@@ -1,0 +1,41 @@
+with "Libgade_Common";
+
+library project Libgade is
+
+   type Library_Mode_Type is
+     ("static", "dynamic");
+
+   Library_Mode : Library_Mode_Type :=
+     external ("LIBGADE_LIBRARY_MODE", "dynamic");
+
+   Base_Interfaces :=
+     ("gade.ads",
+      "gade-interfaces.ads",
+      "gade-input_reader.ads",
+      "gade-video_buffer.ads");
+
+   for Library_Name use "gade";
+   for Library_Dir use "../lib";
+   for Library_Kind use Library_Mode;
+   for Library_Src_Dir use "../lib/src" & "/" & Library_Mode;
+   for Library_ALI_Dir use "../lib/src" & "/" & Library_Mode;
+
+   for Interfaces use Base_Interfaces;
+
+   for Source_Dirs use ("core");
+   for Object_Dir use Libgade_Common'Object_Dir & "/" & Library_Mode;
+   for Languages use Libgade_Common'Languages;
+
+   package Binder         renames Libgade_Common.Binder;
+   package Compiler       renames Libgade_Common.Compiler;
+   package Naming         renames Libgade_Common.Naming;
+   package Pretty_Printer renames Libgade_Common.Pretty_Printer;
+
+   case Library_Mode is
+      when "static" =>
+         null;
+      when "dynamic" =>
+         for Library_Standalone use "encapsulated";
+   end case;
+
+end Libgade;

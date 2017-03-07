@@ -1,0 +1,11 @@
+with Gade.Memory_Map; use Gade.Memory_Map;
+with Gade.CPU; use Gade.CPU;
+
+package Gade.GB is
+
+  type GB_Context is record
+      c : Dummy_CPU_Context;
+      m : Dummy_Memory_Map_Type;
+  end record;
+
+end Gade.GB;

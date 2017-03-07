@@ -1,0 +1,14 @@
+library project Libgade_CPP extends "Libgade" is
+
+   for Source_Dirs use ("cpp");
+   for Object_Dir use "../obj/libgade/cpp/" & Libgade.Library_Mode;
+   for Languages use ("C++");
+   for Interfaces use Libgade'Interfaces & ("libgade.hpp", "gade-interfaces-c.ads");
+   for Library_Dir use "../lib";
+   for Library_Kind use Libgade'Library_Kind;
+
+   package Naming is
+      for Spec_Suffix ("C++") use ".hpp";
+   end Naming;
+
+end Libgade_CPP;
