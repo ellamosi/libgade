@@ -1,4 +1,4 @@
-with "Libgade_Common";
+with "Gade_Common";
 
 library project Libgade is
 
@@ -23,13 +23,13 @@ library project Libgade is
    for Interfaces use Base_Interfaces;
 
    for Source_Dirs use ("core");
-   for Object_Dir use Libgade_Common'Object_Dir & "/" & Library_Mode;
-   for Languages use Libgade_Common'Languages;
+   for Object_Dir use Gade_Common'Object_Dir & "/" & Library_Mode;
+   for Languages use Gade_Common'Languages;
 
-   package Binder         renames Libgade_Common.Binder;
-   package Compiler       renames Libgade_Common.Compiler;
-   package Naming         renames Libgade_Common.Naming;
-   package Pretty_Printer renames Libgade_Common.Pretty_Printer;
+   package Binder         renames Gade_Common.Binder;
+   package Compiler       renames Gade_Common.Compiler;
+   package Naming         renames Gade_Common.Naming;
+   package Pretty_Printer renames Gade_Common.Pretty_Printer;
 
    case Library_Mode is
       when "static" =>
