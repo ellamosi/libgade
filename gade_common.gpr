@@ -7,10 +7,6 @@ abstract project Gade_Common is
    for Object_Dir use "../obj/libgade/core/" & Mode;
    for Languages use ("Ada");
 
-   package Binder is
-      for Default_Switches ("Ada") use ("-n");
-   end Binder;
-
    package Builder is
       case Mode is
          when "release" =>

@@ -6,7 +6,6 @@ project Gade is
    for Object_Dir use Gade_Common'Object_Dir;
    for Languages use Gade_Common'Languages;
 
-   package Binder renames Gade_Common.Binder;
    package Builder renames Gade_Common.Builder;
    package Compiler renames Gade_Common.Compiler;
    package Naming renames Gade_Common.Naming;

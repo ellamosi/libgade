@@ -26,7 +26,10 @@ library project Libgade is
    for Object_Dir use Gade_Common'Object_Dir & "/" & Library_Mode;
    for Languages use Gade_Common'Languages;
 
-   package Binder         renames Gade_Common.Binder;
+   package Binder is
+      for Default_Switches ("Ada") use ("-n");
+   end Binder;
+
    package Compiler       renames Gade_Common.Compiler;
    package Naming         renames Gade_Common.Naming;
    package Pretty_Printer renames Gade_Common.Pretty_Printer;
