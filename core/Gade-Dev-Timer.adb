@@ -7,8 +7,10 @@ package body Gade.Dev.Timer is
 
    procedure Reset (Timer : in out Timer_Type) is
    begin
-      Timer.Clocks := 0;
+      Timer.Ticks := 0;
       Timer.Map.Space := (others => 0);
+      Timer.Modulo_Ticks :=
+        TIMA_Clocks(Timer.Map.Timer_Control.Input_Clock_Select);
    end Reset;
 
    procedure Read
@@ -18,7 +20,7 @@ package body Gade.Dev.Timer is
       Value   : out Byte) is
    begin
       if Address = DIV then
-         Value := Byte(Timer.Clocks mod 256);
+         Value := Byte(Timer.Ticks mod 256);
       else
          Value := Timer.Map.Space(Address);
       end if;
@@ -30,26 +32,32 @@ package body Gade.Dev.Timer is
       Address : Word;
       Value   : Byte) is
    begin
+      if Address = TAC then
+         -- Might need to reset ticks too, needs research
+         Timer.Modulo_Ticks :=
+           TIMA_Clocks(Timer.Map.Timer_Control.Input_Clock_Select);
+      end if;
       Timer.Map.Space(Address) := Value;
    end Write;
 
+   function Is_Running (Timer : Timer_Type) return Boolean is
+   begin
+      return Timer.Map.Timer_Control.Timer_Stop = Start;
+   end Is_Running;
+
    procedure Report_Cycle (Timer : in out Timer_Type;
                            GB    : in out Gade.GB.GB_Type) is
+      New_Ticks : Natural;
    begin
-      Timer.Clocks := Timer.Clocks + 1; -- TODO: Types need to be modular
-      if Timer.Map.Timer_Control.Timer_Stop = Start then
-         -- Timer.Clocks := Timer.Clocks + 1;
-         -- Put_Line("Clocks " & Timer.Clocks'Img & " Counter " & Timer.Timer_Counter'Img);
-         if Timer.Clocks >= TIMA_Clocks(Timer.Map.Timer_Control.Input_Clock_Select)
-         then
-            Timer.Clocks := 0;
-            Timer.Map.Timer_Counter := Timer.Map.Timer_Counter + 1;
-            if Timer.Map.Timer_Counter = 0 then
-               Timer.Map.Timer_Counter := Timer.Map.Timer_Modulo;
-               Set_Interrupt(GB, Timer_Interrupt);
-            end if;
+      New_Ticks := (Timer.Ticks + 1) mod Timer.Modulo_Ticks;
+      if Is_Running(Timer) and New_Ticks < Timer.Ticks then
+         Timer.Map.Timer_Counter := Timer.Map.Timer_Counter + 1;
+         if Timer.Map.Timer_Counter = 0 then
+            Timer.Map.Timer_Counter := Timer.Map.Timer_Modulo;
+            Set_Interrupt(GB, Timer_Interrupt);
          end if;
       end if;
+      Timer.Ticks := New_Ticks;
    end Report_Cycle;
 
 end Gade.Dev.Timer;

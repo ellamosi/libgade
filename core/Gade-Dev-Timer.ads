@@ -63,7 +63,7 @@ private
    type Timer_Stop_Type is (Stop, Start);
 
    -- 1024 Clocks, 16 Clocks, 64 Clocks, 256 Clocks
-   TIMA_Clocks : constant array(Input_Clock_Type) of Integer :=
+   TIMA_Clocks : constant array(Input_Clock_Type) of Natural :=
      (f_4_096   => 1024,
       f_262_144 => 16,
       f_65_536  => 64,
@@ -96,8 +96,9 @@ private
 
    type Timer_Type is
      new Memory_Mapped_Device and Interrupt_Source with record
-      Clocks : Integer;
-      Map    : Timer_Map_Type;
+      Ticks        : Natural;
+      Modulo_Ticks : Natural;
+      Map          : Timer_Map_Type;
    end record;
 
 end Gade.Dev.Timer;
