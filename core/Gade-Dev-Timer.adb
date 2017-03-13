@@ -50,6 +50,8 @@ package body Gade.Dev.Timer is
       New_Ticks : Natural;
    begin
       New_Ticks := (Timer.Ticks + 1) mod Timer.Modulo_Ticks;
+      -- Might need to use a different modulo value/condition when TAC is set
+      -- to high frequencies
       if Is_Running(Timer) and New_Ticks < Timer.Ticks then
          Timer.Map.Timer_Counter := Timer.Map.Timer_Counter + 1;
          if Timer.Map.Timer_Counter = 0 then
