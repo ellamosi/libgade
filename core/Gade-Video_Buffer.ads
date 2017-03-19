@@ -1,6 +1,6 @@
 package Gade.Video_Buffer is
 
-   subtype Color_Value is Natural range 0..3;
+   type Color_Value is mod 4;
 
    type Color_Buffer is array
      (Natural range <>, Natural range <>) of Color_Value;

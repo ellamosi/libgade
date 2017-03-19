@@ -28,14 +28,15 @@ package body Gade.GB is
       Load_ROM (GB.External_ROM, File);
    end Load_ROM;
 
-   procedure Report_Cycle
-     (GB    : in out GB_Type;
-      Video : RGB32_Display_Buffer_Access) is
+   procedure Report_Cycles
+     (GB     : in out GB_Type;
+      Video  : RGB32_Display_Buffer_Access;
+      Cycles : Positive) is
    begin
-      Report_Cycle(GB.Joypad, GB);
-      Report_Cycle(GB.Display, GB, Video);
-      Report_Cycle(GB.Timer, GB);
-   end Report_Cycle;
+      Report_Cycles(GB.Joypad, GB, Cycles);
+      Report_Cycles(GB.Display, GB, Video, Cycles);
+      Report_Cycles(GB.Timer, GB, Cycles);
+   end Report_Cycles;
 
 --
 --     procedure Read_Screen_Buffer

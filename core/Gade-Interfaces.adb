@@ -43,17 +43,20 @@ package body Gade.Interfaces is
      (G     : Gade_Type;
       Video : Gade.Video_Buffer.RGB32_Display_Buffer_Access) is
       Frame_Finished : Boolean := False;
-      Cycles : Natural;
+      Instruction_Cycles, Interrupt_Cycles : Natural;
    begin
+      Interrupt_Cycles := 0;
       while not Frame_Finished loop
-         Cycles := 1;
+         Instruction_Cycles := 1;
          if not G.GB.CPU.Halted then
-            Gade.Dev.CPU.Instructions.Exec.Execute(G.GB.CPU, G.GB, Cycles);
+            Gade.Dev.CPU.Instructions.Exec.Execute
+              (G.GB.CPU, G.GB, Instruction_Cycles);
          end if;
-         for i in 1..Cycles loop
-            Report_Cycle(G.GB, Video);
-         end loop;
-         Gade.Dev.Interrupts.Handle_Interrupts(G.GB);
+         Report_Cycles(G.GB, Video, Instruction_Cycles);
+         Gade.Dev.Interrupts.Service_Interrupts(G.GB, Interrupt_Cycles);
+         if Interrupt_Cycles > 0 then
+            Report_Cycles(G.GB, Video, Interrupt_Cycles);
+         end if;
          Gade.Dev.Display.Check_Frame_Finished(G.GB.Display, Frame_Finished);
       end loop;
    end Next_Frame;

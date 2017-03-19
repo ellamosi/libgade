@@ -8,6 +8,7 @@ project Gade is
 
    package Builder renames Gade_Common.Builder;
    package Compiler renames Gade_Common.Compiler;
+   package Linker renames Gade_Common.Linker;
    package Naming renames Gade_Common.Naming;
    package Pretty_Printer renames Gade_Common.Pretty_Printer;
 

@@ -55,9 +55,11 @@ package body Gade.Dev.Interrupts is
      (GB        : in out Gade.GB.GB_Type;
       Interrupt : Interrupt_Type) is
    begin
-      GB.Interrupt_Flag.Map.Flags(Interrupt) :=
-        GB.Interrupt_Enable.Map.Flags(Interrupt);
-      GB.CPU.Halted := False;
+      GB.Interrupt_Flag.Map.Flags(Interrupt) := True;
+      if GB.Interrupt_Enable.Map.Flags(Interrupt) then
+         -- TODO: Handle CPU stopped with Joypad interrupt
+         GB.CPU.Halted := False;
+      end if;
    end Set_Interrupt;
 
    function Interrupt_Requested
@@ -66,7 +68,8 @@ package body Gade.Dev.Interrupts is
       return Interrupt_Flag.Reg /= 0;
    end Interrupt_Requested;
 
-   procedure Handle_Interrupts (GB : in out Gade.GB.GB_Type) is
+   procedure Service_Interrupts (GB     : in out Gade.GB.GB_Type;
+                                 Cycles : out Natural) is
       Interrupt_Enable : Interrupt_Flag_Register_Type;
       Interrupt_Flags : Interrupt_Flag_Register_Type;
    begin
@@ -86,10 +89,13 @@ package body Gade.Dev.Interrupts is
                GB.CPU.PC := Interrupt_Handlers(I);
                -- Save reset interrupt flags
                GB.Interrupt_Flag.Map := Interrupt_Flags;
-               exit;
+               -- Set interrupt servicing delay
+               Cycles := 20;
+               return;
             end if;
          end loop;
       end if;
-   end Handle_Interrupts;
+      Cycles := 0;
+   end Service_Interrupts;
 
 end Gade.Dev.Interrupts;
