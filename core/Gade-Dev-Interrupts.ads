@@ -51,8 +51,9 @@ package Gade.Dev.Interrupts is
      (GB        : in out Gade.GB.GB_Type;
       Interrupt : Interrupt_Type);
 
-   procedure Handle_Interrupts
-     (GB : in out Gade.GB.GB_Type);
+   procedure Service_Interrupts
+     (GB     : in out Gade.GB.GB_Type;
+      Cycles : out Natural);
 
 private
 

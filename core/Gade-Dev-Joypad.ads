@@ -21,9 +21,10 @@ package Gade.Dev.Joypad is
       Address : Word;
       Content : Byte);
 
-   overriding procedure Report_Cycle
+   overriding procedure Report_Cycles
      (Joypad : in out Joypad_Type;
-      GB     : in out Gade.GB.GB_Type);
+      GB     : in out Gade.GB.GB_Type;
+      Cycles : Positive);
 
    procedure Set_Input_Reader
      (Joypad : in out Joypad_Type;

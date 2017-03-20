@@ -56,9 +56,10 @@ private package Gade.GB is
 
    procedure Reset (GB : in out GB_Type);
 
-   procedure Report_Cycle
-     (GB    : in out GB_Type;
-      Video : RGB32_Display_Buffer_Access);
+   procedure Report_Cycles
+     (GB     : in out GB_Type;
+      Video  : RGB32_Display_Buffer_Access;
+      Cycles : Positive);
 
 private
 

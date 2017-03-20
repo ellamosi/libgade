@@ -25,8 +25,9 @@ private package Gade.Dev is
 
    type Interrupt_Source is interface;
 
-   procedure Report_Cycle
+   procedure Report_Cycles
      (Device : in out Interrupt_Source;
-      GB     : in out Gade.GB.GB_Type) is abstract;
+      GB     : in out Gade.GB.GB_Type;
+      Cycles : Positive) is abstract;
 
 end Gade.Dev;

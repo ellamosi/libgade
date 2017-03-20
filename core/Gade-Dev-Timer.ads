@@ -25,33 +25,10 @@ package Gade.Dev.Timer is
       Address : Word;
       Value   : Byte);
 
-   overriding procedure Report_Cycle
-     (Timer : in out Timer_Type;
-      GB    : in out Gade.GB.GB_Type);
-
-   --  Name     - TIMA
-   --  Contents - Timer counter (R/W)
-   --             This timer is incremented by a clock frequency specified by
-   --  the TAC register ($FF07). The timer generates an interrupt when it
-   --  overflows.
-
-
-   -- Name     - TMA
-   -- Contents - Timer Modulo (R/W)
-   --            When the TIMA overflows, this data will be loaded.
-
-
-   --  Name     - TAC
-   --  Contents - Timer Control (R/W)
-   --             Bit 2 - Timer Stop
-   --                     0: Stop Timer
-   --                     1: Start Timer
-   --             Bits 1+0 - Input Clock Select
-   --                     00: 4. 096 KHz   ( ~4. 194 KHz SGB)
-   --                     01: 262. 144 Khz ( ~268. 4 KHz SGB)
-   --                     10: 65. 536 KHz  ( ~67. 11 KHz SGB)
-   --                     11: 16. 384 KHz  ( ~16. 78 KHz SGB)
-
+   overriding procedure Report_Cycles
+     (Timer  : in out Timer_Type;
+      GB     : in out Gade.GB.GB_Type;
+      Cycles : Positive);
 
 private
 
@@ -69,6 +46,20 @@ private
       f_65_536  => 64,
       f_16_384  => 256);
 
+   DIV_Increment_Freq : constant Input_Clock_Type := f_16_384;
+   DIV_Increment_TIMA_Clocks : constant Natural :=
+     TIMA_Clocks(DIV_Increment_Freq);
+
+   --  Name     - TAC
+   --  Contents - Timer Control (R/W)
+   --             Bit 2 - Timer Stop
+   --                     0: Stop Timer
+   --                     1: Start Timer
+   --             Bits 1+0 - Input Clock Select
+   --                     00: 4. 096 KHz   ( ~4. 194 KHz SGB)
+   --                     01: 262. 144 Khz ( ~268. 4 KHz SGB)
+   --                     10: 65. 536 KHz  ( ~67. 11 KHz SGB)
+   --                     11: 16. 384 KHz  ( ~16. 78 KHz SGB)
    type Timer_Control_Type is record
       Input_Clock_Select : Input_Clock_Type;
       Timer_Stop         : Timer_Stop_Type;
@@ -85,7 +76,12 @@ private
       case Access_Type is
          when Named =>
             Divider       : Byte;
+            -- TIMA: Timer counter (R/W) - This timer is incremented by a clock
+            -- frequency specified by the TAC register ($FF07). The timer
+            -- generates an interrupt when it overflows.
             Timer_Counter : Byte;
+            -- TMA: Timer Modulo (R/W) - When the TIMA overflows, this data will
+            -- be loaded.
             Timer_Modulo  : Byte;
             Timer_Control : Timer_Control_Type;
          when Address =>
@@ -96,8 +92,9 @@ private
 
    type Timer_Type is
      new Memory_Mapped_Device and Interrupt_Source with record
-      Ticks        : Natural;
+      Ticks        : Integer;
       Modulo_Ticks : Natural;
+      DIV_Ticks    : Natural;
       Map          : Timer_Map_Type;
    end record;
 

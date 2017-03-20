@@ -5,6 +5,8 @@ with Gade.Dev.CPU.Instructions.Table; use Gade.Dev.CPU.Instructions.Table;
 with Gade.GB;                         use Gade.GB;
 with Gade.GB.Memory_Map;              use Gade.GB.Memory_Map;
 
+with Gade.Dev.Interrupts;
+
 package body Gade.Dev.CPU.Instructions.Exec is
 
    procedure Execute
@@ -16,8 +18,8 @@ package body Gade.Dev.CPU.Instructions.Exec is
       Instruction      : access constant Instruction_Entry;
       Partial_Opcode   : Byte;
    begin
-      -- Ada.Integer_Text_IO.Put(Integer(Instruction_Addr), Base => 16);
       Current_Table := Opcodes_Main.Entries'Access;
+      -- Ada.Integer_Text_IO.Put(Integer(Instruction_Addr), Base => 16);
       loop
          Partial_Opcode := Read_Byte(GB, GB.CPU.PC);
          GB.CPU.PC := GB.CPU.PC + 1;

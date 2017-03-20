@@ -20,17 +20,34 @@ abstract project Gade_Common is
       case Mode is
          when "release" =>
             for Default_Switches ("Ada") use
-              ("-gnat12");
+              ("-gnat12", -- Ada 2012 mode
+               "-gnatp",  -- Suppress all checks
+               "-O3");    -- Optimization level
+               --"-fprofile-use"); -- Profile Guided Optimization (-fprofile-generate -fprofile-use)
          when others =>
             for Default_Switches ("Ada") use
               ("-gnat2012",     -- Ada 2012 mode
                "-fstack-check", -- Stack Overflow Checks
                "-gnato",        -- Overflow Checks
                "-gnatE",        -- Access before elaboration checks - REVISIT
-               "-g",            -- Enable Debugging
+               "-g",            -- Generate debugging information
                "-gnata");       -- Enable assertions
       end case;
    end Compiler;
+
+   package Linker is
+      case Mode is
+         when "release" =>
+            for Default_Switches ("Ada") use
+              ("-dead_strip",           -- Remove unused subprograms: OSX
+               "-O3",
+               "-fprofile-use",         -- Profile Guided Optimization
+               "-flto");                -- Enables link time optimization
+               --  "-Wl,--gc-sections"  -- Remove unused subprograms: linux
+         when others =>
+            null;
+      end case;
+   end Linker;
 
    package Naming is
       for Casing use "MixedCase";

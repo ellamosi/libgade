@@ -1,5 +1,8 @@
 with Gade.Video_Buffer; use Gade.Video_Buffer;
 with Gade.Dev.OAM;      use Gade.Dev.OAM;
+with Gade.Dev.Video.Background_Buffer; use Gade.Dev.Video.Background_Buffer;
+with Gade.Dev.Video; use Gade.Dev.Video;
+with Gade.Dev.Video.Sprites; use Gade.Dev.Video.Sprites;
 
 package Gade.Dev.Display is
 
@@ -25,10 +28,11 @@ package Gade.Dev.Display is
       Address : Word;
       Value   : Byte);
 
-   procedure Report_Cycle
+   procedure Report_Cycles
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
-      Video   : RGB32_Display_Buffer_Access);
+      Video   : RGB32_Display_Buffer_Access;
+      Cycles  : Positive);
 
 --     procedure Read_Screen_Buffer
 --       (Display : Display_Type;
@@ -52,7 +56,7 @@ package Gade.Dev.Display is
      (Display  : in out Display_Type;
       Finished : out Boolean);
 
-   type Palette_Type is array (0..3) of Color_Value;
+   type Palette_Type is array (Color_Value'Range) of Color_Value;
    pragma Pack (Palette_Type);
    for Palette_Type'Size use 8;
 
@@ -74,15 +78,15 @@ private
       --  Bit1  Sprite display                      | ON        | OFF
       Sprite_Display           : Boolean;
       --  Bit2  Sprite size                         | 8x16      | 8x8
-      Sprite_Size              : Boolean;
+      Sprite_Size              : Sprite_Size_Type;
       --  Bit3  Background Tile Map address         | 9C00-9FFF | 9800-9BFF
-      Background_Tile_Map_Addr : Boolean;
+      Background_Tile_Map_Addr : Tile_Map_Access_Type;
       --  Bit4  Tile Data Table address             | 8000-8FFF | 8800-97FF
-      Tile_Data_Table_Addr     : Boolean;
+      Tile_Data_Table_Addr     : Tile_Data_Access_Type;
       --  Bit5  Window display                      | ON        | OFF
       Window_Display           : Boolean;
       --  Bit6  Window Tile Table address           | 9C00-9FFF | 9800-9BFF
-      Window_Tile_Table_Addr   : Boolean;
+      Window_Tile_Table_Addr   : Tile_Map_Access_Type;
       --  Bit7  LCD operation                       | ON        | OFF
       LCD_Operation            : Boolean;
    end record;
@@ -100,11 +104,11 @@ private
    Default_LCD_Control : constant LCD_Control :=
       (Background_Display         => True,
        Sprite_Display             => False,
-       Sprite_Size                => False,
-       Background_Tile_Map_Addr   => False,
-       Tile_Data_Table_Addr       => True,
+       Sprite_Size                => Single,
+       Background_Tile_Map_Addr   => Low_Map,
+       Tile_Data_Table_Addr       => Low_Data,
        Window_Display             => False,
-       Window_Tile_Table_Addr     => False,
+       Window_Tile_Table_Addr     => Low_Map,
        LCD_Operation              => True);
 
    type LCD_Controller_Mode_Type is (
@@ -255,21 +259,11 @@ private
      ((255, 255, 255), (171, 171, 171), (85, 85, 85), (0, 0, 0));
 
    function Read_Background_Pixel
-     (GB   : Gade.GB.GB_Type;
+     (GB   : in out Gade.GB.GB_Type;
       X, Y : Natural) return Color_Value;
 
-   type Sprite_Result_Type is record
-      Value    : Color_Value;
-      Priority : Boolean;
-      Palette  : Object_Palette_Type;
-   end record;
-
-   function Read_Sprite_Pixel
-     (GB   : Gade.GB.GB_Type;
-      X, Y : Natural) return Sprite_Result_Type;
-
    function Read_Screen_Pixel
-     (GB   : Gade.GB.GB_Type;
+     (GB   : in out Gade.GB.GB_Type;
       X, Y : Natural) return Color_Value;
 end Gade.Dev.Display;
 
