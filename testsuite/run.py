@@ -1,5 +1,4 @@
 #! /usr/bin/env python2
-# Based on https://github.com/AdaCore/Ada_Drivers_Library/blob/master/testsuite/run.py
 
 import argparse
 import difflib
