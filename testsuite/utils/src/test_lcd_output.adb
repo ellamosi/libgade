@@ -97,9 +97,9 @@ package body Test_LCD_Output is
       Run_ROM (ROM_File, Buffer'Access, Frames);
       Write_LCD_Output(Buffer);
       if Binnary_Equal (Test_Dir & "/test.bmp", Test_Dir & "/ref.bmp") then
-         Put_Line(Test_Name & " test OK.");
+         Put_Line(Test_Name & " test OK");
       else
-         Put_Line(Test_Name & " test FAILED.");
+         Put_Line(Test_Name & " test FAILED");
       end if;
    end Run_LCD_Test;
 
