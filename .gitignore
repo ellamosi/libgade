@@ -2,6 +2,8 @@
 *.ads#
 *.adb#
 *.db
+*.db-shm
+*.db-wal
 *.ali
 *.o
 *.a
@@ -9,7 +11,11 @@
 *.cgpr
 *.bexch
 *.lexch
-*.a
 *.ci
 *.cswi
+*.stderr
+*.stdout
+*.a
+*.cswi
 *~
+

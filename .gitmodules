@@ -1,0 +1,3 @@
+[submodule "testsuite/utils/libraries/bmp"]
+	path = testsuite/utils/libraries/bmp
+	url = git@github.com:ellamosi/Ada_BMP_Library.git
