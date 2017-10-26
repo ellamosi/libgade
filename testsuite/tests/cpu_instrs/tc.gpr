@@ -1,6 +1,6 @@
---with "../../../gade.gpr";
+with "../../utils/test_utils.gpr";
 
-project TC extends "../../utils/test_utils.gpr" is
+project TC is
 
    for Languages use ("Ada");
    for Source_Dirs use ("src");
