@@ -29,7 +29,6 @@ abstract project Gade_Common is
               ("-gnat2012",     -- Ada 2012 mode
                "-fstack-check", -- Stack Overflow Checks
                "-gnato",        -- Overflow Checks
-               "-gnatE",        -- Access before elaboration checks - REVISIT
                "-g",            -- Generate debugging information
                "-gnata");       -- Enable assertions
       end case;
