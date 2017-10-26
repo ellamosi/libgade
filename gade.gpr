@@ -1,4 +1,4 @@
-with "Gade_Common";
+with "gade_common.gpr";
 
 project Gade is
 
@@ -13,4 +13,3 @@ project Gade is
    package Pretty_Printer renames Gade_Common.Pretty_Printer;
 
 end Gade;
-

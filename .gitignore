@@ -1,5 +1,22 @@
-# Object file
-*.o
-
-# Ada Library Information
+*.DS_Store
+*.ads#
+*.adb#
+*.db
+*.db-shm
+*.db-wal
 *.ali
+*.o
+*.a
+*.xml
+*.cgpr
+*.bexch
+*.lexch
+*.ci
+*.cswi
+*.stderr
+*.stdout
+*.a
+*.cswi
+*~
+**/obj/*
+**/bin/*

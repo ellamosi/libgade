@@ -29,14 +29,14 @@ package body Gade.Interfaces is
      (G    : Gade_Type;
       Path : String) is
    begin
-      G.GB.External_ROM.Load_ROM(Path);
+      G.GB.External_ROM.Load_ROM (Path);
    end Load_ROM;
 
    procedure Set_Input_Reader
      (G      : Gade_Type;
       Reader : Gade.Input_Reader.Input_Reader_Access) is
    begin
-      G.GB.Joypad.Set_Input_Reader(Reader);
+      G.GB.Joypad.Set_Input_Reader (Reader);
    end Set_Input_Reader;
 
    procedure Next_Frame
@@ -52,10 +52,10 @@ package body Gade.Interfaces is
             Gade.Dev.CPU.Instructions.Exec.Execute
               (G.GB.CPU, G.GB, Instruction_Cycles);
          end if;
-         Report_Cycles(G.GB, Video, Instruction_Cycles);
-         Gade.Dev.Interrupts.Service_Interrupts(G.GB, Interrupt_Cycles);
+         Report_Cycles (G.GB, Video, Instruction_Cycles);
+         Gade.Dev.Interrupts.Service_Interrupts (G.GB, Interrupt_Cycles);
          if Interrupt_Cycles > 0 then
-            Report_Cycles(G.GB, Video, Interrupt_Cycles);
+            Report_Cycles (G.GB, Video, Interrupt_Cycles);
          end if;
          Gade.Dev.Display.Check_Frame_Finished(G.GB.Display, Frame_Finished);
       end loop;
@@ -65,8 +65,8 @@ package body Gade.Interfaces is
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin
-      Put_Line("Finalize");
-      Free(This);
+      Put_Line ("Finalize");
+      Free (This);
    end Finalize;
 
 end Gade.Interfaces;
