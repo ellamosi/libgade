@@ -32,6 +32,14 @@ abstract project Gade_Common is
                "-g",            -- Generate debugging information
                "-gnata");       -- Enable assertions
       end case;
+      for Default_Switches ("ada") use Compiler'Default_Switches ("Ada") &
+        ("-gnatwa",             -- Activate most optional warnings
+         -- "-gnatwe",             -- Treat warnings and style checks as errors
+         "-gnaty",              -- Style checking
+         "-gnatyO",             -- Check that overriding subprograms are explicitly marked as such
+         "-gnatyM120",          -- Set maximum line length
+         "-ffunction-sections", -- Eliminate unused code
+         "-fdata-sections");    -- Eliminate unused data
    end Compiler;
 
    package Linker is
