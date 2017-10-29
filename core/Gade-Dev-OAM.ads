@@ -35,8 +35,7 @@ package Gade.Dev.OAM is
          when Address =>
             Space : OAM_Address_Space;
       end case;
-   end record;
-   pragma Unchecked_Union (OAM_Map_Type);
+   end record with Unchecked_Union;
 
    type OAM_Type is new Memory_Mapped_Device with record
       Map : OAM_Map_Type;

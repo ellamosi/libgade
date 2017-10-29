@@ -215,8 +215,7 @@ private
          when Address =>
             Space   : LCD_Address_Space;
       end case;
-   end record;
-   pragma Unchecked_Union (LCD_Map_Type);
+   end record with Unchecked_Union;
 
    type Display_Type is
      new Memory_Mapped_Device with record

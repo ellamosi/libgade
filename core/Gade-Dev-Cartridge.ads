@@ -296,11 +296,10 @@ private
          when Address =>
             Space : ROM_Bank_Address_Space;
       end case;
-   end record;
+   end record with Unchecked_Union;
    for ROM_Bank_Type use record
       Cartridge_Info at 16#100# range 0 .. 16#50# * 8 - 1;
    end record;
-   pragma Unchecked_Union (ROM_Bank_Type);
 
    type ROM_Bank_Access is access ROM_Bank_Type;
 

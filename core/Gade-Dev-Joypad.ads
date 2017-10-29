@@ -46,8 +46,7 @@ private
          when Byte_Access =>
             Reg : Byte;
       end case;
-   end record;
-   pragma Unchecked_Union (Joypad_Matrix_Type);
+   end record with Unchecked_Union;
    for Joypad_Matrix_Type use record
       P10_IN  at 0 range 0 .. 0;
       P11_IN  at 0 range 1 .. 1;
