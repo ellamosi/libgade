@@ -1,5 +1,6 @@
-with Gade.Dev.Video.Tile_Map; use Gade.Dev.Video.Tile_Map;
 with Gade.Dev.VRAM; use Gade.Dev.VRAM;
+with Gade.Dev.Video.Tile_Map; use Gade.Dev.Video.Tile_Map;
+with Gade.Dev.Video.Tile_Buffer; use Gade.Dev.Video.Tile_Buffer;
 
 package body Gade.Dev.Video.Window is
 
