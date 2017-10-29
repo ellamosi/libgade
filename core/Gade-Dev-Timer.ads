@@ -91,8 +91,7 @@ private
          when Address =>
             Space : Timer_Address_Space;
       end case;
-   end record;
-   pragma Unchecked_Union (Timer_Map_Type);
+   end record with Unchecked_Union;
 
    type Timer_Type is
      new Memory_Mapped_Device and Interrupt_Source with record

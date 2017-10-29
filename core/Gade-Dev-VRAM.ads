@@ -125,8 +125,7 @@ package Gade.Dev.VRAM is
          when Address =>
             Space : VRAM_Address_Space;
       end case;
-   end record;
-   pragma Unchecked_Union (VRAM_Map_Type);
+   end record with Unchecked_Union;
 
    type Consolidated_Tile_Map_Array is
      array (Tile_Map_Access_Type) of Consolidated_Tile_Map_Type;

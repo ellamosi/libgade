@@ -25,18 +25,16 @@ package Gade.Dev.CPU is
    --------------------
 
    type Register_Width is (Half, Full);
-   type CPU_Registers (Width : Register_Width := Half) is
-      record
-         SP : Word;
-         case Width is
-            when Half =>
-               F : CPU_Flags;
-               A, C, B, E, D, L, H : Byte;
-            when Full =>
-               AF,   BC,   DE,   HL   : Word;
-         end case;
-      end record;
-   pragma Unchecked_Union (CPU_Registers);
+   type CPU_Registers (Width : Register_Width := Half) is record
+      SP : Word;
+      case Width is
+         when Half =>
+            F : CPU_Flags;
+            A, C, B, E, D, L, H : Byte;
+         when Full =>
+            AF, BC, DE, HL : Word;
+      end case;
+   end record with Unchecked_Union;
 
    type Interrupt_Enable is (IE_DI, IE_EI);
 

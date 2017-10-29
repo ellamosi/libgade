@@ -78,8 +78,7 @@ private
          when Indexed =>
             Flags : Indexed_Flag_Array;
       end case;
-   end record;
-   pragma Unchecked_Union (Interrupt_Flag_Register_Type);
+   end record with Unchecked_Union;
    for Interrupt_Flag_Register_Type use record
       VBLANK at 0 range 0 .. 0;
       LCDC   at 0 range 1 .. 1;
@@ -115,8 +114,7 @@ private
          when Indexed =>
             Flags : Indexed_Flag_Array;
       end case;
-   end record;
-   pragma Unchecked_Union (Interrupt_Enable_Register_Type);
+   end record with Unchecked_Union;
    for Interrupt_Enable_Register_Type use record
       VBLANK at 0 range 0 .. 0;
       LCDC   at 0 range 1 .. 1;

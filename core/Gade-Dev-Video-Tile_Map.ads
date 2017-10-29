@@ -33,8 +33,7 @@ package Gade.Dev.Video.Tile_Map is
          when Addressed =>
             Addressed : Addessed_Tile_Map_Type;
       end case;
-   end record;
-   pragma Unchecked_Union (Consolidated_Partial_Map_Type);
+   end record with Unchecked_Union;
 
    type Consolidated_Tile_Map_Type is array
      (Tile_Data_Access_Type) of Consolidated_Partial_Map_Type;
