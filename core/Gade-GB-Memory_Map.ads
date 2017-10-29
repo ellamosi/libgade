@@ -5,7 +5,7 @@ package Gade.GB.Memory_Map is
       Address : Word;
       Value   : out Byte);
 
-   -- TODO: Re-examine function with mutable orguments
+   --  TODO: Re-examine function with mutable orguments
    function Read_Byte
      (GB      : in out GB_Type;
       Address : Word) return Byte;
@@ -20,7 +20,7 @@ package Gade.GB.Memory_Map is
       Address : Word;
       Value   : out Word);
 
-   -- TODO: Re-examine function with mutable orguments
+   --  TODO: Re-examine function with mutable orguments
    function Read_Word
      (GB      : in out GB_Type;
       Address : Word) return Word;

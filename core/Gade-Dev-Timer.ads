@@ -1,6 +1,6 @@
 package Gade.Dev.Timer is
 
-   subtype Timer_IO_Address is Word range 16#FF04#..16#FF07#;
+   subtype Timer_IO_Address is Word range 16#FF04# .. 16#FF07#;
 
    DIV  : constant Word := 16#FF04#;
    TIMA : constant Word := 16#FF05#;
@@ -10,37 +10,41 @@ package Gade.Dev.Timer is
    type Timer_Type is
      new Memory_Mapped_Device and Interrupt_Source with private;
 
+   overriding
    procedure Reset
      (Timer : in out Timer_Type);
 
-   overriding procedure Read
+   overriding
+   procedure Read
      (Timer   : in out Timer_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Value   : out Byte);
 
-   overriding procedure Write
+   overriding
+   procedure Write
      (Timer   : in out Timer_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Value   : Byte);
 
-   overriding procedure Report_Cycles
+   overriding
+   procedure Report_Cycles
      (Timer  : in out Timer_Type;
       GB     : in out Gade.GB.GB_Type;
       Cycles : Positive);
 
 private
 
-   type Timer_Address_Space is Array (Timer_IO_Address'Range) of Byte;
+   type Timer_Address_Space is array (Timer_IO_Address'Range) of Byte;
 
-   -- CPU Clock: 4.194304 Mhz
+   --  CPU Clock: 4.194304 Mhz
 
    type Input_Clock_Type is (f_4_096, f_262_144, f_65_536, f_16_384);
    type Timer_Stop_Type is (Stop, Start);
 
-   -- 1024 Clocks, 16 Clocks, 64 Clocks, 256 Clocks
-   TIMA_Clocks : constant array(Input_Clock_Type) of Natural :=
+   --  1024 Clocks, 16 Clocks, 64 Clocks, 256 Clocks
+   TIMA_Clocks : constant array (Input_Clock_Type) of Natural :=
      (f_4_096   => 1024,
       f_262_144 => 16,
       f_65_536  => 64,
@@ -48,7 +52,7 @@ private
 
    DIV_Increment_Freq : constant Input_Clock_Type := f_16_384;
    DIV_Increment_TIMA_Clocks : constant Natural :=
-     TIMA_Clocks(DIV_Increment_Freq);
+     TIMA_Clocks (DIV_Increment_Freq);
 
    --  Name     - TAC
    --  Contents - Timer Control (R/W)
@@ -65,8 +69,8 @@ private
       Timer_Stop         : Timer_Stop_Type;
    end record;
    for Timer_Control_Type use record
-      Input_Clock_Select at 0 range 0..1;
-      Timer_Stop         at 0 range 2..2;
+      Input_Clock_Select at 0 range 0 .. 1;
+      Timer_Stop         at 0 range 2 .. 2;
    end record;
    for Timer_Control_Type'Size use 8;
 
@@ -76,12 +80,12 @@ private
       case Access_Type is
          when Named =>
             Divider       : Byte;
-            -- TIMA: Timer counter (R/W) - This timer is incremented by a clock
-            -- frequency specified by the TAC register ($FF07). The timer
-            -- generates an interrupt when it overflows.
+            --  TIMA: Timer counter (R/W) - This timer is incremented by a clock
+            --  frequency specified by the TAC register ($FF07). The timer
+            --  generates an interrupt when it overflows.
             Timer_Counter : Byte;
-            -- TMA: Timer Modulo (R/W) - When the TIMA overflows, this data will
-            -- be loaded.
+            --  TMA: Timer Modulo (R/W) - When the TIMA overflows, this data will
+            --  be loaded.
             Timer_Modulo  : Byte;
             Timer_Control : Timer_Control_Type;
          when Address =>
@@ -97,5 +101,7 @@ private
       DIV_Ticks    : Natural;
       Map          : Timer_Map_Type;
    end record;
+
+   function Is_Running (Timer : Timer_Type) return Boolean;
 
 end Gade.Dev.Timer;

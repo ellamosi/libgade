@@ -12,41 +12,41 @@ with Gade.Video_Buffer;   use Gade.Video_Buffer;
 
 private package Gade.GB is
 
-   -- 0000: 16kB ROM bank #0 | 32kB Cartridge (First Half)
-   -- 4000: 16kB switchable ROM bank | 32kB Cartridge (Second Half)
-   -- 8000: 8kB Video RAM
-   -- A000: 8kB switchable RAM bank
-   -- C000: 8kB Internal RAM
-   -- E000: Echo of 8kB Internal RAM
-   -- FE00: Sprite Attrib Memory (OAM)
-   -- FEA0: Empty but unusable for I/O
-   -- FF00: I/O ports
-   -- FF4C: Empty but unusable for I/O
-   -- FF80: Internal RAM
-   -- FFFF: Interrupt Enable Register
+   --  0000: 16kB ROM bank #0 | 32kB Cartridge (First Half)
+   --  4000: 16kB switchable ROM bank | 32kB Cartridge (Second Half)
+   --  8000: 8kB Video RAM
+   --  A000: 8kB switchable RAM bank
+   --  C000: 8kB Internal RAM
+   --  E000: Echo of 8kB Internal RAM
+   --  FE00: Sprite Attrib Memory (OAM)
+   --  FEA0: Empty but unusable for I/O
+   --  FF00: I/O ports
+   --  FF4C: Empty but unusable for I/O
+   --  FF80: Internal RAM
+   --  FFFF: Interrupt Enable Register
 
    type Memory_Bytes is array (Word'Range) of Byte;
 
    type GB_Public_Type is abstract tagged record
       CPU              : aliased CPU_Context;
-      -- 0000
+      --  0000
       External_ROM     : aliased External_ROM_Type;
-      -- 8000
+      --  8000
       Video_RAM        : aliased VRAM_Type;
-      -- A000
+      --  A000
       External_RAM     : aliased External_RAM_Type;
-      -- C000 Intenal RAM / E000 Intenal RAM Echo
+      --  C000 Intenal RAM / E000 Intenal RAM Echo
       Content          : Memory_Bytes; -- TODO: redo!
-      -- FE00
+      --  FE00
       Video_OAM        : aliased OAM_Type;
-      -- FF40
+      --  FF40
       Interrupt_Flag   : aliased Interrupt_Flag_Type;
       Joypad           : aliased Joypad_Type;
       Timer            : aliased Timer_Type;
       Display          : aliased Display_Type;
-      -- FF4C: Empty but unusable for I/O
-      -- FF80: Internal RAM
-      -- FFFF
+      --  FF4C: Empty but unusable for I/O
+      --  FF80: Internal RAM
+      --  FFFF
       Interrupt_Enable : aliased Interrupt_Enable_Type;
    end record;
 

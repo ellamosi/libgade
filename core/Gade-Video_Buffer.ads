@@ -8,11 +8,11 @@ package Gade.Video_Buffer is
    Display_Width  : constant := 160;
    Display_Height : constant := 144;
 
-   subtype Display_Horizontal_Range is Natural range 0 .. Display_Width-1;
-   subtype Display_Vertical_Range is Natural range 0 .. Display_Height-1;
+   subtype Display_Horizontal_Range is Natural range 0 .. Display_Width - 1;
+   subtype Display_Vertical_Range is Natural range 0 .. Display_Height - 1;
 
    type Video_Buffer_Type is new
-      Color_Buffer(Display_Vertical_Range, Display_Horizontal_Range);
+      Color_Buffer (Display_Vertical_Range, Display_Horizontal_Range);
 
    type Video_Buffer_Access is access all Video_Buffer_Type;
 
@@ -42,7 +42,7 @@ package Gade.Video_Buffer is
      (Natural range <>, Natural range <>) of RGB32_Color;
 
    type RGB32_Display_Buffer is new
-     RGB32_Buffer(Display_Vertical_Range, Display_Horizontal_Range) with
+     RGB32_Buffer (Display_Vertical_Range, Display_Horizontal_Range) with
      Convention => C;
 
    type RGB32_Display_Buffer_Access is access all RGB32_Display_Buffer with
@@ -51,11 +51,11 @@ package Gade.Video_Buffer is
    Background_Width  : constant := 256;
    Background_Height : constant := 256;
 
-   subtype Background_Horizontal_Range is Natural range 0 .. Background_Width-1;
-   subtype Background_Vertical_Range is Natural range 0 .. Background_Height-1;
+   subtype Background_Horizontal_Range is Natural range 0 .. Background_Width - 1;
+   subtype Background_Vertical_Range is Natural range 0 .. Background_Height - 1;
 
    type Background_Buffer_Type is new
-      Color_Buffer(Background_Vertical_Range, Background_Horizontal_Range);
+      Color_Buffer (Background_Vertical_Range, Background_Horizontal_Range);
 
    type Background_Buffer_Access is access all Background_Buffer_Type;
 
@@ -63,12 +63,12 @@ package Gade.Video_Buffer is
    Tile_Buffer_Height : constant := 128;
 
    subtype Tile_Buffer_Horizontal_Range is
-      Natural range 0 .. Tile_Buffer_Width-1;
+      Natural range 0 .. Tile_Buffer_Width - 1;
    subtype Tile_Buffer_Vertical_Range is
-      Natural range 0 .. Tile_Buffer_Height-1;
+      Natural range 0 .. Tile_Buffer_Height - 1;
 
    type Tile_Buffer_Type is new
-      Color_Buffer(Tile_Buffer_Vertical_Range, Tile_Buffer_Horizontal_Range);
+      Color_Buffer (Tile_Buffer_Vertical_Range, Tile_Buffer_Horizontal_Range);
 
    type Tile_Buffer_Access is access all Tile_Buffer_Type;
 

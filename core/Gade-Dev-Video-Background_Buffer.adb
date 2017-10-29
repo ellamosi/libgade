@@ -1,5 +1,4 @@
 with Gade.Dev.VRAM; use Gade.Dev.VRAM;
-with Ada.Text_IO; use Ada.Text_IO;
 with Gade.Dev.Video.Tile_Map; use Gade.Dev.Video.Tile_Map;
 
 package body Gade.Dev.Video.Background_Buffer is
@@ -7,10 +6,10 @@ package body Gade.Dev.Video.Background_Buffer is
    procedure Reset
      (Buffer : out Background_Buffer_Type) is
    begin
-      Buffer(Low_Data, Low_Map).Rasterized := False;
-      Buffer(High_Data, Low_Map).Rasterized := False;
-      Buffer(Low_Data, High_Map).Rasterized := False;
-      Buffer(High_Data, High_Map).Rasterized := False;
+      Buffer (Low_Data, Low_Map).Rasterized := False;
+      Buffer (High_Data, Low_Map).Rasterized := False;
+      Buffer (Low_Data, High_Map).Rasterized := False;
+      Buffer (High_Data, High_Map).Rasterized := False;
    end Reset;
 
    function Read
@@ -24,15 +23,13 @@ package body Gade.Dev.Video.Background_Buffer is
       Tile_PX_Row, Tile_PX_Col : Natural;
       Tile_Index : Tile_Index_Type;
    begin
-      Tile_Row := Vertical_Tile_Map_Range(Row / 8);
+      Tile_Row := Vertical_Tile_Map_Range (Row / 8);
       Tile_PX_Row := Row mod 8;
-      Tile_Col := Horizontal_Tile_Map_Range(Col / 8);
+      Tile_Col := Horizontal_Tile_Map_Range (Col / 8);
       Tile_PX_Col := Col mod 8;
 
       Tile_Index :=
-        VRAM.Consolidated_Maps(Tile_Map)(Tile_Data).Positional
-          (Vertical_Tile_Map_Range(Tile_Row),
-           Horizontal_Tile_Map_Range(Tile_Col));
+        VRAM.Consolidated_Maps (Tile_Map)(Tile_Data).Positional (Tile_Row, Tile_Col);
       return
         Read_Raster_Tile
           (VRAM.Tile_Buffer,

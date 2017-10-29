@@ -5,7 +5,7 @@ package Gade.Dev.Video.Tile_Buffer is
 
    Total_Tiles : constant := 256 + 128;
 
-   type Tile_Index_Type is range 0..Total_Tiles-1;
+   type Tile_Index_Type is range 0 .. Total_Tiles - 1;
 
    type Tile_Buffer_Type is private;
 
@@ -22,7 +22,7 @@ package Gade.Dev.Video.Tile_Buffer is
       Tile_Index : Tile_Index_Type;
       Row, Col   : Natural) return Color_Value;
 
-   -- Marks the tile belonging to the given address as dirty
+   --  Marks the tile belonging to the given address as dirty
    procedure Set_Dirty_Tile
      (Buffer   : in out Tile_Buffer_Type;
       Address  : Word);
@@ -31,11 +31,11 @@ private
 
    Tile_Byte_Size : constant := 16;
 
-   type Raster_Tile_Line is array (0..7) of Color_Value;
+   type Raster_Tile_Line is array (0 .. 7) of Color_Value;
 
-   type Raster_Tile_Type is array (0..7) of Raster_Tile_Line;
+   type Raster_Tile_Type is array (0 .. 7) of Raster_Tile_Line;
 
-   type Raster_Double_Tile_Type is array (0..15) of Raster_Tile_Line;
+   type Raster_Double_Tile_Type is array (0 .. 15) of Raster_Tile_Line;
 
    type Tile_State_Type is (Dirty, Read, Clean);
 
@@ -52,6 +52,14 @@ private
    end record;
 
    Half_Color_Lookup_Table : constant
-     array (Byte range 0..1, Byte range 0..1) of Color_Value := ((0,2),(1,3));
+     array (Byte range 0 .. 1, Byte range 0 .. 1) of Color_Value := ((0, 2), (1, 3));
+
+   procedure Rasterize_Line
+     (Raster : in out Raster_Tile_Line;
+      Actual : Gade.Dev.VRAM.Tile_Line_Type);
+
+   procedure Rasterize_Tile
+     (Raster : in out Raster_Tile_Type;
+      Actual : Gade.Dev.VRAM.Tile_Type);
 
 end Gade.Dev.Video.Tile_Buffer;

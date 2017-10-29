@@ -1,12 +1,13 @@
 package Gade.Dev.External_RAM is
-   -- For the (often) battery backed RAM that some cartridge types include
+   --  For the (often) battery backed RAM that some cartridge types include
 
-   subtype External_RAM_IO_Address is Word range 16#A000#..16#BFFF#; -- 8kB
+   subtype External_RAM_IO_Address is Word range 16#A000# .. 16#BFFF#; -- 8kB
 
-   type External_RAM_Bank_Range is range 0..3; -- Max is 32kB
+   type External_RAM_Bank_Range is range 0 .. 3; -- Max is 32kB
 
    type External_RAM_Type is new Memory_Mapped_Device with private;
 
+   overriding
    procedure Reset (External_RAM : in out External_RAM_Type);
 
    procedure Set_Enabled
@@ -17,12 +18,14 @@ package Gade.Dev.External_RAM is
      (External_RAM : in out External_RAM_Type;
       Bank         : External_RAM_Bank_Range);
 
+   overriding
    procedure Read
      (External_RAM : in out External_RAM_Type;
       GB           : in out Gade.GB.GB_Type;
       Address      : Word;
       Value        : out Byte);
 
+   overriding
    procedure Write
      (External_RAM : in out External_RAM_Type;
       GB           : in out Gade.GB.GB_Type;
@@ -31,7 +34,7 @@ package Gade.Dev.External_RAM is
 
 private
 
-   subtype Bank_Address_Range is Word range 0..8*1024-1; -- Bank size is 8kB
+   subtype Bank_Address_Range is Word range 0 .. 8 * 1024 - 1; -- Bank size is 8kB
    type RAM_Bank is array (Bank_Address_Range) of Byte;
    type RAM_Bank_Access is access RAM_Bank;
 

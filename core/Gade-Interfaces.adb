@@ -57,11 +57,11 @@ package body Gade.Interfaces is
          if Interrupt_Cycles > 0 then
             Report_Cycles (G.GB, Video, Interrupt_Cycles);
          end if;
-         Gade.Dev.Display.Check_Frame_Finished(G.GB.Display, Frame_Finished);
+         Gade.Dev.Display.Check_Frame_Finished (G.GB.Display, Frame_Finished);
       end loop;
    end Next_Frame;
 
-   procedure Finalize (This: in out Gade_Type) is
+   procedure Finalize (This : in out Gade_Type) is
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin

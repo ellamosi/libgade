@@ -4,6 +4,8 @@ limited with Gade.Dev.VRAM;
 
 package Gade.Dev.Video.Background_Buffer is
 
+   procedure Reset (Buffer : out Background_Buffer_Type);
+
    function Read
      (VRAM      : Gade.Dev.VRAM.VRAM_Type;
       Row, Col  : Integer;
@@ -15,8 +17,8 @@ private
    Vertical_Tiles   : constant := 32;
    Horizontal_Tiles : constant := 32;
 
-   type Vertical_Tile_Range is range 0..Vertical_Tiles-1;
-   type Horizontal_Tile_Range is range 0..Horizontal_Tiles-1;
+   type Vertical_Tile_Range is range 0 .. Vertical_Tiles - 1;
+   type Horizontal_Tile_Range is range 0 .. Horizontal_Tiles - 1;
 
    type Bitmap_Type is array
      (Background_Vertical_Range, Background_Horizontal_Range) of Color_Value;

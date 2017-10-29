@@ -1,31 +1,29 @@
-with Gade.Video_Buffer; use Gade.Video_Buffer;
-
 package Gade.Dev.OAM is
 
-   subtype OAM_IO_Address is Word range 16#FE00#..16#FE9F#;
+   subtype OAM_IO_Address is Word range 16#FE00# .. 16#FE9F#;
 
    type Object_Palette_Type is (OBJ0PAL, OBJ1PAL); -- Should not be declared here
 
-   -- Sprites are either 8x8 or 8x16
+   --  Sprites are either 8x8 or 8x16
    type Sprite_Type is record
-      -- TODO: Type properly!
+      --  TODO: Type properly!
       Y, X, Pattern  : Byte;
       Priority       : Boolean;
       Y_Flip, X_Flip : Boolean;
       Palette        : Object_Palette_Type;
    end record;
    for Sprite_Type use record
-      Y        at 0 range 0..7;
-      X        at 1 range 0..7;
-      Pattern  at 2 range 0..7;
-      Palette  at 3 range 4..4;
-      X_Flip   at 3 range 5..5;
-      Y_Flip   at 3 range 6..6;
-      Priority at 3 range 7..7;
+      Y        at 0 range 0 .. 7;
+      X        at 1 range 0 .. 7;
+      Pattern  at 2 range 0 .. 7;
+      Palette  at 3 range 4 .. 4;
+      X_Flip   at 3 range 5 .. 5;
+      Y_Flip   at 3 range 6 .. 6;
+      Priority at 3 range 7 .. 7;
    end record;
-   for Sprite_Type'Size use 8*4;
+   for Sprite_Type'Size use 8 * 4;
 
-   type Sprite_Array_Type is array (0..39) of Sprite_Type;
+   type Sprite_Array_Type is array (0 .. 39) of Sprite_Type;
    type VRAM_Access_Type is (Named, Address);
 
    type OAM_Address_Space is array (OAM_IO_Address) of Byte;

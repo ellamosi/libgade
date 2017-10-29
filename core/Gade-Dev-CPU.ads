@@ -1,18 +1,16 @@
-limited with Gade.GB;
-
 package Gade.Dev.CPU is
 
    type CPU_Flag is private;
 
    type CPU_Flags is record
-      C  : CPU_Flag;
-      -- Carry Flag
-      N  : CPU_Flag;
-      -- Add/Subtract
-      H  : CPU_Flag;
-      -- Half_Carry
-      Z  : CPU_Flag;
-      -- Zero Flag
+      C : CPU_Flag;
+      --  Carry Flag
+      N : CPU_Flag;
+      --  Add/Subtract
+      H : CPU_Flag;
+      --  Half_Carry
+      Z : CPU_Flag;
+      --  Zero Flag
    end record;
 
    --------------------
@@ -27,7 +25,7 @@ package Gade.Dev.CPU is
    --------------------
 
    type Register_Width is (Half, Full);
-   type CPU_Registers(Width : Register_Width := Half) is
+   type CPU_Registers (Width : Register_Width := Half) is
       record
          SP : Word;
          case Width is
@@ -44,11 +42,11 @@ package Gade.Dev.CPU is
 
    type CPU_Context is tagged record
       Regs  : CPU_Registers;
-      --Flags : CPU_Flags;
+      --  Flags : CPU_Flags;
       PC    : Word;
       IFF   : Interrupt_Enable; -- Interrupt Flipflops
       Halted : Boolean;
-      --Mem   : Memory_Map_Type;
+      --  Mem   : Memory_Map_Type;
       Branch_Taken : Boolean;
    end record;
 
@@ -57,16 +55,16 @@ package Gade.Dev.CPU is
    procedure Reset (ctxt : in out CPU_Context);
 
    procedure Set (Flag : in out CPU_Flag);
-   pragma Inline(Set);
+   pragma Inline (Set);
 
    procedure Set_Value (Flag : in out CPU_Flag; Value : in Boolean);
-   pragma Inline(Set_Value);
+   pragma Inline (Set_Value);
 
    procedure Reset (Flag : in out CPU_Flag);
-   pragma Inline(Reset);
+   pragma Inline (Reset);
 
    function Is_Set (Flag : CPU_Flag) return Boolean;
-   pragma Inline(Is_Set);
+   pragma Inline (Is_Set);
 
    type Condition_Type is (C_Z, C_NZ, C_C, C_NC);
 
@@ -81,10 +79,10 @@ private
    type CPU_Flag is new Boolean;
 
    for CPU_Flags use record
-      Z at 0 range 7..7;
-      N at 0 range 6..6;
-      H at 0 range 5..5;
-      C at 0 range 4..4;
+      Z at 0 range 7 .. 7;
+      N at 0 range 6 .. 6;
+      H at 0 range 5 .. 5;
+      C at 0 range 4 .. 4;
    end record;
    for CPU_Flags'Size use Byte'Size;
 

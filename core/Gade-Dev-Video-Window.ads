@@ -1,4 +1,3 @@
-with Gade.Dev.Video.Tile_Buffer; use Gade.Dev.Video.Tile_Buffer;
 limited with Gade.Dev.VRAM;
 with Gade.Video_Buffer; use Gade.Video_Buffer;
 

@@ -1,4 +1,4 @@
--- TODO: Make private
+--  TODO: Make private
 package Gade.Dev.Video is
 
    type Tile_Map_Access_Type is (Low_Map, High_Map);

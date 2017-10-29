@@ -1,5 +1,6 @@
 package body Gade.Dev.External_RAM is
 
+   overriding
    procedure Reset (External_RAM : in out External_RAM_Type) is
    begin
       External_RAM.Enabled := False;
@@ -19,6 +20,7 @@ package body Gade.Dev.External_RAM is
       null;
    end Switch_Banks;
 
+   overriding
    procedure Read
      (External_RAM : in out External_RAM_Type;
       GB           : in out Gade.GB.GB_Type;
@@ -28,6 +30,7 @@ package body Gade.Dev.External_RAM is
       null;
    end Read;
 
+   overriding
    procedure Write
      (External_RAM : in out External_RAM_Type;
       GB           : in out Gade.GB.GB_Type;
