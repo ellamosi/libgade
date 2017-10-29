@@ -4,6 +4,8 @@ limited with Gade.Dev.VRAM;
 
 package Gade.Dev.Video.Background_Buffer is
 
+   type Background_Buffer_Type is private;
+
    procedure Reset (Buffer : out Background_Buffer_Type);
 
    function Read
