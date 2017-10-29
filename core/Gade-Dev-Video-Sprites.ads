@@ -34,19 +34,14 @@ private
    subtype Sprite_Vertical_Range is Natural range 0 .. Double_Sprite_Height - 1;
    subtype Sprite_Horizontal_Range is Natural range 0 .. Sprite_Width - 1;
 
-   type X_Flip_Lookup_Array is array (Sprite_Horizontal_Range) of Natural;
+   X_Flip_Lookup : constant array (Boolean'Range, Sprite_Horizontal_Range)
+     of Natural :=
+       (False => (0, 1, 2, 3, 4, 5, 6, 7),
+        True  => (7, 6, 5, 4, 3, 2, 1, 0));
 
-   X_Flip_Lookup : constant array (Boolean'Range) of X_Flip_Lookup_Array :=
-     (False => (0, 1, 2, 3, 4, 5, 6, 7),
-      True  => (7, 6, 5, 4, 3, 2, 1, 0));
-
-   type Y_Flip_Lookup_Array is array (0 .. 15) of Natural;
-
-   type Y_Flip_Lookup_Size_Array is array (Boolean'Range) of
-     Y_Flip_Lookup_Array;
-
-   Y_Flip_Lookup : constant array (Sprite_Size_Type'Range) of
-     Y_Flip_Lookup_Size_Array :=
+   Y_Flip_Lookup : constant array
+     (Sprite_Size_Type'Range, Boolean'Range, Sprite_Vertical_Range)
+     of Natural :=
        (Single =>
           (False => (0, 1, 2, 3, 4, 5, 6, 7, others => 0),
            True  => (7, 6, 5, 4, 3, 2, 1, 0, others => 0)),
@@ -54,12 +49,12 @@ private
           (False => (0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7),
            True  => (7, 6, 5, 4, 3, 2, 1, 0, 7, 6, 5, 4, 3, 2, 1, 0)));
 
-   type Sprite_Add_Array_Type is array (Sprite_Vertical_Range) of
-     Tile_Index_Type;
-
-   Sprite_Index_Add_Lookup : constant array (Sprite_Size_Type'Range) of
-     Sprite_Add_Array_Type :=
-       (Single => (others => 0),
-        Double => (0 .. 7 => 0, 8 .. 15 => 1));
+   Sprite_Index_Add_Lookup : constant array
+     (Sprite_Size_Type'Range, Boolean'Range, Sprite_Vertical_Range)
+     of Tile_Index_Type :=
+       (Single => (others => (others => 0)),
+        Double =>
+          (False => (0 .. 7 => 0, 8 .. 15 => 1),
+           True  => (0 .. 7 => 1, 8 .. 15 => 0)));
 
 end Gade.Dev.Video.Sprites;

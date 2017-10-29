@@ -30,13 +30,19 @@ package body Gade.Dev.Video.Sprites is
          PX_Col := Col - Sprite_X + 8;
          PX_Row := Row - Sprite_Y + 16;
 
+         --  TODO: Revise this, as some sprites need to be taken into account for
+         --  the line sprite limits
          if PX_Row >= 0 and PX_Row < Y_Limit and PX_Col >= 0 and PX_Col < 8 then
             --  Sprite is in pixel
-            Index_Add := Sprite_Index_Add_Lookup (Size)(PX_Row);
+
             X_Flip := OAM.Map.Sprites (Current_Sprite).X_Flip;
             Y_Flip := OAM.Map.Sprites (Current_Sprite).Y_Flip;
-            PX_Col := X_Flip_Lookup (X_Flip)(PX_Col);
-            PX_Row := Y_Flip_Lookup (Size)(Y_Flip)(PX_Row);
+
+            --  Size = Double and ((PX_Row >= 8 and not Y_Flip) or (PX_Row <= 7 and Y_Flip)
+            Index_Add := Sprite_Index_Add_Lookup (Size, Y_Flip, PX_Row);
+
+            PX_Col := X_Flip_Lookup (X_Flip, PX_Col);
+            PX_Row := Y_Flip_Lookup (Size, Y_Flip, PX_Row);
 
             Tile_Index := Tile_Index_Type (OAM.Map.Sprites (Current_Sprite).Pattern) + Index_Add;
             PX_Val := Read_Raster_Tile (VRAM.Tile_Buffer, Tile_Index, PX_Row, PX_Col);
