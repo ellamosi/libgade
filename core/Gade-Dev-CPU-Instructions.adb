@@ -2653,7 +2653,9 @@ package body Gade.Dev.CPU.Instructions is
 
    procedure STOP (GB : in out Gade.GB.GB_Type) is
    begin
-      GB.CPU.Halted := True;
+      if GB.CPU.IFF = IE_EI then
+         GB.CPU.Halted := True;
+      end if;
    end STOP;
 
    procedure SUB_A_off_HL (GB : in out Gade.GB.GB_Type) is
