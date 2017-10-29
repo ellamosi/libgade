@@ -2,9 +2,9 @@ limited with Gade.GB;
 
 package Gade.Dev.Interrupts is
 
-   subtype Interrupt_Flag_IO_Address is Word range 16#FF0F#..16#FF0F#;
+   subtype Interrupt_Flag_IO_Address is Word range 16#FF0F# .. 16#FF0F#;
 
-   subtype Interrupt_Enable_IO_Address is Word range 16#FFFF#..16#FFFF#;
+   subtype Interrupt_Enable_IO_Address is Word range 16#FFFF# .. 16#FFFF#;
 
    type Interrupt_Flag_Type is
      new Memory_Mapped_Device with private;
@@ -81,11 +81,12 @@ private
    end record;
    pragma Unchecked_Union (Interrupt_Flag_Register_Type);
    for Interrupt_Flag_Register_Type use record
-      VBLANK at 0 range 0..0;
-      LCDC   at 0 range 1..1;
-      Timer  at 0 range 2..2;
-      Serial at 0 range 3..3;
-      Joypad at 0 range 4..4;
+      VBLANK at 0 range 0 .. 0;
+      LCDC   at 0 range 1 .. 1;
+      Timer  at 0 range 2 .. 2;
+      Serial at 0 range 3 .. 3;
+      Joypad at 0 range 4 .. 4;
+      Reg    at 0 range 0 .. 7;
    end record;
    for Interrupt_Flag_Register_Type'Size use 8;
 
@@ -117,11 +118,12 @@ private
    end record;
    pragma Unchecked_Union (Interrupt_Enable_Register_Type);
    for Interrupt_Enable_Register_Type use record
-      VBLANK at 0 range 0..0;
-      LCDC   at 0 range 1..1;
-      Timer  at 0 range 2..2;
-      Serial at 0 range 3..3;
-      Joypad at 0 range 4..4;
+      VBLANK at 0 range 0 .. 0;
+      LCDC   at 0 range 1 .. 1;
+      Timer  at 0 range 2 .. 2;
+      Serial at 0 range 3 .. 3;
+      Joypad at 0 range 4 .. 4;
+      Reg    at 0 range 0 .. 7;
    end record;
    for Interrupt_Enable_Register_Type'Size use 8;
 
@@ -130,5 +132,8 @@ private
    type Interrupt_Enable_Type is new Memory_Mapped_Device with record
       Map : Interrupt_Flag_Register_Type;
    end record;
+
+   function Interrupt_Requested
+     (Interrupt_Flag : Interrupt_Flag_Register_Type) return Boolean;
 
 end Gade.Dev.Interrupts;

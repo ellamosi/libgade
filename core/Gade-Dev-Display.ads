@@ -1,18 +1,18 @@
 with Gade.Video_Buffer; use Gade.Video_Buffer;
-with Gade.Dev.OAM;      use Gade.Dev.OAM;
-with Gade.Dev.Video.Background_Buffer; use Gade.Dev.Video.Background_Buffer;
 with Gade.Dev.Video; use Gade.Dev.Video;
 with Gade.Dev.Video.Sprites; use Gade.Dev.Video.Sprites;
+with Gade.Dev.Video.Window; use Gade.Dev.Video.Window;
 
 package Gade.Dev.Display is
 
-   subtype Display_IO_Address is Word range 16#FF40#..16#FF4B#;
+   subtype Display_IO_Address is Word range 16#FF40# .. 16#FF4B#;
 
    type Display_Type is new Memory_Mapped_Device with private;
 
    procedure Create
      (Display : out Display_Type);
 
+   overriding
    procedure Reset
      (Display : in out Display_Type);
 
@@ -60,7 +60,7 @@ package Gade.Dev.Display is
    pragma Pack (Palette_Type);
    for Palette_Type'Size use 8;
 
-   -- TODO: This type should go elsewhere?! (Public_Types?)
+   --  TODO: This type should go elsewhere?! (Public_Types?)
    type Palette_Info_Type is record
       BGP, OBP0, OBP1 : Palette_Type;
    end record;
@@ -91,14 +91,14 @@ private
       LCD_Operation            : Boolean;
    end record;
    for LCD_Control use record
-      Background_Display         at 0 range 0..0;
-      Sprite_Display             at 0 range 1..1;
-      Sprite_Size                at 0 range 2..2;
-      Background_Tile_Map_Addr   at 0 range 3..3;
-      Tile_Data_Table_Addr       at 0 range 4..4;
-      Window_Display             at 0 range 5..5;
-      Window_Tile_Table_Addr     at 0 range 6..6;
-      LCD_Operation              at 0 range 7..7;
+      Background_Display         at 0 range 0 .. 0;
+      Sprite_Display             at 0 range 1 .. 1;
+      Sprite_Size                at 0 range 2 .. 2;
+      Background_Tile_Map_Addr   at 0 range 3 .. 3;
+      Tile_Data_Table_Addr       at 0 range 4 .. 4;
+      Window_Display             at 0 range 5 .. 5;
+      Window_Tile_Table_Addr     at 0 range 6 .. 6;
+      LCD_Operation              at 0 range 7 .. 7;
    end record;
 
    Default_LCD_Control : constant LCD_Control :=
@@ -113,13 +113,13 @@ private
 
    type LCD_Controller_Mode_Type is (
       HBlank,
-      -- Horizontal blanking impulse (VRAM 8000-9FFF can be accessed by CPU)
+      --  Horizontal blanking impulse (VRAM 8000-9FFF can be accessed by CPU)
       VBlank,
-      -- Vertical blanking impulse (VRAM 8000-9FFF can be accessed by CPU)
+      --  Vertical blanking impulse (VRAM 8000-9FFF can be accessed by CPU)
       OAM_Access,
-      -- OAM FE00-FE90 is accessed by LCD controller
+      --  OAM FE00-FE90 is accessed by LCD controller
       OAM_VRAM_Access
-      -- Both OAM FE00-FE90 and VRAM 8000-9FFF are accessed by LCD controller
+      --  Both OAM FE00-FE90 and VRAM 8000-9FFF are accessed by LCD controller
    );
    for LCD_Controller_Mode_Type'Size use 2;
    for LCD_Controller_Mode_Type use
@@ -145,13 +145,13 @@ private
       Interrupt_Scanline_Coincidence : Boolean;
    end record;
    for LCD_Status use record
-      LCD_Controller_Mode            at 0 range 0..1;
-      Scanline_Coincidence           at 0 range 2..2;
-      Interrupt_HBlank               at 0 range 3..3;
-      Interrupt_VBlank               at 0 range 4..4;
-      Interrupt_OAM_Access           at 0 range 5..5;
-      Interrupt_Scanline_Coincidence at 0 range 6..6;
-      -- Reserved bit
+      LCD_Controller_Mode            at 0 range 0 .. 1;
+      Scanline_Coincidence           at 0 range 2 .. 2;
+      Interrupt_HBlank               at 0 range 3 .. 3;
+      Interrupt_VBlank               at 0 range 4 .. 4;
+      Interrupt_OAM_Access           at 0 range 5 .. 5;
+      Interrupt_Scanline_Coincidence at 0 range 6 .. 6;
+      --  Reserved bit
    end record;
    for LCD_Status'Size use 8;
 
@@ -167,7 +167,7 @@ private
    --  00 ------- 01 ------- 10 -------> 11
    --  lightest                     darkest
 
-   type LCD_Address_Space is Array (Display_IO_Address'Range) of Byte;
+   type LCD_Address_Space is array (Display_IO_Address'Range) of Byte;
 
    type Line is mod 154; -- It can become up to 153
    for Line'Size use 8;
@@ -249,7 +249,7 @@ private
 --          EI           ; Enable interrupts
 --
 
-   Mode_Cycles : constant array(LCD_Controller_Mode_Type) of Integer :=
+   Mode_Cycles : constant array (LCD_Controller_Mode_Type) of Integer :=
      (HBlank           => 204,  -- 201-207 clks
       VBlank           => 4560,
       OAM_Access       => 80,   -- 77-83 clks
@@ -265,5 +265,67 @@ private
    function Read_Screen_Pixel
      (GB   : in out Gade.GB.GB_Type;
       X, Y : Natural) return Color_Value;
+
+   procedure Do_DMA
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Write_Video_Buffer_Line
+     (GB     : in out Gade.GB.GB_Type;
+      Buffer : RGB32_Display_Buffer_Access;
+      Row    : Natural);
+
+   function Next_Mode
+     (Display : Display_Type) return LCD_Controller_Mode_Type;
+
+   procedure Next_Mode
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Next_Line
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type;
+      Video   : RGB32_Display_Buffer_Access);
+
+   procedure Start_OAM_Access
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Do_OAM_Access
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Start_OAM_VRAM_Access
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Do_OAM_VRAM_Access
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Start_HBlank
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Do_HBlank
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Start_VBlank
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   procedure Do_VBlank
+     (Display : in out Display_Type;
+      GB      : in out Gade.GB.GB_Type);
+
+   function Read_Sprite_Pixel
+     (GB   : Gade.GB.GB_Type;
+      X, Y : Natural) return Sprite_Result_Type;
+
+   function Read_Window_Pixel
+     (GB   : Gade.GB.GB_Type;
+      X, Y : Natural) return Window_Result_Type;
+
 end Gade.Dev.Display;
 

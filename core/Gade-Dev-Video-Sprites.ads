@@ -31,8 +31,8 @@ private
 
    Sprite_Width : constant := 8;
 
-   subtype Sprite_Vertical_Range is Natural range 0..Double_Sprite_Height-1;
-   subtype Sprite_Horizontal_Range is Natural range 0..Sprite_Width-1;
+   subtype Sprite_Vertical_Range is Natural range 0 .. Double_Sprite_Height - 1;
+   subtype Sprite_Horizontal_Range is Natural range 0 .. Sprite_Width - 1;
 
    type X_Flip_Lookup_Array is array (Sprite_Horizontal_Range) of Natural;
 
@@ -40,7 +40,7 @@ private
      (False => (0, 1, 2, 3, 4, 5, 6, 7),
       True  => (7, 6, 5, 4, 3, 2, 1, 0));
 
-   type Y_Flip_Lookup_Array is array (0..15) of Natural;
+   type Y_Flip_Lookup_Array is array (0 .. 15) of Natural;
 
    type Y_Flip_Lookup_Size_Array is array (Boolean'Range) of
      Y_Flip_Lookup_Array;
@@ -60,6 +60,6 @@ private
    Sprite_Index_Add_Lookup : constant array (Sprite_Size_Type'Range) of
      Sprite_Add_Array_Type :=
        (Single => (others => 0),
-        Double => (0..7 => 0, 8..15 => 1));
+        Double => (0 .. 7 => 0, 8 .. 15 => 1));
 
 end Gade.Dev.Video.Sprites;

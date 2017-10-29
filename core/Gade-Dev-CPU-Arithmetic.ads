@@ -1,5 +1,3 @@
-with System;
-
 package Gade.Dev.CPU.Arithmetic is
 
    type Carry_Type is private;
@@ -12,19 +10,19 @@ package Gade.Dev.CPU.Arithmetic is
       Value  :        Byte;
       Result :    out Byte;
       Carry  :        Carry_Type);
-   -- 8 bit add
+   --  8 bit add
 
    procedure Do_Add
      (CPU    : in out CPU_Context;
       Value  :        Word;
       Result :    out Word);
-   -- 16 Bit add
+   --  16 Bit add
 
    procedure Do_Add
      (CPU    : in out CPU_Context;
       Reg    : in out Word;
       Value  :        Byte);
-   -- 16 Bit add
+   --  16 Bit add
 
    SUB_Carry : constant Carry_Type;
    SBC_Carry : constant Carry_Type;

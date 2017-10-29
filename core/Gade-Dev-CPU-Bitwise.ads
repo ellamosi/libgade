@@ -1,16 +1,16 @@
 package Gade.Dev.CPU.Bitwise is
 
-   -- Rotate and Shift Group
+   --  Rotate and Shift Group
 
    procedure Do_RLC
       (CPU          : in out CPU_Context;
        Adjust_Flags : Boolean;
        Value        : in out Byte);
-   -- The contents of the Accumulator (register A) are rotated left 1-bit
-   -- position. The sign bit (bit 7) is copied to the Carry flag and also to
-   -- bit 0. Bit 0 is the least-significant bit.
+   --  The contents of the Accumulator (register A) are rotated left 1-bit
+   --  position. The sign bit (bit 7) is copied to the Carry flag and also to
+   --  bit 0. Bit 0 is the least-significant bit.
    --
-   -- RLCA / RLC r / RLC (HL) / RLC (X+d) / RLC (IY+d)
+   --  RLCA / RLC r / RLC (HL) / RLC (X+d) / RLC (IY+d)
 
    procedure Do_RL
       (CPU          : in out CPU_Context;
@@ -27,7 +27,7 @@ package Gade.Dev.CPU.Bitwise is
        Adjust_Flags : Boolean;
       Value         : in out Byte);
 
-   subtype Bit_Index is Natural range 0..7;
+   subtype Bit_Index is Natural range 0 .. 7;
 
    SR_SET : constant Bit := 1;
    SR_RES : constant Bit := 0;
@@ -57,7 +57,7 @@ package Gade.Dev.CPU.Bitwise is
        Arithmetic : Boolean;
        Value      : in out Byte);
 
-   -- Swap upper & lower nibbles of n.
+   --  Swap upper & lower nibbles of n.
    procedure Do_Swap
       (CPU        : in out CPU_Context;
        Value      : in out Byte);

@@ -2,7 +2,7 @@ with Gade.Input_Reader; use Gade.Input_Reader;
 
 package Gade.Dev.Joypad is
 
-   subtype Joypad_IO_Address is Word range 16#FF00#..16#FF00#;
+   subtype Joypad_IO_Address is Word range 16#FF00# .. 16#FF00#;
 
    type Joypad_Type is
      new Memory_Mapped_Device and Interrupt_Source with private;
@@ -49,12 +49,13 @@ private
    end record;
    pragma Unchecked_Union (Joypad_Matrix_Type);
    for Joypad_Matrix_Type use record
-      P10_IN  at 0 range 0..0;
-      P11_IN  at 0 range 1..1;
-      P12_IN  at 0 range 2..2;
-      P13_IN  at 0 range 3..3;
-      P14_OUT at 0 range 4..4;
-      P15_OUT at 0 range 5..5;
+      P10_IN  at 0 range 0 .. 0;
+      P11_IN  at 0 range 1 .. 1;
+      P12_IN  at 0 range 2 .. 2;
+      P13_IN  at 0 range 3 .. 3;
+      P14_OUT at 0 range 4 .. 4;
+      P15_OUT at 0 range 5 .. 5;
+      Reg     at 0 range 0 .. 7;
    end record;
    for Joypad_Matrix_Type'Size use 8;
 
@@ -63,5 +64,9 @@ private
       Reader : Input_Reader_Access := null;
       Map    : Joypad_Matrix_Type;
    end record;
+
+   procedure Read_Button_Matrix
+     (M     : in out Joypad_Matrix_Type;
+      Input : Input_State);
 
 end Gade.Dev.Joypad;
