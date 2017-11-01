@@ -3,9 +3,6 @@
 
 #define EXPORT __attribute__((visibility("default")))
 
-#include <stdint.h>
-#include <string>
-
 #include "inputreader.hpp"
 
 extern "C" {
@@ -14,7 +11,7 @@ extern "C" {
 }
 
 typedef struct RGB32Bitmap {
-    uint8_t r, g, b, unused;
+    unsigned char r, g, b, unused;
 } RGB32Bitmap;
 
 class EXPORT GB {

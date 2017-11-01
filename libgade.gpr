@@ -38,6 +38,7 @@ library project Libgade is
       when "static" =>
          null;
       when "dynamic" =>
+         -- null;
          for Library_Standalone use "encapsulated";
    end case;
 

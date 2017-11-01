@@ -6,6 +6,7 @@ library project Libgade_CPP extends "Libgade" is
    for Interfaces use Libgade'Interfaces & ("libgade.hpp", "gade-interfaces-c.ads");
    for Library_Dir use "../lib";
    for Library_Kind use Libgade'Library_Kind;
+   for Create_Missing_Dirs use "True";
 
    package Naming is
       for Spec_Suffix ("C++") use ".hpp";
