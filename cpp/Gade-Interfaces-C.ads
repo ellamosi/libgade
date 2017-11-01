@@ -1,8 +1,8 @@
 with Gade.Video_Buffer; use Gade.Video_Buffer;
-with Gade.Input_Reader; use Gade.Input_Reader;
 
 with System;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
+with Gade.Input_Reader; use Gade.Input_Reader;
 
 package Gade.Interfaces.C is
 
@@ -14,7 +14,7 @@ package Gade.Interfaces.C is
    procedure Finalize (This : in out Gade_Type);
    pragma Export (C, Finalize, "gadeFinal");
 
-   procedure Reset (This: Gade_Type);
+   procedure Reset (This : Gade_Type);
    pragma Export (C, Reset, "gadeReset");
 
    procedure Load_ROM
@@ -45,6 +45,13 @@ private
    type Input_Reader_Class;
 
    type Input_Reader_Class_Access is access all Input_Reader_Class;
-   pragma Convention(C, Input_Reader_Class_Access);
+   pragma Convention (C, Input_Reader_Class_Access);
+
+   type Input_Reader_Wrapper is new Input_Reader_Type with record
+      C_Instance : Input_Reader_Class_Access;
+   end record;
+
+   overriding
+   function Read_Input (Wrapper : Input_Reader_Wrapper) return Input_State;
 
 end Gade.Interfaces.C;
