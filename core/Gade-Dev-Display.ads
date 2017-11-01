@@ -228,6 +228,7 @@ private
       DMA_Clocks_Since_Last_Copy : Integer; -- 1/4 clocks + 4 clocks setup
       DMA_Copy_Ongoing : Boolean;
       Map : LCD_Map_Type;
+      Sprite_Cache : Sprite_Line_Cache;
    end record;
 
 --  ------------------------------------------------------------------------------
@@ -279,12 +280,12 @@ private
 
    procedure Next_Mode
      (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
+      GB      : in out Gade.GB.GB_Type;
+      Video   : RGB32_Display_Buffer_Access);
 
    procedure Next_Line
      (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Video   : RGB32_Display_Buffer_Access);
+      GB      : in out Gade.GB.GB_Type);
 
    procedure Start_OAM_Access
      (Display : in out Display_Type;

@@ -7,6 +7,7 @@ with Gade.Dev.Video.Tile_Buffer; use Gade.Dev.Video.Tile_Buffer;
 with Gade.Dev.Video.Background_Buffer;
 
 with Gade.Dev.OAM; use Gade.Dev.OAM;
+--  with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Dev.Display is
 
@@ -18,7 +19,7 @@ package body Gade.Dev.Display is
    overriding
    procedure Reset (Display : in out Display_Type) is
    begin
-      Display.Line_Cycles := 0;
+      Display.Line_Cycles := 80 + 172;
       Display.Mode_Cycles := 0;
       Display.Frame_Finished := False;
       Display.Map.LCDC := Default_LCD_Control;
@@ -122,7 +123,8 @@ package body Gade.Dev.Display is
 
    procedure Next_Mode
      (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type) is
+      GB      : in out Gade.GB.GB_Type;
+      Video   : RGB32_Display_Buffer_Access) is
       New_Mode : LCD_Controller_Mode_Type;
       Mode_Interrupt : Boolean;
    begin
@@ -141,17 +143,17 @@ package body Gade.Dev.Display is
       if New_Mode = VBlank then
          Display.Frame_Finished := True;
          Set_Interrupt (GB, VBlank_Interrupt);
+      elsif New_Mode = HBlank then
+         Write_Video_Buffer_Line (GB, Video, Natural (GB.Display.Map.CURLINE));
       end if;
    end Next_Mode;
 
    procedure Next_Line
      (Display : in out Display_Type;
-      GB      : in out GB_Type;
-      Video   : RGB32_Display_Buffer_Access) is
+      GB      : in out GB_Type) is
       Coincidence : Boolean;
    begin
       if Display.Map.LCDC.LCD_Operation then
-         Write_Video_Buffer_Line (GB, Video, Natural (GB.Display.Map.CURLINE));
          Display.Map.CURLINE := Display.Map.CURLINE + 1;
          Gade.Dev.Video.Tile_Buffer.Rasterize_Tiles
            (GB.Video_RAM.Tile_Buffer, GB.Video_RAM);
@@ -160,6 +162,16 @@ package body Gade.Dev.Display is
          Display.Map.STAT.Scanline_Coincidence := Coincidence;
          if Coincidence and Display.Map.STAT.Interrupt_Scanline_Coincidence then
             Set_Interrupt (GB, LCDC_Interrupt);
+         end if;
+         --  Put_Line ("Line:" & Integer'Image (Integer (Display.Map.CURLINE)) & " Next_Line Mode:" & Display.Map.STAT.LCD_Controller_Mode'Img & " Mode cycles:" & Display.Mode_Cycles'Image);
+         if Natural (Display.Map.CURLINE) in Display_Vertical_Range then
+            --  Put_Line ("Line:" & Integer'Image (Integer (Display.Map.CURLINE)));
+            Gade.Dev.Video.Sprites.Populate_Line_Cache
+              (GB.Video_RAM,
+               GB.Video_OAM,
+               Display.Sprite_Cache,
+               Natural (Display.Map.CURLINE),
+               GB.Display.Map.LCDC.Sprite_Size);
          end if;
       end if;
    end Next_Line;
@@ -256,14 +268,13 @@ package body Gade.Dev.Display is
       Display.Mode_Cycles := Display.Mode_Cycles + Cycles;
       if Display.Mode_Cycles >= Display.Mode_Cycle_Limit then
          Display.Mode_Cycles := Display.Mode_Cycles - Display.Mode_Cycle_Limit;
-         Next_Mode (Display, GB);
+         Next_Mode (Display, GB, Video);
       end if;
-
 
       Display.Line_Cycles := Display.Line_Cycles + Cycles;
       if Display.Line_Cycles >= 456 then
          Display.Line_Cycles := Display.Line_Cycles - 456;
-         Next_Line (Display, GB, Video);
+         Next_Line (Display, GB);
       end if;
       if not Display.Map.LCDC.LCD_Operation and Display.Frame_Finished then
          Video.all := (others => (others => (255, 255, 255)));
@@ -288,10 +299,13 @@ package body Gade.Dev.Display is
    function Read_Sprite_Pixel
      (GB   : GB_Type;
       X, Y : Natural) return Sprite_Result_Type is
+      pragma Unreferenced (Y);
    begin
       return
+        -- Gade.Dev.Video.Sprites.Read
+        --   (GB.Video_RAM, GB.Video_OAM, Y, X, GB.Display.Map.LCDC.Sprite_Size);
         Gade.Dev.Video.Sprites.Read
-          (GB.Video_RAM, GB.Video_OAM, Y, X, GB.Display.Map.LCDC.Sprite_Size);
+          (GB.Display.Sprite_Cache, X);
    end Read_Sprite_Pixel;
 
    function Read_Window_Pixel
