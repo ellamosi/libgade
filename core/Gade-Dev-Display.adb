@@ -163,7 +163,9 @@ package body Gade.Dev.Display is
          if Coincidence and Display.Map.STAT.Interrupt_Scanline_Coincidence then
             Set_Interrupt (GB, LCDC_Interrupt);
          end if;
-         --  Put_Line ("Line:" & Integer'Image (Integer (Display.Map.CURLINE)) & " Next_Line Mode:" & Display.Map.STAT.LCD_Controller_Mode'Img & " Mode cycles:" & Display.Mode_Cycles'Image);
+         --  Put_Line ("Line:" & Integer'Image (Integer (Display.Map.CURLINE)) &
+         --  " Next_Line Mode:" & Display.Map.STAT.LCD_Controller_Mode'Img &
+         --  " Mode cycles:" & Display.Mode_Cycles'Image);
          if Natural (Display.Map.CURLINE) in Display_Vertical_Range then
             --  Put_Line ("Line:" & Integer'Image (Integer (Display.Map.CURLINE)));
             Gade.Dev.Video.Sprites.Populate_Line_Cache
