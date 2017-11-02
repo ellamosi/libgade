@@ -15,13 +15,7 @@ package Gade.Dev.Video.Sprites is
       Palette  : Object_Palette_Type;
    end record;
 
-   function Read
-     (VRAM      : Gade.Dev.VRAM.VRAM_Type;
-      OAM       : Gade.Dev.OAM.OAM_Type;
-      Row, Col  : Integer;
-      Size      : Sprite_Size_Type) return Sprite_Result_Type;
-
-   type Sprite_Line_Cache is private;
+   type Sprite_Line_Cache is array (Display_Horizontal_Range) of Sprite_Result_Type;
 
    procedure Populate_Line_Cache
      (VRAM  : Gade.Dev.VRAM.VRAM_Type;
@@ -30,14 +24,12 @@ package Gade.Dev.Video.Sprites is
       Row   : Display_Vertical_Range;
       Size  : Sprite_Size_Type);
 
-   function Read
-     (Cache : Sprite_Line_Cache;
-      Col   : Display_Horizontal_Range) return Sprite_Result_Type;
-
 private
 
    Single_Sprite_Height : constant := 8;
    Double_Sprite_Height : constant := 16;
+
+   Max_Line_Sprites : constant := 10;
 
    Sprite_Height : constant array (Sprite_Size_Type'Range) of Positive :=
      (Single_Sprite_Height, Double_Sprite_Height);
@@ -69,13 +61,5 @@ private
         Double =>
           (False => (0 .. 7 => 0, 8 .. 15 => 1),
            True  => (0 .. 7 => 1, 8 .. 15 => 0)));
-
-   type Cache_Item is record
-      Color    : Color_Value;
-      Priority : Boolean;
-      Palette  : Object_Palette_Type;
-   end record;
-
-   type Sprite_Line_Cache is array (Display_Horizontal_Range) of Cache_Item;
 
 end Gade.Dev.Video.Sprites;

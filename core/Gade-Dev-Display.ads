@@ -319,10 +319,6 @@ private
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type);
 
-   function Read_Sprite_Pixel
-     (GB   : Gade.GB.GB_Type;
-      X, Y : Natural) return Sprite_Result_Type;
-
    function Read_Window_Pixel
      (GB   : Gade.GB.GB_Type;
       X, Y : Natural) return Window_Result_Type;

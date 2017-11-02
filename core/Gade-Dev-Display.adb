@@ -298,18 +298,6 @@ package body Gade.Dev.Display is
            GB.Display.Map.LCDC.Tile_Data_Table_Addr);
    end Read_Background_Pixel;
 
-   function Read_Sprite_Pixel
-     (GB   : GB_Type;
-      X, Y : Natural) return Sprite_Result_Type is
-      pragma Unreferenced (Y);
-   begin
-      return
-        -- Gade.Dev.Video.Sprites.Read
-        --   (GB.Video_RAM, GB.Video_OAM, Y, X, GB.Display.Map.LCDC.Sprite_Size);
-        Gade.Dev.Video.Sprites.Read
-          (GB.Display.Sprite_Cache, X);
-   end Read_Sprite_Pixel;
-
    function Read_Window_Pixel
      (GB   : Gade.GB.GB_Type;
       X, Y : Natural) return Window_Result_Type is
@@ -342,7 +330,7 @@ package body Gade.Dev.Display is
       Window.Visible := False;
 
       if GB.Display.Map.LCDC.Sprite_Display then
-         Sprite := Read_Sprite_Pixel (GB, X, Y);
+         Sprite := GB.Display.Sprite_Cache (X);
       else
          Sprite.Value := Sprite_Transparent_Color;
       end if;
