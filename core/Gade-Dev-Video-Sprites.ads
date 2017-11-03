@@ -11,7 +11,7 @@ package Gade.Dev.Video.Sprites is
 
    type Sprite_Result_Type is record
       Value    : Color_Value;
-      Priority : Boolean;
+      Priority : Object_Priority_Type;
       Palette  : Object_Palette_Type;
    end record;
 
@@ -61,5 +61,35 @@ private
         Double =>
           (False => (0 .. 7 => 0, 8 .. 15 => 1),
            True  => (0 .. 7 => 1, 8 .. 15 => 0)));
+
+   type Sprite_Index_Array is array (Positive range <>) of Sprite_Index_Type;
+
+   type Sprite_Priority_Buffer is record
+      Indexes   : Sprite_Index_Array (1 .. Max_Line_Sprites);
+      N_Sprites : Natural := 0;
+   end record;
+
+   procedure Insert_By_Processing_Priority
+     (Buffer   : in out Sprite_Priority_Buffer;
+      Index    : Sprite_Index_Type;
+      Inserted : out Boolean);
+
+   procedure Insert_By_Draw_Priority
+     (Buffer  : in out Sprite_Priority_Buffer;
+      Index   : Sprite_Index_Type;
+      Sprites : Sprite_Array_Type);
+
+   procedure Prioritize_Sprites
+     (Buffer  : out Sprite_Priority_Buffer;
+      Sprites : Sprite_Array_Type;
+      Row     : Display_Vertical_Range;
+      Size    : Sprite_Size_Type);
+
+   procedure Populate_Sprite_Line
+     (VRAM   : Gade.Dev.VRAM.VRAM_Type;
+      Sprite : Sprite_Type;
+      Cache  : in out Sprite_Line_Cache;
+      Row    : Display_Vertical_Range;
+      Size   : Sprite_Size_Type);
 
 end Gade.Dev.Video.Sprites;

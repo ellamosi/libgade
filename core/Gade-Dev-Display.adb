@@ -336,7 +336,7 @@ package body Gade.Dev.Display is
       end if;
 
       if (Sprite.Value = Sprite_Transparent_Color or
-         (Sprite.Value /= Sprite_Transparent_Color and Sprite.Priority))
+         (Sprite.Value /= Sprite_Transparent_Color and Sprite.Priority = Behind_BG))
       then
          if GB.Display.Map.LCDC.Window_Display then
             Window := Read_Window_Pixel (GB, X, Y);
@@ -350,7 +350,7 @@ package body Gade.Dev.Display is
       end if;
 
       if Sprite.Value /= 0 and
-        (not Sprite.Priority or (Sprite.Priority and BG = 0))
+        (Sprite.Priority = Above_BG or (Sprite.Priority = Behind_BG and BG = 0))
       then
          case Sprite.Palette is
             when OBJ0PAL => Result := GB.Display.Map.OBJ0PAL (Sprite.Value);
