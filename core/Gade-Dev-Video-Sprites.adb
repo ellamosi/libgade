@@ -4,30 +4,12 @@ package body Gade.Dev.Video.Sprites is
 
    procedure Insert_By_Processing_Priority
      (Buffer   : in out Sprite_Priority_Buffer;
-      Index    : Sprite_Index_Type;
-      Inserted : out Boolean)
+      Index    : Sprite_Index_Type)
    is
-      --  1 : More Prio .. 10 : Less Prio
-      Buffer_Full : constant Boolean := Buffer.N_Sprites = Buffer.Indexes'Last;
-      I : Natural := Buffer.N_Sprites;
    begin
-      while I >= 1 and then Index < Buffer.Indexes (I) loop
-         I := I - 1;
-      end loop;
-      if I < Buffer.N_Sprites and Buffer_Full then
-         Buffer.Indexes (I + 2 .. Buffer.N_Sprites) :=
-           Buffer.Indexes (I + 1 .. Buffer.N_Sprites - 1);
-         Buffer.Indexes (I + 1) := Index;
-         Inserted := True;
-      elsif not Buffer_Full then
-         Buffer.Indexes (I + 2 .. Buffer.N_Sprites + 1) :=
-           Buffer.Indexes (I + 1 .. Buffer.N_Sprites);
-         Buffer.N_Sprites := Buffer.N_Sprites + 1;
-         Buffer.Indexes (I + 1) := Index;
-         Inserted := True;
-      else
-         Inserted := False;
-      end if;
+      --  Sprites are already sorted by index, so just append them
+      Buffer.N_Sprites := Buffer.N_Sprites + 1;
+      Buffer.Indexes (Buffer.N_Sprites) := Index;
    end Insert_By_Processing_Priority;
 
    procedure Insert_By_Draw_Priority
@@ -78,17 +60,19 @@ package body Gade.Dev.Video.Sprites is
       begin
          --  All the processed sprites are in the line, so no need to check
          --  for Y coordinates again
-         return Sprite.X in 1 .. 160 + 8 - 1;
+         return Sprite.X in 1 .. Display_Width + Sprite_Width - 1;
       end Is_Visible;
 
       Processed : Sprite_Priority_Buffer;
-      Inserted  : Boolean := True;
    begin
+      Processed.N_Sprites := 0;
+      Buffer.N_Sprites := 0;
+
       for Sprite_Index in Sprites'Range loop
          if Is_Enabled (Sprites (Sprite_Index)) then
-            Insert_By_Processing_Priority (Processed, Sprite_Index, Inserted);
-            if not Inserted then exit; end if;
+            Insert_By_Processing_Priority (Processed, Sprite_Index);
          end if;
+         if Processed.N_Sprites = Max_Line_Sprites then exit; end if;
       end loop;
 
       for Sprite_Index of Processed.Indexes (1 .. Processed.N_Sprites) loop
@@ -115,9 +99,11 @@ package body Gade.Dev.Video.Sprites is
       --  Prepare priority buffer
       Prioritize_Sprites (Priority_Buffer, OAM.Map.Sprites, Row, Size);
 
-      --  Loop in reverse, draw the most prioritized sprite the last so it's on
-      --  top
-      for Sprite_Index of reverse Priority_Buffer.Indexes (1 .. Priority_Buffer.N_Sprites) loop
+      --  Loop in reverse, draw the most prioritized sprite the last so it's
+      --  drawn the latest, on top
+      for Sprite_Index of reverse
+        Priority_Buffer.Indexes (1 .. Priority_Buffer.N_Sprites)
+      loop
          Populate_Sprite_Line
            (VRAM, OAM.Map.Sprites (Sprite_Index), Cache, Row, Size);
       end loop;
@@ -149,9 +135,13 @@ package body Gade.Dev.Video.Sprites is
         Sprite_Index_Add_Lookup (Size, Y_Flip, Sprite_Row);
       --  Extremes to be drawn within the line for the sprite
       Left  : constant Display_Horizontal_Range :=
-        Sprite_Horizontal_Range'Max (Display_Horizontal_Range'First, Sprite_X - Sprite_Width);
+        Sprite_Horizontal_Range'Max
+          (Display_Horizontal_Range'First,
+           Sprite_X - Sprite_Width);
       Right : constant Display_Horizontal_Range :=
-        Sprite_Horizontal_Range'Min (Display_Horizontal_Range'Last, Sprite_X - 1);
+        Sprite_Horizontal_Range'Min
+          (Display_Horizontal_Range'Last,
+           Sprite_X - 1);
       --  Actual width drawn of the sprite
       Effective_Width : constant Positive := Right - Left + 1;
 
@@ -164,14 +154,7 @@ package body Gade.Dev.Video.Sprites is
            (VRAM.Tile_Buffer, Tile_Index, Tile_Row, Tile_Col);
 
          if Color /= Sprite_Transparent_Color then
-            Cache (Col) :=
-              (Value    => Color,
-               Priority => Sprite.Priority,
-               Palette  => Sprite.Palette);
-            --  Cache (Col).Value := Color;
-            --  TODO: Needs a better name or enum!
-            --  Cache (Col).Priority := Sprite.Priority;
-            --  Cache (Col).Palette := Sprite.Palette;
+            Cache (Col) := (Color, Sprite.Priority, Sprite.Palette);
          end if;
          Sprite_Col := Sprite_Col + 1;
       end loop;

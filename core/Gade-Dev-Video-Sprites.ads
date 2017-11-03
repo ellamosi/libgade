@@ -66,13 +66,12 @@ private
 
    type Sprite_Priority_Buffer is record
       Indexes   : Sprite_Index_Array (1 .. Max_Line_Sprites);
-      N_Sprites : Natural := 0;
+      N_Sprites : Natural;
    end record;
 
    procedure Insert_By_Processing_Priority
      (Buffer   : in out Sprite_Priority_Buffer;
-      Index    : Sprite_Index_Type;
-      Inserted : out Boolean);
+      Index    : Sprite_Index_Type);
 
    procedure Insert_By_Draw_Priority
      (Buffer  : in out Sprite_Priority_Buffer;
