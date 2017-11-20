@@ -2,6 +2,7 @@ package body Gade.GB is
 
    procedure Create (GB : out GB_Type) is
    begin
+      Display.Create (GB.Display);
       Reset (GB);
    end Create;
 

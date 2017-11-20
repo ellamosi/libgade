@@ -1,7 +1,7 @@
 with Gade.Video_Buffer; use Gade.Video_Buffer;
 with Gade.Dev.Video; use Gade.Dev.Video;
 with Gade.Dev.Video.Sprites; use Gade.Dev.Video.Sprites;
-with Gade.Dev.Video.Window; use Gade.Dev.Video.Window;
+limited private with Gade.Dev.Display.Handlers;
 
 package Gade.Dev.Display is
 
@@ -10,7 +10,7 @@ package Gade.Dev.Display is
    type Display_Type is new Memory_Mapped_Device with private;
 
    procedure Create
-     (Display : out Display_Type);
+     (Display : aliased out Display_Type);
 
    overriding
    procedure Reset
@@ -34,24 +34,6 @@ package Gade.Dev.Display is
       Video   : RGB32_Display_Buffer_Access;
       Cycles  : Positive);
 
---     procedure Read_Screen_Buffer
---       (Display : Display_Type;
---        VRAM    : VRAM_Type;
---        OAM     : OAM_Type;
---        Buffer  : out Video_Buffer_Type);
---
---     procedure Read_Background
---        (Display : Display_Type;
---         VRAM    : VRAM_Type;
---         Map_High, Tile_High : Boolean;
---         Buffer  : out Background_Buffer_Type);
---
---     procedure Read_Tiles
---        (Display   : Display_Type;
---         VRAM      : VRAM_Type;
---         Tile_High : Boolean;
---         Buffer    : out Tile_Buffer_Type);
-
    procedure Check_Frame_Finished
      (Display  : in out Display_Type;
       Finished : out Boolean);
@@ -65,10 +47,9 @@ package Gade.Dev.Display is
       BGP, OBP0, OBP1 : Palette_Type;
    end record;
 
-   function Read_Palettes (Display : Display_Type) return Palette_Info_Type;
-
 private
 
+   type Display_Handler_Access is access all Gade.Dev.Display.Handlers.Display_Handler_Type;
 
    --  FF40 - LCDCONT [RW] LCD Control
    --  TODO: Use more fitting types
@@ -118,15 +99,17 @@ private
       --  Vertical blanking impulse (VRAM 8000-9FFF can be accessed by CPU)
       OAM_Access,
       --  OAM FE00-FE90 is accessed by LCD controller
-      OAM_VRAM_Access
+      VRAM_Access
       --  Both OAM FE00-FE90 and VRAM 8000-9FFF are accessed by LCD controller
    );
-   for LCD_Controller_Mode_Type'Size use 2;
    for LCD_Controller_Mode_Type use
-     (HBlank          => 2#00#,
-      VBlank          => 2#01#,
-      OAM_Access      => 2#10#,
-      OAM_VRAM_Access => 2#11#);
+     (HBlank      => 2#00#,
+      VBlank      => 2#01#,
+      OAM_Access  => 2#10#,
+      VRAM_Access => 2#11#);
+
+   Starting_Line : constant := 144; -- Start of VBlank, THIS IS MADE UP!
+   Starting_Mode : constant LCD_Controller_Mode_Type := VBlank;
 
    --  FF41 -- LCDSTAT [RW] LCD Status
    --  TODO: Use more fitting types
@@ -156,7 +139,7 @@ private
    for LCD_Status'Size use 8;
 
    Default_LCD_Status : constant LCD_Status :=
-      (LCD_Controller_Mode            => HBlank,
+      (LCD_Controller_Mode            => Starting_Mode,
        Scanline_Coincidence           => False,
        Interrupt_HBlank               => False,
        Interrupt_VBlank               => False,
@@ -169,8 +152,7 @@ private
 
    type LCD_Address_Space is array (Display_IO_Address'Range) of Byte;
 
-   type Line is mod 154; -- It can become up to 153
-   for Line'Size use 8;
+   subtype Line_Count_Type is Natural range 0 .. 153;
 
    type LCD_Access_Type is (Named, Address);
    type LCD_Map_Type (Access_Type : LCD_Access_Type := Named) is record
@@ -189,7 +171,7 @@ private
             --  being scanned. It can take values 0-153 where 144-153
             --  indicate the vertical blanking period. Writing into this
             --  register resets it.
-            CURLINE : Line;
+            CURLINE : Line_Count_Type;
             --  FF45 -- CMPLINE [RW] Scanline Comparison
             --  When contents of CURLINE are equal to contents of CMPLINE,
             --  scanline coincidence flag is set in the LCD status register
@@ -216,20 +198,34 @@ private
             Space   : LCD_Address_Space;
       end case;
    end record with Unchecked_Union;
+   for LCD_Map_Type use record
+      LCDC    at  0 range 0 .. 7;
+      STAT    at  1 range 0 .. 7;
+      SCROLLY at  2 range 0 .. 7;
+      SCROLLX at  3 range 0 .. 7;
+      CURLINE at  4 range 0 .. 7;
+      CMPLINE at  5 range 0 .. 7;
+      DMA     at  6 range 0 .. 7;
+      BGRDPAL at  7 range 0 .. 7;
+      OBJ0PAL at  8 range 0 .. 7;
+      OBJ1PAL at  9 range 0 .. 7;
+      WNDPOSY at 10 range 0 .. 7;
+      WNDPOSX at 11 range 0 .. 7;
+   end record;
 
    type Display_Type is
      new Memory_Mapped_Device with record
-      Line_Cycles : Natural;
-      Mode_Cycles : Natural;
-      Mode_Cycle_Limit : Natural;
       Frame_Finished : Boolean;
       DMA_Source_Address : Word;
       DMA_Target_Address : Word;
       DMA_Clocks_Since_Last_Copy : Integer; -- 1/4 clocks + 4 clocks setup
       DMA_Copy_Ongoing : Boolean;
       Map : LCD_Map_Type;
-      Sprite_Cache : Sprite_Line_Cache;
+      Current_Mode : LCD_Controller_Mode_Type;
+      Display_Handler : Display_Handler_Access;
    end record;
+
+   type Display_Access is access all Display_Type;
 
 --  ------------------------------------------------------------------------------
 --  FF46 -- DMACONT [W] DMA Transfer Control
@@ -249,79 +245,22 @@ private
 --          EI           ; Enable interrupts
 --
 
-   Mode_Cycles : constant array (LCD_Controller_Mode_Type) of Integer :=
-     (HBlank           => 204,  -- 201-207 clks
-      VBlank           => 4560,
-      OAM_Access       => 80,   -- 77-83 clks
-      OAM_VRAM_Access  => 172); -- 169-175 clks
-
    Color_Lookup : constant array (Color_Value'Range) of RGB32_Color :=
      ((255, 255, 255), (171, 171, 171), (85, 85, 85), (0, 0, 0));
-
-   function Read_Background_Pixel
-     (GB   : in out Gade.GB.GB_Type;
-      X, Y : Natural) return Color_Value;
-
-   function Read_Screen_Pixel
-     (GB   : in out Gade.GB.GB_Type;
-      X, Y : Natural) return Color_Value;
 
    procedure Do_DMA
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type);
 
-   procedure Write_Video_Buffer_Line
-     (GB     : in out Gade.GB.GB_Type;
-      Buffer : RGB32_Display_Buffer_Access;
-      Row    : Natural);
-
-   function Next_Mode
-     (Display : Display_Type) return LCD_Controller_Mode_Type;
-
-   procedure Next_Mode
+   procedure Line_Changed
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
-      Video   : RGB32_Display_Buffer_Access);
+      Line    : Line_Count_Type);
 
-   procedure Next_Line
+   procedure Mode_Changed
      (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   procedure Start_OAM_Access
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   procedure Do_OAM_Access
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   procedure Start_OAM_VRAM_Access
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   procedure Do_OAM_VRAM_Access
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   procedure Start_HBlank
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   procedure Do_HBlank
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   procedure Start_VBlank
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   procedure Do_VBlank
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
-
-   function Read_Window_Pixel
-     (GB   : Gade.GB.GB_Type;
-      X, Y : Natural) return Window_Result_Type;
+      GB      : in out Gade.GB.GB_Type;
+      Mode    : LCD_Controller_Mode_Type);
 
 end Gade.Dev.Display;
 

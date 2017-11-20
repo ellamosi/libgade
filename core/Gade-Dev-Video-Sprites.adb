@@ -15,8 +15,8 @@ package body Gade.Dev.Video.Sprites is
    procedure Insert_By_Draw_Priority
      (Buffer  : in out Sprite_Priority_Buffer;
       Index   : Sprite_Index_Type;
-      Sprites : Sprite_Array_Type) is
-
+      Sprites : Sprite_Array_Type)
+   is
       function Compare_Priorities (L, R : Sprite_Index_Type) return Boolean;
       function Compare_Priorities (L, R : Sprite_Index_Type) return Boolean is
       begin
