@@ -86,6 +86,7 @@ package body Gade.Dev.Video.Sprites is
      (VRAM  : Gade.Dev.VRAM.VRAM_Type;
       OAM   : Gade.Dev.OAM.OAM_Type;
       Cache : out Sprite_Line_Cache;
+      Timings : out Edge_Counts_Type; -- Should probably break this up to a different metho
       Row   : Display_Vertical_Range;
       Size  : Sprite_Size_Type)
    is
@@ -107,6 +108,8 @@ package body Gade.Dev.Video.Sprites is
          Populate_Sprite_Line
            (VRAM, OAM.Map.Sprites (Sprite_Index), Cache, Row, Size);
       end loop;
+
+      Populate_Timing_Cache (Priority_Buffer, OAM.Map.Sprites, Timings);
    end Populate_Line_Cache;
 
    procedure Populate_Sprite_Line
@@ -159,5 +162,19 @@ package body Gade.Dev.Video.Sprites is
          Sprite_Col := Sprite_Col + 1;
       end loop;
    end Populate_Sprite_Line;
+
+   procedure Populate_Timing_Cache
+     (Buffer  : Sprite_Priority_Buffer;
+      Sprites : Sprite_Array_Type;
+      Timings : out Edge_Counts_Type)
+   is
+      Sprite_Left : Integer;
+   begin
+      Timings := (others => 0);
+      for Sprite_Index of Buffer.Indexes (1 .. Buffer.N_Sprites) loop
+         Sprite_Left := Integer (Sprites (Sprite_Index).X) - Sprite_Width + 1;
+         Timings (Sprite_Left) := Timings (Sprite_Left) + 1;
+      end loop;
+   end Populate_Timing_Cache;
 
 end Gade.Dev.Video.Sprites;

@@ -27,11 +27,17 @@ private
    type Handler_Array is array (LCD_Controller_Mode_Type)
      of Mode_Handler_Access;
 
+   --  TODO: This should go to its own file
+   subtype Line_Buffer_Range is Natural range 0 .. 160 - 1;
+   type Line_Buffer_Type is array (Line_Buffer_Range) of Natural;
+
    type Display_Handler_Type is new Handler_Common_Info_Type with record
       Mode                 : LCD_Controller_Mode_Type;
       Mode_Handlers        : Handler_Array;
       Current_Mode_Handler : Mode_Handler_Access;
       Sprite_Cache         : Sprite_Line_Cache;
+      Timing_Cache         : Line_Buffer_Type;
+      VRAM_Access_Cycles   : Natural;
    end record;
 
    procedure Line_Changed

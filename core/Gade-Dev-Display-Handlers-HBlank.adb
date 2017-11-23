@@ -10,7 +10,6 @@ package body Gade.Dev.Display.Handlers.HBlank is
    is
    begin
       Mode_Handler_Type (Mode_Handler).Reset;
-      Mode_Handler.Remaining_Cycles := Mode_Cycles;
    end Reset;
 
    overriding
@@ -23,6 +22,9 @@ package body Gade.Dev.Display.Handlers.HBlank is
       Write_Video_Buffer_Line
         (GB, Video, Mode_Handler.Display_Handler.Current_Line);
       Mode_Handler_Type (Mode_Handler).Start (GB, Video);
+      --  TODO: Use proper names!
+      Mode_Handler.Remaining_Cycles :=
+        456 - 80 - Mode_Handler.Display_Handler.VRAM_Access_Cycles;
    end Start;
 
    overriding

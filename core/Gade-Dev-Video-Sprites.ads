@@ -17,10 +17,14 @@ package Gade.Dev.Video.Sprites is
 
    type Sprite_Line_Cache is array (Display_Horizontal_Range) of Sprite_Result_Type;
 
+   subtype Edge_Count_Type is Natural range 0 .. 10;
+   type Edge_Counts_Type is array (-7 .. 166) of Edge_Count_Type;
+
    procedure Populate_Line_Cache
      (VRAM  : Gade.Dev.VRAM.VRAM_Type;
       OAM   : Gade.Dev.OAM.OAM_Type;
       Cache : out Sprite_Line_Cache;
+      Timings : out Edge_Counts_Type; -- Should probably break this up to a different metho
       Row   : Display_Vertical_Range;
       Size  : Sprite_Size_Type);
 
@@ -90,5 +94,10 @@ private
       Cache  : in out Sprite_Line_Cache;
       Row    : Display_Vertical_Range;
       Size   : Sprite_Size_Type);
+
+   procedure Populate_Timing_Cache
+     (Buffer  : Sprite_Priority_Buffer;
+      Sprites : Sprite_Array_Type;
+      Timings : out Edge_Counts_Type);
 
 end Gade.Dev.Video.Sprites;
