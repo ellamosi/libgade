@@ -5,6 +5,7 @@ with Gade.GB;             use Gade.GB;
 with Gade.GB.Memory_Map;  use Gade.GB.Memory_Map;
 with Gade.Dev.OAM;        use Gade.Dev.OAM;
 with Gade.Dev.Display.Handlers;
+--  with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Dev.Display is
 
@@ -149,9 +150,9 @@ package body Gade.Dev.Display is
       Display.Map.CURLINE := Line;
       Coincidence := Line = Natural (Display.Map.CMPLINE);
       Display.Map.STAT.Scanline_Coincidence := Coincidence;
-      --  Put_Line
-      --    ("YCMP:" & Display.Map.CMPLINE'Img & " LY:" & Display.Map.CURLINE'Img &
-      --     " Coincidence: " & Coincidence'Img);
+--        Put_Line
+--          ("YCMP:" & Display.Map.CMPLINE'Img & " LY:" & Display.Map.CURLINE'Img &
+--           " Coincidence: " & Coincidence'Img);
       if Coincidence and Display.Map.STAT.Interrupt_Scanline_Coincidence then
          Set_Interrupt (GB, LCDC_Interrupt);
          --  Put_Line ("LYC Interrupt");

@@ -100,7 +100,7 @@ package body Gade.Dev.Display.Handlers.OAM_Access is
          --  From the VRAM Access mode timings documented seems more likely that
          --  FIFO has to wait for the end of fetcher clock even if the fetcher
          --  had already fetched the tile and was waiting
-         return Fetcher.Steps >= Required_Steps and Fetcher.Steps mod 2 = 0;
+         return Fetcher.Steps >= Required_Steps; -- and Fetcher.Steps mod 2 = 0;
       end Tile_Available;
 
    end Tile_Fetcher;
@@ -151,7 +151,7 @@ package body Gade.Dev.Display.Handlers.OAM_Access is
 
       Pixel_FIFO   : Pixel_FIFO_Type;
       Tile_Fetcher : Tile_Fetcher_Type;
-      Total_Cycles : Natural := 0;
+      Total_Cycles : Integer := 0; -- Maybe -4? We seem to start off
 
       Sprite_Cycles : constant := 6;
 
