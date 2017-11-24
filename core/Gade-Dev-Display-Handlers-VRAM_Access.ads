@@ -10,6 +10,12 @@ private package Gade.Dev.Display.Handlers.VRAM_Access is
      (Mode_Handler : in out VRAM_Access_Handler_Type);
 
    overriding
+   procedure Start
+     (Mode_Handler : in out VRAM_Access_Handler_Type;
+      GB           : in out Gade.GB.GB_Type;
+      Video        : RGB32_Display_Buffer_Access);
+
+   overriding
    procedure Report_Cycles
      (Mode_Handler     : in out VRAM_Access_Handler_Type;
       GB               : in out Gade.GB.GB_Type;

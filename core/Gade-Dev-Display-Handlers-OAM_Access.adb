@@ -1,5 +1,4 @@
 with Gade.GB; use Gade.GB;
-with Gade.Dev.Video.Tile_Buffer;
 
 package body Gade.Dev.Display.Handlers.OAM_Access is
 
@@ -27,10 +26,6 @@ package body Gade.Dev.Display.Handlers.OAM_Access is
          Sprite_Edge_Counts,
          Mode_Handler.Display_Handler.Current_Line,
          GB.Display.Map.LCDC.Sprite_Size);
-      --  This probably would be better gone, tile rasterization could happen
-      --  on mem writes
-      Gade.Dev.Video.Tile_Buffer.Rasterize_Tiles
-        (GB.Video_RAM.Tile_Buffer, GB.Video_RAM);
 
       Find_VRAM_Access_Timings (Mode_Handler, Sprite_Edge_Counts);
       Mode_Handler_Type (Mode_Handler).Start (GB, Video);

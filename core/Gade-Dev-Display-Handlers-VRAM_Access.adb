@@ -1,6 +1,7 @@
 with Gade.GB; use Gade.GB;
 with Gade.Dev.OAM; use Gade.Dev.OAM;
 with Gade.Dev.Video.Background_Buffer; use Gade.Dev.Video.Background_Buffer;
+with Gade.Dev.Video.Tile_Buffer;
 
 package body Gade.Dev.Display.Handlers.VRAM_Access is
 
@@ -16,6 +17,20 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       Mode_Handler.Pixel_Cursor := 0;
       Mode_Handler.Mode_Cycles := Display_Handler.Timing_Cache (160 - 1);
    end Reset;
+
+   overriding
+   procedure Start
+     (Mode_Handler : in out VRAM_Access_Handler_Type;
+      GB           : in out Gade.GB.GB_Type;
+      Video        : RGB32_Display_Buffer_Access)
+   is
+   begin
+      Mode_Handler_Type (Mode_Handler).Start (GB, Video);
+      --  This probably would be better gone, tile rasterization could happen
+      --  on mem writes
+      Gade.Dev.Video.Tile_Buffer.Rasterize_Tiles
+        (GB.Video_RAM.Tile_Buffer, GB.Video_RAM);
+   end Start;
 
    overriding
    procedure Report_Cycles
@@ -99,8 +114,6 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       Window  : Window_Result_Type;
       Result  : Color_Value;
    begin
-      Window.Visible := False;
-
       if GB.Display.Map.LCDC.Sprite_Display then
          Sprite := GB.Display.Display_Handler.Sprite_Cache (X);
       else
@@ -120,8 +133,6 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
             BG := Window.Value;
          end if;
       end if;
-
-      BG := Read_Background_Pixel (GB, X, Y);
 
       if Sprite.Value /= 0 and
         (Sprite.Priority = Above_BG or (Sprite.Priority = Behind_BG and BG = 0))

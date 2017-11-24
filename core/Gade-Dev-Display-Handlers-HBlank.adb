@@ -17,8 +17,6 @@ package body Gade.Dev.Display.Handlers.HBlank is
       Video        : RGB32_Display_Buffer_Access)
    is
    begin
---        Write_Video_Buffer_Line
---          (GB, Video, Mode_Handler.Display_Handler.Current_Line);
       Mode_Handler_Type (Mode_Handler).Start (GB, Video);
       --  TODO: Use proper names!
       Mode_Handler.Remaining_Cycles :=
