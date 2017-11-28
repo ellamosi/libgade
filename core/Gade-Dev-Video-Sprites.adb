@@ -150,9 +150,31 @@ package body Gade.Dev.Video.Sprites is
 
       Color : Color_Value;
    begin
-      Sprite_Col := Sprite_X - Left - Effective_Width;
+      --         0   1   2   3   4   5   6   7   8   9   0
+      --    S0  S1  S2  S3  S4  S5  S6  S7
+      --                                     X
+      --    Effective width: 7
+      --    First column: 1
+      --    Left: 0
+      --    Right: 6
+      --
+      --       157 158 159 160|161 162 163 164 165
+      --        S0  S1  S2  S3  S4  S5  S6  S7
+      --                                         X
+      --    Effective width: 4
+      --    First column: 0
+      --    Left: 157
+      --    Right: 160
+
+      if Left = 0 then
+         Sprite_Col := Sprite_Width - Effective_Width;
+      else
+         Sprite_Col := 0;
+      end if;
+
       for Col in Left .. Right loop
          Tile_Col := X_Flip_Lookup (X_Flip, Sprite_Col);
+
          Color := Read_Raster_Tile
            (VRAM.Tile_Buffer, Tile_Index, Tile_Row, Tile_Col);
 
