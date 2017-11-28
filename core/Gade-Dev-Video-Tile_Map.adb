@@ -22,4 +22,11 @@ package body Gade.Dev.Video.Tile_Map is
       Tile_Map (High_Data).Addressed (Map_Index) := High_Data_Index (Value);
    end Consolidate_Tile_Index;
 
+   procedure Reset (Tile_Map : out Consolidated_Tile_Map_Type) is
+   begin
+      for Map of Tile_Map loop
+         Map.Addressed := (others => 0);
+      end loop;
+   end Reset;
+
 end Gade.Dev.Video.Tile_Map;

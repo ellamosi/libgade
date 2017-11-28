@@ -153,4 +153,7 @@ package Gade.Dev.VRAM is
       Address : Word;
       Value   : Byte);
 
+   procedure Reset
+     (Consolidated_Tile_Maps : out Consolidated_Tile_Map_Array);
+
 end Gade.Dev.VRAM;

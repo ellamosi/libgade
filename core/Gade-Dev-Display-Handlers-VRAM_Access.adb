@@ -1,7 +1,6 @@
 with Gade.GB; use Gade.GB;
 with Gade.Dev.OAM; use Gade.Dev.OAM;
 with Gade.Dev.Video.Background_Buffer; use Gade.Dev.Video.Background_Buffer;
-with Gade.Dev.Video.Tile_Buffer;
 
 package body Gade.Dev.Display.Handlers.VRAM_Access is
 
@@ -26,10 +25,6 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
    is
    begin
       Mode_Handler_Type (Mode_Handler).Start (GB, Video);
-      --  This probably would be better gone, tile rasterization could happen
-      --  on mem writes
-      Gade.Dev.Video.Tile_Buffer.Rasterize_Tiles
-        (GB.Video_RAM.Tile_Buffer, GB.Video_RAM);
    end Start;
 
    overriding
