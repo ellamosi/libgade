@@ -5,7 +5,6 @@ with Gade.GB;             use Gade.GB;
 with Gade.GB.Memory_Map;  use Gade.GB.Memory_Map;
 with Gade.Dev.OAM;        use Gade.Dev.OAM;
 with Gade.Dev.Display.Handlers;
---  with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Dev.Display is
 
@@ -61,13 +60,8 @@ package body Gade.Dev.Display is
          Display.DMA_Target_Address := OAM_IO_Address'First;
          Display.DMA_Clocks_Since_Last_Copy := -4; -- Setup clocks
       elsif Display.Map.Space (Address)'Address = Display.Map.CURLINE'Address then
-         --  Reset the scanline rendering
-         --  DO THIS
-         --  Display.Line_Cycles := 0;
+         --  Reset the scanline rendering ?!
          null;
-         --  Put_Line ("LY Write");
-      --  elsif Display.Map.Space (Address)'Address = Display.Map.SCROLLY'Address then
-      --   Put_Line ("SCY Write");
       end if;
       Display.Map.Space (Address) := Value;
    end Write;
@@ -150,12 +144,8 @@ package body Gade.Dev.Display is
       Display.Map.CURLINE := Line;
       Coincidence := Line = Natural (Display.Map.CMPLINE);
       Display.Map.STAT.Scanline_Coincidence := Coincidence;
---        Put_Line
---          ("YCMP:" & Display.Map.CMPLINE'Img & " LY:" & Display.Map.CURLINE'Img &
---           " Coincidence: " & Coincidence'Img);
       if Coincidence and Display.Map.STAT.Interrupt_Scanline_Coincidence then
          Set_Interrupt (GB, LCDC_Interrupt);
-         --  Put_Line ("LYC Interrupt");
       end if;
    end Line_Changed;
 
