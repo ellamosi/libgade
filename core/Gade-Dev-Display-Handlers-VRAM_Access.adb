@@ -122,8 +122,10 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
             Window := Read_Window_Pixel (GB, X, Y);
          end if;
 
-         if not Window.Visible then
+         if not Window.Visible and GB.Display.Map.LCDC.Background_Display then
             BG := Read_Background_Pixel (GB, X, Y);
+         elsif not Window.Visible and not GB.Display.Map.LCDC.Background_Display then
+            BG := 0;
          else
             BG := Window.Value;
          end if;
