@@ -3,12 +3,12 @@ package Gade.Dev.OAM is
    subtype OAM_IO_Address is Word range 16#FE00# .. 16#FE9F#;
 
    type Object_Palette_Type is (OBJ0PAL, OBJ1PAL); -- Should not be declared here
+   type Object_Priority_Type is (Above_BG, Behind_BG);
 
    --  Sprites are either 8x8 or 8x16
    type Sprite_Type is record
-      --  TODO: Type properly!
       Y, X, Pattern  : Byte;
-      Priority       : Boolean;
+      Priority       : Object_Priority_Type;
       Y_Flip, X_Flip : Boolean;
       Palette        : Object_Palette_Type;
    end record;
@@ -23,7 +23,8 @@ package Gade.Dev.OAM is
    end record;
    for Sprite_Type'Size use 8 * 4;
 
-   type Sprite_Array_Type is array (0 .. 39) of Sprite_Type;
+   type Sprite_Index_Type is range 0 .. 39;
+   type Sprite_Array_Type is array (Sprite_Index_Type) of Sprite_Type;
    type VRAM_Access_Type is (Named, Address);
 
    type OAM_Address_Space is array (OAM_IO_Address) of Byte;

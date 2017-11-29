@@ -4,14 +4,18 @@ package body Gade.Dev.VRAM is
    procedure Reset (VRAM : in out VRAM_Type) is
    begin
       VRAM.Map.Space := (others => 0);
-      for Tile in VRAM.Raster.All_Tile_Data'Range loop
-         for Row in 0 .. 7 loop
-            for Col in 0 .. 7 loop
-               VRAM.Raster.All_Tile_Data (Tile)(Row, Col) := 0;
-            end loop;
-         end loop;
-      end loop;
+      VRAM.Raster.All_Tile_Data := (others => (others => (others => 0)));
       Reset (VRAM.Tile_Buffer);
+      Reset (VRAM.Consolidated_Maps);
+   end Reset;
+
+   procedure Reset
+     (Consolidated_Tile_Maps : out Consolidated_Tile_Map_Array)
+   is
+   begin
+      for Consolidated_Tile_Map of Consolidated_Tile_Maps loop
+         Reset (Consolidated_Tile_Map);
+      end loop;
    end Reset;
 
    overriding
@@ -35,7 +39,8 @@ package body Gade.Dev.VRAM is
    begin
       VRAM.Map.Space (Address) := Value;
       if Address in 16#8000# .. 16#97FF# then
-         Set_Dirty_Tile (VRAM.Tile_Buffer, Address - 16#8000#);
+         --  Set_Dirty_Tile (VRAM.Tile_Buffer, Address - 16#8000#);
+         Rasterize_Tile (VRAM.Tile_Buffer, VRAM, Address - 16#8000#);
       elsif Address in 16#9800# .. 16#9C00# - 1 then
          Consolidate_Tile_Index (VRAM.Consolidated_Maps (Low_Map), Address, Value);
       elsif Address in 16#9C00# .. 16#A000# - 1 then

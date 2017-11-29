@@ -27,6 +27,11 @@ package Gade.Dev.Video.Tile_Buffer is
      (Buffer   : in out Tile_Buffer_Type;
       Address  : Word);
 
+   procedure Rasterize_Tile
+     (Buffer  : in out Tile_Buffer_Type;
+      VRAM    : Gade.Dev.VRAM.VRAM_Type;
+      Address : Word);
+
 private
 
    Tile_Byte_Size : constant := 16;

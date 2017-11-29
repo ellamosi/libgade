@@ -38,6 +38,8 @@ package Gade.Dev.Video.Tile_Map is
    type Consolidated_Tile_Map_Type is array
      (Tile_Data_Access_Type) of Consolidated_Partial_Map_Type;
 
+   procedure Reset (Tile_Map : out Consolidated_Tile_Map_Type);
+
 private
 
    function Low_Data_Index (Value : Byte) return Tile_Index_Type;
