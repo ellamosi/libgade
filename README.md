@@ -17,18 +17,19 @@ Why Ada? I learned to program in Ada, and I always felt that it was a more relia
 - ROM, MBC1, MBC2 cartridge types
 - Joypad
 - Timer
-- Background
+- Background Layer
+- Window Layer
 - Sprites
+- Mid scanline rendering
 
 #### What does not work
 - Sound
 - Other cartridge controller types
-- Window layer rendering
 - Game saves
 - Accurate timings
 
 #### Next steps
-- Window rendering
 - Performance optimizations (GPU rendering)
 - Performance optimizations (CPU interpretation/Interrupt handling)
+- More cartridge types, including ones with RAM
 
