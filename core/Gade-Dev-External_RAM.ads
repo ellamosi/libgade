@@ -42,6 +42,7 @@ private
 
    type External_RAM_Type is new Memory_Mapped_Device with record
       Enabled      : Boolean;
+      Banks        : External_RAM_Banks;
       Current_Bank : RAM_Bank_Access;
    end record;
 
