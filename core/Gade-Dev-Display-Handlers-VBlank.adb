@@ -35,21 +35,33 @@ package body Gade.Dev.Display.Handlers.VBlank is
       pragma Unreferenced (Video);
       Remaining_Line_Cycles : Integer;
       New_Line              : Line_Count_Type;
+      Display_Handler       : constant Display_Handler_Access :=
+        Mode_Handler.Display_Handler;
    begin
       Remaining_Cycles := Cycles;
       while Remaining_Cycles > 0 and not Mode_Handler.Finished loop
          Remaining_Line_Cycles := Mode_Handler.Remaining_Line_Cycles - Remaining_Cycles;
+
+         if Remaining_Line_Cycles <= 440 and
+           Display_Handler.Current_Line = 153 and
+           Display_Handler.Dev.Map.CURLINE = 153
+         then
+            --  Early LY=0/LYC interrupt
+            Display_Handler.Dev.Line_Changed (GB, 0);
+         end if;
+
          if Remaining_Line_Cycles <= 0 then
             --  Exhausted line cycles
             Remaining_Cycles := Remaining_Cycles - Mode_Handler.Remaining_Line_Cycles;
-            if Mode_Handler.Display_Handler.Current_Line < Line_Count_Type'Last then
+            if Display_Handler.Current_Line < Line_Count_Type'Last then
                Mode_Handler.Remaining_Line_Cycles := Line_Cycles;
-               New_Line := Mode_Handler.Display_Handler.Current_Line + 1;
+               New_Line := Display_Handler.Current_Line + 1;
+               Display_Handler.Line_Changed (GB, New_Line);
             else
                Mode_Handler.Finished := True;
                New_Line := 0;
+               Display_Handler.Current_Line := New_Line;
             end if;
-            Mode_Handler.Display_Handler.Line_Changed (GB, New_Line);
          else
             --  Not exhausted line cycles
             Remaining_Cycles := 0;

@@ -4,11 +4,7 @@ package body Gade.Dev.Video.Tile_Buffer is
 
    procedure Reset (Buffer : out Tile_Buffer_Type) is
    begin
-      Buffer.Tiles :=
-        (others =>
-           (State => Dirty,
-            Tile  => (others => (others => 0))));
-      Buffer.Has_Dirty_Tiles := True;
+      Buffer := (others => (others => (others => 0)));
    end Reset;
 
    procedure Rasterize_Line
@@ -38,35 +34,6 @@ package body Gade.Dev.Video.Tile_Buffer is
       end loop;
    end Rasterize_Tile;
 
-   procedure Rasterize_Tiles
-     (Buffer : in out Tile_Buffer_Type;
-      VRAM   : Gade.Dev.VRAM.VRAM_Type)
-   is
-   begin
-      if Buffer.Has_Dirty_Tiles then
-         for Index in Buffer.Tiles'Range loop
-            if Buffer.Tiles (Index).State = Dirty then
-               Rasterize_Tile
-                 (Buffer.Tiles (Index).Tile,
-                  VRAM.Map.Tile_Data.All_Tile_Data (Integer (Index))); -- TODO: Casting should not be necessary
-               Buffer.Tiles (Index).State := Read;
-            end if;
-         end loop;
-      end if;
-      Buffer.Has_Dirty_Tiles := False;
-   end Rasterize_Tiles;
-
-   procedure Set_Dirty_Tile
-     (Buffer   : in out Tile_Buffer_Type;
-      Address  : Word)
-   is
-      Index : Tile_Index_Type;
-   begin
-      Index := Tile_Index_Type (Address / Tile_Byte_Size);
-      Buffer.Tiles (Index).State := Dirty;
-      Buffer.Has_Dirty_Tiles := True;
-   end Set_Dirty_Tile;
-
    procedure Rasterize_Tile
      (Buffer  : in out Tile_Buffer_Type;
       VRAM    : Gade.Dev.VRAM.VRAM_Type;
@@ -76,7 +43,7 @@ package body Gade.Dev.Video.Tile_Buffer is
    begin
       Index := Tile_Index_Type (Address / Tile_Byte_Size);
       Rasterize_Tile
-        (Buffer.Tiles (Index).Tile,
+        (Buffer (Index),
          VRAM.Map.Tile_Data.All_Tile_Data (Integer (Index)));
    end Rasterize_Tile;
 
@@ -86,7 +53,7 @@ package body Gade.Dev.Video.Tile_Buffer is
       Row, Col   : Natural) return Color_Value
    is
    begin
-      return Buffer.Tiles (Tile_Index).Tile (Row)(Col);
+      return Buffer (Tile_Index)(Row)(Col);
    end Read_Raster_Tile;
 
 end Gade.Dev.Video.Tile_Buffer;

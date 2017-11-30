@@ -1,16 +1,8 @@
 with Gade.Dev.VRAM; use Gade.Dev.VRAM;
 with Gade.Dev.Video.Tile_Map; use Gade.Dev.Video.Tile_Map;
+with Gade.Dev.Video.Tile_Buffer; use Gade.Dev.Video.Tile_Buffer;
 
 package body Gade.Dev.Video.Background_Buffer is
-
-   procedure Reset
-     (Buffer : out Background_Buffer_Type) is
-   begin
-      Buffer (Low_Data, Low_Map).Rasterized := False;
-      Buffer (High_Data, Low_Map).Rasterized := False;
-      Buffer (Low_Data, High_Map).Rasterized := False;
-      Buffer (High_Data, High_Map).Rasterized := False;
-   end Reset;
 
    function Read
      (VRAM      : Gade.Dev.VRAM.VRAM_Type;

@@ -15,6 +15,7 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       Display_Handler.VRAM_Access_Cycles := 0;
       Mode_Handler.Pixel_Cursor := 0;
       Mode_Handler.Mode_Cycles := Display_Handler.Timing_Cache (160 - 1);
+      Mode_Handler.Scroll_X := Natural (Display_Handler.Dev.Map.SCROLLX);
    end Reset;
 
    overriding
@@ -53,7 +54,7 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       while Display_Handler.VRAM_Access_Cycles < Run_Until_Cycles loop
          Pixel_Cycles := Display_Handler.Timing_Cache (Mode_Handler.Pixel_Cursor);
          if Pixel_Cycles <= Run_Until_Cycles then
-            Draw_Pixel (GB, Video, Display_Handler.Current_Line, Mode_Handler.Pixel_Cursor);
+            Draw_Pixel (Mode_Handler, GB, Video, Display_Handler.Current_Line, Mode_Handler.Pixel_Cursor);
             Mode_Handler.Pixel_Cursor := Mode_Handler.Pixel_Cursor + 1;
             Display_Handler.VRAM_Access_Cycles := Pixel_Cycles;
          else
@@ -86,19 +87,21 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
    end Next_Mode;
 
    procedure Draw_Pixel
-     (GB     : in out GB_Type;
+     (Mode_Handler : VRAM_Access_Handler_Type;
+      GB     : in out GB_Type;
       Buffer : RGB32_Display_Buffer_Access;
       Row    : Natural;
       Col    : Natural)
    is
       Color : Color_Value;
    begin
-      Color := Read_Screen_Pixel (GB, Col, Row);
+      Color := Read_Screen_Pixel (Mode_Handler, GB, Col, Row);
       Buffer (Row, Col) := Color_Lookup (Color);
    end Draw_Pixel;
 
    function Read_Screen_Pixel
-     (GB   : in out GB_Type;
+     (Mode_Handler : VRAM_Access_Handler_Type;
+      GB   : in out GB_Type;
       X, Y : Natural) return Color_Value is
       --  Coordinates should disappear and be based on internal Display state
       --  Then this should be called with the appropriate timing for each px
@@ -118,16 +121,17 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       if (Sprite.Value = Sprite_Transparent_Color or
          (Sprite.Value /= Sprite_Transparent_Color and Sprite.Priority = Behind_BG))
       then
+         Window.Visible := False;
          if GB.Display.Map.LCDC.Window_Display then
             Window := Read_Window_Pixel (GB, X, Y);
          end if;
 
          if not Window.Visible and GB.Display.Map.LCDC.Background_Display then
-            BG := Read_Background_Pixel (GB, X, Y);
-         elsif not Window.Visible and not GB.Display.Map.LCDC.Background_Display then
-            BG := 0;
-         else
+            BG := Read_Background_Pixel (Mode_Handler, GB, X, Y);
+         elsif Window.Visible then
             BG := Window.Value;
+         else
+            BG := 0;
          end if;
       end if;
 
@@ -163,14 +167,15 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
    end Read_Window_Pixel;
 
    function Read_Background_Pixel
-     (GB   : in out GB_Type;
+     (Mode_Handler : VRAM_Access_Handler_Type;
+      GB   : in out GB_Type;
       X, Y : Natural) return Color_Value is
    begin
       return
         Gade.Dev.Video.Background_Buffer.Read
           (GB.Video_RAM,
            (Y + Natural (GB.Display.Map.SCROLLY)) mod 256,
-           (X + Natural (GB.Display.Map.SCROLLX)) mod 256,
+           (X + Mode_Handler.Scroll_X) mod 256,
            GB.Display.Map.LCDC.Background_Tile_Map_Addr,
            GB.Display.Map.LCDC.Tile_Data_Table_Addr);
    end Read_Background_Pixel;
