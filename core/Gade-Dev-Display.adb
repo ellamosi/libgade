@@ -23,7 +23,6 @@ package body Gade.Dev.Display is
       Display.Map.STAT := Default_LCD_Status;
       Display.Map.CURLINE := Starting_Line;
       Display.DMA_Copy_Ongoing := False;
-      Display.Current_Mode := Starting_Mode;
       Display.Display_Handler.Reset;
    end Reset;
 
@@ -122,7 +121,7 @@ package body Gade.Dev.Display is
    begin
       Display.Map.STAT.LCD_Controller_Mode := Mode;
       Mode_Interrupt :=
-        (case Display.Current_Mode is
+        (case Mode is
             when HBlank     => Display.Map.STAT.Interrupt_HBlank,
             when VBlank     => Display.Map.STAT.Interrupt_VBlank,
             when OAM_Access => Display.Map.STAT.Interrupt_OAM_Access,

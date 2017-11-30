@@ -221,7 +221,6 @@ private
       DMA_Clocks_Since_Last_Copy : Integer; -- 1/4 clocks + 4 clocks setup
       DMA_Copy_Ongoing : Boolean;
       Map : LCD_Map_Type;
-      Current_Mode : LCD_Controller_Mode_Type;
       Display_Handler : Display_Handler_Access;
    end record;
 

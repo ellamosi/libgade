@@ -37,18 +37,21 @@ private
    --  Mode_Cycles : constant := 172; -- 169-297 clks
 
    type VRAM_Access_Handler_Type is new Mode_Handler_Type with record
-      Pixel_Cursor   : Natural;
-      Mode_Cycles    : Natural;
+      Pixel_Cursor : Natural;
+      Mode_Cycles  : Natural;
+      Scroll_X     : Natural;
    end record;
 
    procedure Draw_Pixel
-     (GB     : in out Gade.GB.GB_Type;
+     (Mode_Handler : VRAM_Access_Handler_Type;
+      GB     : in out Gade.GB.GB_Type;
       Buffer : RGB32_Display_Buffer_Access;
       Row    : Natural;
       Col    : Natural);
 
    function Read_Screen_Pixel
-     (GB   : in out Gade.GB.GB_Type;
+     (Mode_Handler : VRAM_Access_Handler_Type;
+      GB   : in out Gade.GB.GB_Type;
       X, Y : Natural) return Color_Value;
 
    function Read_Window_Pixel
@@ -56,7 +59,8 @@ private
       X, Y : Natural) return Window_Result_Type;
 
    function Read_Background_Pixel
-     (GB   : in out Gade.GB.GB_Type;
+     (Mode_Handler : VRAM_Access_Handler_Type;
+      GB   : in out Gade.GB.GB_Type;
       X, Y : Natural) return Color_Value;
 
 end Gade.Dev.Display.Handlers.VRAM_Access;
