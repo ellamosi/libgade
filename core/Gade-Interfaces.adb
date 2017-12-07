@@ -7,6 +7,7 @@ with Gade.Video_Buffer; use Gade.Video_Buffer;
 with Gade.Dev.CPU.Instructions.Exec;        use Gade.Dev.CPU.Instructions.Exec;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
+with Gade.Cartridge;
 
 package body Gade.Interfaces is
 
@@ -29,7 +30,10 @@ package body Gade.Interfaces is
      (G    : Gade_Type;
       Path : String) is
    begin
-      G.GB.External_ROM.Load_ROM (Path);
+      Gade.Cartridge.Load_ROM
+        (G.GB.External_ROM,
+         G.GB.External_RAM,
+         Path);
    end Load_ROM;
 
    procedure Set_Input_Reader

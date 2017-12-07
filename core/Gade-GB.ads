@@ -1,14 +1,13 @@
 with Gade.Dev;              use Gade.Dev;
-with Gade.Dev.Cartridge;    use Gade.Dev.Cartridge;
 with Gade.Dev.CPU;          use Gade.Dev.CPU;
 with Gade.Dev.VRAM;         use Gade.Dev.VRAM;
-with Gade.Dev.External_RAM; use Gade.Dev.External_RAM;
 with Gade.Dev.OAM;          use Gade.Dev.OAM;
 with Gade.Dev.Joypad;       use Gade.Dev.Joypad;
 with Gade.Dev.Timer;        use Gade.Dev.Timer;
 with Gade.Dev.Display;      use Gade.Dev.Display;
-with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
-with Gade.Video_Buffer;   use Gade.Video_Buffer;
+with Gade.Dev.Interrupts;   use Gade.Dev.Interrupts;
+with Gade.Video_Buffer;     use Gade.Video_Buffer;
+with Gade.Cartridge;        use Gade.Cartridge;
 
 private package Gade.GB is
 
@@ -30,11 +29,11 @@ private package Gade.GB is
    type GB_Public_Type is abstract tagged record
       CPU              : aliased CPU_Context;
       --  0000
-      External_ROM     : aliased External_ROM_Type;
+      External_ROM     : ROM_Handler_Access;
       --  8000
       Video_RAM        : aliased VRAM_Type;
       --  A000
-      External_RAM     : aliased External_RAM_Type;
+      External_RAM     : RAM_Handler_Access;
       --  C000 Intenal RAM / E000 Intenal RAM Echo
       Content          : Memory_Bytes; -- TODO: redo!
       --  FE00
