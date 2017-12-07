@@ -1,7 +1,4 @@
-with Gade.GB;
-with Gade.Cartridge.ROM; use Gade.Cartridge.ROM;
-
-private package Gade.Cartridge.MBC is
+package Gade.ROM_Handler.MBC is
 
    --  ROM Reading
 
@@ -52,7 +49,7 @@ private package Gade.Cartridge.MBC is
    --  MBC3: 6000-7FFF - Latch Clock Data (Write Only)
    --  MBC5: -
 
-   type MBC_ROM_Handler_Type is abstract new ROM_Only_Handler_Type with private;
+   type MBC_ROM_Handler_Type is abstract new ROM_Handler_Type with private;
 
    overriding
    procedure Write
@@ -63,15 +60,15 @@ private package Gade.Cartridge.MBC is
 
 private
 
-   type MBC_ROM_Handler_Type is abstract new ROM_Only_Handler_Type with record
+   type MBC_ROM_Handler_Type is abstract new ROM_Handler_Type with record
       RAM_Handler : RAM_Handler_Access;
-      RAM_Enabled : Boolean;
    end record;
 
    overriding
    procedure Create
-     (Handler : out MBC_ROM_Handler_Type;
-      ROM     : ROM_Access);
+     (Handler     : out MBC_ROM_Handler_Type;
+      ROM         : ROM_Access;
+      RAM_Handler : RAM_Handler_Access);
 
    procedure ROM_Write
      (Handler : in out MBC_ROM_Handler_Type'Class;
@@ -99,4 +96,4 @@ private
      (MBC     : in out MBC_ROM_Handler_Type;
       Value   : Byte) is null;
 
-end Gade.Cartridge.MBC;
+end Gade.ROM_Handler.MBC;

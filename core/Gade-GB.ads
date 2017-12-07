@@ -7,7 +7,8 @@ with Gade.Dev.Timer;        use Gade.Dev.Timer;
 with Gade.Dev.Display;      use Gade.Dev.Display;
 with Gade.Dev.Interrupts;   use Gade.Dev.Interrupts;
 with Gade.Video_Buffer;     use Gade.Video_Buffer;
-with Gade.Cartridge;        use Gade.Cartridge;
+with Gade.ROM_Handler;      use Gade.ROM_Handler;
+with Gade.RAM_Handler;      use Gade.RAM_Handler;
 
 private package Gade.GB is
 

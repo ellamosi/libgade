@@ -29,6 +29,8 @@ package Gade.External.RAM is
 
    type RAM_Access is access RAM_Type;
 
+   Bank_Address_Mask : constant Word := 16#1FFF#;
+
 private
 
    RAM_Bank_Count : constant array (RAM_Size_Type) of Integer :=

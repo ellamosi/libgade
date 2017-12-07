@@ -1,16 +1,39 @@
-package body Gade.Cartridge.MBC.MBC1 is
+with Gade.External.RAM; use Gade.External.RAM;
+
+package body Gade.ROM_Handler.MBC.MBC1 is
 
    overriding
    procedure Create
-     (Handler : out MBC1_ROM_Handler_Type;
-      ROM     : ROM_Access)
+     (Handler     : out MBC1_ROM_Handler_Type;
+      ROM         : ROM_Access;
+      RAM_Handler : RAM_Handler_Access)
    is
    begin
-      MBC_ROM_Handler_Type (Handler).Create (ROM);
+      MBC_ROM_Handler_Type (Handler).Create (ROM, RAM_Handler);
       Handler.Banking_Mode := MBC1.ROM;
       Handler.Low_Bank_Select := 1;
       Handler.High_Bank_Select := 0;
    end Create;
+
+   overriding
+   procedure Enable_RAM
+     (Handler : in out MBC1_ROM_Handler_Type;
+      Address : RAM_Enable_Address;
+      Value   : Byte)
+   is
+      pragma Unreferenced (Address);
+      Mask    : constant := 16#0F#;
+      Enable  : constant := 16#0A#;
+      Disable : constant := 16#00#;
+
+      Masked_Value : constant Byte := Value and Mask;
+   begin
+      case Masked_Value is
+         when Enable  => Handler.RAM_Handler.Set_Enabled (True);
+         when Disable => Handler.RAM_Handler.Set_Enabled (False);
+         when others  => null;
+      end case;
+   end Enable_RAM;
 
    overriding
    procedure Select_Bank
@@ -86,13 +109,9 @@ package body Gade.Cartridge.MBC.MBC1 is
    procedure Select_RAM_Bank
      (Handler : in out MBC1_ROM_Handler_Type)
    is
-      pragma Unreferenced (Handler);
+      Bank : constant RAM_Bank_Range := RAM_Bank_Range (Handler.High_Bank_Select);
    begin
-      null;
-      --  TODO
---        Gade.Dev.External_RAM.Switch_Banks
---          (Dummy,
---           External_RAM_Bank_Range (MBC.High_Bank_Select));
+      Handler.RAM_Handler.Switch_Banks (Bank);
    end Select_RAM_Bank;
 
-end Gade.Cartridge.MBC.MBC1;
+end Gade.ROM_Handler.MBC.MBC1;

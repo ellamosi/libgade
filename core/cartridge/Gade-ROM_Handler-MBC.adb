@@ -1,14 +1,14 @@
-package body Gade.Cartridge.MBC is
+package body Gade.ROM_Handler.MBC is
 
    overriding
    procedure Create
-     (Handler : out MBC_ROM_Handler_Type;
-      ROM     : ROM_Access)
+     (Handler     : out MBC_ROM_Handler_Type;
+      ROM         : ROM_Access;
+      RAM_Handler : RAM_Handler_Access)
    is
    begin
-      ROM_Only_Handler_Type (Handler).Create (ROM);
-      Handler.RAM_Enabled := False;
-      --  TODO: Assign RAM handler
+      ROM_Handler_Type (Handler).Create (ROM, RAM_Handler);
+      Handler.RAM_Handler := RAM_Handler;
    end Create;
 
    overriding
@@ -36,4 +36,4 @@ package body Gade.Cartridge.MBC is
       end case;
    end ROM_Write;
 
-end Gade.Cartridge.MBC;
+end Gade.ROM_Handler.MBC;

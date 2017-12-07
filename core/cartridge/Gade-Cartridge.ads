@@ -1,53 +1,11 @@
-with Gade.Dev; use Gade.Dev;
-limited with Gade.GB;
-with Gade.External.ROM;
-with Gade.External.RAM;
+with Gade.ROM_Handler; use Gade.ROM_Handler;
+with Gade.RAM_Handler; use Gade.RAM_Handler;
+
+private with Gade.External.ROM;
+private with Gade.External.RAM;
 private with Gade.Cartridge_Info;
 
 private package Gade.Cartridge is
-
-   subtype External_ROM_IO_Address is Word range 16#0000# .. 16#7FFF#;
-
-   type ROM_Handler_Type is abstract new Memory_Mapped_Device with private;
-
-   type ROM_Handler_Access is access ROM_Handler_Type'Class;
-
-   overriding
-   procedure Read
-     (Handler : in out ROM_Handler_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Content : out Byte);
-
-   overriding
-   procedure Write
-     (Handler : in out ROM_Handler_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Content : Byte) is null;
-
-   subtype External_RAM_IO_Address is Word range 16#A000# .. 16#BFFF#;
-
-   type RAM_Handler_Type is new Memory_Mapped_Device with private;
-
-   overriding
-   procedure Reset (Handler : in out RAM_Handler_Type) is null;
-
-   overriding
-   procedure Read
-     (Handler : in out RAM_Handler_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Content : out Byte);
-
-   overriding
-   procedure Write
-     (Handler : in out RAM_Handler_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Content : Byte) is null;
-
-   type RAM_Handler_Access is access RAM_Handler_Type'Class;
 
    procedure Load_ROM
      (ROM_Handler : out ROM_Handler_Access;
@@ -243,30 +201,37 @@ private
         Huds_on_Huc_1             => Huds_on_Huc_1
        );
 
-   subtype Addressable_Bank_Range is ROM_Bank_Range range 0 .. 1;
+   type RAM_Handler_Kind_Type is
+     (None, MBC1);
 
-   type ROM_Banks is array (Addressable_Bank_Range) of ROM_Bank_Access;
-
-   subtype Bank0_Address is External_ROM_IO_Address range 16#0000# .. 16#3FFF#;
-   subtype Bank1_Address is External_ROM_IO_Address range 16#4000# .. 16#7FFF#;
-
-   type ROM_Handler_Type is abstract new Memory_Mapped_Device with record
-      ROM   : ROM_Access;
-      Banks : ROM_Banks;
-   end record;
-
-   type RAM_Handler_Type is new Memory_Mapped_Device with null record;
-
-   procedure Create
-     (Handler : out ROM_Handler_Type;
-      ROM     : ROM_Access);
-
-   procedure Set_ROM_Bank
-     (Handler          : in out ROM_Handler_Type;
-      Addressable_Bank : Addressable_Bank_Range;
-      ROM_Bank         : ROM_Bank_Range);
-
-   procedure Create
-     (Handler : out RAM_Handler_Type) is null;
+   RAM_Handler_Kind_For_Cartridge : constant array (Cartridge_Type)
+     of RAM_Handler_Kind_Type :=
+       (ROM_ONLY                  => None,
+        ROM_MBC1                  => None,
+        ROM_MBC1_RAM              => MBC1,
+        ROM_MBC1_RAM_BATT         => MBC1,
+        ROM_MBC2                  => None,
+        ROM_MBC2_BATT             => None,
+        ROM_RAM                   => MBC1, -- For now
+        ROM_RAM_BATT              => MBC1, -- For now
+        ROM_MM01                  => None,
+        ROM_MM01_SRAM             => None,
+        ROM_MM01_SRAM_BATT        => None,
+        ROM_MBC3_TIMER_BATT       => None,
+        ROM_MBC3_TIMER_RAM_BATT   => None,
+        ROM_MBC3                  => None,
+        ROM_MBC3_RAM              => None,
+        ROM_MBC3_RAM_BATT         => None,
+        ROM_MBC5                  => None,
+        ROM_MBC5_RAM              => None,
+        ROM_MBC5_RAM_BATT         => None,
+        ROM_MBC5_RUMBLE           => None,
+        ROM_MBC5_RUMBLE_SRAM      => None,
+        ROM_MBC5_RUMBLE_SRAM_BATT => None,
+        Pocket_Camera             => None,
+        Bandai_TAMA5              => None,
+        Huds_on_Huc_3             => None,
+        Huds_on_Huc_1             => None
+       );
 
 end Gade.Cartridge;

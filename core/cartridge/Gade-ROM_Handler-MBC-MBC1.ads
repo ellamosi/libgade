@@ -1,4 +1,4 @@
-package Gade.Cartridge.MBC.MBC1 is
+package Gade.ROM_Handler.MBC.MBC1 is
 
    type MBC1_ROM_Handler_Type is new MBC_ROM_Handler_Type with private;
 
@@ -31,13 +31,20 @@ private
 
    overriding
    procedure Create
-     (Handler : out MBC1_ROM_Handler_Type;
-      ROM     : ROM_Access);
+     (Handler     : out MBC1_ROM_Handler_Type;
+      ROM         : ROM_Access;
+      RAM_Handler : RAM_Handler_Access);
 
    overriding
    procedure Select_Bank
      (Handler : in out MBC1_ROM_Handler_Type;
       Address : Bank_Select_Address;
+      Value   : Byte);
+
+   overriding
+   procedure Enable_RAM
+     (Handler : in out MBC1_ROM_Handler_Type;
+      Address : RAM_Enable_Address;
       Value   : Byte);
 
    overriding
@@ -59,4 +66,4 @@ private
    procedure Select_RAM_Bank
      (Handler : in out MBC1_ROM_Handler_Type);
 
-end Gade.Cartridge.MBC.MBC1;
+end Gade.ROM_Handler.MBC.MBC1;
