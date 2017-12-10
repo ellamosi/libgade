@@ -2,12 +2,12 @@ limited with Gade.GB;
 
 private package Gade.Dev is
 
-   type Hardware_Device is interface;
+   type Hardware_Device is limited interface;
 
    procedure Reset
      (Device : in out Hardware_Device) is abstract;
 
-   type Memory_Mapped_Device is abstract new Hardware_Device with null record;
+   type Memory_Mapped_Device is abstract limited new Hardware_Device with null record;
 
    procedure Read
      (Device : in out Memory_Mapped_Device;
@@ -23,7 +23,7 @@ private package Gade.Dev is
 
    type Memory_Access_Type is (Named, Address);
 
-   type Interrupt_Source is interface;
+   type Interrupt_Source is limited interface;
 
    procedure Report_Cycles
      (Device : in out Interrupt_Source;

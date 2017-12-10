@@ -1,19 +1,29 @@
-with Gade.External.RAM; use Gade.External.RAM;
+with Gade.Cart.RAM; use Gade.Cart.RAM;
 
-package body Gade.ROM_Handler.MBC.MBC1 is
+package body Gade.Cart.ROM.Handlers.MBC.MBC1 is
 
-   overriding
-   procedure Create
-     (Handler     : out MBC1_ROM_Handler_Type;
-      ROM         : ROM_Access;
-      RAM_Handler : RAM_Handler_Access)
+   function Create
+     (ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
+      RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access)
+      return MBC1_ROM_Handler_Access
+   is
+      Handler : constant MBC1_ROM_Handler_Access := new MBC1_ROM_Handler_Type;
+   begin
+      MBC1.Initialize (Handler.all, ROM_Content, RAM_Handler);
+      return Handler;
+   end Create;
+
+   procedure Initialize
+     (Handler     : out MBC1_ROM_Handler_Type'Class;
+      ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
+      RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access)
    is
    begin
-      MBC_ROM_Handler_Type (Handler).Create (ROM, RAM_Handler);
+      MBC_ROM_Handler_Type (Handler).Initialize (ROM_Content, RAM_Handler);
       Handler.Banking_Mode := MBC1.ROM;
       Handler.Low_Bank_Select := 1;
       Handler.High_Bank_Select := 0;
-   end Create;
+   end Initialize;
 
    overriding
    procedure Enable_RAM
@@ -102,8 +112,8 @@ package body Gade.ROM_Handler.MBC.MBC1 is
             Low_ROM_Bank_Number := ROM_Bank_Range (High_Part * 2**5);
             High_ROM_Bank_Number := ROM_Bank_Range (Low_Part);
       end case;
-      Handler.Set_ROM_Bank (0, Low_ROM_Bank_Number);
-      Handler.Set_ROM_Bank (1, High_ROM_Bank_Number);
+      Handler.Switch_Banks (0, Low_ROM_Bank_Number);
+      Handler.Switch_Banks (1, High_ROM_Bank_Number);
    end Select_ROM_Bank;
 
    procedure Select_RAM_Bank
@@ -114,4 +124,4 @@ package body Gade.ROM_Handler.MBC.MBC1 is
       Handler.RAM_Handler.Switch_Banks (Bank);
    end Select_RAM_Bank;
 
-end Gade.ROM_Handler.MBC.MBC1;
+end Gade.Cart.ROM.Handlers.MBC.MBC1;

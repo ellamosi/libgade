@@ -1,6 +1,15 @@
-package Gade.ROM_Handler.MBC.MBC1 is
+with Gade.Cart.RAM.Handlers;
+
+package Gade.Cart.ROM.Handlers.MBC.MBC1 is
 
    type MBC1_ROM_Handler_Type is new MBC_ROM_Handler_Type with private;
+
+   type MBC1_ROM_Handler_Access is access MBC1_ROM_Handler_Type;
+
+   function Create
+     (ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
+      RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access)
+      return MBC1_ROM_Handler_Access;
 
 private
 
@@ -29,11 +38,10 @@ private
       High_Bank_Select : High_Bank_Select_Type;
    end record;
 
-   overriding
-   procedure Create
-     (Handler     : out MBC1_ROM_Handler_Type;
-      ROM         : ROM_Access;
-      RAM_Handler : RAM_Handler_Access);
+   procedure Initialize
+     (Handler     : out MBC1_ROM_Handler_Type'Class;
+      ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
+      RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access);
 
    overriding
    procedure Select_Bank
@@ -66,4 +74,4 @@ private
    procedure Select_RAM_Bank
      (Handler : in out MBC1_ROM_Handler_Type);
 
-end Gade.ROM_Handler.MBC.MBC1;
+end Gade.Cart.ROM.Handlers.MBC.MBC1;

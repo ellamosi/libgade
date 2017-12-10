@@ -7,7 +7,7 @@ with Gade.Video_Buffer; use Gade.Video_Buffer;
 with Gade.Dev.CPU.Instructions.Exec;        use Gade.Dev.CPU.Instructions.Exec;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
-with Gade.Cartridge;
+with Gade.Cart;
 
 package body Gade.Interfaces is
 
@@ -30,7 +30,7 @@ package body Gade.Interfaces is
      (G    : Gade_Type;
       Path : String) is
    begin
-      Gade.Cartridge.Load_ROM
+      Gade.Cart.Load_ROM
         (G.GB.External_ROM,
          G.GB.External_RAM,
          Path);
@@ -65,12 +65,13 @@ package body Gade.Interfaces is
       end loop;
    end Next_Frame;
 
-   procedure Finalize (This : in out Gade_Type) is
+   procedure Finalize (G : in out Gade_Type) is
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin
+      G.GB.External_RAM.Set_Enabled (False);
       Put_Line ("Finalize");
-      Free (This);
+      Free (G);
    end Finalize;
 
 end Gade.Interfaces;

@@ -21,7 +21,7 @@ package Gade.Interfaces is
      (G     : Gade_Type;
       Video : Gade.Video_Buffer.RGB32_Display_Buffer_Access);
 
-   procedure Finalize (This : in out Gade_Type);
+   procedure Finalize (G : in out Gade_Type);
 
 private
 

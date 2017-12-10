@@ -1,4 +1,6 @@
-package Gade.ROM_Handler.MBC is
+with Gade.Cart.RAM.Handlers;
+
+package Gade.Cart.ROM.Handlers.MBC is
 
    --  ROM Reading
 
@@ -59,16 +61,21 @@ package Gade.ROM_Handler.MBC is
       Content : Byte);
 
 private
+   use Gade.Cart.RAM.Handlers;
 
    type MBC_ROM_Handler_Type is abstract new ROM_Handler_Type with record
       RAM_Handler : RAM_Handler_Access;
    end record;
 
-   overriding
-   procedure Create
-     (Handler     : out MBC_ROM_Handler_Type;
-      ROM         : ROM_Access;
+   procedure Initialize
+     (Handler     : out MBC_ROM_Handler_Type'Class;
+      ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
       RAM_Handler : RAM_Handler_Access);
+
+   procedure Switch_Banks
+     (Handler          : in out MBC_ROM_Handler_Type;
+      Addressable_Bank : Addressable_Bank_Range;
+      ROM_Bank         : ROM_Bank_Range);
 
    procedure ROM_Write
      (Handler : in out MBC_ROM_Handler_Type'Class;
@@ -96,4 +103,4 @@ private
      (MBC     : in out MBC_ROM_Handler_Type;
       Value   : Byte) is null;
 
-end Gade.ROM_Handler.MBC;
+end Gade.Cart.ROM.Handlers.MBC;

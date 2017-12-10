@@ -1,7 +1,7 @@
 with Ada.Unchecked_Conversion;
 
 package Gade is
-
+   pragma Pure;
 private
 
    Byte_Size : constant := 8;
