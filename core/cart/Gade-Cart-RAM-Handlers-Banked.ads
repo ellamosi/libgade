@@ -12,6 +12,9 @@ package Gade.Cart.RAM.Handlers.Banked is
    function Create (Size : RAM_Size_Type) return Banked_RAM_Handler_Access;
 
    overriding
+   procedure Reset (Handler : in out Banked_RAM_Handler_Type);
+
+   overriding
    procedure Read
      (Handler : in out Banked_RAM_Handler_Type;
       GB      : in out Gade.GB.GB_Type;

@@ -11,6 +11,10 @@ package Gade.Cart.ROM.Handlers.MBC.MBC1 is
       RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access)
       return MBC1_ROM_Handler_Access;
 
+   overriding
+   procedure Reset
+     (Handler : in out MBC1_ROM_Handler_Type);
+
 private
 
    type Banking_Mode_Type is (ROM, RAM);

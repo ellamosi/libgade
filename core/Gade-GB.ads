@@ -30,11 +30,11 @@ private package Gade.GB is
    type GB_Public_Type is abstract tagged limited record
       CPU              : aliased CPU_Context;
       --  0000
-      External_ROM     : ROM_Handler_Access;
+      External_ROM     : ROM_Handler_Access := null;
       --  8000
       Video_RAM        : aliased VRAM_Type;
       --  A000
-      External_RAM     : RAM_Handler_Access;
+      External_RAM     : RAM_Handler_Access := null;
       --  C000 Intenal RAM / E000 Intenal RAM Echo
       Content          : Memory_Bytes; -- TODO: redo!
       --  FE00

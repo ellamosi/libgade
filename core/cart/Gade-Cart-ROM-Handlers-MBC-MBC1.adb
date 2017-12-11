@@ -20,10 +20,18 @@ package body Gade.Cart.ROM.Handlers.MBC.MBC1 is
    is
    begin
       MBC_ROM_Handler_Type (Handler).Initialize (ROM_Content, RAM_Handler);
+      Handler.Reset;
+   end Initialize;
+
+   overriding
+   procedure Reset (Handler : in out MBC1_ROM_Handler_Type) is
+   begin
       Handler.Banking_Mode := MBC1.ROM;
       Handler.Low_Bank_Select := 1;
       Handler.High_Bank_Select := 0;
-   end Initialize;
+      Handler.Select_ROM_Bank;
+      Handler.Select_RAM_Bank;
+   end Reset;
 
    overriding
    procedure Enable_RAM

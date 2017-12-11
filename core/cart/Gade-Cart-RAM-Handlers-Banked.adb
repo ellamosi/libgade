@@ -23,9 +23,15 @@ package body Gade.Cart.RAM.Handlers.Banked is
          Bank := new RAM_Bank_Content_Type'(others => 0);
       end loop;
       Handler.Memory_Bank := new Memory_RAM_Bank_Type;
+      Handler.Reset;
+   end Initialize;
+
+   overriding
+   procedure Reset (Handler : in out Banked_RAM_Handler_Type) is
+   begin
       Handler.Switch_Banks (0);
       Handler.Disable;
-   end Initialize;
+   end Reset;
 
    overriding
    procedure Read
