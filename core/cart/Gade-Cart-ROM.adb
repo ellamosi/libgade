@@ -13,7 +13,7 @@ package body Gade.Cart.ROM is
       Bank_Index := 0;
       while not End_Of_File (File) loop
          Ada.Text_IO.Put_Line ("Loading bank " & Bank_Index'Img);
-         Load (File, Content (Bank_Index));
+         Content (Bank_Index) := Load (File);
          Bank_Index := Bank_Index + 1;
       end loop;
       Ada.Text_IO.Put_Line ("Loader: Successfully loaded" & Bank_Index'Img & " ROM banks.");

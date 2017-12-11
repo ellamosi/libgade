@@ -18,9 +18,7 @@ package Gade.Cart.Banks.ROM is
 
    package ROM_Bank_IO is new Ada.Sequential_IO (ROM_Bank_Content_Type);
 
-   procedure Load
-     (File : ROM_Bank_IO.File_Type;
-      Bank : out ROM_Bank_Access);
+   function Load (File : ROM_Bank_IO.File_Type) return ROM_Bank_Access;
 
 private
 

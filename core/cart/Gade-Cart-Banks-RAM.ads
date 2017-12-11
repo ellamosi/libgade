@@ -27,6 +27,11 @@ package Gade.Cart.Banks.RAM is
 
    package RAM_Bank_IO is new Ada.Sequential_IO (RAM_Bank_Content_Type);
 
+   procedure Initialize (Bank : out RAM_Bank_Content_Type);
+
+   function Load
+     (File : RAM_Bank_IO.File_Type) return RAM_Bank_Content_Access;
+
    procedure Save
      (File : RAM_Bank_IO.File_Type;
       Bank : RAM_Bank_Content_Type);

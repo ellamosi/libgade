@@ -2,26 +2,28 @@ with Gade.Cart.Banks.RAM.Blank;
 
 package body Gade.Cart.RAM.Handlers.Banked is
 
-   function Create (Size : RAM_Size_Type) return Banked_RAM_Handler_Access
+   function Create
+     (Size : RAM_Size_Type;
+      Path : String) return Banked_RAM_Handler_Access
    is
       Handler : constant Banked_RAM_Handler_Access :=
         new Banked_RAM_Handler_Type;
    begin
-      Banked.Initialize (Handler.all, Size);
+      Banked.Initialize (Handler.all, Size, Path);
       return Handler;
    end Create;
 
    procedure Initialize
      (Handler : out Banked_RAM_Handler_Type'Class;
-      Size    : RAM_Size_Type)
+      Size    : RAM_Size_Type;
+      Path    : String)
    is
       Bank_Count : constant RAM_Bank_Count_Type := RAM_Bank_Count (Size);
       subtype Content_Range is RAM_Bank_Range range  0 .. Bank_Count - 1;
    begin
       Handler.RAM_Content := new RAM_Content_Type (Content_Range);
-      for Bank of Handler.RAM_Content.all loop
-         Bank := new RAM_Bank_Content_Type'(others => 0);
-      end loop;
+      Handler.Path := new String'(Path);
+      Load (Handler.Path.all, Handler.RAM_Content.all);
       Handler.Memory_Bank := new Memory_RAM_Bank_Type;
       Handler.Reset;
    end Initialize;
@@ -97,11 +99,12 @@ package body Gade.Cart.RAM.Handlers.Banked is
         RAM_Bank_Access (Gade.Cart.Banks.RAM.Blank.Singleton);
    end Disable;
 
-   procedure Save (Handler : in out Banked_RAM_Handler_Type) is
+   overriding
+   procedure Save (Handler : Banked_RAM_Handler_Type) is
       use RAM_Bank_IO;
       File : RAM_Bank_IO.File_Type;
    begin
-      Create (File, Out_File, "gade.sav");
+      Create (File, Out_File, Handler.Path.all);
       for Bank of Handler.RAM_Content.all loop
          Save (File, Bank.all);
       end loop;

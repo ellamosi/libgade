@@ -34,6 +34,9 @@ package Gade.Cart.RAM.Handlers is
      (Handler : in out RAM_Handler_Type;
       Enabled : Boolean) is null;
 
+   procedure Save
+     (Handler : RAM_Handler_Type) is null;
+
 private
 
    RAM_Bank_Count : constant array (RAM_Size_Type) of RAM_Bank_Count_Type :=

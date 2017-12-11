@@ -13,4 +13,10 @@ package Gade.Cart.RAM is
 
    type RAM_Content_Access is access RAM_Content_Type;
 
+   procedure Initialize (Content : out RAM_Content_Type);
+
+   procedure Load
+     (Path    : String;
+      Content : out RAM_Content_Type);
+
 end Gade.Cart.RAM;
