@@ -71,19 +71,24 @@ package body Gade.Cart.ROM.Handlers.MBC.MBC1 is
      (Handler : in out MBC1_ROM_Handler_Type;
       Value   : Byte)
    is
-      New_Banking_Mode : Banking_Mode_Type;
-      Mode_Changed : Boolean;
+      New_Mode : constant Banking_Mode_Type :=
+        Banking_Mode_Type'Val (Value and Banking_Mode_Mask);
    begin
-      New_Banking_Mode := Banking_Mode_Type'Val (Value and Banking_Mode_Mask);
-      Mode_Changed := New_Banking_Mode /= Handler.Banking_Mode;
-      if Mode_Changed then
-         Handler.Banking_Mode := New_Banking_Mode;
-         case New_Banking_Mode is
-            when ROM => Handler.Select_ROM_Bank;
-            when RAM => Handler.Select_RAM_Bank;
-         end case;
-      end if;
+      Handler.Change_Banking_Mode (New_Mode);
    end Write_Special;
+
+   procedure Change_Banking_Mode
+     (Handler  : in out MBC1_ROM_Handler_Type;
+      New_Mode : Banking_Mode_Type)
+   is
+      Mode_Changes : constant Boolean := New_Mode /= Handler.Banking_Mode;
+   begin
+      if Mode_Changes then
+         Handler.Banking_Mode := New_Mode;
+         Handler.Select_ROM_Bank;
+         Handler.Select_RAM_Bank;
+      end if;
+   end Change_Banking_Mode;
 
    procedure Select_Low_Bank
      (Handler : in out MBC1_ROM_Handler_Type;
@@ -112,13 +117,10 @@ package body Gade.Cart.ROM.Handlers.MBC.MBC1 is
       Low_Part : constant Natural := Natural (Handler.Low_Bank_Select);
       High_Part : constant Natural := Natural (Handler.High_Bank_Select);
    begin
+      High_ROM_Bank_Number := ROM_Bank_Range (High_Part * 2**5 + Low_Part);
       case Handler.Banking_Mode is
-         when ROM =>
-            Low_ROM_Bank_Number := 0;
-            High_ROM_Bank_Number := ROM_Bank_Range (High_Part * 2**5 + Low_Part);
-         when RAM =>
-            Low_ROM_Bank_Number := ROM_Bank_Range (High_Part * 2**5);
-            High_ROM_Bank_Number := ROM_Bank_Range (Low_Part);
+         when ROM => Low_ROM_Bank_Number := 0;
+         when RAM => Low_ROM_Bank_Number := ROM_Bank_Range (High_Part * 2**5);
       end case;
       Handler.Switch_Banks (0, Low_ROM_Bank_Number);
       Handler.Switch_Banks (1, High_ROM_Bank_Number);
@@ -127,8 +129,12 @@ package body Gade.Cart.ROM.Handlers.MBC.MBC1 is
    procedure Select_RAM_Bank
      (Handler : in out MBC1_ROM_Handler_Type)
    is
-      Bank : constant RAM_Bank_Range := RAM_Bank_Range (Handler.High_Bank_Select);
+      Bank : RAM_Bank_Range;
    begin
+      case Handler.Banking_Mode is
+         when ROM => Bank := 0;
+         when RAM => Bank := RAM_Bank_Range (Handler.High_Bank_Select);
+      end case;
       Handler.RAM_Handler.Switch_Banks (Bank);
    end Select_RAM_Bank;
 

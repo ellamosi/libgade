@@ -64,6 +64,10 @@ private
      (Handler : in out MBC1_ROM_Handler_Type;
       Value   : Byte);
 
+   procedure Change_Banking_Mode
+     (Handler  : in out MBC1_ROM_Handler_Type;
+      New_Mode : Banking_Mode_Type);
+
    procedure Select_Low_Bank
      (Handler : in out MBC1_ROM_Handler_Type;
       Value   : Byte);
