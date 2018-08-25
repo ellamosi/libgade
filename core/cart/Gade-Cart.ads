@@ -240,7 +240,7 @@ private
         Huds_on_Huc_1             => Huds_on_Huc_1);
 
    type RAM_Handler_Kind_Type is
-     (None, MBC1);
+     (None, MBC1, MBC2);
 
    RAM_Handler_Kind_For_Cart : constant array (Cart_Type)
      of RAM_Handler_Kind_Type :=
@@ -248,8 +248,8 @@ private
         ROM_MBC1                  => None,
         ROM_MBC1_RAM              => MBC1,
         ROM_MBC1_RAM_BATT         => MBC1,
-        ROM_MBC2                  => None,
-        ROM_MBC2_BATT             => None,
+        ROM_MBC2                  => MBC2,
+        ROM_MBC2_BATT             => MBC2,
         ROM_RAM                   => MBC1, -- For now
         ROM_RAM_BATT              => MBC1, -- For now
         ROM_MM01                  => None,

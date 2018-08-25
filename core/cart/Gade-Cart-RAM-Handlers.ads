@@ -34,6 +34,9 @@ package Gade.Cart.RAM.Handlers is
      (Handler : in out RAM_Handler_Type;
       Enabled : Boolean) is null;
 
+   procedure Toggle_Enabled
+     (Handler : in out RAM_Handler_Type) is null;
+
    procedure Save
      (Handler : RAM_Handler_Type) is null;
 
