@@ -1,4 +1,4 @@
-with Gade.Cart.RAM.Handlers;
+with Gade.Cart.RAM_Space;
 
 package Gade.Cart.ROM.Handlers.MBC is
 
@@ -61,16 +61,16 @@ package Gade.Cart.ROM.Handlers.MBC is
       Content : Byte);
 
 private
-   use Gade.Cart.RAM.Handlers;
+   use Gade.Cart.RAM_Space;
 
    type MBC_ROM_Handler_Type is abstract new ROM_Handler_Type with record
-      RAM_Handler : RAM_Handler_Access;
+      RAM_Handler : RAM_Space_Access;
    end record;
 
    procedure Initialize
      (Handler     : out MBC_ROM_Handler_Type'Class;
       ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : RAM_Handler_Access);
+      RAM_Handler : RAM_Space_Access);
 
    procedure Switch_Banks
      (Handler          : in out MBC_ROM_Handler_Type;

@@ -3,7 +3,7 @@ package body Gade.Cart.ROM.Handlers.MBC is
    procedure Initialize
      (Handler     : out MBC_ROM_Handler_Type'Class;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Handler_Access)
+      RAM_Handler : RAM_Space_Access)
    is
    begin
       ROM_Handler_Type (Handler).Initialize (ROM_Content);

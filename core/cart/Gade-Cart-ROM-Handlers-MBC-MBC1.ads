@@ -1,4 +1,4 @@
-with Gade.Cart.RAM.Handlers;
+with Gade.Cart.RAM_Space;
 
 package Gade.Cart.ROM.Handlers.MBC.MBC1 is
 
@@ -8,7 +8,7 @@ package Gade.Cart.ROM.Handlers.MBC.MBC1 is
 
    function Create
      (ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access)
+      RAM_Handler : Gade.Cart.RAM_Space.RAM_Space_Access)
       return MBC1_ROM_Handler_Access;
 
    overriding
@@ -45,7 +45,7 @@ private
    procedure Initialize
      (Handler     : out MBC1_ROM_Handler_Type'Class;
       ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access);
+      RAM_Handler : Gade.Cart.RAM_Space.RAM_Space_Access);
 
    overriding
    procedure Select_Bank

@@ -6,28 +6,28 @@ with Gade.Cart.ROM.Handlers;          use Gade.Cart.ROM.Handlers;
 with Gade.Cart.ROM.Handlers.ROM_Only; use Gade.Cart.ROM.Handlers.ROM_Only;
 with Gade.Cart.ROM.Handlers.MBC.MBC1; use Gade.Cart.ROM.Handlers.MBC.MBC1;
 
-with Gade.Cart.RAM.Handlers;          use Gade.Cart.RAM.Handlers;
-with Gade.Cart.RAM.Handlers.Blank;    use Gade.Cart.RAM.Handlers.Blank;
-with Gade.Cart.RAM.Handlers.Banked;   use Gade.Cart.RAM.Handlers.Banked;
+with Gade.Cart.RAM_Space;          use Gade.Cart.RAM_Space;
+with Gade.Cart.RAM_Space.Blank;    use Gade.Cart.RAM_Space.Blank;
+with Gade.Cart.RAM_Space.Banked;   use Gade.Cart.RAM_Space.Banked;
 
-with Gade.Cart.Banks.ROM;             use Gade.Cart.Banks.ROM;
+with Gade.Cart.Banks.ROM;          use Gade.Cart.Banks.ROM;
 
 package body Gade.Cart is
 
    function Create_RAM_Handler
      (Header   : Cart_Header;
-      ROM_Path : String) return RAM_Handler_Access;
+      ROM_Path : String) return RAM_Space_Access;
 
    function Create_ROM_Handler
      (Header      : Cart_Header;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Handler_Access) return ROM_Handler_Access;
+      RAM_Handler : RAM_Space_Access) return ROM_Handler_Access;
 
    function RAM_Path (ROM_Path : String) return String;
 
    procedure Load_ROM
      (ROM_Handler : out ROM_Handler_Access;
-      RAM_Handler : out RAM_Handler_Access;
+      RAM_Handler : out RAM_Space_Access;
       Path        : String)
    is
       ROM_Content : ROM_Content_Access;
@@ -44,10 +44,10 @@ package body Gade.Cart is
 
    function Create_RAM_Handler
      (Header   : Cart_Header;
-      ROM_Path : String) return RAM_Handler_Access
+      ROM_Path : String) return RAM_Space_Access
    is
-      package Blank_RAM_Handler  renames Gade.Cart.RAM.Handlers.Blank;
-      package Banked_RAM_Handler renames Gade.Cart.RAM.Handlers.Banked;
+      package Blank_RAM_Handler  renames Gade.Cart.RAM_Space.Blank;
+      package Banked_RAM_Handler renames Gade.Cart.RAM_Space.Banked;
       RAM_Handler_Kind : constant RAM_Handler_Kind_Type :=
         RAM_Handler_Kind_For_Cart (Header.Cart_Type);
       Path : constant String := RAM_Path (ROM_Path);
@@ -55,15 +55,15 @@ package body Gade.Cart is
       return
         (case RAM_Handler_Kind is
             when None =>
-               RAM_Handler_Access (Blank_RAM_Handler.Create),
+               RAM_Space_Access (Blank_RAM_Handler.Create),
             when MBC1 =>
-               RAM_Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)));
+               RAM_Space_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)));
    end Create_RAM_Handler;
 
    function Create_ROM_Handler
      (Header      : Cart_Header;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Handler_Access) return ROM_Handler_Access
+      RAM_Handler : RAM_Space_Access) return ROM_Handler_Access
    is
       package ROM_Only_Handler renames Gade.Cart.ROM.Handlers.ROM_Only;
       package MBC1_ROM_Handler renames Gade.Cart.ROM.Handlers.MBC.MBC1;

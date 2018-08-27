@@ -4,7 +4,7 @@ package body Gade.Cart.ROM.Handlers.MBC.MBC1 is
 
    function Create
      (ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access)
+      RAM_Handler : Gade.Cart.RAM_Space.RAM_Space_Access)
       return MBC1_ROM_Handler_Access
    is
       Handler : constant MBC1_ROM_Handler_Access := new MBC1_ROM_Handler_Type;
@@ -16,7 +16,7 @@ package body Gade.Cart.ROM.Handlers.MBC.MBC1 is
    procedure Initialize
      (Handler     : out MBC1_ROM_Handler_Type'Class;
       ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Gade.Cart.RAM.Handlers.RAM_Handler_Access)
+      RAM_Handler : Gade.Cart.RAM_Space.RAM_Space_Access)
    is
    begin
       MBC_ROM_Handler_Type (Handler).Initialize (ROM_Content, RAM_Handler);

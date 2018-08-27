@@ -37,6 +37,7 @@ package body Gade.Cart.Banks.RAM.Mem is
       Index : RAM_Bank_Range)
    is
    begin
+      --  TODO: Make sure that the bank number is in range by wrapping around
       case Bank.Size is
          when RAM_16kbit =>
             Bank.Offset := 0;

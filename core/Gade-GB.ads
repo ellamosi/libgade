@@ -8,7 +8,7 @@ with Gade.Dev.Display;       use Gade.Dev.Display;
 with Gade.Dev.Interrupts;    use Gade.Dev.Interrupts;
 with Gade.Video_Buffer;      use Gade.Video_Buffer;
 with Gade.Cart.ROM.Handlers; use Gade.Cart.ROM.Handlers;
-with Gade.Cart.RAM.Handlers; use Gade.Cart.RAM.Handlers;
+with Gade.Cart.RAM_Space;    use Gade.Cart.RAM_Space;
 
 private package Gade.GB is
 
@@ -34,7 +34,7 @@ private package Gade.GB is
       --  8000
       Video_RAM        : aliased VRAM_Type;
       --  A000
-      External_RAM     : RAM_Handler_Access := null;
+      External_RAM     : RAM_Space_Access := null;
       --  C000 Intenal RAM / E000 Intenal RAM Echo
       Content          : Memory_Bytes; -- TODO: redo!
       --  FE00
