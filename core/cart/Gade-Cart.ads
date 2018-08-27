@@ -78,11 +78,12 @@ private package Gade.Cart is
       ROM_12Mbit);
 
    --  0149 RAM size:
-   --  0 - None
-   --  1 - 16kBit  = 2kB   =  1 bank
-   --  2 - 64kBit  = 8kB   =  1 bank
-   --  3 - 256kBit = 32kB  =  4 banks
-   --  4 - 1MBit   = 128kB = 16 banks
+   --  0 -    None (Including MBC2 built-in RAM)
+   --  1 -  16kBit =   2kByte =  1 x 2kByte bank  (MBC1, MBC5)
+   --  2 -  64kBit =   8kByte =  1 x 8kByte banks (MBC1, MBC3, MBC5)
+   --  3 - 256kBit =  32kByte =  4 x 8kByte banks (MBC1, MBC3, MBC5)
+   --  4 -   1MBit = 128kByte = 16 x 8kByte banks (MBC5)
+   --  5 - 512kBit =  64kByte =  8 x 8kByte banks (MBC30, MBC5)
    type RAM_Size_Type is
      (None,
       RAM_16kbit,

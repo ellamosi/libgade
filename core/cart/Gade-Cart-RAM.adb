@@ -1,31 +1,33 @@
+with Ada.Streams.Stream_IO; use Ada.Streams.Stream_IO;
+
 package body Gade.Cart.RAM is
 
    procedure Load
      (Path    : String;
       Content : out RAM_Content_Type)
    is
-      use RAM_Bank_IO;
-      File       : File_Type;
-      Bank_Index : RAM_Bank_Count_Type;
+      File         : File_Type;
+      Input_Stream : Stream_Access;
    begin
-      Content := (others => null);
       Open (File, In_File, Path);
-      Bank_Index := 0;
-      while not End_Of_File (File) loop
-         Content (Bank_Index) := Load (File);
-         Bank_Index := Bank_Index + 1;
-      end loop;
+      Input_Stream := Ada.Streams.Stream_IO.Stream (File);
+      RAM_Content_Type'Read (Input_Stream, Content);
       Close (File);
    exception
-      when Name_Error => Initialize (Content);
+      when Name_Error => Content := (others => 0);
    end Load;
 
-   procedure Initialize (Content : out RAM_Content_Type) is
+   procedure Save
+     (Path    : String;
+      Content : RAM_Content_Type)
+   is
+      File          : File_Type;
+      Output_Stream : Stream_Access;
    begin
-      for Bank of Content loop
-         Bank := new RAM_Bank_Content_Type;
-         Initialize (Bank.all);
-      end loop;
-   end Initialize;
+      Create (File, Out_File, Path);
+      Output_Stream := Ada.Streams.Stream_IO.Stream (File);
+      RAM_Content_Type'Write (Output_Stream, Content);
+      Close (File);
+   end Save;
 
 end Gade.Cart.RAM;

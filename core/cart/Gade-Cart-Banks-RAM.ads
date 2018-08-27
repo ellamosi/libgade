@@ -1,5 +1,3 @@
-with Ada.Sequential_IO;
-
 package Gade.Cart.Banks.RAM is
 
    --  Each bank is 8 kB
@@ -25,16 +23,16 @@ package Gade.Cart.Banks.RAM is
 
    type RAM_Bank_Content_Access is access RAM_Bank_Content_Type;
 
-   package RAM_Bank_IO is new Ada.Sequential_IO (RAM_Bank_Content_Type);
+   --  package RAM_Bank_IO is new Ada.Sequential_IO (RAM_Bank_Content_Type);
 
    procedure Initialize (Bank : out RAM_Bank_Content_Type);
 
-   function Load
-     (File : RAM_Bank_IO.File_Type) return RAM_Bank_Content_Access;
-
-   procedure Save
-     (File : RAM_Bank_IO.File_Type;
-      Bank : RAM_Bank_Content_Type);
+--     function Load
+--       (File : RAM_Bank_IO.File_Type) return RAM_Bank_Content_Access;
+--
+--     procedure Save
+--       (File : RAM_Bank_IO.File_Type;
+--        Bank : RAM_Bank_Content_Type);
 
 private
 

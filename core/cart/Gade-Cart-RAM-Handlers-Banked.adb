@@ -18,13 +18,9 @@ package body Gade.Cart.RAM.Handlers.Banked is
       Size    : RAM_Size_Type;
       Path    : String)
    is
-      Bank_Count : constant RAM_Bank_Count_Type := RAM_Bank_Count (Size);
-      subtype Content_Range is RAM_Bank_Range range  0 .. Bank_Count - 1;
    begin
-      Handler.RAM_Content := new RAM_Content_Type (Content_Range);
-      Handler.Path := new String'(Path);
-      Load (Handler.Path.all, Handler.RAM_Content.all);
       Handler.Memory_Bank := new Memory_RAM_Bank_Type;
+      Handler.Memory_Bank.Initialize (Size, Path);
       Handler.Reset;
    end Initialize;
 
@@ -66,10 +62,8 @@ package body Gade.Cart.RAM.Handlers.Banked is
      (Handler : in out Banked_RAM_Handler_Type;
       Bank    : RAM_Bank_Range)
    is
-      Bank_Index : constant RAM_Bank_Range :=
-        Bank mod Handler.RAM_Content.all'Length;
    begin
-      Handler.Memory_Bank.Content := Handler.RAM_Content (Bank_Index);
+      Handler.Memory_Bank.Set_Bank (Bank);
    end Switch_Banks;
 
    overriding
@@ -101,14 +95,8 @@ package body Gade.Cart.RAM.Handlers.Banked is
 
    overriding
    procedure Save (Handler : Banked_RAM_Handler_Type) is
-      use RAM_Bank_IO;
-      File : RAM_Bank_IO.File_Type;
    begin
-      Create (File, Out_File, Handler.Path.all);
-      for Bank of Handler.RAM_Content.all loop
-         Save (File, Bank.all);
-      end loop;
-      Close (File);
+      Handler.Memory_Bank.Save;
    end Save;
 
 end Gade.Cart.RAM.Handlers.Banked;

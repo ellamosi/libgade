@@ -1,5 +1,6 @@
 limited with Gade.GB;
 with Gade.Dev; use Gade.Dev;
+with Gade.Cart.Banks.RAM; use Gade.Cart.Banks.RAM;
 
 package Gade.Cart.RAM.Handlers is
 
