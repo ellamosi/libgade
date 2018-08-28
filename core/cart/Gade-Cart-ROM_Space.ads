@@ -1,28 +1,30 @@
 limited with Gade.GB;
-with Gade.Dev; use Gade.Dev;
+with Gade.Dev;      use Gade.Dev;
+with Gade.Cart.ROM;       use Gade.Cart.ROM;
+with Gade.Cart.Banks.ROM; use Gade.Cart.Banks.ROM;
 
-package Gade.Cart.ROM.Handlers is
+package Gade.Cart.ROM_Space is
 
    subtype External_ROM_IO_Address is Word range 16#0000# .. 16#7FFF#;
 
-   type ROM_Handler_Type is abstract new Memory_Mapped_Device with private;
+   type ROM_Space_Type is abstract new Memory_Mapped_Device with private;
 
-   type ROM_Handler_Access is access all ROM_Handler_Type'Class;
+   type ROM_Space_Access is access all ROM_Space_Type'Class;
 
    overriding
    procedure Reset
-     (Handler : in out ROM_Handler_Type) is null;
+     (Handler : in out ROM_Space_Type) is null;
 
    overriding
    procedure Read
-     (Handler : in out ROM_Handler_Type;
+     (Handler : in out ROM_Space_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : out Byte);
 
    overriding
    procedure Write
-     (Handler : in out ROM_Handler_Type;
+     (Handler : in out ROM_Space_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : Byte) is abstract;
@@ -54,13 +56,13 @@ private
    type Addressable_ROM_Banks is array (Addressable_Bank_Range) of
      ROM_Bank_Access;
 
-   type ROM_Handler_Type is abstract new Memory_Mapped_Device with record
+   type ROM_Space_Type is abstract new Memory_Mapped_Device with record
       ROM_Content       : ROM_Content_Access;
       Addressable_Banks : Addressable_ROM_Banks;
    end record;
 
    procedure Initialize
-     (Handler     : out ROM_Handler_Type'Class;
+     (Handler     : out ROM_Space_Type'Class;
       ROM_Content : ROM_Content_Access);
 
-end Gade.Cart.ROM.Handlers;
+end Gade.Cart.ROM_Space;

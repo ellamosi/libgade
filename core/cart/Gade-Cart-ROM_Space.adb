@@ -1,7 +1,7 @@
-package body Gade.Cart.ROM.Handlers is
+package body Gade.Cart.ROM_Space is
 
    procedure Initialize
-     (Handler     : out ROM_Handler_Type'Class;
+     (Handler     : out ROM_Space_Type'Class;
       ROM_Content : ROM_Content_Access)
    is
       ROM_Bank   : ROM_Bank_Access;
@@ -18,7 +18,7 @@ package body Gade.Cart.ROM.Handlers is
 
    overriding
    procedure Read
-     (Handler : in out ROM_Handler_Type;
+     (Handler : in out ROM_Space_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : out Byte)
@@ -34,4 +34,4 @@ package body Gade.Cart.ROM.Handlers is
       end case;
    end Read;
 
-end Gade.Cart.ROM.Handlers;
+end Gade.Cart.ROM_Space;

@@ -1,10 +1,10 @@
 with Ada.Directories; use Ada.Directories;
 with Ada.Text_IO;     use Ada.Text_IO;
 
-with Gade.Cart.ROM;                   use Gade.Cart.ROM;
-with Gade.Cart.ROM.Handlers;          use Gade.Cart.ROM.Handlers;
-with Gade.Cart.ROM.Handlers.ROM_Only; use Gade.Cart.ROM.Handlers.ROM_Only;
-with Gade.Cart.ROM.Handlers.MBC.MBC1; use Gade.Cart.ROM.Handlers.MBC.MBC1;
+with Gade.Cart.ROM;                use Gade.Cart.ROM;
+with Gade.Cart.ROM_Space;          use Gade.Cart.ROM_Space;
+with Gade.Cart.ROM_Space.ROM_Only; use Gade.Cart.ROM_Space.ROM_Only;
+with Gade.Cart.ROM_Space.MBC.MBC1; use Gade.Cart.ROM_Space.MBC.MBC1;
 
 with Gade.Cart.RAM_Space;          use Gade.Cart.RAM_Space;
 with Gade.Cart.RAM_Space.Blank;    use Gade.Cart.RAM_Space.Blank;
@@ -14,19 +14,19 @@ with Gade.Cart.Banks.ROM;          use Gade.Cart.Banks.ROM;
 
 package body Gade.Cart is
 
-   function Create_RAM_Handler
+   function Create_RAM_Space_Handler
      (Header   : Cart_Header;
       ROM_Path : String) return RAM_Space_Access;
 
-   function Create_ROM_Handler
+   function Create_ROM_Space_Handler
      (Header      : Cart_Header;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Space_Access) return ROM_Handler_Access;
+      RAM_Handler : RAM_Space_Access) return ROM_Space_Access;
 
    function RAM_Path (ROM_Path : String) return String;
 
    procedure Load_ROM
-     (ROM_Handler : out ROM_Handler_Access;
+     (ROM_Handler : out ROM_Space_Access;
       RAM_Handler : out RAM_Space_Access;
       Path        : String)
    is
@@ -38,11 +38,11 @@ package body Gade.Cart is
       --  Not true for some few rare cart types (multicarts)
       Header := Convert (ROM_Content (0));
 
-      RAM_Handler := Create_RAM_Handler (Header.all, Path);
-      ROM_Handler := Create_ROM_Handler (Header.all, ROM_Content, RAM_Handler);
+      RAM_Handler := Create_RAM_Space_Handler (Header.all, Path);
+      ROM_Handler := Create_ROM_Space_Handler (Header.all, ROM_Content, RAM_Handler);
    end Load_ROM;
 
-   function Create_RAM_Handler
+   function Create_RAM_Space_Handler
      (Header   : Cart_Header;
       ROM_Path : String) return RAM_Space_Access
    is
@@ -58,15 +58,15 @@ package body Gade.Cart is
                RAM_Space_Access (Blank_RAM_Handler.Create),
             when MBC1 =>
                RAM_Space_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)));
-   end Create_RAM_Handler;
+   end Create_RAM_Space_Handler;
 
-   function Create_ROM_Handler
+   function Create_ROM_Space_Handler
      (Header      : Cart_Header;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Space_Access) return ROM_Handler_Access
+      RAM_Handler : RAM_Space_Access) return ROM_Space_Access
    is
-      package ROM_Only_Handler renames Gade.Cart.ROM.Handlers.ROM_Only;
-      package MBC1_ROM_Handler renames Gade.Cart.ROM.Handlers.MBC.MBC1;
+      package ROM_Only_Handler renames Gade.Cart.ROM_Space.ROM_Only;
+      package MBC1_ROM_Handler renames Gade.Cart.ROM_Space.MBC.MBC1;
       Controller : constant Controller_Type :=
         Controller_Type_For_Cart (Header.Cart_Type);
    begin
@@ -75,12 +75,12 @@ package body Gade.Cart is
       return
         (case Controller is
             when Cartridge_Info.None =>
-               ROM_Handler_Access (ROM_Only_Handler.Create (ROM_Content)),
+               ROM_Space_Access (ROM_Only_Handler.Create (ROM_Content)),
             when Cartridge_Info.MBC1 =>
-               ROM_Handler_Access (MBC1_ROM_Handler.Create (ROM_Content, RAM_Handler)),
+               ROM_Space_Access (MBC1_ROM_Handler.Create (ROM_Content, RAM_Handler)),
             when others =>
                raise Program_Error with "Unsupported cartridge controller! " & Controller'Img);
-   end Create_ROM_Handler;
+   end Create_ROM_Space_Handler;
 
    function RAM_Path (ROM_Path : String) return String is
    begin

@@ -1,19 +1,19 @@
 with Gade.Cart.RAM_Space;
 
-package Gade.Cart.ROM.Handlers.MBC.MBC1 is
+package Gade.Cart.ROM_Space.MBC.MBC1 is
 
-   type MBC1_ROM_Handler_Type is new MBC_ROM_Handler_Type with private;
+   type MBC1_ROM_Space_Type is new MBC_ROM_Space_Type with private;
 
-   type MBC1_ROM_Handler_Access is access MBC1_ROM_Handler_Type;
+   type MBC1_ROM_Space_Access is access MBC1_ROM_Space_Type;
 
    function Create
      (ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
       RAM_Handler : Gade.Cart.RAM_Space.RAM_Space_Access)
-      return MBC1_ROM_Handler_Access;
+      return MBC1_ROM_Space_Access;
 
    overriding
    procedure Reset
-     (Handler : in out MBC1_ROM_Handler_Type);
+     (Space : in out MBC1_ROM_Space_Type);
 
 private
 
@@ -36,50 +36,50 @@ private
    subtype High_Bank_Select_Address is
      Bank_Select_Address range 16#4000# .. 16#5FFF#;
 
-   type MBC1_ROM_Handler_Type is new MBC_ROM_Handler_Type with record
+   type MBC1_ROM_Space_Type is new MBC_ROM_Space_Type with record
       Banking_Mode     : Banking_Mode_Type;
       Low_Bank_Select  : Low_Bank_Select_Type;
       High_Bank_Select : High_Bank_Select_Type;
    end record;
 
    procedure Initialize
-     (Handler     : out MBC1_ROM_Handler_Type'Class;
+     (Space       : out MBC1_ROM_Space_Type'Class;
       ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Gade.Cart.RAM_Space.RAM_Space_Access);
+      RAM_Space   : Gade.Cart.RAM_Space.RAM_Space_Access);
 
    overriding
    procedure Select_Bank
-     (Handler : in out MBC1_ROM_Handler_Type;
+     (Space   : in out MBC1_ROM_Space_Type;
       Address : Bank_Select_Address;
       Value   : Byte);
 
    overriding
    procedure Enable_RAM
-     (Handler : in out MBC1_ROM_Handler_Type;
+     (Space   : in out MBC1_ROM_Space_Type;
       Address : RAM_Enable_Address;
       Value   : Byte);
 
    overriding
    procedure Write_Special
-     (Handler : in out MBC1_ROM_Handler_Type;
-      Value   : Byte);
+     (Space : in out MBC1_ROM_Space_Type;
+      Value : Byte);
 
    procedure Change_Banking_Mode
-     (Handler  : in out MBC1_ROM_Handler_Type;
+     (Space    : in out MBC1_ROM_Space_Type;
       New_Mode : Banking_Mode_Type);
 
    procedure Select_Low_Bank
-     (Handler : in out MBC1_ROM_Handler_Type;
-      Value   : Byte);
+     (Space : in out MBC1_ROM_Space_Type;
+      Value : Byte);
 
    procedure Select_High_Bank
-     (Handler : in out MBC1_ROM_Handler_Type;
-      Value   : Byte);
+     (Space : in out MBC1_ROM_Space_Type;
+      Value : Byte);
 
    procedure Select_ROM_Bank
-     (Handler : in out MBC1_ROM_Handler_Type);
+     (Space : in out MBC1_ROM_Space_Type);
 
    procedure Select_RAM_Bank
-     (Handler : in out MBC1_ROM_Handler_Type);
+     (Space : in out MBC1_ROM_Space_Type);
 
-end Gade.Cart.ROM.Handlers.MBC.MBC1;
+end Gade.Cart.ROM_Space.MBC.MBC1;
