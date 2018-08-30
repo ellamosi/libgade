@@ -18,7 +18,7 @@ package body Gade.Cart.RAM_Space.Blank is
    is
       pragma Unreferenced (Space, GB);
    begin
-      Gade.Cart.Banks.RAM.Blank.Singleton.Read (Address, Content);
+      Gade.Cart.Banks.RAM.Blank.Singleton.Read (To_Bank_Address (Address), Content);
    end Read;
 
    overriding procedure Write
@@ -29,7 +29,7 @@ package body Gade.Cart.RAM_Space.Blank is
    is
       pragma Unreferenced (Space, GB);
    begin
-      Gade.Cart.Banks.RAM.Blank.Singleton.Write (Address, Content);
+      Gade.Cart.Banks.RAM.Blank.Singleton.Write (To_Bank_Address (Address), Content);
    end Write;
 
 end Gade.Cart.RAM_Space.Blank;

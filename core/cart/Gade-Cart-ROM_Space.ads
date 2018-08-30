@@ -54,10 +54,9 @@ private
      0 .. Addressable_Bank_Count - 1;
 
    type Addressable_ROM_Banks is array (Addressable_Bank_Range) of
-     ROM_Bank_Access;
+     Memory_ROM_Bank_Access;
 
    type ROM_Space_Type is abstract new Memory_Mapped_Device with record
-      ROM_Content       : ROM_Content_Access;
       Addressable_Banks : Addressable_ROM_Banks;
    end record;
 

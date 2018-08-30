@@ -40,12 +40,8 @@ package body Gade.Cart.ROM_Space.MBC is
       Addressable_Bank : Addressable_Bank_Range;
       ROM_Bank         : ROM_Bank_Range)
    is
-      --  If the ROM has fewer banks than supported the higher pins won't be
-      --  wired, therefore we are going to be looping banks if selecting
-      --  a higher bank than available.
-      Bank : constant ROM_Bank_Range := ROM_Bank mod Space.ROM_Content'Length;
    begin
-      Space.Addressable_Banks (Addressable_Bank) := Space.ROM_Content (Bank);
+      Space.Addressable_Banks (Addressable_Bank).Set_Bank (ROM_Bank);
    end Switch_Banks;
 
 end Gade.Cart.ROM_Space.MBC;

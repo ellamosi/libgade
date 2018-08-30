@@ -10,8 +10,6 @@ with Gade.Cart.RAM_Space;          use Gade.Cart.RAM_Space;
 with Gade.Cart.RAM_Space.Blank;    use Gade.Cart.RAM_Space.Blank;
 with Gade.Cart.RAM_Space.Banked;   use Gade.Cart.RAM_Space.Banked;
 
-with Gade.Cart.Banks.ROM;          use Gade.Cart.Banks.ROM;
-
 package body Gade.Cart is
 
    function Create_RAM_Space_Handler
@@ -36,7 +34,7 @@ package body Gade.Cart is
       ROM_Content := Load (Path);
 
       --  Not true for some few rare cart types (multicarts)
-      Header := Convert (ROM_Content (0));
+      Header := Gade.Cart.ROM.Header (ROM_Content);
 
       RAM_Handler := Create_RAM_Space_Handler (Header.all, Path);
       ROM_Handler := Create_ROM_Space_Handler (Header.all, ROM_Content, RAM_Handler);

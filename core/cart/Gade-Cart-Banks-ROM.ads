@@ -1,5 +1,5 @@
-with Ada.Sequential_IO;
-with Ada.Unchecked_Conversion;
+--  with Ada.Sequential_IO;
+with Gade.Cart.ROM; use Gade.Cart.ROM;
 
 package Gade.Cart.Banks.ROM is
 
@@ -12,16 +12,34 @@ package Gade.Cart.Banks.ROM is
 
    type ROM_Bank_Access is access constant ROM_Bank_Content_Type;
 
-   function Convert is new Ada.Unchecked_Conversion
-     (Source => ROM_Bank_Access,
-      Target => Cart_Header_Access);
+   --  package ROM_Bank_IO is new Ada.Sequential_IO (ROM_Bank_Content_Type);
 
-   package ROM_Bank_IO is new Ada.Sequential_IO (ROM_Bank_Content_Type);
+   --  function Load (File : ROM_Bank_IO.File_Type) return ROM_Bank_Access;
 
-   function Load (File : ROM_Bank_IO.File_Type) return ROM_Bank_Access;
+   type Memory_ROM_Bank_Type is tagged private;
+
+   type Memory_ROM_Bank_Access is access Memory_ROM_Bank_Type;
+
+   procedure Initialize
+     (Bank    : out Memory_ROM_Bank_Type;
+      Content : ROM_Content_Access);
+
+   procedure Read
+     (Bank    : Memory_ROM_Bank_Type;
+      Address : ROM_Bank_Address;
+      Value   : out Byte);
+
+   procedure Set_Bank
+     (Bank  : in out Memory_ROM_Bank_Type;
+      Index : ROM_Bank_Range);
 
 private
 
    type Non_Constant_ROM_Bank_Access is access ROM_Bank_Content_Type;
+
+   type Memory_ROM_Bank_Type is tagged record
+      Content : ROM_Content_Access;
+      Offset  : ROM_Address_Range;
+   end record;
 
 end Gade.Cart.Banks.ROM;
