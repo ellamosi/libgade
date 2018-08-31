@@ -1,9 +1,7 @@
---  with Ada.Sequential_IO;
 with Gade.Cart.ROM; use Gade.Cart.ROM;
 
 package Gade.Cart.Banks.ROM is
 
-   --  Each bank is 16 kB
    subtype ROM_Bank_Address is Word range 16#0000# .. 16#3FFF#;
 
    Bank_Address_Mask : constant Word := 16#3FFF#;
@@ -11,10 +9,6 @@ package Gade.Cart.Banks.ROM is
    type ROM_Bank_Content_Type is array (ROM_Bank_Address) of Byte;
 
    type ROM_Bank_Access is access constant ROM_Bank_Content_Type;
-
-   --  package ROM_Bank_IO is new Ada.Sequential_IO (ROM_Bank_Content_Type);
-
-   --  function Load (File : ROM_Bank_IO.File_Type) return ROM_Bank_Access;
 
    type Memory_ROM_Bank_Type is tagged private;
 

@@ -12,6 +12,7 @@ package body Gade.Cart.Banks.RAM.Mem is
       Load (Path, Bank.Content.all);
       Bank.Size := Size;
       Bank.Path := new String'(Path);
+      Bank.Bank_Count := RAM_Bytes / RAM_Bank_Size;
    end Initialize;
 
    overriding procedure Read
@@ -36,15 +37,15 @@ package body Gade.Cart.Banks.RAM.Mem is
      (Bank  : in out Memory_RAM_Bank_Type;
       Index : RAM_Bank_Range)
    is
+      Wrapped_Index : constant RAM_Bank_Range := Index mod Bank.Bank_Count;
    begin
-      --  TODO: Make sure that the bank number is in range by wrapping around
       case Bank.Size is
          when RAM_16kbit =>
             Bank.Offset := 0;
             Bank.Mask   := 16#7FF#;
          when others =>
-            Bank.Offset := Index * 16#2000#;
-            Bank.Mask   := 16#1FFF#;
+            Bank.Offset := Wrapped_Index * RAM_Bank_Size;
+            Bank.Mask   := RAM_Bank_Size - 1;
       end case;
    end Set_Bank;
 

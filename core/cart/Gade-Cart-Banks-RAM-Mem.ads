@@ -43,11 +43,12 @@ private
    type RAM_Path_Access is access constant String;
 
    type Memory_RAM_Bank_Type is new RAM_Bank_Type with record
-      Size    : RAM_Size_Type;
-      Content : RAM_Content_Access;
-      Offset  : RAM_Address_Range;
-      Mask    : RAM_Address_Range;
-      Path    : RAM_Path_Access;
+      Size       : RAM_Size_Type;
+      Content    : RAM_Content_Access;
+      Offset     : RAM_Address_Range;
+      Mask       : RAM_Address_Range;
+      Path       : RAM_Path_Access;
+      Bank_Count : RAM_Bank_Count_Type;
    end record;
 
    function RAM_Address
