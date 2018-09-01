@@ -1,4 +1,4 @@
-package Gade.Cart.Banks.RAM is
+package Gade.Cart.Banked.RAM is
 
    subtype RAM_Bank_Address is Word range 16#0000# .. 16#1FFF#;
 
@@ -22,4 +22,4 @@ private
 
    type RAM_Bank_Type is abstract tagged null record;
 
-end Gade.Cart.Banks.RAM;
+end Gade.Cart.Banked.RAM;

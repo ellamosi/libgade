@@ -1,4 +1,4 @@
-package body Gade.Cart.Banks.ROM is
+package body Gade.Cart.Banked.ROM is
 
    procedure Initialize
      (Bank    : out Memory_ROM_Bank_Type;
@@ -27,4 +27,4 @@ package body Gade.Cart.Banks.ROM is
       Bank.Offset := Unwrapped_Offset mod Bank.Content'Length;
    end Set_Bank;
 
-end Gade.Cart.Banks.ROM;
+end Gade.Cart.Banked.ROM;

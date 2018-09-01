@@ -1,6 +1,6 @@
-with Gade.Cart.RAM_Space;
+with Gade.Cart.Spaces.RAM;
 
-package Gade.Cart.ROM_Space.MBC.MBC1 is
+package Gade.Cart.Spaces.ROM.MBC.MBC1 is
 
    type MBC1_ROM_Space_Type is new MBC_ROM_Space_Type with private;
 
@@ -8,7 +8,7 @@ package Gade.Cart.ROM_Space.MBC.MBC1 is
 
    function Create
      (ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Gade.Cart.RAM_Space.RAM_Space_Access)
+      RAM_Handler : Gade.Cart.Spaces.RAM.RAM_Space_Access)
       return MBC1_ROM_Space_Access;
 
    overriding
@@ -45,7 +45,7 @@ private
    procedure Initialize
      (Space       : out MBC1_ROM_Space_Type'Class;
       ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Space   : Gade.Cart.RAM_Space.RAM_Space_Access);
+      RAM_Space   : Gade.Cart.Spaces.RAM.RAM_Space_Access);
 
    overriding
    procedure Select_Bank
@@ -82,4 +82,4 @@ private
    procedure Select_RAM_Bank
      (Space : in out MBC1_ROM_Space_Type);
 
-end Gade.Cart.ROM_Space.MBC.MBC1;
+end Gade.Cart.Spaces.ROM.MBC.MBC1;

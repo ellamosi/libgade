@@ -1,6 +1,5 @@
-limited with Gade.Cart.ROM_Space;
-limited with Gade.Cart.RAM_Space;
-
+limited with Gade.Cart.Spaces.ROM;
+limited with Gade.Cart.Spaces.RAM;
 private with Gade.Cartridge_Info;
 
 private package Gade.Cart is
@@ -133,8 +132,8 @@ private package Gade.Cart is
    type Cart_Header_Access is access Cart_Header;
 
    procedure Load_ROM
-     (ROM_Handler : out Gade.Cart.ROM_Space.ROM_Space_Access;
-      RAM_Handler : out Gade.Cart.RAM_Space.RAM_Space_Access;
+     (ROM_Handler : out Gade.Cart.Spaces.ROM.ROM_Space_Access;
+      RAM_Handler : out Gade.Cart.Spaces.RAM.RAM_Space_Access;
       Path        : String);
 
 private

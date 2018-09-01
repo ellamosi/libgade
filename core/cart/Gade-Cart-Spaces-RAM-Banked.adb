@@ -1,6 +1,6 @@
-with Gade.Cart.Banks.RAM.Blank;
+with Gade.Cart.Banked.RAM.Blank;
 
-package body Gade.Cart.RAM_Space.Banked is
+package body Gade.Cart.Spaces.RAM.Banked is
 
    function Create
      (Size : RAM_Size_Type;
@@ -89,7 +89,7 @@ package body Gade.Cart.RAM_Space.Banked is
    begin
       Space.Enabled := False;
       Space.Current_Bank :=
-        RAM_Bank_Access (Gade.Cart.Banks.RAM.Blank.Singleton);
+        RAM_Bank_Access (Gade.Cart.Banked.RAM.Blank.Singleton);
    end Disable;
 
    overriding
@@ -98,4 +98,4 @@ package body Gade.Cart.RAM_Space.Banked is
       Space.Memory_Bank.Save;
    end Save;
 
-end Gade.Cart.RAM_Space.Banked;
+end Gade.Cart.Spaces.RAM.Banked;

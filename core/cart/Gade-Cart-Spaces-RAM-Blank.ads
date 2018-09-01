@@ -1,4 +1,4 @@
-package Gade.Cart.RAM_Space.Blank is
+package Gade.Cart.Spaces.RAM.Blank is
 
    type Blank_RAM_Space_Type is new RAM_Space_Type with private;
 
@@ -26,4 +26,4 @@ private
 
    type Blank_RAM_Space_Type is new RAM_Space_Type with null record;
 
-end Gade.Cart.RAM_Space.Blank;
+end Gade.Cart.Spaces.RAM.Blank;

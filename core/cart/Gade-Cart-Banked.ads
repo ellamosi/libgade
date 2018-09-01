@@ -1,7 +1,7 @@
-package Gade.Cart.Banks is
+package Gade.Cart.Banked is
 
 private
 
    Blank_Value : constant Byte := 16#FF#;
 
-end Gade.Cart.Banks;
+end Gade.Cart.Banked;

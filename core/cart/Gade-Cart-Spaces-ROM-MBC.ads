@@ -1,6 +1,6 @@
-with Gade.Cart.RAM_Space;
+with Gade.Cart.Spaces.RAM;
 
-package Gade.Cart.ROM_Space.MBC is
+package Gade.Cart.Spaces.ROM.MBC is
 
    --  ROM Reading
 
@@ -61,7 +61,7 @@ package Gade.Cart.ROM_Space.MBC is
       Content : Byte);
 
 private
-   use Gade.Cart.RAM_Space;
+   use Gade.Cart.Spaces.RAM;
 
    type MBC_ROM_Space_Type is abstract new ROM_Space_Type with record
       RAM_Handler : RAM_Space_Access;
@@ -103,4 +103,4 @@ private
      (MBC     : in out MBC_ROM_Space_Type;
       Value   : Byte) is null;
 
-end Gade.Cart.ROM_Space.MBC;
+end Gade.Cart.Spaces.ROM.MBC;

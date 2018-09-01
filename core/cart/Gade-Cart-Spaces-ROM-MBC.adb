@@ -1,4 +1,4 @@
-package body Gade.Cart.ROM_Space.MBC is
+package body Gade.Cart.Spaces.ROM.MBC is
 
    procedure Initialize
      (Space       : out MBC_ROM_Space_Type'Class;
@@ -44,4 +44,4 @@ package body Gade.Cart.ROM_Space.MBC is
       Space.Addressable_Banks (Addressable_Bank).Set_Bank (ROM_Bank);
    end Switch_Banks;
 
-end Gade.Cart.ROM_Space.MBC;
+end Gade.Cart.Spaces.ROM.MBC;

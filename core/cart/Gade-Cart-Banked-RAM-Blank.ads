@@ -1,4 +1,4 @@
-package Gade.Cart.Banks.RAM.Blank is
+package Gade.Cart.Banked.RAM.Blank is
 
    type Blank_RAM_Bank_Type is new RAM_Bank_Type with private;
 
@@ -22,4 +22,4 @@ private
 
    type Blank_RAM_Bank_Type is new RAM_Bank_Type with null record;
 
-end Gade.Cart.Banks.RAM.Blank;
+end Gade.Cart.Banked.RAM.Blank;

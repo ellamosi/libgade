@@ -1,14 +1,14 @@
 with Ada.Directories; use Ada.Directories;
 with Ada.Text_IO;     use Ada.Text_IO;
 
-with Gade.Cart.ROM;                use Gade.Cart.ROM;
-with Gade.Cart.ROM_Space;          use Gade.Cart.ROM_Space;
-with Gade.Cart.ROM_Space.ROM_Only; use Gade.Cart.ROM_Space.ROM_Only;
-with Gade.Cart.ROM_Space.MBC.MBC1; use Gade.Cart.ROM_Space.MBC.MBC1;
+with Gade.Cart.ROM;                 use Gade.Cart.ROM;
+with Gade.Cart.Spaces.ROM;          use Gade.Cart.Spaces.ROM;
+with Gade.Cart.Spaces.ROM.Plain;    use Gade.Cart.Spaces.ROM.Plain;
+with Gade.Cart.Spaces.ROM.MBC.MBC1; use Gade.Cart.Spaces.ROM.MBC.MBC1;
 
-with Gade.Cart.RAM_Space;          use Gade.Cart.RAM_Space;
-with Gade.Cart.RAM_Space.Blank;    use Gade.Cart.RAM_Space.Blank;
-with Gade.Cart.RAM_Space.Banked;   use Gade.Cart.RAM_Space.Banked;
+with Gade.Cart.Spaces.RAM;          use Gade.Cart.Spaces.RAM;
+with Gade.Cart.Spaces.RAM.Blank;    use Gade.Cart.Spaces.RAM.Blank;
+with Gade.Cart.Spaces.RAM.Banked;   use Gade.Cart.Spaces.RAM.Banked;
 
 package body Gade.Cart is
 
@@ -44,8 +44,8 @@ package body Gade.Cart is
      (Header   : Cart_Header;
       ROM_Path : String) return RAM_Space_Access
    is
-      package Blank_RAM_Handler  renames Gade.Cart.RAM_Space.Blank;
-      package Banked_RAM_Handler renames Gade.Cart.RAM_Space.Banked;
+      package Blank_RAM_Handler  renames Gade.Cart.Spaces.RAM.Blank;
+      package Banked_RAM_Handler renames Gade.Cart.Spaces.RAM.Banked;
       RAM_Handler_Kind : constant RAM_Handler_Kind_Type :=
         RAM_Handler_Kind_For_Cart (Header.Cart_Type);
       Path : constant String := RAM_Path (ROM_Path);
@@ -63,8 +63,8 @@ package body Gade.Cart is
       ROM_Content : ROM_Content_Access;
       RAM_Handler : RAM_Space_Access) return ROM_Space_Access
    is
-      package ROM_Only_Handler renames Gade.Cart.ROM_Space.ROM_Only;
-      package MBC1_ROM_Handler renames Gade.Cart.ROM_Space.MBC.MBC1;
+      package Plain_ROM_Handler renames Gade.Cart.Spaces.ROM.Plain;
+      package MBC1_ROM_Handler renames Gade.Cart.Spaces.ROM.MBC.MBC1;
       Controller : constant Controller_Type :=
         Controller_Type_For_Cart (Header.Cart_Type);
    begin
@@ -73,7 +73,7 @@ package body Gade.Cart is
       return
         (case Controller is
             when Cartridge_Info.None =>
-               ROM_Space_Access (ROM_Only_Handler.Create (ROM_Content)),
+               ROM_Space_Access (Plain_ROM_Handler.Create (ROM_Content)),
             when Cartridge_Info.MBC1 =>
                ROM_Space_Access (MBC1_ROM_Handler.Create (ROM_Content, RAM_Handler)),
             when others =>

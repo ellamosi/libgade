@@ -1,4 +1,4 @@
-package body Gade.Cart.Banks.RAM.Mem is
+package body Gade.Cart.Banked.RAM.Mem is
 
    procedure Initialize
      (Bank : out Memory_RAM_Bank_Type;
@@ -67,4 +67,4 @@ package body Gade.Cart.Banks.RAM.Mem is
       Save (Bank.Path.all, Bank.Content.all);
    end Save;
 
-end Gade.Cart.Banks.RAM.Mem;
+end Gade.Cart.Banked.RAM.Mem;

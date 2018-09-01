@@ -1,6 +1,6 @@
 with Gade.Cart.RAM; use Gade.Cart.RAM;
 
-package Gade.Cart.Banks.RAM.Mem is
+package Gade.Cart.Banked.RAM.Mem is
 
    type Memory_RAM_Bank_Type is new RAM_Bank_Type with private;
 
@@ -56,4 +56,4 @@ private
       Address : RAM_Bank_Address)
       return RAM_Address_Range;
 
-end Gade.Cart.Banks.RAM.Mem;
+end Gade.Cart.Banked.RAM.Mem;

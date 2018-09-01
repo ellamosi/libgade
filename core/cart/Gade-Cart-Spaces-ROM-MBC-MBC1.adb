@@ -1,11 +1,11 @@
 with Gade.Cart.RAM; use Gade.Cart.RAM;
 with Gade.Cart.ROM; use Gade.Cart.ROM;
 
-package body Gade.Cart.ROM_Space.MBC.MBC1 is
+package body Gade.Cart.Spaces.ROM.MBC.MBC1 is
 
    function Create
      (ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Gade.Cart.RAM_Space.RAM_Space_Access)
+      RAM_Handler : Gade.Cart.Spaces.RAM.RAM_Space_Access)
       return MBC1_ROM_Space_Access
    is
       Space : constant MBC1_ROM_Space_Access := new MBC1_ROM_Space_Type;
@@ -17,7 +17,7 @@ package body Gade.Cart.ROM_Space.MBC.MBC1 is
    procedure Initialize
      (Space       : out MBC1_ROM_Space_Type'Class;
       ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Space   : Gade.Cart.RAM_Space.RAM_Space_Access)
+      RAM_Space   : Gade.Cart.Spaces.RAM.RAM_Space_Access)
    is
    begin
       MBC_ROM_Space_Type (Space).Initialize (ROM_Content, RAM_Space);
@@ -139,4 +139,4 @@ package body Gade.Cart.ROM_Space.MBC.MBC1 is
       Space.RAM_Handler.Switch_Banks (Bank);
    end Select_RAM_Bank;
 
-end Gade.Cart.ROM_Space.MBC.MBC1;
+end Gade.Cart.Spaces.ROM.MBC.MBC1;

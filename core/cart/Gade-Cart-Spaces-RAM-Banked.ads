@@ -1,6 +1,6 @@
-with Gade.Cart.Banks.RAM.Mem; use Gade.Cart.Banks.RAM.Mem;
+with Gade.Cart.Banked.RAM.Mem; use Gade.Cart.Banked.RAM.Mem;
 
-package Gade.Cart.RAM_Space.Banked is
+package Gade.Cart.Spaces.RAM.Banked is
 
    subtype MBC1_Bank_Range is RAM_Bank_Range range 0 .. 3;
 
@@ -62,4 +62,4 @@ private
       Size  : RAM_Size_Type;
       Path  : String);
 
-end Gade.Cart.RAM_Space.Banked;
+end Gade.Cart.Spaces.RAM.Banked;

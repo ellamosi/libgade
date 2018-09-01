@@ -1,4 +1,4 @@
-package body Gade.Cart.ROM_Space is
+package body Gade.Cart.Spaces.ROM is
 
    procedure Initialize
      (Handler     : out ROM_Space_Type'Class;
@@ -36,4 +36,4 @@ package body Gade.Cart.ROM_Space is
       end case;
    end Read;
 
-end Gade.Cart.ROM_Space;
+end Gade.Cart.Spaces.ROM;

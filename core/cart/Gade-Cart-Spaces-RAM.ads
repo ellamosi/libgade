@@ -1,10 +1,9 @@
 limited with Gade.GB;
-with Gade.Dev; use Gade.Dev;
-with Gade.Cart.Banks.RAM; use Gade.Cart.Banks.RAM;
+with Gade.Dev;             use Gade.Dev;
+with Gade.Cart.Banked.RAM; use Gade.Cart.Banked.RAM;
+with Gade.Cart.RAM;        use Gade.Cart.RAM;
 
-with Gade.Cart.RAM; use Gade.Cart.RAM;
-
-package Gade.Cart.RAM_Space is
+package Gade.Cart.Spaces.RAM is
 
    subtype External_RAM_IO_Address is Word range 16#A000# .. 16#BFFF#;
 
@@ -46,4 +45,5 @@ private
 
    function To_Bank_Address (Address : Word) return RAM_Bank_Address;
 
-end Gade.Cart.RAM_Space;
+end Gade.Cart.Spaces.RAM;
+

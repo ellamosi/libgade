@@ -1,6 +1,6 @@
 with Gade.Cart.ROM; use Gade.Cart.ROM;
 
-package Gade.Cart.Banks.ROM is
+package Gade.Cart.Banked.ROM is
 
    subtype ROM_Bank_Address is Word range 16#0000# .. 16#3FFF#;
 
@@ -36,4 +36,4 @@ private
       Offset  : ROM_Address_Range;
    end record;
 
-end Gade.Cart.Banks.ROM;
+end Gade.Cart.Banked.ROM;

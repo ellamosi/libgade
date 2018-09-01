@@ -1,14 +1,14 @@
-with Gade.Dev;            use Gade.Dev;
-with Gade.Dev.CPU;        use Gade.Dev.CPU;
-with Gade.Dev.VRAM;       use Gade.Dev.VRAM;
-with Gade.Dev.OAM;        use Gade.Dev.OAM;
-with Gade.Dev.Joypad;     use Gade.Dev.Joypad;
-with Gade.Dev.Timer;      use Gade.Dev.Timer;
-with Gade.Dev.Display;    use Gade.Dev.Display;
-with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
-with Gade.Video_Buffer;   use Gade.Video_Buffer;
-with Gade.Cart.ROM_Space; use Gade.Cart.ROM_Space;
-with Gade.Cart.RAM_Space; use Gade.Cart.RAM_Space;
+with Gade.Dev;             use Gade.Dev;
+with Gade.Dev.CPU;         use Gade.Dev.CPU;
+with Gade.Dev.VRAM;        use Gade.Dev.VRAM;
+with Gade.Dev.OAM;         use Gade.Dev.OAM;
+with Gade.Dev.Joypad;      use Gade.Dev.Joypad;
+with Gade.Dev.Timer;       use Gade.Dev.Timer;
+with Gade.Dev.Display;     use Gade.Dev.Display;
+with Gade.Dev.Interrupts;  use Gade.Dev.Interrupts;
+with Gade.Video_Buffer;    use Gade.Video_Buffer;
+with Gade.Cart.Spaces.ROM; use Gade.Cart.Spaces.ROM;
+with Gade.Cart.Spaces.RAM; use Gade.Cart.Spaces.RAM;
 
 private package Gade.GB is
 

@@ -1,9 +1,9 @@
 limited with Gade.GB;
-with Gade.Dev;      use Gade.Dev;
-with Gade.Cart.ROM;       use Gade.Cart.ROM;
-with Gade.Cart.Banks.ROM; use Gade.Cart.Banks.ROM;
+with Gade.Dev;             use Gade.Dev;
+with Gade.Cart.ROM;        use Gade.Cart.ROM;
+with Gade.Cart.Banked.ROM; use Gade.Cart.Banked.ROM;
 
-package Gade.Cart.ROM_Space is
+package Gade.Cart.Spaces.ROM is
 
    subtype External_ROM_IO_Address is Word range 16#0000# .. 16#7FFF#;
 
@@ -50,4 +50,4 @@ private
      (Handler     : out ROM_Space_Type'Class;
       ROM_Content : ROM_Content_Access);
 
-end Gade.Cart.ROM_Space;
+end Gade.Cart.Spaces.ROM;

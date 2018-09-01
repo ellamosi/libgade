@@ -1,4 +1,4 @@
-package body Gade.Cart.Banks.RAM.Blank is
+package body Gade.Cart.Banked.RAM.Blank is
 
    Blank_Bank : aliased Blank_RAM_Bank_Type := (null record);
    Blank_Bank_Access : constant Blank_RAM_Bank_Access := Blank_Bank'Access;
@@ -19,4 +19,4 @@ package body Gade.Cart.Banks.RAM.Blank is
       Value := Blank_Value;
    end Read;
 
-end Gade.Cart.Banks.RAM.Blank;
+end Gade.Cart.Banked.RAM.Blank;
