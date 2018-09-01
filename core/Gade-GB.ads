@@ -30,7 +30,7 @@ private package Gade.GB is
    type GB_Public_Type is abstract tagged limited record
       CPU              : aliased CPU_Context;
       --  0000
-      External_ROM     : ROM_Space_Access := null;
+      External_ROM     : Cart.Spaces.ROM.Handler_Access := null;
       --  8000
       Video_RAM        : aliased VRAM_Type;
       --  A000
@@ -73,3 +73,4 @@ private
    end record;
 
 end Gade.GB;
+

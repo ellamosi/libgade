@@ -1,12 +1,13 @@
 package body Gade.Cart.Spaces.ROM is
 
    procedure Initialize
-     (Handler     : out ROM_Space_Type'Class;
+     (Handler     : out Handler_Type'Class;
       ROM_Content : ROM_Content_Access)
    is
       ROM_Bank   : Memory_ROM_Bank_Access;
       ROM_Size   : constant ROM_Byte_Count := ROM_Content.all'Length;
-      Bank_Count : constant ROM_Bank_Count := ROM_Bank_Count (ROM_Size / (16 * 1024));
+      Bank_Count : constant ROM_Bank_Count
+        := ROM_Bank_Count (ROM_Size / ROM_Bank_Size);
       Bank_Index : ROM_Bank_Range;
    begin
       for Addressable_Bank_Index in Addressable_Bank_Range loop
@@ -20,7 +21,7 @@ package body Gade.Cart.Spaces.ROM is
 
    overriding
    procedure Read
-     (Handler : in out ROM_Space_Type;
+     (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : out Byte)

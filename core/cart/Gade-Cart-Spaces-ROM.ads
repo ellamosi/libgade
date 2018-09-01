@@ -7,24 +7,23 @@ package Gade.Cart.Spaces.ROM is
 
    subtype External_ROM_IO_Address is Word range 16#0000# .. 16#7FFF#;
 
-   type ROM_Space_Type is abstract new Memory_Mapped_Device with private;
-
-   type ROM_Space_Access is access all ROM_Space_Type'Class;
+   type Handler_Type is abstract new Memory_Mapped_Device with private;
+   type Handler_Access is access all Handler_Type'Class;
 
    overriding
    procedure Reset
-     (Handler : in out ROM_Space_Type) is null;
+     (Handler : in out Handler_Type) is null;
 
    overriding
    procedure Read
-     (Handler : in out ROM_Space_Type;
+     (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : out Byte);
 
    overriding
    procedure Write
-     (Handler : in out ROM_Space_Type;
+     (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : Byte) is abstract;
@@ -42,12 +41,12 @@ private
    type Addressable_ROM_Banks is array (Addressable_Bank_Range) of
      Memory_ROM_Bank_Access;
 
-   type ROM_Space_Type is abstract new Memory_Mapped_Device with record
+   type Handler_Type is abstract new Memory_Mapped_Device with record
       Addressable_Banks : Addressable_ROM_Banks;
    end record;
 
    procedure Initialize
-     (Handler     : out ROM_Space_Type'Class;
+     (Handler     : out Handler_Type'Class;
       ROM_Content : ROM_Content_Access);
 
 end Gade.Cart.Spaces.ROM;

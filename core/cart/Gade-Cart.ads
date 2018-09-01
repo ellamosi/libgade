@@ -132,8 +132,8 @@ private package Gade.Cart is
    type Cart_Header_Access is access Cart_Header;
 
    procedure Load_ROM
-     (ROM_Handler : out Gade.Cart.Spaces.ROM.ROM_Space_Access;
-      RAM_Handler : out Gade.Cart.Spaces.RAM.RAM_Space_Access;
+     (ROM_Handler : out Spaces.ROM.Handler_Access;
+      RAM_Handler : out Spaces.RAM.RAM_Space_Access;
       Path        : String);
 
 private
@@ -272,3 +272,4 @@ private
         Huds_on_Huc_1             => None);
 
 end Gade.Cart;
+

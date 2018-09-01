@@ -19,12 +19,12 @@ package body Gade.Cart is
    function Create_ROM_Space_Handler
      (Header      : Cart_Header;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Space_Access) return ROM_Space_Access;
+      RAM_Handler : RAM_Space_Access) return Spaces.ROM.Handler_Access;
 
    function RAM_Path (ROM_Path : String) return String;
 
    procedure Load_ROM
-     (ROM_Handler : out ROM_Space_Access;
+     (ROM_Handler : out Spaces.ROM.Handler_Access;
       RAM_Handler : out RAM_Space_Access;
       Path        : String)
    is
@@ -61,10 +61,9 @@ package body Gade.Cart is
    function Create_ROM_Space_Handler
      (Header      : Cart_Header;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Space_Access) return ROM_Space_Access
+      RAM_Handler : RAM_Space_Access) return Spaces.ROM.Handler_Access
    is
-      package Plain_ROM_Handler renames Gade.Cart.Spaces.ROM.Plain;
-      package MBC1_ROM_Handler renames Gade.Cart.Spaces.ROM.MBC.MBC1;
+      subtype Handler_Access is Spaces.ROM.Handler_Access;
       Controller : constant Controller_Type :=
         Controller_Type_For_Cart (Header.Cart_Type);
    begin
@@ -73,9 +72,9 @@ package body Gade.Cart is
       return
         (case Controller is
             when Cartridge_Info.None =>
-               ROM_Space_Access (Plain_ROM_Handler.Create (ROM_Content)),
+               Handler_Access (Spaces.ROM.Plain.Create (ROM_Content)),
             when Cartridge_Info.MBC1 =>
-               ROM_Space_Access (MBC1_ROM_Handler.Create (ROM_Content, RAM_Handler)),
+               Handler_Access (Spaces.ROM.MBC.MBC1.Create (ROM_Content, RAM_Handler)),
             when others =>
                raise Program_Error with "Unsupported cartridge controller! " & Controller'Img);
    end Create_ROM_Space_Handler;
@@ -89,3 +88,4 @@ package body Gade.Cart is
    end RAM_Path;
 
 end Gade.Cart;
+
