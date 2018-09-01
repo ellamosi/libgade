@@ -64,13 +64,13 @@ private
    use Gade.Cart.Spaces.RAM;
 
    type Handler_Type is abstract new ROM.Handler_Type with record
-      RAM_Handler : RAM_Space_Access;
+      RAM_Handler : RAM.Handler_Access;
    end record;
 
    procedure Initialize
      (Handler     : out Handler_Type'Class;
       ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : RAM_Space_Access);
+      RAM_Handler : RAM.Handler_Access);
 
    procedure Switch_Banks
      (Handler          : in out Handler_Type;
@@ -104,3 +104,4 @@ private
       Value   : Byte) is null;
 
 end Gade.Cart.Spaces.ROM.MBC;
+

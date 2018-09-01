@@ -23,3 +23,4 @@ private
    type Blank_RAM_Bank_Type is new RAM_Bank_Type with null record;
 
 end Gade.Cart.Banked.RAM.Blank;
+

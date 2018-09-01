@@ -133,7 +133,7 @@ private package Gade.Cart is
 
    procedure Load_ROM
      (ROM_Handler : out Spaces.ROM.Handler_Access;
-      RAM_Handler : out Spaces.RAM.RAM_Space_Access;
+      RAM_Handler : out Spaces.RAM.Handler_Access;
       Path        : String);
 
 private

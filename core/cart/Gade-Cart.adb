@@ -14,18 +14,18 @@ package body Gade.Cart is
 
    function Create_RAM_Space_Handler
      (Header   : Cart_Header;
-      ROM_Path : String) return RAM_Space_Access;
+      ROM_Path : String) return Spaces.RAM.Handler_Access;
 
    function Create_ROM_Space_Handler
      (Header      : Cart_Header;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Space_Access) return Spaces.ROM.Handler_Access;
+      RAM_Handler : Spaces.RAM.Handler_Access) return Spaces.ROM.Handler_Access;
 
    function RAM_Path (ROM_Path : String) return String;
 
    procedure Load_ROM
      (ROM_Handler : out Spaces.ROM.Handler_Access;
-      RAM_Handler : out RAM_Space_Access;
+      RAM_Handler : out Spaces.RAM.Handler_Access;
       Path        : String)
    is
       ROM_Content : ROM_Content_Access;
@@ -42,10 +42,11 @@ package body Gade.Cart is
 
    function Create_RAM_Space_Handler
      (Header   : Cart_Header;
-      ROM_Path : String) return RAM_Space_Access
+      ROM_Path : String) return Spaces.RAM.Handler_Access
    is
       package Blank_RAM_Handler  renames Gade.Cart.Spaces.RAM.Blank;
       package Banked_RAM_Handler renames Gade.Cart.Spaces.RAM.Banked;
+      subtype Handler_Access is Spaces.RAM.Handler_Access;
       RAM_Handler_Kind : constant RAM_Handler_Kind_Type :=
         RAM_Handler_Kind_For_Cart (Header.Cart_Type);
       Path : constant String := RAM_Path (ROM_Path);
@@ -53,15 +54,15 @@ package body Gade.Cart is
       return
         (case RAM_Handler_Kind is
             when None =>
-               RAM_Space_Access (Blank_RAM_Handler.Create),
+               Handler_Access (Blank_RAM_Handler.Create),
             when MBC1 =>
-               RAM_Space_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)));
+               Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)));
    end Create_RAM_Space_Handler;
 
    function Create_ROM_Space_Handler
      (Header      : Cart_Header;
       ROM_Content : ROM_Content_Access;
-      RAM_Handler : RAM_Space_Access) return Spaces.ROM.Handler_Access
+      RAM_Handler : Spaces.RAM.Handler_Access) return Spaces.ROM.Handler_Access
    is
       subtype Handler_Access is Spaces.ROM.Handler_Access;
       Controller : constant Controller_Type :=

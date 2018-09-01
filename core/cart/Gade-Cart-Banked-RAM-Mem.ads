@@ -57,3 +57,4 @@ private
       return RAM_Address_Range;
 
 end Gade.Cart.Banked.RAM.Mem;
+

@@ -4,8 +4,8 @@ with Gade.Cart.ROM; use Gade.Cart.ROM;
 package body Gade.Cart.Spaces.ROM.MBC.MBC1 is
 
    function Create
-     (ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Gade.Cart.Spaces.RAM.RAM_Space_Access)
+     (ROM_Content : Cart.ROM.ROM_Content_Access;
+      RAM_Handler : Cart.Spaces.RAM.Handler_Access)
       return Handler_Access
    is
       Handler : constant Handler_Access := new Handler_Type;
@@ -16,11 +16,11 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC1 is
 
    procedure Initialize
      (Handler     : out Handler_Type'Class;
-      ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
-      RAM_Space   : Gade.Cart.Spaces.RAM.RAM_Space_Access)
+      ROM_Content : Cart.ROM.ROM_Content_Access;
+      RAM_Handler : Cart.Spaces.RAM.Handler_Access)
    is
    begin
-      MBC.Handler_Type (Handler).Initialize (ROM_Content, RAM_Space);
+      MBC.Handler_Type (Handler).Initialize (ROM_Content, RAM_Handler);
       Handler.Reset;
    end Initialize;
 

@@ -7,41 +7,39 @@ package Gade.Cart.Spaces.RAM is
 
    subtype External_RAM_IO_Address is Word range 16#A000# .. 16#BFFF#;
 
-   type RAM_Space_Type is abstract new Memory_Mapped_Device with private;
-
-   type RAM_Space_Access is access all RAM_Space_Type'Class;
+   type Handler_Type is abstract new Memory_Mapped_Device with private;
+   type Handler_Access is access all Handler_Type'Class;
 
    overriding
-   procedure Reset (Space : in out RAM_Space_Type) is null;
+   procedure Reset (Space : in out Handler_Type) is null;
 
    overriding
    procedure Read
-     (Space   : in out RAM_Space_Type;
+     (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : out Byte) is abstract;
 
    overriding
    procedure Write
-     (Space   : in out RAM_Space_Type;
+     (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : Byte) is abstract;
 
    procedure Switch_Banks
-     (Space : in out RAM_Space_Type;
-      Bank  : RAM_Bank_Range) is null;
+     (Handler : in out Handler_Type;
+      Bank    : RAM_Bank_Range) is null;
 
    procedure Set_Enabled
-     (Space   : in out RAM_Space_Type;
+     (Handler : in out Handler_Type;
       Enabled : Boolean) is null;
 
-   procedure Save
-     (Space : RAM_Space_Type) is null;
+   procedure Save (Space : Handler_Type) is null;
 
 private
 
-   type RAM_Space_Type is abstract new Memory_Mapped_Device with null record;
+   type Handler_Type is abstract new Memory_Mapped_Device with null record;
 
    function To_Bank_Address (Address : Word) return RAM_Bank_Address;
 

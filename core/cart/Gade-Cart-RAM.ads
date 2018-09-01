@@ -22,3 +22,4 @@ package Gade.Cart.RAM is
       Content : RAM_Content_Type);
 
 end Gade.Cart.RAM;
+

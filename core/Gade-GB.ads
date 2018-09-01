@@ -34,7 +34,7 @@ private package Gade.GB is
       --  8000
       Video_RAM        : aliased VRAM_Type;
       --  A000
-      External_RAM     : RAM_Space_Access := null;
+      External_RAM     : Cart.Spaces.RAM.Handler_Access := null;
       --  C000 Intenal RAM / E000 Intenal RAM Echo
       Content          : Memory_Bytes; -- TODO: redo!
       --  FE00

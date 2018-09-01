@@ -4,35 +4,35 @@ package body Gade.Cart.Spaces.RAM.Banked is
 
    function Create
      (Size : RAM_Size_Type;
-      Path : String) return Banked_RAM_Space_Access
+      Path : String) return Handler_Access
    is
-      Space : constant Banked_RAM_Space_Access := new Banked_RAM_Space_Type;
+      Handler : constant Handler_Access := new Handler_Type;
    begin
-      Banked.Initialize (Space.all, Size, Path);
-      return Space;
+      Banked.Initialize (Handler.all, Size, Path);
+      return Handler;
    end Create;
 
    procedure Initialize
-     (Space : out Banked_RAM_Space_Type'Class;
-      Size  : RAM_Size_Type;
-      Path  : String)
+     (Handler : out Handler_Type'Class;
+      Size    : RAM_Size_Type;
+      Path    : String)
    is
    begin
-      Space.Memory_Bank := new Memory_RAM_Bank_Type;
-      Space.Memory_Bank.Initialize (Size, Path);
-      Space.Reset;
+      Handler.Memory_Bank := new Memory_RAM_Bank_Type;
+      Handler.Memory_Bank.Initialize (Size, Path);
+      Handler.Reset;
    end Initialize;
 
    overriding
-   procedure Reset (Space : in out Banked_RAM_Space_Type) is
+   procedure Reset (Handler : in out Handler_Type) is
    begin
-      Space.Switch_Banks (0);
-      Space.Disable;
+      Handler.Switch_Banks (0);
+      Handler.Disable;
    end Reset;
 
    overriding
    procedure Read
-     (Space   : in out Banked_RAM_Space_Type;
+     (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : out Byte)
@@ -40,12 +40,12 @@ package body Gade.Cart.Spaces.RAM.Banked is
       pragma Unreferenced (GB);
       Bank_Address : constant RAM_Bank_Address := To_Bank_Address (Address);
    begin
-      Space.Current_Bank.Read (Bank_Address, Content);
+      Handler.Current_Bank.Read (Bank_Address, Content);
    end Read;
 
    overriding
    procedure Write
-     (Space   : in out Banked_RAM_Space_Type;
+     (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Content : Byte)
@@ -53,49 +53,50 @@ package body Gade.Cart.Spaces.RAM.Banked is
       pragma Unreferenced (GB);
       Bank_Address : constant RAM_Bank_Address := To_Bank_Address (Address);
    begin
-      Space.Current_Bank.Write (Bank_Address, Content);
+      Handler.Current_Bank.Write (Bank_Address, Content);
    end Write;
 
    overriding
    procedure Switch_Banks
-     (Space : in out Banked_RAM_Space_Type;
-      Bank  : RAM_Bank_Range)
+     (Handler : in out Handler_Type;
+      Bank    : RAM_Bank_Range)
    is
    begin
-      Space.Memory_Bank.Set_Bank (Bank);
+      Handler.Memory_Bank.Set_Bank (Bank);
    end Switch_Banks;
 
    overriding
    procedure Set_Enabled
-     (Space   : in out Banked_RAM_Space_Type;
+     (Handler : in out Handler_Type;
       Enabled : Boolean)
    is
-      State_Changed : constant Boolean := Space.Enabled /= Enabled;
+      State_Changed : constant Boolean := Handler.Enabled /= Enabled;
    begin
       if State_Changed and Enabled then
-         Space.Enable;
+         Handler.Enable;
       elsif State_Changed and not Enabled then
-         Space.Disable;
+         Handler.Disable;
       end if;
    end Set_Enabled;
 
-   procedure Enable (Space : in out Banked_RAM_Space_Type) is
+   procedure Enable (Handler : in out Handler_Type) is
    begin
-      Space.Enabled := True;
-      Space.Current_Bank := RAM_Bank_Access (Space.Memory_Bank);
+      Handler.Enabled := True;
+      Handler.Current_Bank := RAM_Bank_Access (Handler.Memory_Bank);
    end Enable;
 
-   procedure Disable (Space : in out Banked_RAM_Space_Type) is
+   procedure Disable (Handler : in out Handler_Type) is
    begin
-      Space.Enabled := False;
-      Space.Current_Bank :=
+      Handler.Enabled := False;
+      Handler.Current_Bank :=
         RAM_Bank_Access (Gade.Cart.Banked.RAM.Blank.Singleton);
    end Disable;
 
    overriding
-   procedure Save (Space : Banked_RAM_Space_Type) is
+   procedure Save (Handler : Handler_Type) is
    begin
-      Space.Memory_Bank.Save;
+      Handler.Memory_Bank.Save;
    end Save;
 
 end Gade.Cart.Spaces.RAM.Banked;
+
