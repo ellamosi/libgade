@@ -40,6 +40,8 @@ private
       RAM_1Mbit   => 128 * 1024,
       RAM_512kbit =>  64 * 1024);
 
+   RAM_16kbit_Mask : constant := 16#7FF#;
+
    type Path_Access is access constant String;
 
    type Memory_RAM_Bank_Type is new RAM_Bank_Type with record

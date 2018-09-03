@@ -42,10 +42,10 @@ package body Gade.Cart.Banked.RAM.Mem is
       case Bank.Size is
          when RAM_16kbit =>
             Bank.Offset := 0;
-            Bank.Mask   := 16#7FF#;
+            Bank.Mask   := RAM_16kbit_Mask;
          when others =>
             Bank.Offset := Wrapped_Index * Bank_Size;
-            Bank.Mask   := Bank_Size - 1;
+            Bank.Mask   := Address (Bank_Address_Mask);
       end case;
    end Set_Bank;
 
