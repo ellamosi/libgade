@@ -16,7 +16,7 @@ package Gade.Cart.Banked.ROM is
 
    procedure Initialize
      (Bank    : out Memory_ROM_Bank_Type;
-      Content : ROM_Content_Access);
+      Content : Content_Access);
 
    procedure Read
      (Bank    : Memory_ROM_Bank_Type;
@@ -25,15 +25,15 @@ package Gade.Cart.Banked.ROM is
 
    procedure Set_Bank
      (Bank  : in out Memory_ROM_Bank_Type;
-      Index : ROM_Bank_Range);
+      Index : Bank_Index_Type);
 
 private
 
    type Non_Constant_ROM_Bank_Access is access ROM_Bank_Content_Type;
 
    type Memory_ROM_Bank_Type is tagged record
-      Content : ROM_Content_Access;
-      Offset  : ROM_Address_Range;
+      Content : Content_Access;
+      Offset  : Address_Type;
    end record;
 
 end Gade.Cart.Banked.ROM;

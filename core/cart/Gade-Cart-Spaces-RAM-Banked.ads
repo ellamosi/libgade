@@ -2,8 +2,6 @@ with Gade.Cart.Banked.RAM.Mem; use Gade.Cart.Banked.RAM.Mem;
 
 package Gade.Cart.Spaces.RAM.Banked is
 
-   subtype MBC1_Bank_Range is RAM_Bank_Range range 0 .. 3;
-
    type Handler_Type is new RAM.Handler_Type with private;
    type Handler_Access is access Handler_Type;
 
@@ -31,7 +29,7 @@ package Gade.Cart.Spaces.RAM.Banked is
    overriding
    procedure Switch_Banks
      (Handler : in out Handler_Type;
-      Bank    : RAM_Bank_Range);
+      Index   : Bank_Index_Type);
 
    overriding
    procedure Set_Enabled

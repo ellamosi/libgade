@@ -4,8 +4,8 @@ with Gade.Cart.ROM; use Gade.Cart.ROM;
 package body Gade.Cart.Spaces.ROM.MBC.MBC1 is
 
    function Create
-     (ROM_Content : Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Cart.Spaces.RAM.Handler_Access)
+     (ROM_Content : Cart.ROM.Content_Access;
+      RAM_Handler : Spaces.RAM.Handler_Access)
       return Handler_Access
    is
       Handler : constant Handler_Access := new Handler_Type;
@@ -16,8 +16,8 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC1 is
 
    procedure Initialize
      (Handler     : out Handler_Type'Class;
-      ROM_Content : Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Cart.Spaces.RAM.Handler_Access)
+      ROM_Content : Cart.ROM.Content_Access;
+      RAM_Handler : Spaces.RAM.Handler_Access)
    is
    begin
       MBC.Handler_Type (Handler).Initialize (ROM_Content, RAM_Handler);
@@ -112,27 +112,27 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC1 is
    end Select_High_Bank;
 
    procedure Select_ROM_Bank (Handler : in out Handler_Type) is
-      Low_ROM_Bank_Number, High_ROM_Bank_Number : ROM_Bank_Range;
+      Low_Bank_Index, High_Bank_Index : Cart.ROM.Bank_Index_Type;
       Low_Part : constant Natural := Natural (Handler.Low_Bank_Select);
       High_Part : constant Natural := Natural (Handler.High_Bank_Select);
    begin
-      High_ROM_Bank_Number := ROM_Bank_Range (High_Part * 2**5 + Low_Part);
+      High_Bank_Index := Cart.ROM.Bank_Index_Type (High_Part * 2**5 + Low_Part);
       case Handler.Banking_Mode is
-         when ROM => Low_ROM_Bank_Number := 0;
-         when RAM => Low_ROM_Bank_Number := ROM_Bank_Range (High_Part * 2**5);
+         when ROM => Low_Bank_Index := 0;
+         when RAM => Low_Bank_Index := Cart.ROM.Bank_Index_Type (High_Part * 2**5);
       end case;
-      Handler.Switch_Banks (0, Low_ROM_Bank_Number);
-      Handler.Switch_Banks (1, High_ROM_Bank_Number);
+      Handler.Switch_Banks (0, Low_Bank_Index);
+      Handler.Switch_Banks (1, High_Bank_Index);
    end Select_ROM_Bank;
 
    procedure Select_RAM_Bank (Handler : in out Handler_Type) is
-      Bank : RAM_Bank_Range;
+      Index : Cart.RAM.Bank_Index_Type;
    begin
       case Handler.Banking_Mode is
-         when ROM => Bank := 0;
-         when RAM => Bank := RAM_Bank_Range (Handler.High_Bank_Select);
+         when ROM => Index := 0;
+         when RAM => Index := Cart.RAM.Bank_Index_Type (Handler.High_Bank_Select);
       end case;
-      Handler.RAM_Handler.Switch_Banks (Bank);
+      Handler.RAM_Handler.Switch_Banks (Index);
    end Select_RAM_Bank;
 
 end Gade.Cart.Spaces.ROM.MBC.MBC1;

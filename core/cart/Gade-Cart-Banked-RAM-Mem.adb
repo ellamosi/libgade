@@ -5,14 +5,14 @@ package body Gade.Cart.Banked.RAM.Mem is
       Size : RAM_Size_Type;
       Path : String)
    is
-      RAM_Bytes : constant RAM_Byte_Count_Type := RAM_Size (Size);
-      subtype Content_Range is RAM_Address_Range range 0 .. RAM_Bytes - 1;
+      Byte_Size : constant Byte_Count_Type := RAM_Size (Size);
+      subtype Content_Range is Address_Type range 0 .. Byte_Size - 1;
    begin
-      Bank.Content := new RAM_Content_Type (Content_Range);
+      Bank.Content := new Content_Type (Content_Range);
       Load (Path, Bank.Content.all);
       Bank.Size := Size;
       Bank.Path := new String'(Path);
-      Bank.Bank_Count := RAM_Bytes / RAM_Bank_Size;
+      Bank.Bank_Count := Byte_Size / Bank_Size;
    end Initialize;
 
    overriding procedure Read
@@ -35,27 +35,27 @@ package body Gade.Cart.Banked.RAM.Mem is
 
    procedure Set_Bank
      (Bank  : in out Memory_RAM_Bank_Type;
-      Index : RAM_Bank_Range)
+      Index : Bank_Index_Type)
    is
-      Wrapped_Index : constant RAM_Bank_Range := Index mod Bank.Bank_Count;
+      Wrapped_Index : constant Bank_Index_Type := Index mod Bank.Bank_Count;
    begin
       case Bank.Size is
          when RAM_16kbit =>
             Bank.Offset := 0;
             Bank.Mask   := 16#7FF#;
          when others =>
-            Bank.Offset := Wrapped_Index * RAM_Bank_Size;
-            Bank.Mask   := RAM_Bank_Size - 1;
+            Bank.Offset := Wrapped_Index * Bank_Size;
+            Bank.Mask   := Bank_Size - 1;
       end case;
    end Set_Bank;
 
    function RAM_Address
      (Bank    : Memory_RAM_Bank_Type;
       Address : RAM_Bank_Address)
-      return RAM_Address_Range
+      return Address_Type
    is
-      Offseted_Address : constant RAM_Address_Range
-        := RAM_Address_Range (Address) + Bank.Offset;
+      Offseted_Address : constant Address_Type :=
+        Address_Type (Address) + Bank.Offset;
    begin
       return Offseted_Address and Bank.Mask;
    end RAM_Address;

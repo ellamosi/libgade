@@ -35,8 +35,8 @@ private
 
    Addressable_Bank_Count : constant := 2;
 
-   subtype Addressable_Bank_Range is ROM_Bank_Range range
-     0 .. Addressable_Bank_Count - 1;
+   subtype Addressable_Bank_Range is Bank_Index_Type
+     range 0 .. Addressable_Bank_Count - 1;
 
    type Addressable_ROM_Banks is array (Addressable_Bank_Range) of
      Memory_ROM_Bank_Access;
@@ -46,8 +46,8 @@ private
    end record;
 
    procedure Initialize
-     (Handler     : out Handler_Type'Class;
-      ROM_Content : ROM_Content_Access);
+     (Handler : out Handler_Type'Class;
+      Content : Content_Access);
 
 end Gade.Cart.Spaces.ROM;
 

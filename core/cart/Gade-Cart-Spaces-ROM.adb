@@ -1,21 +1,21 @@
 package body Gade.Cart.Spaces.ROM is
 
    procedure Initialize
-     (Handler     : out Handler_Type'Class;
-      ROM_Content : ROM_Content_Access)
+     (Handler : out Handler_Type'Class;
+      Content : Content_Access)
    is
-      ROM_Bank   : Memory_ROM_Bank_Access;
-      ROM_Size   : constant ROM_Byte_Count := ROM_Content.all'Length;
-      Bank_Count : constant ROM_Bank_Count
-        := ROM_Bank_Count (ROM_Size / ROM_Bank_Size);
-      Bank_Index : ROM_Bank_Range;
+      Bank : Memory_ROM_Bank_Access;
+      Size : constant Byte_Count_Type := Content.all'Length;
+      Bank_Count : constant Bank_Count_Type :=
+        Bank_Count_Type (Size / Bank_Size);
+      Bank_Index : Bank_Index_Type;
    begin
       for Addressable_Bank_Index in Addressable_Bank_Range loop
          Bank_Index := Addressable_Bank_Index mod Bank_Count;
-         ROM_Bank := new Memory_ROM_Bank_Type;
-         Initialize (ROM_Bank.all, ROM_Content);
-         ROM_Bank.Set_Bank (Bank_Index);
-         Handler.Addressable_Banks (Addressable_Bank_Index) := ROM_Bank;
+         Bank := new Memory_ROM_Bank_Type;
+         Initialize (Bank.all, Content);
+         Bank.Set_Bank (Bank_Index);
+         Handler.Addressable_Banks (Addressable_Bank_Index) := Bank;
       end loop;
    end Initialize;
 

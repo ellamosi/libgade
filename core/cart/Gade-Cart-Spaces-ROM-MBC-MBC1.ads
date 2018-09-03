@@ -6,8 +6,8 @@ package Gade.Cart.Spaces.ROM.MBC.MBC1 is
    type Handler_Access is access Handler_Type;
 
    function Create
-     (ROM_Content : Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Cart.Spaces.RAM.Handler_Access)
+     (ROM_Content : Cart.ROM.Content_Access;
+      RAM_Handler : Spaces.RAM.Handler_Access)
       return Handler_Access;
 
    overriding
@@ -42,8 +42,8 @@ private
 
    procedure Initialize
      (Handler     : out Handler_Type'Class;
-      ROM_Content : Cart.ROM.ROM_Content_Access;
-      RAM_Handler : Cart.Spaces.RAM.Handler_Access);
+      ROM_Content : Cart.ROM.Content_Access;
+      RAM_Handler : Spaces.RAM.Handler_Access);
 
    overriding
    procedure Select_Bank

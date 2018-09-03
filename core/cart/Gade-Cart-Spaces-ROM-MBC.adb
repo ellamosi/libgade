@@ -2,7 +2,7 @@ package body Gade.Cart.Spaces.ROM.MBC is
 
    procedure Initialize
      (Handler     : out Handler_Type'Class;
-      ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
+      ROM_Content : Cart.ROM.Content_Access;
       RAM_Handler : RAM.Handler_Access)
    is
    begin
@@ -38,10 +38,10 @@ package body Gade.Cart.Spaces.ROM.MBC is
    procedure Switch_Banks
      (Handler          : in out Handler_Type;
       Addressable_Bank : Addressable_Bank_Range;
-      ROM_Bank         : ROM_Bank_Range)
+      Index            : Bank_Index_Type)
    is
    begin
-      Handler.Addressable_Banks (Addressable_Bank).Set_Bank (ROM_Bank);
+      Handler.Addressable_Banks (Addressable_Bank).Set_Bank (Index);
    end Switch_Banks;
 
 end Gade.Cart.Spaces.ROM.MBC;

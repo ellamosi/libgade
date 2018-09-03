@@ -3,9 +3,7 @@ package Gade.Cart.Spaces.ROM.Plain is
    type Handler_Type is new ROM.Handler_Type with private;
    type Handler_Access is access Handler_Type;
 
-   function Create
-     (ROM_Content : Gade.Cart.ROM.ROM_Content_Access)
-      return Handler_Access;
+   function Create (Content : Cart.ROM.Content_Access) return Handler_Access;
 
    overriding
    procedure Write
@@ -20,7 +18,7 @@ private
 
    procedure Initialize
      (Handler     : out Handler_Type'Class;
-      ROM_Content : Gade.Cart.ROM.ROM_Content_Access);
+      ROM_Content : Cart.ROM.Content_Access);
 
 end Gade.Cart.Spaces.ROM.Plain;
 

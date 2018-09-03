@@ -69,13 +69,13 @@ private
 
    procedure Initialize
      (Handler     : out Handler_Type'Class;
-      ROM_Content : Gade.Cart.ROM.ROM_Content_Access;
+      ROM_Content : Cart.ROM.Content_Access;
       RAM_Handler : RAM.Handler_Access);
 
    procedure Switch_Banks
      (Handler          : in out Handler_Type;
       Addressable_Bank : Addressable_Bank_Range;
-      ROM_Bank         : ROM_Bank_Range);
+      Index            : Bank_Index_Type);
 
    procedure ROM_Write
      (Handler : in out Handler_Type'Class;

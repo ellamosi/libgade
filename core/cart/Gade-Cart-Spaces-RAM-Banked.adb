@@ -59,10 +59,10 @@ package body Gade.Cart.Spaces.RAM.Banked is
    overriding
    procedure Switch_Banks
      (Handler : in out Handler_Type;
-      Bank    : RAM_Bank_Range)
+      Index   : Bank_Index_Type)
    is
    begin
-      Handler.Memory_Bank.Set_Bank (Bank);
+      Handler.Memory_Bank.Set_Bank (Index);
    end Switch_Banks;
 
    overriding

@@ -18,7 +18,7 @@ package body Gade.Cart is
 
    function Create_ROM_Space_Handler
      (Header      : Cart_Header;
-      ROM_Content : ROM_Content_Access;
+      ROM_Content : ROM.Content_Access;
       RAM_Handler : Spaces.RAM.Handler_Access) return Spaces.ROM.Handler_Access;
 
    function RAM_Path (ROM_Path : String) return String;
@@ -28,7 +28,7 @@ package body Gade.Cart is
       RAM_Handler : out Spaces.RAM.Handler_Access;
       Path        : String)
    is
-      ROM_Content : ROM_Content_Access;
+      ROM_Content : ROM.Content_Access;
       Header      : Cart_Header_Access;
    begin
       ROM_Content := Load (Path);
@@ -61,7 +61,7 @@ package body Gade.Cart is
 
    function Create_ROM_Space_Handler
      (Header      : Cart_Header;
-      ROM_Content : ROM_Content_Access;
+      ROM_Content : ROM.Content_Access;
       RAM_Handler : Spaces.RAM.Handler_Access) return Spaces.ROM.Handler_Access
    is
       subtype Handler_Access is Spaces.ROM.Handler_Access;
