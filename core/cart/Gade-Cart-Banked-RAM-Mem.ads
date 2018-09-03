@@ -56,4 +56,3 @@ private
       return Address;
 
 end Gade.Cart.Banked.RAM.Mem;
-

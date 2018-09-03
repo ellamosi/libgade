@@ -26,4 +26,3 @@ private
    type Handler_Type is new RAM.Handler_Type with null record;
 
 end Gade.Cart.Spaces.RAM.Blank;
-

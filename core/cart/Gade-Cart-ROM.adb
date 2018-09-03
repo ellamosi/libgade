@@ -32,4 +32,3 @@ package body Gade.Cart.ROM is
    end Load;
 
 end Gade.Cart.ROM;
-

@@ -31,4 +31,3 @@ package body Gade.Cart.RAM is
    end Save;
 
 end Gade.Cart.RAM;
-

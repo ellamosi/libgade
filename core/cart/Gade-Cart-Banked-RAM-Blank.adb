@@ -20,4 +20,3 @@ package body Gade.Cart.Banked.RAM.Blank is
    end Read;
 
 end Gade.Cart.Banked.RAM.Blank;
-

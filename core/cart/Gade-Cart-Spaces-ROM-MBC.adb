@@ -45,4 +45,3 @@ package body Gade.Cart.Spaces.ROM.MBC is
    end Switch_Banks;
 
 end Gade.Cart.Spaces.ROM.MBC;
-

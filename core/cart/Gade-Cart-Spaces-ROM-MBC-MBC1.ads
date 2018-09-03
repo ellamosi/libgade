@@ -79,4 +79,3 @@ private
    procedure Select_RAM_Bank (Handler : in out Handler_Type);
 
 end Gade.Cart.Spaces.ROM.MBC.MBC1;
-

@@ -23,4 +23,3 @@ private
    type RAM_Bank_Type is abstract tagged null record;
 
 end Gade.Cart.Banked.RAM;
-

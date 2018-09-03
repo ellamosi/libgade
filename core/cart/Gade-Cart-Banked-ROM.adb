@@ -28,4 +28,3 @@ package body Gade.Cart.Banked.ROM is
    end Set_Bank;
 
 end Gade.Cart.Banked.ROM;
-

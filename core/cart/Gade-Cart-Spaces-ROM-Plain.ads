@@ -21,4 +21,3 @@ private
       ROM_Content : Cart.ROM.Content_Access);
 
 end Gade.Cart.Spaces.ROM.Plain;
-

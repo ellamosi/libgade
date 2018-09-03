@@ -22,4 +22,3 @@ package Gade.Cart.RAM is
       ROM  : Content);
 
 end Gade.Cart.RAM;
-

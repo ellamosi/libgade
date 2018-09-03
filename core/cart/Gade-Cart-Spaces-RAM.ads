@@ -44,4 +44,3 @@ private
    function To_Bank_Address (Address : Word) return RAM_Bank_Address;
 
 end Gade.Cart.Spaces.RAM;
-

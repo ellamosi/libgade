@@ -16,4 +16,3 @@ package body Gade.Cart.Spaces.ROM.Plain is
    end Initialize;
 
 end Gade.Cart.Spaces.ROM.Plain;
-

@@ -16,4 +16,3 @@ package Gade.Cart.ROM is
    function Load (Path : String) return Content_Access;
 
 end Gade.Cart.ROM;
-

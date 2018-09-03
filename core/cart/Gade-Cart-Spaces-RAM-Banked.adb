@@ -99,4 +99,3 @@ package body Gade.Cart.Spaces.RAM.Banked is
    end Save;
 
 end Gade.Cart.Spaces.RAM.Banked;
-

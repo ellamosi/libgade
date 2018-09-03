@@ -37,4 +37,3 @@ private
    end record;
 
 end Gade.Cart.Banked.ROM;
-

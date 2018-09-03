@@ -272,4 +272,3 @@ private
         Huds_on_Huc_1             => None);
 
 end Gade.Cart;
-

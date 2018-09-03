@@ -106,4 +106,3 @@ package body Gade.Cart is
    end Get_Header;
 
 end Gade.Cart;
-

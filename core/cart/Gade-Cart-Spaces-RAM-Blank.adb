@@ -35,4 +35,3 @@ package body Gade.Cart.Spaces.RAM.Blank is
    end Write;
 
 end Gade.Cart.Spaces.RAM.Blank;
-

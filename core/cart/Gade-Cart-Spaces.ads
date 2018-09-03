@@ -12,4 +12,3 @@ package Gade.Cart.Spaces is
    --  (such as Cart.Spaces.Low and Cart.Spaces.High).
 
 end Gade.Cart.Spaces;
-
