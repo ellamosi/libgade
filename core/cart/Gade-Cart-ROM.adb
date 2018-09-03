@@ -32,15 +32,5 @@ package body Gade.Cart.ROM is
       return Content;
    end Load;
 
-   function Header (Content : Content_Access) return Cart_Header_Access is
-      type Byte_Access is access all Byte;
-
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => Byte_Access,
-         Target => Cart_Header_Access);
-   begin
-      return Convert (Content (0)'Access);
-   end Header;
-
 end Gade.Cart.ROM;
 

@@ -21,6 +21,10 @@ package body Gade.Cart is
       ROM_Content : ROM.Content_Access;
       RAM_Handler : Spaces.RAM.Handler_Access) return Spaces.ROM.Handler_Access;
 
+   function Get_Header
+     (Content : Cart.ROM.Content_Access)
+      return Cart_Header_Access;
+
    function RAM_Path (ROM_Path : String) return String;
 
    procedure Load_ROM
@@ -34,7 +38,7 @@ package body Gade.Cart is
       ROM_Content := Load (Path);
 
       --  Not true for some few rare cart types (multicarts)
-      Header := Gade.Cart.ROM.Header (ROM_Content);
+      Header := Get_Header (ROM_Content);
 
       RAM_Handler := Create_RAM_Space_Handler (Header.all, Path);
       ROM_Handler := Create_ROM_Space_Handler (Header.all, ROM_Content, RAM_Handler);
@@ -87,6 +91,19 @@ package body Gade.Cart is
                  Name                 => Base_Name (ROM_Path),
                  Extension            => "sav");
    end RAM_Path;
+
+   function Get_Header
+     (Content : Cart.ROM.Content_Access)
+      return Cart_Header_Access
+   is
+      type Byte_Access is access all Byte;
+
+      function Convert is new Ada.Unchecked_Conversion
+        (Source => Byte_Access,
+         Target => Cart_Header_Access);
+   begin
+      return Convert (Content (0)'Access);
+   end Get_Header;
 
 end Gade.Cart;
 
