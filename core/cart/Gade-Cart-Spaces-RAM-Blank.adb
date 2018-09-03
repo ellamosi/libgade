@@ -17,9 +17,9 @@ package body Gade.Cart.Spaces.RAM.Blank is
       Content : out Byte)
    is
       pragma Unreferenced (Handler, GB);
-      Bank_Address : constant RAM_Bank_Address := To_Bank_Address (Address);
+      Bank_Addr : constant Bank_Address := To_Bank_Address (Address);
    begin
-      Gade.Cart.Banked.RAM.Blank.Singleton.Read (Bank_Address, Content);
+      Gade.Cart.Banked.RAM.Blank.Singleton.Read (Bank_Addr, Content);
    end Read;
 
    overriding procedure Write
@@ -29,9 +29,9 @@ package body Gade.Cart.Spaces.RAM.Blank is
       Content : Byte)
    is
       pragma Unreferenced (Handler, GB);
-      Bank_Address : constant RAM_Bank_Address := To_Bank_Address (Address);
+      Bank_Addr : constant Bank_Address := To_Bank_Address (Address);
    begin
-      Gade.Cart.Banked.RAM.Blank.Singleton.Write (Bank_Address, Content);
+      Gade.Cart.Banked.RAM.Blank.Singleton.Write (Bank_Addr, Content);
    end Write;
 
 end Gade.Cart.Spaces.RAM.Blank;

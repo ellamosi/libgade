@@ -1,17 +1,17 @@
 package body Gade.Cart.Banked.RAM.Blank is
 
-   Blank_Bank : aliased Blank_RAM_Bank_Type := (null record);
-   Blank_Bank_Access : constant Blank_RAM_Bank_Access := Blank_Bank'Access;
+   Blank_Handler : aliased Handler_Type := (null record);
+   Blank_Handler_Access : constant Handler_Access := Blank_Handler'Access;
 
-   function Singleton return Blank_RAM_Bank_Access is
+   function Singleton return Handler_Access is
    begin
-      return Blank_Bank_Access;
+      return Blank_Handler_Access;
    end Singleton;
 
    overriding
    procedure Read
-     (Handler : Blank_RAM_Bank_Type;
-      Address : RAM_Bank_Address;
+     (Handler : Handler_Type;
+      Address : Bank_Address;
       Value   : out Byte)
    is
       pragma Unreferenced (Handler, Address);

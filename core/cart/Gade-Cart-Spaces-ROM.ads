@@ -39,7 +39,7 @@ private
      range 0 .. Addressable_Bank_Count - 1;
 
    type Addressable_ROM_Banks is array (Addressable_Bank_Range) of
-     Memory_ROM_Bank_Access;
+     Banked.ROM.Handler_Access;
 
    type Handler_Type is abstract new Memory_Mapped_Device with record
       Addressable_Banks : Addressable_ROM_Banks;

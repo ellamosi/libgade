@@ -1,25 +1,24 @@
 package Gade.Cart.Banked.RAM.Blank is
 
-   type Blank_RAM_Bank_Type is new RAM_Bank_Type with private;
+   type Handler_Type is new RAM.Handler_Type with private;
+   type Handler_Access is access all Handler_Type;
 
-   type Blank_RAM_Bank_Access is access all Blank_RAM_Bank_Type;
-
-   function Singleton return Blank_RAM_Bank_Access;
+   function Singleton return Handler_Access;
 
    overriding
    procedure Read
-     (Handler : Blank_RAM_Bank_Type;
-      Address : RAM_Bank_Address;
+     (Handler : Handler_Type;
+      Address : Bank_Address;
       Value   : out Byte);
 
    overriding
    procedure Write
-     (Handler : in out Blank_RAM_Bank_Type;
-      Address : RAM_Bank_Address;
+     (Handler : in out Handler_Type;
+      Address : Bank_Address;
       Value   : Byte) is null;
 
 private
 
-   type Blank_RAM_Bank_Type is new RAM_Bank_Type with null record;
+   type Handler_Type is new RAM.Handler_Type with null record;
 
 end Gade.Cart.Banked.RAM.Blank;

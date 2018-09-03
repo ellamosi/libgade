@@ -2,6 +2,10 @@ with Gade.Cart.Banked.RAM.Blank;
 
 package body Gade.Cart.Spaces.RAM.Banked is
 
+   package Base_Bank renames Cart.Banked.RAM;
+   package Blank_Bank renames Cart.Banked.RAM.Blank;
+   package Memory_Bank renames Cart.Banked.RAM.Mem;
+
    function Create
      (Size : RAM_Size_Type;
       Path : String) return Handler_Access
@@ -18,7 +22,7 @@ package body Gade.Cart.Spaces.RAM.Banked is
       Path    : String)
    is
    begin
-      Handler.Memory_Bank := new Memory_RAM_Bank_Type;
+      Handler.Memory_Bank := new Memory_Bank.Handler_Type;
       Handler.Memory_Bank.Initialize (Size, Path);
       Handler.Reset;
    end Initialize;
@@ -38,9 +42,9 @@ package body Gade.Cart.Spaces.RAM.Banked is
       Content : out Byte)
    is
       pragma Unreferenced (GB);
-      Bank_Address : constant RAM_Bank_Address := To_Bank_Address (Address);
+      Bank_Addr : constant Bank_Address := To_Bank_Address (Address);
    begin
-      Handler.Current_Bank.Read (Bank_Address, Content);
+      Handler.Current_Bank.Read (Bank_Addr, Content);
    end Read;
 
    overriding
@@ -51,9 +55,9 @@ package body Gade.Cart.Spaces.RAM.Banked is
       Content : Byte)
    is
       pragma Unreferenced (GB);
-      Bank_Address : constant RAM_Bank_Address := To_Bank_Address (Address);
+      Bank_Addr : constant Bank_Address := To_Bank_Address (Address);
    begin
-      Handler.Current_Bank.Write (Bank_Address, Content);
+      Handler.Current_Bank.Write (Bank_Addr, Content);
    end Write;
 
    overriding
@@ -82,14 +86,13 @@ package body Gade.Cart.Spaces.RAM.Banked is
    procedure Enable (Handler : in out Handler_Type) is
    begin
       Handler.Enabled := True;
-      Handler.Current_Bank := RAM_Bank_Access (Handler.Memory_Bank);
+      Handler.Current_Bank := Base_Bank.Handler_Access (Handler.Memory_Bank);
    end Enable;
 
    procedure Disable (Handler : in out Handler_Type) is
    begin
       Handler.Enabled := False;
-      Handler.Current_Bank :=
-        RAM_Bank_Access (Gade.Cart.Banked.RAM.Blank.Singleton);
+      Handler.Current_Bank := Base_Bank.Handler_Access (Blank_Bank.Singleton);
    end Disable;
 
    overriding

@@ -2,33 +2,32 @@ with Gade.Cart.RAM; use Gade.Cart.RAM;
 
 package Gade.Cart.Banked.RAM.Mem is
 
-   type Memory_RAM_Bank_Type is new RAM_Bank_Type with private;
-
-   type Memory_RAM_Bank_Access is access Memory_RAM_Bank_Type;
+   type Handler_Type is new RAM.Handler_Type with private;
+   type Handler_Access is access Handler_Type;
 
    procedure Initialize
-     (Bank : out Memory_RAM_Bank_Type;
-      Size : RAM_Size_Type;
-      Path : String);
+     (Handler : out Handler_Type;
+      Size    : RAM_Size_Type;
+      Path    : String);
 
    overriding
    procedure Read
-     (Bank    : Memory_RAM_Bank_Type;
-      Address : RAM_Bank_Address;
+     (Handler : Handler_Type;
+      Address : Bank_Address;
       Value   : out Byte);
 
    overriding
    procedure Write
-     (Bank    : in out Memory_RAM_Bank_Type;
-      Address : RAM_Bank_Address;
+     (Handler : in out Handler_Type;
+      Address : Bank_Address;
       Value   : Byte);
 
    procedure Set_Bank
-     (Bank  : in out Memory_RAM_Bank_Type;
-      Index : Bank_Index);
+     (Handler : in out Handler_Type;
+      Index   : Bank_Index);
 
    procedure Save
-     (Bank : Memory_RAM_Bank_Type);
+     (Handler : Handler_Type);
 
 private
 
@@ -44,17 +43,17 @@ private
 
    type Path_Access is access constant String;
 
-   type Memory_RAM_Bank_Type is new RAM_Bank_Type with record
+   type Handler_Type is new RAM.Handler_Type with record
       Size         : RAM_Size_Type;
-      Content      : Content_Access;
+      RAM          : Content_Access;
       Offset, Mask : Address;
       Path         : Path_Access;
       N_Banks      : Bank_Count;
    end record;
 
    function RAM_Address
-     (Bank : Memory_RAM_Bank_Type;
-      Addr : RAM_Bank_Address)
+     (Handler : Handler_Type;
+      Addr    : Bank_Address)
       return Address;
 
 end Gade.Cart.Banked.RAM.Mem;

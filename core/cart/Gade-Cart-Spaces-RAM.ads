@@ -41,6 +41,6 @@ private
 
    type Handler_Type is abstract new Memory_Mapped_Device with null record;
 
-   function To_Bank_Address (Address : Word) return RAM_Bank_Address;
+   function To_Bank_Address (Address : Word) return Bank_Address;
 
 end Gade.Cart.Spaces.RAM;

@@ -2,37 +2,30 @@ with Gade.Cart.ROM; use Gade.Cart.ROM;
 
 package Gade.Cart.Banked.ROM is
 
-   subtype ROM_Bank_Address is Word range 16#0000# .. 16#3FFF#;
+   subtype Bank_Address is Word range 16#0000# .. 16#3FFF#;
 
-   Bank_Address_Mask : constant Word := 16#3FFF#;
+   Address_Mask : constant Word := 16#3FFF#;
 
-   type ROM_Bank_Content_Type is array (ROM_Bank_Address) of Byte;
-
-   type ROM_Bank_Access is access constant ROM_Bank_Content_Type;
-
-   type Memory_ROM_Bank_Type is tagged private;
-
-   type Memory_ROM_Bank_Access is access Memory_ROM_Bank_Type;
+   type Handler_Type is tagged private;
+   type Handler_Access is access Handler_Type;
 
    procedure Initialize
-     (Bank    : out Memory_ROM_Bank_Type;
+     (Handler : out Handler_Type;
       Content : Content_Access);
 
    procedure Read
-     (Bank  : Memory_ROM_Bank_Type;
-      Addr  : ROM_Bank_Address;
-      Value : out Byte);
+     (Handler : Handler_Type;
+      Addr    : Bank_Address;
+      Value   : out Byte);
 
    procedure Set_Bank
-     (Bank  : in out Memory_ROM_Bank_Type;
-      Index : Bank_Index);
+     (Handler : in out Handler_Type;
+      Index   : Bank_Index);
 
 private
 
-   type Non_Constant_ROM_Bank_Access is access ROM_Bank_Content_Type;
-
-   type Memory_ROM_Bank_Type is tagged record
-      Content : Content_Access;
+   type Handler_Type is tagged record
+      ROM     : Content_Access;
       Offset  : Address;
    end record;
 
