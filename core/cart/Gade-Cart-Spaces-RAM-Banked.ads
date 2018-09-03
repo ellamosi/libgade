@@ -29,7 +29,7 @@ package Gade.Cart.Spaces.RAM.Banked is
    overriding
    procedure Switch_Banks
      (Handler : in out Handler_Type;
-      Index   : Bank_Index_Type);
+      Index   : Bank_Index);
 
    overriding
    procedure Set_Enabled

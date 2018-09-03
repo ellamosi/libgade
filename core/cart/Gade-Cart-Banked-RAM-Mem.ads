@@ -25,14 +25,14 @@ package Gade.Cart.Banked.RAM.Mem is
 
    procedure Set_Bank
      (Bank  : in out Memory_RAM_Bank_Type;
-      Index : Bank_Index_Type);
+      Index : Bank_Index);
 
    procedure Save
      (Bank : Memory_RAM_Bank_Type);
 
 private
 
-   RAM_Size : constant array (RAM_Size_Type) of Byte_Count_Type :=
+   RAM_Size : constant array (RAM_Size_Type) of Byte_Count :=
      (None        =>          0,
       RAM_16kbit  =>   2 * 1024,
       RAM_64kbit  =>   8 * 1024,
@@ -45,15 +45,15 @@ private
    type Memory_RAM_Bank_Type is new RAM_Bank_Type with record
       Size         : RAM_Size_Type;
       Content      : Content_Access;
-      Offset, Mask : Address_Type;
+      Offset, Mask : Address;
       Path         : Path_Access;
-      Bank_Count   : Bank_Count_Type;
+      N_Banks      : Bank_Count;
    end record;
 
    function RAM_Address
-     (Bank    : Memory_RAM_Bank_Type;
-      Address : RAM_Bank_Address)
-      return Address_Type;
+     (Bank : Memory_RAM_Bank_Type;
+      Addr : RAM_Bank_Address)
+      return Address;
 
 end Gade.Cart.Banked.RAM.Mem;
 

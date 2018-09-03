@@ -28,8 +28,8 @@ package Gade.Cart.Spaces.RAM is
       Content : Byte) is abstract;
 
    procedure Switch_Banks
-     (Handler    : in out Handler_Type;
-      Bank_Index : Bank_Index_Type) is null;
+     (Handler : in out Handler_Type;
+      Index   : Bank_Index) is null;
 
    procedure Set_Enabled
      (Handler : in out Handler_Type;
