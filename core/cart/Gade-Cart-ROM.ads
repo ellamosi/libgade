@@ -4,14 +4,14 @@ package Gade.Cart.ROM is
    Max_Banks : constant := 512; -- 8 MB for MBC5 (512 x 16 kByte)
    Max_Bytes : constant := Max_Banks * Bank_Size;
 
-   subtype Bank_Count_Type is Native_Unsigned range 0 .. Max_Banks;
-   subtype Byte_Count_Type is Native_Unsigned range 0 .. Max_Bytes;
+   subtype Bank_Count is Native_Unsigned range 0 .. Max_Banks;
+   subtype Byte_Count is Native_Unsigned range 0 .. Max_Bytes;
 
-   subtype Bank_Index_Type is Bank_Count_Type range 0 .. Max_Banks - 1;
-   subtype Address_Type is Byte_Count_Type range 0 .. Max_Bytes - 1;
+   subtype Bank_Index is Bank_Count range 0 .. Max_Banks - 1;
+   subtype Address is Byte_Count range 0 .. Max_Bytes - 1;
 
-   type Content_Type is array (Address_Type range <>) of aliased Byte;
-   type Content_Access is access Content_Type;
+   type Content is array (Address range <>) of aliased Byte;
+   type Content_Access is access Content;
 
    function Load (Path : String) return Content_Access;
 

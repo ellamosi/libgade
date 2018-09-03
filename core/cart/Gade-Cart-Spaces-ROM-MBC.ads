@@ -75,7 +75,7 @@ private
    procedure Switch_Banks
      (Handler          : in out Handler_Type;
       Addressable_Bank : Addressable_Bank_Range;
-      Index            : Bank_Index_Type);
+      Index            : Bank_Index);
 
    procedure ROM_Write
      (Handler : in out Handler_Type'Class;

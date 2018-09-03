@@ -112,14 +112,14 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC1 is
    end Select_High_Bank;
 
    procedure Select_ROM_Bank (Handler : in out Handler_Type) is
-      Low_Bank_Index, High_Bank_Index : Cart.ROM.Bank_Index_Type;
+      Low_Bank_Index, High_Bank_Index : Cart.ROM.Bank_Index;
       Low_Part : constant Natural := Natural (Handler.Low_Bank_Select);
       High_Part : constant Natural := Natural (Handler.High_Bank_Select);
    begin
-      High_Bank_Index := Cart.ROM.Bank_Index_Type (High_Part * 2**5 + Low_Part);
+      High_Bank_Index := Cart.ROM.Bank_Index (High_Part * 2**5 + Low_Part);
       case Handler.Banking_Mode is
          when ROM => Low_Bank_Index := 0;
-         when RAM => Low_Bank_Index := Cart.ROM.Bank_Index_Type (High_Part * 2**5);
+         when RAM => Low_Bank_Index := Cart.ROM.Bank_Index (High_Part * 2**5);
       end case;
       Handler.Switch_Banks (0, Low_Bank_Index);
       Handler.Switch_Banks (1, High_Bank_Index);

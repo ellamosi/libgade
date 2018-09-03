@@ -19,13 +19,13 @@ package Gade.Cart.Banked.ROM is
       Content : Content_Access);
 
    procedure Read
-     (Bank    : Memory_ROM_Bank_Type;
-      Address : ROM_Bank_Address;
-      Value   : out Byte);
+     (Bank  : Memory_ROM_Bank_Type;
+      Addr  : ROM_Bank_Address;
+      Value : out Byte);
 
    procedure Set_Bank
      (Bank  : in out Memory_ROM_Bank_Type;
-      Index : Bank_Index_Type);
+      Index : Bank_Index);
 
 private
 
@@ -33,7 +33,7 @@ private
 
    type Memory_ROM_Bank_Type is tagged record
       Content : Content_Access;
-      Offset  : Address_Type;
+      Offset  : Address;
    end record;
 
 end Gade.Cart.Banked.ROM;

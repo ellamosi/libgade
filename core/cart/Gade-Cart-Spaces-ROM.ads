@@ -35,7 +35,7 @@ private
 
    Addressable_Bank_Count : constant := 2;
 
-   subtype Addressable_Bank_Range is Bank_Index_Type
+   subtype Addressable_Bank_Range is Bank_Index
      range 0 .. Addressable_Bank_Count - 1;
 
    type Addressable_ROM_Banks is array (Addressable_Bank_Range) of

@@ -38,7 +38,7 @@ package body Gade.Cart.Spaces.ROM.MBC is
    procedure Switch_Banks
      (Handler          : in out Handler_Type;
       Addressable_Bank : Addressable_Bank_Range;
-      Index            : Bank_Index_Type)
+      Index            : Bank_Index)
    is
    begin
       Handler.Addressable_Banks (Addressable_Bank).Set_Bank (Index);

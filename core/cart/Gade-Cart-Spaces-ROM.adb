@@ -5,16 +5,15 @@ package body Gade.Cart.Spaces.ROM is
       Content : Content_Access)
    is
       Bank : Memory_ROM_Bank_Access;
-      Size : constant Byte_Count_Type := Content.all'Length;
-      Bank_Count : constant Bank_Count_Type :=
-        Bank_Count_Type (Size / Bank_Size);
-      Bank_Index : Bank_Index_Type;
+      Size : constant Byte_Count := Content.all'Length;
+      N_Banks : constant Bank_Count := Bank_Count (Size / Bank_Size);
+      Index : Bank_Index;
    begin
       for Addressable_Bank_Index in Addressable_Bank_Range loop
-         Bank_Index := Addressable_Bank_Index mod Bank_Count;
+         Index := Addressable_Bank_Index mod N_Banks;
          Bank := new Memory_ROM_Bank_Type;
          Initialize (Bank.all, Content);
-         Bank.Set_Bank (Bank_Index);
+         Bank.Set_Bank (Index);
          Handler.Addressable_Banks (Addressable_Bank_Index) := Bank;
       end loop;
    end Initialize;

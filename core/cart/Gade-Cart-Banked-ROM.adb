@@ -9,20 +9,20 @@ package body Gade.Cart.Banked.ROM is
    end Initialize;
 
    procedure Read
-     (Bank    : Memory_ROM_Bank_Type;
-      Address : ROM_Bank_Address;
-      Value   : out Byte)
+     (Bank  : Memory_ROM_Bank_Type;
+      Addr  : ROM_Bank_Address;
+      Value : out Byte)
    is
    begin
-      Value := Bank.Content (Address_Type (Address) + Bank.Offset);
+      Value := Bank.Content (Address (Addr) + Bank.Offset);
    end Read;
 
    procedure Set_Bank
      (Bank  : in out Memory_ROM_Bank_Type;
-      Index : Bank_Index_Type)
+      Index : Bank_Index)
    is
-      Unwrapped_Offset : constant Address_Type :=
-        Address_Type (Index) * Bank_Size;
+      Unwrapped_Offset : constant Address :=
+        Address (Index) * Bank_Size;
    begin
       Bank.Offset := Unwrapped_Offset mod Bank.Content'Length;
    end Set_Bank;
