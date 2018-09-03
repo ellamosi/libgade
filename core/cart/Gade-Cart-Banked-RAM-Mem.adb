@@ -12,7 +12,7 @@ package body Gade.Cart.Banked.RAM.Mem is
       Load (Path, Handler.RAM.all);
       Handler.Size := Size;
       Handler.Path := new String'(Path);
-      Handler.N_Banks := Byte_Size / Bank_Size;
+      Handler.N_Banks := Bank_Count ((Byte_Size) / Native_Unsigned (Bank_Size));
    end Initialize;
 
    overriding procedure Read
@@ -44,7 +44,7 @@ package body Gade.Cart.Banked.RAM.Mem is
             Handler.Offset := 0;
             Handler.Mask   := RAM_16kbit_Mask;
          when others =>
-            Handler.Offset := Wrapped_Index * Bank_Size;
+            Handler.Offset := Native_Unsigned (Wrapped_Index) * Bank_Size;
             Handler.Mask   := Address (Address_Mask);
       end case;
    end Set_Bank;

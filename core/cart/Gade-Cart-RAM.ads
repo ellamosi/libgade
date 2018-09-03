@@ -4,7 +4,7 @@ package Gade.Cart.RAM is
    Max_Banks : constant := 16; -- 128 kB for MBC5 (16 x 8kByte)
    Max_Bytes : constant := Max_Banks * Bank_Size;
 
-   subtype Bank_Count is Native_Unsigned range 0 .. Max_Banks;
+   type Bank_Count is range 0 .. Max_Banks;
    subtype Byte_Count is Native_Unsigned range 0 .. Max_Bytes;
 
    subtype Bank_Index is Bank_Count range 0 .. Max_Banks - 1;
