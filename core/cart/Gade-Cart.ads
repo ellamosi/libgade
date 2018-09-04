@@ -129,7 +129,7 @@ private package Gade.Cart is
       Complement_Check   : Byte;
       Checksum           : Word;
    end record;
-   type Cart_Header_Access is access Cart_Header;
+   type Cart_Header_Access is access constant Cart_Header;
 
    procedure Load_ROM
      (ROM_Handler : out Spaces.ROM.Handler_Access;
