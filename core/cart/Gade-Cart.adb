@@ -5,10 +5,12 @@ with Gade.Cart.ROM;                 use Gade.Cart.ROM;
 with Gade.Cart.Spaces.ROM;          use Gade.Cart.Spaces.ROM;
 with Gade.Cart.Spaces.ROM.Plain;    use Gade.Cart.Spaces.ROM.Plain;
 with Gade.Cart.Spaces.ROM.MBC.MBC1; use Gade.Cart.Spaces.ROM.MBC.MBC1;
+with Gade.Cart.Spaces.ROM.MBC.MBC2; use Gade.Cart.Spaces.ROM.MBC.MBC2;
 
 with Gade.Cart.Spaces.RAM;          use Gade.Cart.Spaces.RAM;
 with Gade.Cart.Spaces.RAM.Blank;    use Gade.Cart.Spaces.RAM.Blank;
 with Gade.Cart.Spaces.RAM.Banked;   use Gade.Cart.Spaces.RAM.Banked;
+with Gade.Cart.Spaces.RAM.MBC2;     use Gade.Cart.Spaces.RAM.MBC2;
 
 package body Gade.Cart is
 
@@ -50,6 +52,7 @@ package body Gade.Cart is
    is
       package Blank_RAM_Handler  renames Gade.Cart.Spaces.RAM.Blank;
       package Banked_RAM_Handler renames Gade.Cart.Spaces.RAM.Banked;
+      package MBC2_RAM_Handler   renames Gade.Cart.Spaces.RAM.MBC2;
       subtype Handler_Access is Spaces.RAM.Handler_Access;
       RAM_Handler_Kind : constant RAM_Handler_Kind_Type :=
         RAM_Handler_Kind_For_Cart (Header.Cart_Type);
@@ -60,7 +63,10 @@ package body Gade.Cart is
             when None =>
                Handler_Access (Blank_RAM_Handler.Create),
             when MBC1 =>
-               Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)));
+               Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)),
+            when MBC2 =>
+               Handler_Access (MBC2_RAM_Handler.Create (Path))
+        );
    end Create_RAM_Space_Handler;
 
    function Create_ROM_Space_Handler
@@ -80,6 +86,8 @@ package body Gade.Cart is
                Handler_Access (Spaces.ROM.Plain.Create (ROM_Content)),
             when Cartridge_Info.MBC1 =>
                Handler_Access (Spaces.ROM.MBC.MBC1.Create (ROM_Content, RAM_Handler)),
+            when Cartridge_Info.MBC2 =>
+               Handler_Access (Spaces.ROM.MBC.MBC2.Create (ROM_Content, RAM_Handler)),
             when others =>
                raise Program_Error with "Unsupported cartridge controller! " & Controller'Img);
    end Create_ROM_Space_Handler;
