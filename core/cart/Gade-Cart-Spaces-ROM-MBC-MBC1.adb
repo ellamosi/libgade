@@ -47,6 +47,7 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC1 is
 
       Masked_Value : constant Byte := Value and Mask;
    begin
+      --  TODO: Review disabling values
       case Masked_Value is
          when Enable  => Handler.RAM_Handler.Set_Enabled (True);
          when Disable => Handler.RAM_Handler.Set_Enabled (False);
