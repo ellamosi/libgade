@@ -15,10 +15,10 @@ package Gade.Cart.RAM is
 
    procedure Load
      (Path : String;
-      ROM  : out Content);
+      RAM  : out Content);
 
    procedure Save
      (Path : String;
-      ROM  : Content);
+      RAM  : Content);
 
 end Gade.Cart.RAM;

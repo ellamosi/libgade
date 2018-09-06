@@ -15,15 +15,13 @@ package Gade.Cart.Spaces.ROM.MBC.MBC2 is
 
 private
 
-   type Bank_Select_Type is mod 2**4;
-
    Select_Mask : constant := 16#0F#;
 
    subtype Bank_Select_Address is
      MBC.Bank_Select_Address range 16#2000# .. 16#3FFF#;
 
    type Handler_Type is new MBC.Handler_Type with record
-      Bank_Select : Bank_Select_Type;
+      null;
    end record;
 
    procedure Initialize
