@@ -6,6 +6,7 @@ with Gade.Cart.Spaces.ROM;          use Gade.Cart.Spaces.ROM;
 with Gade.Cart.Spaces.ROM.Plain;    use Gade.Cart.Spaces.ROM.Plain;
 with Gade.Cart.Spaces.ROM.MBC.MBC1; use Gade.Cart.Spaces.ROM.MBC.MBC1;
 with Gade.Cart.Spaces.ROM.MBC.MBC2; use Gade.Cart.Spaces.ROM.MBC.MBC2;
+with Gade.Cart.Spaces.ROM.MBC.MBC3; use Gade.Cart.Spaces.ROM.MBC.MBC3;
 
 with Gade.Cart.Spaces.RAM;          use Gade.Cart.Spaces.RAM;
 with Gade.Cart.Spaces.RAM.Blank;    use Gade.Cart.Spaces.RAM.Blank;
@@ -65,7 +66,9 @@ package body Gade.Cart is
             when MBC1 =>
                Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)),
             when MBC2 =>
-               Handler_Access (MBC2_RAM_Handler.Create (Path))
+               Handler_Access (MBC2_RAM_Handler.Create (Path)),
+            when MBC3 =>
+               Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path))
         );
    end Create_RAM_Space_Handler;
 
@@ -88,6 +91,8 @@ package body Gade.Cart is
                Handler_Access (Spaces.ROM.MBC.MBC1.Create (ROM_Content, RAM_Handler)),
             when Cartridge_Info.MBC2 =>
                Handler_Access (Spaces.ROM.MBC.MBC2.Create (ROM_Content, RAM_Handler)),
+            when Cartridge_Info.MBC3 =>
+               Handler_Access (Spaces.ROM.MBC.MBC3.Create (ROM_Content, RAM_Handler)),
             when others =>
                raise Program_Error with "Unsupported cartridge controller! " & Controller'Img);
    end Create_ROM_Space_Handler;

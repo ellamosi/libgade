@@ -24,7 +24,7 @@ package Gade.Cart.Spaces.ROM.MBC is
    --  RAM Enable
 
    --  MBC1: 0000-1FFF - RAM Enable (Write Only) (Value based)
-   --  MBC2: 0000-1FFF - RAM Enable (Write Only) (Address based)
+   --  MBC2: 0000-1FFF - RAM Enable (Write Only) (Value based - Address restrictions)
    --  MBC3: 0000-1FFF - RAM and Timer Enable (Write Only) (Value based, always affects timer)
    --  MBC5: 0000-1FFF - RAM Enable (Write Only) (Value based)
 
@@ -32,7 +32,7 @@ package Gade.Cart.Spaces.ROM.MBC is
 
    --  MBC1: 2000-3FFF - ROM Bank Number (Write Only) 0, 20h, 40h, 60h are mapped to +1
    --        4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) NOOOOOOOOOOOOO
-   --  MBC2: 2000-3FFF - ROM Bank Number (Write Only) only certain addresses work!
+   --  MBC2: 2000-3FFF - ROM Bank Number (Write Only) - Address restrictions
    --  MBC3: 2000-3FFF - ROM Bank Number (Write Only) 0 maps to 1
    --  MBC5: 2000-2FFF - Low 8 bits of ROM Bank Number (Write Only)
    --        3000-3FFF - High bit of ROM Bank Number (Write Only)
