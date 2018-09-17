@@ -61,7 +61,9 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC3 is
      (Handler : in out Handler_Type;
       Value   : Byte)
    is
+      pragma Unreferenced (Value, Handler);
    begin
+      --  Put_Line ("Latch: Unimplemented");
       --  Latch Clock Data
       null;
    end Write_Special;
@@ -82,8 +84,7 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC3 is
      (Handler : in out Handler_Type;
       Value   : Byte)
    is
-      --  TODO : This does not support selecting the RTC
-      Bank_Mask : constant Byte := 16#07#;
+      Bank_Mask : constant Byte := 16#0F#;
       Index : Cart.RAM.Bank_Index;
    begin
       Index := Cart.RAM.Bank_Index (Value and Bank_Mask);

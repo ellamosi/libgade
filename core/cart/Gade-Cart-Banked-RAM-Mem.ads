@@ -12,7 +12,7 @@ package Gade.Cart.Banked.RAM.Mem is
 
    overriding
    procedure Read
-     (Handler : Handler_Type;
+     (Handler : in out Handler_Type;
       Address : Bank_Address;
       Value   : out Byte);
 
@@ -40,8 +40,6 @@ private
       RAM_512kbit =>  64 * 1024);
 
    RAM_16kbit_Mask : constant := 16#7FF#;
-
-   type Path_Access is access constant String;
 
    type Handler_Type is new RAM.Handler_Type with record
       Size         : RAM_Size_Type;

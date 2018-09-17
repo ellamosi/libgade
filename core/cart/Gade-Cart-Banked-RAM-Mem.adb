@@ -16,7 +16,7 @@ package body Gade.Cart.Banked.RAM.Mem is
    end Initialize;
 
    overriding procedure Read
-     (Handler : Handler_Type;
+     (Handler : in out Handler_Type;
       Address : Bank_Address;
       Value   : out Byte)
    is

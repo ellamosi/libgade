@@ -7,7 +7,7 @@ package Gade.Cart.Banked.RAM.Blank is
 
    overriding
    procedure Read
-     (Handler : Handler_Type;
+     (Handler : in out Handler_Type;
       Address : Bank_Address;
       Value   : out Byte);
 

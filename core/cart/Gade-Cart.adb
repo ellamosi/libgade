@@ -8,10 +8,13 @@ with Gade.Cart.Spaces.ROM.MBC.MBC1; use Gade.Cart.Spaces.ROM.MBC.MBC1;
 with Gade.Cart.Spaces.ROM.MBC.MBC2; use Gade.Cart.Spaces.ROM.MBC.MBC2;
 with Gade.Cart.Spaces.ROM.MBC.MBC3; use Gade.Cart.Spaces.ROM.MBC.MBC3;
 
-with Gade.Cart.Spaces.RAM;          use Gade.Cart.Spaces.RAM;
-with Gade.Cart.Spaces.RAM.Blank;    use Gade.Cart.Spaces.RAM.Blank;
-with Gade.Cart.Spaces.RAM.Banked;   use Gade.Cart.Spaces.RAM.Banked;
-with Gade.Cart.Spaces.RAM.MBC2;     use Gade.Cart.Spaces.RAM.MBC2;
+with Gade.Cart.Spaces.RAM;             use Gade.Cart.Spaces.RAM;
+with Gade.Cart.Spaces.RAM.Blank;       use Gade.Cart.Spaces.RAM.Blank;
+with Gade.Cart.Spaces.RAM.Banked;      use Gade.Cart.Spaces.RAM.Banked;
+with Gade.Cart.Spaces.RAM.Banked.MBC3; use Gade.Cart.Spaces.RAM.Banked.MBC3;
+with Gade.Cart.Spaces.RAM.MBC2;        use Gade.Cart.Spaces.RAM.MBC2;
+
+--  with Gade.Cart.RTC;
 
 package body Gade.Cart is
 
@@ -29,6 +32,7 @@ package body Gade.Cart is
       return Cart_Header_Access;
 
    function RAM_Path (ROM_Path : String) return String;
+   --  function RTC_Path (ROM_Path : String) return String;
 
    procedure Load_ROM
      (ROM_Handler : out Spaces.ROM.Handler_Access;
@@ -37,6 +41,9 @@ package body Gade.Cart is
    is
       ROM_Content : ROM.Content_Access;
       Header      : Cart_Header_Access;
+
+      --  TODO: FOR DEBUG
+      --  RTC : Gade.Cart.RTC.Clock;
    begin
       ROM_Content := Load (Path);
 
@@ -45,6 +52,12 @@ package body Gade.Cart is
 
       RAM_Handler := Create_RAM_Space_Handler (Header.all, Path);
       ROM_Handler := Create_ROM_Space_Handler (Header.all, ROM_Content, RAM_Handler);
+
+      --  Put_Line ("Reading RTC");
+      --  Gade.Cart.RTC.Load (RTC_Path (Path), RTC);
+      --  delay 2.0;
+      --  Gade.Cart.RTC.Save (RTC_Path (Path) & '2', RTC);
+      --  Put_Line ("Finished Reading RTC");
    end Load_ROM;
 
    function Create_RAM_Space_Handler
@@ -54,6 +67,7 @@ package body Gade.Cart is
       package Blank_RAM_Handler  renames Gade.Cart.Spaces.RAM.Blank;
       package Banked_RAM_Handler renames Gade.Cart.Spaces.RAM.Banked;
       package MBC2_RAM_Handler   renames Gade.Cart.Spaces.RAM.MBC2;
+      package MBC3_RAM_Handler   renames Gade.Cart.Spaces.RAM.Banked.MBC3;
       subtype Handler_Access is Spaces.RAM.Handler_Access;
       RAM_Handler_Kind : constant RAM_Handler_Kind_Type :=
         RAM_Handler_Kind_For_Cart (Header.Cart_Type);
@@ -68,7 +82,7 @@ package body Gade.Cart is
             when MBC2 =>
                Handler_Access (MBC2_RAM_Handler.Create (Path)),
             when MBC3 =>
-               Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path))
+               Handler_Access (MBC3_RAM_Handler.Create (Header.RAM_Size, Path))
         );
    end Create_RAM_Space_Handler;
 
@@ -104,6 +118,15 @@ package body Gade.Cart is
                  Name                 => Base_Name (ROM_Path),
                  Extension            => "sav");
    end RAM_Path;
+
+
+--     function RTC_Path (ROM_Path : String) return String is
+--     begin
+--        return
+--          Compose (Containing_Directory => Containing_Directory (ROM_Path),
+--                   Name                 => Base_Name (ROM_Path),
+--                   Extension            => "rtc");
+--     end RTC_Path;
 
    function Get_Header
      (Content : Cart.ROM.Content_Access)
