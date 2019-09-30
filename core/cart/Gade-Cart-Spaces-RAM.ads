@@ -10,6 +10,11 @@ package Gade.Cart.Spaces.RAM is
    type Handler_Type is abstract new Memory_Mapped_Device with private;
    type Handler_Access is access all Handler_Type'Class;
 
+   procedure Initialize
+     (Handler : out Handler_Type'Class;
+      Size    : RAM_Size_Type;
+      Path    : String);
+
    overriding
    procedure Reset (Space : in out Handler_Type) is null;
 
@@ -18,14 +23,14 @@ package Gade.Cart.Spaces.RAM is
      (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Content : out Byte) is abstract;
+      Content : out Byte);
 
    overriding
    procedure Write
      (Handler : in out Handler_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Content : Byte) is abstract;
+      Content : Byte);
 
    procedure Switch_Banks
      (Handler : in out Handler_Type;
@@ -37,10 +42,12 @@ package Gade.Cart.Spaces.RAM is
 
    procedure Save (Space : Handler_Type) is null;
 
+   function To_Bank_Address (Address : Word) return Bank_Address;
+
 private
 
-   type Handler_Type is abstract new Memory_Mapped_Device with null record;
-
-   function To_Bank_Address (Address : Word) return Bank_Address;
+   type Handler_Type is abstract new Memory_Mapped_Device with record
+     Current_Bank : Gade.Cart.Banked.RAM.Handler_Access;
+   end record;
 
 end Gade.Cart.Spaces.RAM;

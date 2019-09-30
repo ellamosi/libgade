@@ -81,7 +81,7 @@ package body Gade.Cart is
                Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)),
             when MBC2 =>
                Handler_Access (MBC2_RAM_Handler.Create (Path)),
-            when MBC3 =>
+            when MBC3_RAM =>
                Handler_Access (MBC3_RAM_Handler.Create (Header.RAM_Size, Path))
         );
    end Create_RAM_Space_Handler;

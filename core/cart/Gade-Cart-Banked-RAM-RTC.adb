@@ -1,5 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
 package body Gade.Cart.Banked.RAM.RTC is
 
    procedure Initialize
@@ -19,17 +17,7 @@ package body Gade.Cart.Banked.RAM.RTC is
    is
       pragma Unreferenced (Address);
    begin
-      --  TODO: Figure out more efficient refresh
-      Refresh (Handler.Clk);
-      Read
-        (Handler.Clk,
-         Seconds   => Handler.Values (Seconds),
-         Minutes   => Handler.Values (Minutes),
-         Hours     => Handler.Values (Hours),
-         Days_Low  => Handler.Values (Days_Low),
-         Days_High => Handler.Values (Days_High));
-      Put_Line (Handler.Current'Img & Handler.Values (Handler.Current)'Img);
-      Value := Handler.Values (Handler.Current);
+      Read (Handler.Clk, Handler.Current, Value);
    end Read;
 
    procedure Set_Register

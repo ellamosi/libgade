@@ -2,12 +2,10 @@ package body Gade.Cart.Spaces.ROM.MBC is
 
    procedure Initialize
      (Handler     : out Handler_Type'Class;
-      ROM_Content : Cart.ROM.Content_Access;
-      RAM_Handler : RAM.Handler_Access)
+      ROM_Content : Cart.ROM.Content_Access)
    is
    begin
       ROM.Handler_Type (Handler).Initialize (ROM_Content);
-      Handler.RAM_Handler := RAM_Handler;
    end Initialize;
 
    overriding

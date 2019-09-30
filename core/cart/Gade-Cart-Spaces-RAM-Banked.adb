@@ -35,32 +35,6 @@ package body Gade.Cart.Spaces.RAM.Banked is
    end Reset;
 
    overriding
-   procedure Read
-     (Handler : in out Handler_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Content : out Byte)
-   is
-      pragma Unreferenced (GB);
-      Bank_Addr : constant Bank_Address := To_Bank_Address (Address);
-   begin
-      Handler.Current_Bank.Read (Bank_Addr, Content);
-   end Read;
-
-   overriding
-   procedure Write
-     (Handler : in out Handler_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Content : Byte)
-   is
-      pragma Unreferenced (GB);
-      Bank_Addr : constant Bank_Address := To_Bank_Address (Address);
-   begin
-      Handler.Current_Bank.Write (Bank_Addr, Content);
-   end Write;
-
-   overriding
    procedure Switch_Banks
      (Handler : in out Handler_Type;
       Index   : Bank_Index)

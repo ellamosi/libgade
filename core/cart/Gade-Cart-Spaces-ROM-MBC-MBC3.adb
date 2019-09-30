@@ -1,5 +1,6 @@
 with Gade.Cart.ROM; use Gade.Cart.ROM;
 with Gade.Cart.RAM; use Gade.Cart.RAM;
+with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Cart.Spaces.ROM.MBC.MBC3 is
 
@@ -62,10 +63,12 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC3 is
       Value   : Byte)
    is
       pragma Unreferenced (Value, Handler);
+      --  v : Integer;
    begin
-      --  Put_Line ("Latch: Unimplemented");
+      Put_Line ("Latch: Unimplemented");
+      --  v := Handler.RAM_Handler;
       --  Latch Clock Data
-      null;
+      --  null;
    end Write_Special;
 
    procedure Select_ROM_Bank

@@ -10,10 +10,24 @@ package Gade.Cart.RTC is
 
    procedure Reset (Clk : out Clock);
 
-   procedure Refresh (Clk : in out Clock);
+   --  procedure Refresh (Clk : in out Clock);
+
+--     procedure Read
+--       (Clk : Clock;
+--        Seconds, Minutes, Hours, Days_Low, Days_High : out Byte);
+--
+
    procedure Read
-     (Clk : Clock;
-      Seconds, Minutes, Hours, Days_Low, Days_High : out Byte);
+     (Clk   : in out Clock;
+      Reg   : Register;
+      Value : out Byte);
+
+--     procedure Write
+--       (Clk   : in out Clock;
+--        Reg   : Register;
+--        Value : Byte);
+--
+   procedure Latch (Clk : in out Clock);
 
    procedure Load
      (Path : String;
@@ -97,17 +111,18 @@ private
       Overflown : Boolean;
    end record;
 
+   type Register_Values is array (Register'Range) of Byte;
+
    type Clock is record
       Elapsed    : Counter;
       Latched    : Counter;
+      Registers  : Register_Values;
       Updated_At : Time;
    end record;
 
    Max_Span : constant := 512 * 24 * 60 * 60;
 
    Seconds_Day : constant Duration := Duration (24 * 60 * 60);
-
-
 
    procedure Read (File : File_Type; RTC_Data : out File_Data);
    procedure Sanitize (FD : in out File_Data);
@@ -126,6 +141,12 @@ private
 
    function Duration_Image (D : Duration) return String;
    function Counter_Image (C : Counter) return String;
+
+   procedure Refresh (Clk : in out Clock);
+
+   procedure Materialize_Registers
+     (Count : Counter;
+      Regs  : out Register_Values);
 
 end Gade.Cart.RTC;
 

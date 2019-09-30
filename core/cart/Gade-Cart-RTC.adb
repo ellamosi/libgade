@@ -1,8 +1,8 @@
 with Ada.Calendar.Conversions; use Ada.Calendar.Conversions;
-with Interfaces.C;
-with Ada.Text_IO;
-with Ada.Exceptions; use Ada.Exceptions;
 with Ada.Calendar.Formatting;  use Ada.Calendar.Formatting;
+with Ada.Exceptions;           use Ada.Exceptions;
+with Ada.Text_IO;
+with Interfaces.C;
 
 package body Gade.Cart.RTC is
 
@@ -125,6 +125,22 @@ package body Gade.Cart.RTC is
       Clk.Updated_At := Ada.Calendar.Clock;
    end Reset;
 
+   procedure Materialize_Registers
+     (Count : Counter;
+      Regs  : out Register_Values)
+   is
+      Span_Seconds : constant Natural := Natural (Count.Span);
+      Span_Minutes : constant Natural := Span_Seconds / 60;
+      Span_Hours   : constant Natural := Span_Minutes / 60;
+      Span_Days    : constant Natural := Span_Hours / 24;
+   begin
+      Regs (Seconds)   := Byte (Span_Seconds mod 60);
+      Regs (Minutes)   := Byte (Span_Minutes mod 60);
+      Regs (Hours)     := Byte (Span_Hours mod 24);
+      Regs (Days_Low)  := Byte (Span_Days mod 256);
+      Regs (Days_High) := 0; --  TODO
+   end Materialize_Registers;
+
    procedure Refresh (Clk : in out Clock) is
       Now : constant Time := Ada.Calendar.Clock;
    begin
@@ -139,20 +155,19 @@ package body Gade.Cart.RTC is
    end Refresh;
 
    procedure Read
-     (Clk : Clock;
-      Seconds, Minutes, Hours, Days_Low, Days_High : out Byte)
-   is
-      Span_Seconds : constant Natural := Natural (Clk.Elapsed.Span);
-      Span_Minutes : constant Natural := Span_Seconds / 60;
-      Span_Hours   : constant Natural := Span_Minutes / 60;
-      Span_Days    : constant Natural := Span_Hours / 24;
+     (Clk   : in out Clock;
+      Reg   : Register;
+      Value : out Byte) is
    begin
-      Seconds   := Byte (Span_Seconds mod 60);
-      Minutes   := Byte (Span_Minutes mod 60);
-      Hours     := Byte (Span_Hours mod 24);
-      Days_Low  := Byte (Span_Days mod 256);
-      Days_High := 0; --  TODO
+      Value := Clk.Registers (Reg);
    end Read;
+
+   procedure Latch (Clk : in out Clock) is
+   begin
+      Refresh (Clk);
+      Clk.Latched := Clk.Elapsed;
+      Materialize_Registers (Clk.Latched, Clk.Registers);
+   end Latch;
 
    procedure Read (File : File_Type; RTC_Data : out File_Data) is
       Input_Stream : Stream_Access;
@@ -160,7 +175,7 @@ package body Gade.Cart.RTC is
       Tail_Size    : Count;
    begin
       File_Size := Size (File);
-      Tail_Size := File_Size mod 8192;
+      Tail_Size := File_Size mod 8192; -- TODO: Constantize, bank size
       Set_Index (File, File_Size - Tail_Size);
       Input_Stream := Ada.Streams.Stream_IO.Stream (File);
       if Tail_Size >= File_Data_64_Size then

@@ -60,17 +60,11 @@ package Gade.Cart.Spaces.ROM.MBC is
       Address : Word;
       Content : Byte);
 
-private
-   use Gade.Cart.Spaces.RAM;
-
-   type Handler_Type is abstract new ROM.Handler_Type with record
-      RAM_Handler : RAM.Handler_Access;
-   end record;
+   --  TODO: All of the following should probably be private
 
    procedure Initialize
-     (Handler     : out Handler_Type'Class;
-      ROM_Content : Cart.ROM.Content_Access;
-      RAM_Handler : RAM.Handler_Access);
+     (Handler      : out Handler_Type'Class;
+      ROM_Content  : Cart.ROM.Content_Access);
 
    procedure Switch_Banks
      (Handler          : in out Handler_Type;
@@ -103,4 +97,10 @@ private
      (MBC     : in out Handler_Type;
       Value   : Byte) is null;
 
+private
+   --  use Gade.Cart.Spaces.RAM;
+
+   type Handler_Type is abstract new ROM.Handler_Type with record
+      RAM_Handler : RAM.Handler_Access;
+   end record;
 end Gade.Cart.Spaces.ROM.MBC;

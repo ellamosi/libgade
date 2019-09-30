@@ -240,7 +240,7 @@ private
         Huds_on_Huc_1             => Huds_on_Huc_1);
 
    type RAM_Handler_Kind_Type is
-     (None, MBC1, MBC2, MBC3);
+     (None, MBC1, MBC2, MBC3_RAM);
 
    RAM_Handler_Kind_For_Cart : constant array (Cart_Type)
      of RAM_Handler_Kind_Type :=
@@ -255,11 +255,11 @@ private
         ROM_MM01                  => None,
         ROM_MM01_SRAM             => None,
         ROM_MM01_SRAM_BATT        => None,
-        ROM_MBC3_TIMER_BATT       => MBC3,
-        ROM_MBC3_TIMER_RAM_BATT   => MBC3,
-        ROM_MBC3                  => MBC3,
-        ROM_MBC3_RAM              => MBC3,
-        ROM_MBC3_RAM_BATT         => MBC3,
+        ROM_MBC3_TIMER_BATT       => MBC3_RAM,
+        ROM_MBC3_TIMER_RAM_BATT   => MBC3_RAM,
+        ROM_MBC3                  => MBC3_RAM,
+        ROM_MBC3_RAM              => MBC3_RAM,
+        ROM_MBC3_RAM_BATT         => MBC3_RAM,
         ROM_MBC5                  => None,
         ROM_MBC5_RAM              => None,
         ROM_MBC5_RAM_BATT         => None,
@@ -270,5 +270,7 @@ private
         Bandai_TAMA5              => None,
         Huds_on_Huc_3             => None,
         Huds_on_Huc_1             => None);
+
+   type Cart_Handler is tagged null record;
 
 end Gade.Cart;

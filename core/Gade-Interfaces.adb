@@ -9,6 +9,9 @@ with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
 with Gade.Cart;
 
+--  TODO: Remove
+--  with Gade.Cart.Controllers.MBC.MBC3;
+
 package body Gade.Interfaces is
 
    type Opaque_Gade_Type is record
@@ -73,5 +76,11 @@ package body Gade.Interfaces is
       Put_Line ("Finalize");
       Free (G);
    end Finalize;
+
+   --  TODO: Remove
+   procedure Test is
+   begin
+      Gade.Cart.Controllers.MBC.MBC3.Test;
+   end Test;
 
 end Gade.Interfaces;
