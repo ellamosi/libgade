@@ -7,6 +7,28 @@ package Gade.Cart.Controllers is
 
    type Cart_Handler_Access is access Cart_Handler;
 
+   procedure Read_ROM
+     (Handler : in out Cart_Handler;
+      Address : Word;
+      Content : out Byte);
+
+   procedure Write_ROM
+     (Handler : in out Cart_Handler;
+      Address : Word;
+      Content : Byte);
+
+   procedure Read_RAM
+     (Handler : in out Cart_Handler;
+      Address : Word;
+      Content : out Byte);
+
+   procedure Write_RAM
+     (Handler : in out Cart_Handler;
+      Address : Word;
+      Content : Byte);
+
+private
+
    --  FIXME: This is a prototype in development to attempt to further reduce
    --  some common elements of type definitions while maintaining concrete
    --  types and non dispatching calls

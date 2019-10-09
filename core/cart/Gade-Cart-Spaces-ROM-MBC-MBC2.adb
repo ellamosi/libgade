@@ -54,7 +54,7 @@ package body Gade.Cart.Spaces.ROM.MBC.MBC2 is
       Address : MBC.Bank_Select_Address;
       Value   : Byte)
    is
-      Accept_Mask  : constant Word := 16#0100#;
+      Accept_Mask : constant Word := 16#0100#;
 
       Index : Cart.ROM.Bank_Index;
    begin
