@@ -9,7 +9,6 @@ package Gade.Carts.Memory_Contents is
    type Bank_Count is range 0 .. Max_Banks;
    subtype Bank_Index_Range is Bank_Count range 0 .. Max_Banks - 1;
 
-
    subtype Content_Byte_Count is Native_Unsigned range 0 .. Max_Bytes;
    subtype Memory_Content_Address is Content_Byte_Count range 0 .. Max_Bytes - 1;
    subtype Memory_Content_Offset is Memory_Content_Address;
@@ -18,13 +17,17 @@ package Gade.Carts.Memory_Contents is
 
    type ROM_Content is new Memory_Content;
 
-   type ROM_Content_Access is access ROM_Content;
+   type ROM_Content_Access is access all ROM_Content;
+   subtype ROM_Content_NN_Access is not null ROM_Content_Access;
 
    function Load (Path : String) return ROM_Content_Access;
 
    type RAM_Content is new Memory_Content;
 
-   type RAM_Content_Access is access RAM_Content;
+   type RAM_Content_Access is access all RAM_Content;
+   subtype RAM_Content_NN_Access is not null RAM_Content_Access;
+
+   function Create (Size : RAM_Size_Type) return RAM_Content_NN_Access;
 
    procedure Load
      (Path : String;

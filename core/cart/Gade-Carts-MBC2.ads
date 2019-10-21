@@ -7,6 +7,10 @@ package Gade.Carts.MBC2 is
 
    type MBC2_Cart is new Cart with private;
 
+   type MBC2_Cart_Access is access MBC2_Cart;
+
+   subtype MBC2_Cart_NN_Access is not null MBC2_Cart_Access;
+
 private
 
    type ROM_Bank_Index is range 0 .. 15;

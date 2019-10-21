@@ -22,6 +22,7 @@ package body Gade.Cart.ROM is
       end Print_Banks;
    begin
       ROM_Size := Size (Path);
+      --  TODO: Allocate a power of 2 regardless of actuall file size (ROM files could be trimmed)
       ROM := new Content (0 .. Address (ROM_Size - 1));
       Open (File, In_File, Path);
       Input_Stream := Ada.Streams.Stream_IO.Stream (File);

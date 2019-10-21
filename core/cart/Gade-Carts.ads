@@ -136,7 +136,7 @@ private package Gade.Carts is
 
    type Cart is abstract tagged private;
 
-   type Cart_Access is access all Cart;
+   type Cart_Access is access all Cart'Class;
 
    subtype Cart_NN_Access is not null Cart_Access;
 

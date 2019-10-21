@@ -1,5 +1,4 @@
 package body Gade.Carts.Mixins.Banked_ROM is
-   use ROM_Banks;
 
    overriding
    procedure Read_ROM
@@ -11,9 +10,9 @@ package body Gade.Carts.Mixins.Banked_ROM is
    begin
       case Address is
          when Bank0_Address =>
-            Read (C.Current_ROM_Banks (Bank0).all, Bank_Addr, V);
+            Read (C.Accessible_Banks (Bank0).all, Bank_Addr, V);
          when Bank1_Address =>
-            Read (C.Current_ROM_Banks (Bank1).all, Bank_Addr, V);
+            Read (C.Accessible_Banks (Bank1).all, Bank_Addr, V);
       end case;
    end Read_ROM;
 
@@ -23,7 +22,7 @@ package body Gade.Carts.Mixins.Banked_ROM is
       I : Bank_Index)
    is
    begin
-      C.Current_ROM_Banks (L).Set_Bank (I);
+      C.Accessible_Banks (L) := C.Banks.Select_Bank (I);
    end Select_ROM_Bank;
 
 end Gade.Carts.Mixins.Banked_ROM;

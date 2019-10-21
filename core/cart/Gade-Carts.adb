@@ -14,14 +14,10 @@ with Ada.Directories; use Ada.Directories;
 --  with Gade.Cart.Spaces.RAM.Banked.MBC3; use Gade.Cart.Spaces.RAM.Banked.MBC3;
 --  with Gade.Cart.Spaces.RAM.MBC2;        use Gade.Cart.Spaces.RAM.MBC2;
 
-
-with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
---  with Gade.Cart.C2;       use Gade.Cart.C2;
---  with Gade.Cart.C2.Plain; use Gade.Cart.C2.Plain;
+with Gade.Carts.Memory_Contents;    use Gade.Carts.Memory_Contents;
+with Gade.Carts.Plain.Constructors; use Gade.Carts.Plain.Constructors;
 with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
---  with Gade.Cart.C2.MBC2;  use Gade.Cart.C2.MBC2;
-
---  with Gade.Cart.RTC;
+with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
 
 package body Gade.Carts is
 
@@ -94,21 +90,28 @@ package body Gade.Carts is
 --     end Load_ROM;
 --
    function Load_ROM (Path : String) return Cart_NN_Access is
-      ROM_Content : ROM_Content_Access;
-      Header      : Cart_Header_Access;
-      --  Cart        : Cart_Access;
+      ROM        : ROM_Content_Access;
+      Header     : Cart_Header_Access;
+      Controller : Controller_Type;
 
-      RAMM_Path : constant String := RAM_Path (Path);
+      RAM : constant String := RAM_Path (Path);
    begin
-      ROM_Content := Load (Path);
+      ROM := Load (Path);
 
       --  Not true for some few rare cart types (multicarts)
-      Header := Get_Header (ROM_Content);
+      Header := Get_Header (ROM);
+      Controller := Controller_Type_For_Cart (Header.Cart_Type);
 
-      return
-        Cart_Access (case Controller_Type_For_Cart (Header.Cart_Type) is
-            when others => MBC1.Constructors.Create (ROM_Content, Header, RAMM_Path)
-        );
+      case Controller is
+         when Cartridge_Info.None =>
+            return Cart_Access (Plain.Constructors.Create (ROM, Header, RAM));
+         when Cartridge_Info.MBC1 =>
+            return Cart_Access (MBC1.Constructors.Create (ROM, Header, RAM));
+         when Cartridge_Info.MBC2 =>
+            return Cart_Access (MBC2.Constructors.Create (ROM, Header, RAM));
+         when others =>
+            return Cart_Access (Plain.Constructors.Create (ROM, Header, RAM));
+      end case;
    end Load_ROM;
 --
 --     function Create_RAM_Space_Handler
