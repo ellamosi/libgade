@@ -1,3 +1,5 @@
+private with Ada.Directories;
+
 package Gade.Carts.Memory_Contents is
 
    --  TODO: Separate ROM/RAM concerns
@@ -36,5 +38,24 @@ package Gade.Carts.Memory_Contents is
    procedure Save
      (Path : String;
       RAM  : RAM_Content);
+
+private
+   use Ada.Directories;
+
+   function Encompassing_ROM_Size (S : File_Size) return Content_Byte_Count;
+
+   --  Commercial ROMs seem to be all at least 32kB, but there are a few
+   --  small homebrew test ROMs that are just 16kB. Nonetheless, allow loading
+   --  a bootstrap file too: 256B.
+   Min_ROM_Size : constant Content_Byte_Count := 256;
+
+   Content_Size_For_RAM_Size : constant array (RAM_Size_Type)
+     of Content_Byte_Count :=
+       (None        =>          0,
+        RAM_16kbit  =>   2 * 1024,
+        RAM_64kbit  =>   8 * 1024,
+        RAM_256kbit =>  32 * 1024,
+        RAM_512kbit =>  64 * 1024,
+        RAM_1Mbit   => 128 * 1024);
 
 end Gade.Carts.Memory_Contents;
