@@ -25,11 +25,12 @@ private
    generic
       type Base_Bank is abstract new Bank with private;
       type Content_Type is new Memory_Content;
+      type Content_Access is access all Content_Type;
       type Content_NN_Access is not null access all Content_Type;
    package Memory_Bank_Mixin is
 
       type Base_Memory_Bank is abstract new Base_Bank with record
-         Content : Content_NN_Access;
+         Content : Content_Access;
       end record;
 
       procedure Initialize_Base

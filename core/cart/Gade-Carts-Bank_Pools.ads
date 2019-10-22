@@ -1,3 +1,5 @@
+--  TODO: Consider nesting this within Banks for simpler generic instantiation
+
 generic
    type Bank_Index is range <>;
    type Bank_Type is abstract tagged private;

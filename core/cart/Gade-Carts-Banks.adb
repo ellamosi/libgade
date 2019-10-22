@@ -7,7 +7,7 @@ package body Gade.Carts.Banks is
          Content : Content_NN_Access)
       is
       begin
-         B.Content := Content;
+         B.Content := Content_Access (Content);
       end Initialize_Base;
 
       overriding procedure Read

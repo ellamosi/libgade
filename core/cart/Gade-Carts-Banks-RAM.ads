@@ -27,6 +27,7 @@ private
    package RAM_Memory_Banks is new Memory_Bank_Mixin
      (Base_Bank         => Bank,
       Content_Type      => RAM_Content,
+      Content_Access    => RAM_Content_Access,
       Content_NN_Access => RAM_Content_NN_Access);
    use RAM_Memory_Banks;
 

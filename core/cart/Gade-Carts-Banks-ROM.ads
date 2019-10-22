@@ -15,6 +15,7 @@ private
    package ROM_Memory_Banks is new Memory_Bank_Mixin
      (Base_Bank         => Bank,
       Content_Type      => ROM_Content,
+      Content_Access    => ROM_Content_Access,
       Content_NN_Access => ROM_Content_NN_Access);
    use ROM_Memory_Banks;
 
