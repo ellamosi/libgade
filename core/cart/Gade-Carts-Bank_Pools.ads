@@ -1,11 +1,13 @@
 generic
    type Bank_Index is range <>;
-   type Bank_Type is limited private;
-   type Bank_Access is access all Bank_Type;
-   type Bank_NN_Access is not null access all Bank_Type;
+   type Bank_Type is abstract tagged private;
+   type Bank_Access is access all Bank_Type'Class;
+   type Bank_NN_Access is not null access all Bank_Type'Class;
 package Gade.Carts.Bank_Pools is
 
-   type Bank_Pool is abstract tagged private;
+   type Bank_Array is array (Bank_Index) of Bank_Access;
+
+   type Bank_Pool is private;
 
    function Select_Bank
      (Pool : Bank_Pool;
@@ -13,11 +15,7 @@ package Gade.Carts.Bank_Pools is
 
 private
 
-   type NN_Bank_Array is array (Bank_Index) of Bank_NN_Access;
-
-   type Bank_Array is array (Bank_Index) of Bank_Access;
-
-   type Bank_Pool is tagged record
+   type Bank_Pool is record
       Banks : Bank_Array;
    end record;
 

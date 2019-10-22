@@ -1,7 +1,6 @@
 private with Gade.Carts.Banks;
-private with Gade.Carts.Banks.RAM;
 private with Gade.Carts.Bank_Pools;
-private with Gade.Carts.Bank_Pools.RAM;
+private with Gade.Carts.Memory_Contents;
 
 generic
    type Base_Cart is abstract new Cart with private;
@@ -27,31 +26,31 @@ package Gade.Carts.Mixins.Banked_RAM is
       I : Bank_Index);
 
 private
+   use Gade.Carts.Memory_Contents;
 
    Bank_Size : constant := 16#2000#;
-   Bank_Address_Mask : constant Word := 16#3FFF#;
+   Bank_Address_Mask : constant Word := 16#1FFF#;
+
+   type Path_Access is access String;
 
    package RAM_Space_Banks is new Gade.Carts.Banks (Bank_Size);
-   package RAM_Banks is new RAM_Space_Banks.RAM;
-   use RAM_Space_Banks, RAM_Banks;
+   use RAM_Space_Banks;
 
-   package RAM_Space_Bank_Pools is new Gade.Carts.Bank_Pools
+   package RAM_Bank_Pools is new Gade.Carts.Bank_Pools
      (Bank_Index     => Bank_Index,
-      Bank_Type      => RAM_Bank,
-      Bank_Access    => RAM_Bank_Access,
-      Bank_NN_Access => RAM_Bank_NN_Access);
-   package RAM_Bank_Pools is new RAM_Space_Bank_Pools.RAM;
+      Bank_Type      => Bank,
+      Bank_Access    => Bank_Access,
+      Bank_NN_Access => Bank_NN_Access);
    use RAM_Bank_Pools;
 
    type Banked_RAM_Cart is abstract new Base_Cart with record
-      Accessible_Bank  : RAM_Bank_Access;
-      Banks            : RAM_Bank_Pool;
-      --  Should potentially by a bank concern: ? Yes.
-      RAM_Address_Mask : Word;
+      Accessible_Bank : Bank_Access;
+      Banks           : Bank_Pool;
+      Content         : RAM_Content_Access;
+      Path            : Path_Access;
    end record;
 
-   function Rebase (Address : External_RAM_IO_Address;
-                    Mask    : Word) return Bank_Address;
+   function Rebase (Address : External_RAM_IO_Address) return Bank_Address;
    pragma Inline (Rebase);
 
 end Gade.Carts.Mixins.Banked_RAM;

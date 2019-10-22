@@ -22,7 +22,7 @@ package body Gade.Carts.Mixins.Banked_ROM is
       I : Bank_Index)
    is
    begin
-      C.Accessible_Banks (L) := C.Banks.Select_Bank (I);
+      C.Accessible_Banks (L) := ROM_Bank_Access (Select_Bank (C.Banks, I));
    end Select_ROM_Bank;
 
 end Gade.Carts.Mixins.Banked_ROM;

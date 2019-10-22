@@ -7,8 +7,7 @@ with Gade.Dev.Timer;       use Gade.Dev.Timer;
 with Gade.Dev.Display;     use Gade.Dev.Display;
 with Gade.Dev.Interrupts;  use Gade.Dev.Interrupts;
 with Gade.Video_Buffer;    use Gade.Video_Buffer;
-with Gade.Cart.Spaces.ROM; use Gade.Cart.Spaces.ROM;
-with Gade.Cart.Spaces.RAM; use Gade.Cart.Spaces.RAM;
+with Gade.Carts;           use Gade.Carts;
 
 private package Gade.GB is
 
@@ -30,11 +29,12 @@ private package Gade.GB is
    type GB_Public_Type is abstract tagged limited record
       CPU              : aliased CPU_Context;
       --  0000
-      External_ROM     : Cart.Spaces.ROM.Handler_Access := null;
+      --  Cart (External ROM)
+      Cart             : Carts.Cart_Access := null;
       --  8000
       Video_RAM        : aliased VRAM_Type;
       --  A000
-      External_RAM     : Cart.Spaces.RAM.Handler_Access := null;
+      --  Cart (External RAM)
       --  C000 Intenal RAM / E000 Intenal RAM Echo
       Content          : Memory_Bytes; -- TODO: redo!
       --  FE00

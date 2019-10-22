@@ -7,10 +7,7 @@ with Gade.Video_Buffer; use Gade.Video_Buffer;
 with Gade.Dev.CPU.Instructions.Exec;        use Gade.Dev.CPU.Instructions.Exec;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
-with Gade.Cart;
-
---  TODO: Remove
---  with Gade.Cart.Controllers.MBC.MBC3;
+with Gade.Carts;
 
 package body Gade.Interfaces is
 
@@ -33,10 +30,7 @@ package body Gade.Interfaces is
      (G    : Gade_Type;
       Path : String) is
    begin
-      Gade.Cart.Load_ROM
-        (G.GB.External_ROM,
-         G.GB.External_RAM,
-         Path);
+      G.GB.Cart := Gade.Carts.Load_ROM (Path);
    end Load_ROM;
 
    procedure Set_Input_Reader
@@ -72,7 +66,7 @@ package body Gade.Interfaces is
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin
-      G.GB.External_RAM.Save;
+      --  G.GB.External_RAM.Save;
       Put_Line ("Finalize");
       Free (G);
    end Finalize;
@@ -80,7 +74,7 @@ package body Gade.Interfaces is
    --  TODO: Remove
    procedure Test is
    begin
-      Gade.Cart.Controllers.MBC.MBC3.Test;
+      null;
    end Test;
 
 end Gade.Interfaces;

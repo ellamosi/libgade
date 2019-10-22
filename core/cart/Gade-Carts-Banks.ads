@@ -9,6 +9,7 @@ package Gade.Carts.Banks is
    type Bank is abstract tagged private;
 
    type Bank_Access is access all Bank'Class;
+   subtype Bank_NN_Access is not null Bank_Access;
 
    procedure Read
      (B       : in out Bank;

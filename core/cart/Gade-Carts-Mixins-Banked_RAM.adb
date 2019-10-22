@@ -6,9 +6,8 @@ package body Gade.Carts.Mixins.Banked_RAM is
       Address : External_RAM_IO_Address;
       V       : out Byte)
    is
-      B_Addr : constant Bank_Address := Rebase (Address, C.RAM_Address_Mask);
    begin
-      C.Accessible_Bank.Read (B_Addr, V);
+      C.Accessible_Bank.Read (Rebase (Address), V);
    end Read_RAM;
 
    overriding
@@ -17,9 +16,8 @@ package body Gade.Carts.Mixins.Banked_RAM is
       Address : External_RAM_IO_Address;
       V       : Byte)
    is
-      B_Addr : constant Bank_Address := Rebase (Address, C.RAM_Address_Mask);
    begin
-      C.Accessible_Bank.Write (B_Addr, V);
+      C.Accessible_Bank.Write (Rebase (Address), V);
    end Write_RAM;
 
    procedure Select_RAM_Bank
@@ -27,15 +25,12 @@ package body Gade.Carts.Mixins.Banked_RAM is
       I : Bank_Index)
    is
    begin
-      C.Accessible_Bank := C.Banks.Select_Bank (I);
+      C.Accessible_Bank := Select_Bank (C.Banks, I);
    end Select_RAM_Bank;
 
-   function Rebase
-     (Address : External_RAM_IO_Address;
-      Mask    : Word) return Bank_Address
-   is
+   function Rebase (Address : External_RAM_IO_Address) return Bank_Address is
    begin
-      return Bank_Address (Word (Address) and Mask);
+      return Bank_Address (Address and Bank_Address_Mask);
    end Rebase;
 
 end Gade.Carts.Mixins.Banked_RAM;

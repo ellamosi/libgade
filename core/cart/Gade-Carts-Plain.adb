@@ -17,7 +17,7 @@ package body Gade.Carts.Plain is
       V       : out Byte)
    is
    begin
-      C.RAM.Read (Rebase (Address, C.Address_Mask), V);
+      C.RAM.Read (Rebase (Address), V);
    end Read_RAM;
 
    overriding
@@ -27,16 +27,14 @@ package body Gade.Carts.Plain is
       V       : Byte)
    is
    begin
-      C.RAM.Write (Rebase (Address, C.Address_Mask), V);
+      C.RAM.Write (Rebase (Address), V);
    end Write_RAM;
 
    function Rebase
-     (Address : External_RAM_IO_Address;
-      Mask    : Word)
-      return RAM_Space_Banks.Bank_Address
+     (Address : External_RAM_IO_Address) return RAM_Space_Banks.Bank_Address
    is
    begin
-      return RAM_Space_Banks.Bank_Address (Word (Address) and Mask);
+      return RAM_Space_Banks.Bank_Address (Word (Address) and RAM_Address_Mask);
    end Rebase;
 
 end Gade.Carts.Plain;

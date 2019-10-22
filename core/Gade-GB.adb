@@ -9,8 +9,7 @@ package body Gade.GB is
    procedure Reset (GB : in out GB_Type) is
    begin
       Reset (GB.CPU);
-      if GB.External_ROM /= null then GB.External_ROM.Reset; end if;
-      if GB.External_RAM /= null then GB.External_RAM.Reset; end if;
+      --  if GB.Cart /= null then GB.Cart.Reset; end if;
       VRAM.Reset (GB.Video_RAM);
       OAM.Reset (GB.Video_OAM);
       Joypad.Reset (GB.Joypad);
