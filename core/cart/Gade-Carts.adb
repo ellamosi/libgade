@@ -1,5 +1,5 @@
 with Ada.Directories; use Ada.Directories;
---  with Ada.Text_IO;     use Ada.Text_IO;
+with Ada.Text_IO;     use Ada.Text_IO;
 
 --  with Gade.Cart.ROM;                 use Gade.Cart.ROM;
 --  with Gade.Cart.Spaces.ROM;          use Gade.Cart.Spaces.ROM;
@@ -101,6 +101,9 @@ package body Gade.Carts is
       --  Not true for some few rare cart types (multicarts)
       Header := Get_Header (ROM);
       Controller := Controller_Type_For_Cart (Header.Cart_Type);
+
+      Put_Line ("Cartridge type: " & Header.Cart_Type'Img);
+      Put_Line ("Controller type: " & Controller'Img);
 
       case Controller is
          when Cartridge_Info.None =>
