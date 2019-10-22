@@ -18,7 +18,7 @@ package body Gade.Carts.Mixins.Banked_RAM.Constructors is
       Path : String)
    is
    begin
-      C.Content := Create (Size);
+      if Size /= None then C.Content := Create (Size); end if;
       C.Path := new String'(Path);
       Initialize_Banks (C.Banks, C.Content, Size);
       C.Accessible_Bank := Select_Bank (C.Banks, 0); -- Might belong to reset

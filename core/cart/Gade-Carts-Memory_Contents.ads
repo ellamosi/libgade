@@ -29,7 +29,9 @@ package Gade.Carts.Memory_Contents is
    type RAM_Content_Access is access all RAM_Content;
    subtype RAM_Content_NN_Access is not null RAM_Content_Access;
 
-   function Create (Size : RAM_Size_Type) return RAM_Content_NN_Access;
+   subtype RAM_Allocation_Size is RAM_Size_Type range RAM_16kbit .. RAM_512kbit;
+
+   function Create (Size : RAM_Allocation_Size) return RAM_Content_NN_Access;
 
    procedure Load
      (Path : String;
@@ -49,10 +51,9 @@ private
    --  a bootstrap file too: 256B.
    Min_ROM_Size : constant Content_Byte_Count := 256;
 
-   Content_Size_For_RAM_Size : constant array (RAM_Size_Type)
+   Content_Size_For_RAM_Size : constant array (RAM_Allocation_Size)
      of Content_Byte_Count :=
-       (None        =>          0,
-        RAM_16kbit  =>   2 * 1024,
+       (RAM_16kbit  =>   2 * 1024,
         RAM_64kbit  =>   8 * 1024,
         RAM_256kbit =>  32 * 1024,
         RAM_512kbit =>  64 * 1024,

@@ -47,7 +47,7 @@ package body Gade.Carts.Memory_Contents is
       return ROM;
    end Load;
 
-   function Create (Size : RAM_Size_Type) return RAM_Content_NN_Access is
+   function Create (Size : RAM_Allocation_Size) return RAM_Content_NN_Access is
       Content_Size : constant Content_Byte_Count :=
         Content_Size_For_RAM_Size (Size);
       Result : constant RAM_Content_NN_Access :=
