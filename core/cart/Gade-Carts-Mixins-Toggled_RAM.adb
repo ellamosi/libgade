@@ -1,3 +1,5 @@
+with Ada.Text_IO; use Ada.Text_IO;
+
 package body Gade.Carts.Mixins.Toggled_RAM is
 
    overriding
@@ -26,6 +28,7 @@ package body Gade.Carts.Mixins.Toggled_RAM is
 
    procedure Enable_RAM (C : in out Toggled_RAM_Cart; Enable : Boolean) is
    begin
+      Put_Line ("Enable_RAM: " & Enable'Img);
       C.RAM_Enabled := Enable;
    end Enable_RAM;
 

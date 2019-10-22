@@ -1,4 +1,5 @@
 private with Gade.Carts.Banks;
+private with Gade.Carts.Banks.Blank;
 private with Gade.Carts.Bank_Pools;
 private with Gade.Carts.Memory_Contents;
 
@@ -25,15 +26,19 @@ package Gade.Carts.Mixins.Banked_RAM is
      (C : in out Banked_RAM_Cart;
       I : Bank_Index);
 
+   procedure Enable_RAM (C : in out Banked_RAM_Cart; Enable : Boolean);
+
 private
    use Gade.Carts.Memory_Contents;
 
    Bank_Size : constant := 16#2000#;
    Bank_Address_Mask : constant Word := 16#1FFF#;
+   Max_Banks : constant Bank_Count := Bank_Count (Bank_Index'Range_Length);
 
    type Path_Access is access String;
 
    package RAM_Space_Banks is new Gade.Carts.Banks (Bank_Size);
+   package Blank_RAM_Banks is new RAM_Space_Banks.Blank;
    use RAM_Space_Banks;
 
    package RAM_Bank_Pools is new Gade.Carts.Bank_Pools
@@ -44,10 +49,12 @@ private
    use RAM_Bank_Pools;
 
    type Banked_RAM_Cart is abstract new Base_Cart with record
-      Accessible_Bank : Bank_Access;
-      Banks           : Bank_Pool;
-      Content         : RAM_Content_Access;
-      Path            : Path_Access;
+      Accessible_Bank  : Bank_Access;
+      Accessible_Index : Bank_Index;
+      Enabled          : Boolean;
+      Banks            : Bank_Pool;
+      Content          : RAM_Content_Access;
+      Path             : Path_Access;
    end record;
 
    function Rebase (Address : External_RAM_IO_Address) return Bank_Address;

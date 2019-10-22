@@ -11,11 +11,11 @@ private
    Banks_For_RAM_Size : constant array (RAM_Size_Type)
      of Bank_Count :=
        (None        =>  0,
-        RAM_16kbit  =>  1,
-        RAM_64kbit  =>  1,
-        RAM_256kbit =>  4,
-        RAM_512kbit =>  8,
-        RAM_1Mbit   => 16);
+        RAM_16kbit  =>  1,  --   2kB
+        RAM_64kbit  =>  1,  --   8kB
+        RAM_256kbit =>  4,  --  32kB
+        RAM_512kbit =>  8,  --  64kB
+        RAM_1Mbit   => 16); -- 128kB
 
    procedure Initialize_Banks
      (Banks   : out Bank_Pool;

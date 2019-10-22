@@ -1,7 +1,7 @@
 private with Gade.Carts.Mixins.MBC;
 private with Gade.Carts.Mixins.Banked_ROM;
 private with Gade.Carts.Mixins.Banked_RAM;
-private with Gade.Carts.Mixins.Toggled_RAM;
+--  private with Gade.Carts.Mixins.Toggled_RAM;
 
 package Gade.Carts.MBC1 is
 
@@ -39,10 +39,10 @@ private
    package Banked_RAM_Mixin is new Mixins.Banked_RAM
      (Base_Cart => Banked_ROM_Cart, Bank_Index => RAM_Bank_Index);
    use Banked_RAM_Mixin;
-   package Toggled_RAM_Mixin is new Mixins.Toggled_RAM
-     (Base_Cart => Banked_RAM_Cart);
-   use Toggled_RAM_Mixin;
-   package MBC_Mixin is new Mixins.MBC (Base_Cart => Toggled_RAM_Cart);
+--     package Toggled_RAM_Mixin is new Mixins.Toggled_RAM
+--       (Base_Cart => Banked_RAM_Cart);
+--     use Toggled_RAM_Mixin;
+   package MBC_Mixin is new Mixins.MBC (Base_Cart => Banked_RAM_Cart);
    use MBC_Mixin;
 
    type MBC1_Cart is new MBC_Mixin.MBC_Cart with record

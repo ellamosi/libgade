@@ -1,3 +1,5 @@
+with Ada.Text_IO; use Ada.Text_IO;
+
 package body Gade.Carts.MBC1 is
 
    overriding
@@ -11,6 +13,7 @@ package body Gade.Carts.MBC1 is
       Masked_Value : constant Byte := Value and RAM_Enable_Mask;
    begin
       --  TODO: Review disabling values
+      Put_Line ("MBC1.Enable_RAM: " & Value'Img);
       case Masked_Value is
          when RAM_Enable_Value  => C.Enable_RAM (True);
          when RAM_Disable_Value => C.Enable_RAM (False);
