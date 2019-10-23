@@ -2,13 +2,16 @@ package body Gade.Carts.Banks is
 
    package body Memory_Bank_Mixin is
 
-      procedure Initialize_Base
-        (B       : out Base_Memory_Bank'Class;
-         Content : Content_NN_Access)
+      procedure Initialize
+        (B       : out Memory_Bank'Class;
+         Content : Content_NN_Access;
+         Offset  : Memory_Content_Offset)
       is
       begin
          B.Content := Content_Access (Content);
-      end Initialize_Base;
+         B.Offset := Offset;
+         B.Address_Mask := Address_Mask (Content.all'Length);
+      end Initialize;
 
       overriding procedure Read
         (B : in out Memory_Bank; Address : Bank_Address; V : out Byte)
@@ -16,37 +19,6 @@ package body Gade.Carts.Banks is
       begin
          V := B.Content ((Address and B.Address_Mask) + B.Offset);
       end Read;
-
-      procedure Initialize_Full
-        (B       : out Memory_Bank'Class;
-         Content : Content_NN_Access;
-         Offset  : Memory_Content_Offset)
-      is
-      begin
-         Base_Memory_Bank (B).Initialize_Base (Content);
-         B.Offset := Offset;
-         B.Address_Mask := Address_Mask (Content.all'Length);
-      end Initialize_Full;
-
-      overriding
-      procedure Read
-        (B       : in out Partial_Memory_Bank;
-         Address : Bank_Address;
-         V       : out Byte)
-      is
-      begin
-         --  TODO: turn the full formula into a function for re-use
-         V := B.Content (Memory_Content_Address (Address and B.Address_Mask));
-      end Read;
-
-      procedure Initialize_Partial
-        (B            : out Partial_Memory_Bank'Class;
-         Content      : Content_NN_Access)
-      is
-      begin
-         Base_Memory_Bank (B).Initialize_Base (Content);
-         B.Address_Mask := Address_Mask (Content.all'Length);
-      end Initialize_Partial;
 
    end Memory_Bank_Mixin;
 

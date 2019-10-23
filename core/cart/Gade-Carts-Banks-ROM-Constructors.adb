@@ -16,24 +16,7 @@ package body Gade.Carts.Banks.ROM.Constructors is
       Offset  : Memory_Content_Offset)
    is
    begin
-      ROM_Memory_Banks.Initialize_Full (B, Content, Offset);
-   end Initialize;
-
-   function Create
-     (Content : ROM_Content_NN_Access) return Partial_ROM_Bank_NN_Access
-   is
-      Result : constant Partial_ROM_Bank_NN_Access := new Partial_ROM_Bank;
-   begin
-      Constructors.Initialize (Result.all, Content);
-      return Result;
-   end Create;
-
-   procedure Initialize
-     (B       : out Partial_ROM_Bank'Class;
-      Content : ROM_Content_NN_Access)
-   is
-   begin
-      ROM_Memory_Banks.Initialize_Partial (B, Content);
+      ROM_Memory_Banks.Initialize (B, Content, Offset);
    end Initialize;
 
 end Gade.Carts.Banks.ROM.Constructors;

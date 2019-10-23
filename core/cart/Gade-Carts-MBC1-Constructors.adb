@@ -1,6 +1,3 @@
-with Gade.Carts.Mixins.Banked_ROM.Constructors;
-with Gade.Carts.Mixins.Banked_RAM.Constructors;
-
 package body Gade.Carts.MBC1.Constructors is
 
    function Create
@@ -15,9 +12,6 @@ package body Gade.Carts.MBC1.Constructors is
       return Result;
    end Create;
 
-   package Banked_ROM_Constructors  is new Banked_ROM_Mixin.Constructors;
-   package Banked_RAM_Constructors  is new Banked_RAM_Mixin.Constructors;
-
    procedure Initialize
      (C        : out MBC1_Cart'Class;
       Content  : ROM_Content_Access;
@@ -30,6 +24,7 @@ package body Gade.Carts.MBC1.Constructors is
       --  TODO: Revise how banks are selected upon initialization/reset
       C.Low_Bank_Select := 1;
       C.High_Bank_Select := 0;
+      C.Banking_Mode := ROM;
    end Initialize;
 
 end Gade.Carts.MBC1.Constructors;

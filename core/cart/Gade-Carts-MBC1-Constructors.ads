@@ -1,3 +1,5 @@
+private with Gade.Carts.Mixins.Banked_ROM.Constructors;
+private with Gade.Carts.Mixins.Banked_RAM.Constructors;
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
 package Gade.Carts.MBC1.Constructors is
@@ -9,6 +11,9 @@ package Gade.Carts.MBC1.Constructors is
       return MBC1_Cart_NN_Access;
 
 private
+
+   package Banked_ROM_Constructors is new Banked_ROM_Mixin.Constructors;
+   package Banked_RAM_Constructors is new Banked_RAM_Mixin.Constructors;
 
    procedure Initialize
      (C        : out MBC1_Cart'Class;

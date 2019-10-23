@@ -29,20 +29,13 @@ private
       type Content_NN_Access is not null access all Content_Type;
    package Memory_Bank_Mixin is
 
-      type Base_Memory_Bank is abstract new Base_Bank with record
-         Content : Content_Access;
-      end record;
-
-      procedure Initialize_Base
-        (B       : out Base_Memory_Bank'Class;
-         Content : Content_NN_Access);
-
-      type Memory_Bank is abstract new Base_Memory_Bank with record
+      type Memory_Bank is abstract new Base_Bank with record
+         Content      : Content_Access;
          Offset       : Memory_Content_Offset;
          Address_Mask : Bank_Address;
       end record;
 
-      procedure Initialize_Full
+      procedure Initialize
         (B       : out Memory_Bank'Class;
          Content : Content_NN_Access;
          Offset  : Memory_Content_Offset);
@@ -50,20 +43,6 @@ private
       overriding
       procedure Read
         (B       : in out Memory_Bank;
-         Address : Bank_Address;
-         V       : out Byte);
-
-      type Partial_Memory_Bank is abstract new Base_Memory_Bank with record
-         Address_Mask : Bank_Address;
-      end record;
-
-      procedure Initialize_Partial
-        (B       : out Partial_Memory_Bank'Class;
-         Content : Content_NN_Access);
-
-      overriding
-      procedure Read
-        (B       : in out Partial_Memory_Bank;
          Address : Bank_Address;
          V       : out Byte);
 

@@ -1,16 +1,6 @@
-with Gade.Carts.Banks.RAM;
-with Gade.Carts.Banks.RAM.Constructors;
-with Gade.Carts.Banks.Blank;
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
-with Gade.Carts.Bank_Pools.Constructors;
 
 package body Gade.Carts.Mixins.Banked_RAM.Constructors is
-
-   package RAM_Banks is new RAM_Space_Banks.RAM;
-   package RAM_Bank_Constructors is new RAM_Banks.Constructors;
-   package Blank_Banks is new RAM_Space_Banks.Blank;
-   package Bank_Pool_Constructors is new RAM_Bank_Pools.Constructors;
-   use RAM_Bank_Constructors;
 
    procedure Initialize
      (C    : in out Banked_RAM_Cart'Class;
@@ -32,6 +22,8 @@ package body Gade.Carts.Mixins.Banked_RAM.Constructors is
       Content : RAM_Content_Access;
       Size    : RAM_Size_Type)
    is
+      use RAM_Bank_Constructors;
+
       Reported_Banks : constant Bank_Count := Banks_For_RAM_Size (Size);
       Present_Banks  : Bank_Array := (others => null);
       Offset         : Memory_Content_Offset;

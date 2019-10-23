@@ -1,8 +1,8 @@
 generic
-package Gade.Carts.Bank_Pools.Constructors is
+package Gade.Carts.Banks.Pools.Constructors is
 
    procedure Initialize
      (Pool  : out Bank_Pool;
       Banks : Bank_Array);
 
-end Gade.Carts.Bank_Pools.Constructors;
+end Gade.Carts.Banks.Pools.Constructors;

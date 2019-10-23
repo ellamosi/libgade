@@ -1,4 +1,4 @@
-package body Gade.Carts.Bank_Pools is
+package body Gade.Carts.Banks.Pools is
 
    function Select_Bank
      (Pool : Bank_Pool;
@@ -8,4 +8,4 @@ package body Gade.Carts.Bank_Pools is
       return Bank_NN_Access (Pool.Banks (I));
    end Select_Bank;
 
-end Gade.Carts.Bank_Pools;
+end Gade.Carts.Banks.Pools;

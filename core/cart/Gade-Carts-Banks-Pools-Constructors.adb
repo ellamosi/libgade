@@ -1,6 +1,6 @@
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
-package body Gade.Carts.Bank_Pools.Constructors is
+package body Gade.Carts.Banks.Pools.Constructors is
 
    procedure Initialize
      (Pool  : out Bank_Pool;
@@ -22,4 +22,4 @@ package body Gade.Carts.Bank_Pools.Constructors is
       end loop;
    end Initialize;
 
-end Gade.Carts.Bank_Pools.Constructors;
+end Gade.Carts.Banks.Pools.Constructors;

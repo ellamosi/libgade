@@ -1,6 +1,6 @@
 private with Gade.Carts.Banks;
 private with Gade.Carts.Banks.Blank;
-private with Gade.Carts.Bank_Pools;
+private with Gade.Carts.Banks.Pools;
 private with Gade.Carts.Memory_Contents;
 
 generic
@@ -39,14 +39,8 @@ private
 
    package RAM_Space_Banks is new Gade.Carts.Banks (Bank_Size);
    package Blank_RAM_Banks is new RAM_Space_Banks.Blank;
-   use RAM_Space_Banks;
-
-   package RAM_Bank_Pools is new Gade.Carts.Bank_Pools
-     (Bank_Index     => Bank_Index,
-      Bank_Type      => Bank,
-      Bank_Access    => Bank_Access,
-      Bank_NN_Access => Bank_NN_Access);
-   use RAM_Bank_Pools;
+   package RAM_Bank_Pools is new RAM_Space_Banks.Pools (Bank_Index);
+   use RAM_Space_Banks, RAM_Bank_Pools;
 
    type Banked_RAM_Cart is abstract new Base_Cart with record
       Accessible_Bank  : Bank_Access;

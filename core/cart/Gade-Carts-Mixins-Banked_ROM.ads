@@ -1,6 +1,6 @@
 private with Gade.Carts.Banks;
 private with Gade.Carts.Banks.ROM;
-private with Gade.Carts.Bank_Pools;
+private with Gade.Carts.Banks.Pools;
 
 generic
    type Base_Cart is abstract new Cart with private;
@@ -38,14 +38,8 @@ private
 
    package ROM_Space_Banks is new Gade.Carts.Banks (Bank_Size);
    package ROM_Banks is new ROM_Space_Banks.ROM;
-   use ROM_Space_Banks, ROM_Banks;
-
-   package ROM_Bank_Pools is new Gade.Carts.Bank_Pools
-     (Bank_Index     => Bank_Index,
-      Bank_Type      => Bank,
-      Bank_Access    => Bank_Access,
-      Bank_NN_Access => Bank_NN_Access);
-   use ROM_Bank_Pools;
+   package ROM_Bank_Pools is new ROM_Space_Banks.Pools (Bank_Index);
+   use ROM_Space_Banks, ROM_Banks, ROM_Bank_Pools;
 
    type Accessible_Bank_Array is array (ROM_Bank_Location) of ROM_Bank_Access;
 

@@ -1,3 +1,8 @@
+private with Gade.Carts.Banks.RAM;
+private with Gade.Carts.Banks.RAM.Constructors;
+private with Gade.Carts.Banks.Blank;
+private with Gade.Carts.Banks.Pools.Constructors;
+
 generic
 package Gade.Carts.Mixins.Banked_RAM.Constructors is
 
@@ -7,6 +12,11 @@ package Gade.Carts.Mixins.Banked_RAM.Constructors is
       Path : String); --  This needs config and cart info objects
 
 private
+
+   package RAM_Banks is new RAM_Space_Banks.RAM;
+   package RAM_Bank_Constructors is new RAM_Banks.Constructors;
+   package Blank_Banks is new RAM_Space_Banks.Blank;
+   package Bank_Pool_Constructors is new RAM_Bank_Pools.Constructors;
 
    Banks_For_RAM_Size : constant array (RAM_Size_Type)
      of Bank_Count :=

@@ -1,11 +1,6 @@
---  TODO: Consider nesting this within Banks for simpler generic instantiation
-
 generic
    type Bank_Index is range <>;
-   type Bank_Type is abstract tagged private;
-   type Bank_Access is access all Bank_Type'Class;
-   type Bank_NN_Access is not null access all Bank_Type'Class;
-package Gade.Carts.Bank_Pools is
+package Gade.Carts.Banks.Pools is
 
    type Bank_Array is array (Bank_Index) of Bank_Access;
 
@@ -21,4 +16,4 @@ private
       Banks : Bank_Array;
    end record;
 
-end Gade.Carts.Bank_Pools;
+end Gade.Carts.Banks.Pools;

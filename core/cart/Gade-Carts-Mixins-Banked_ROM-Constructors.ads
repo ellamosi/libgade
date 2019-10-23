@@ -1,4 +1,6 @@
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
+private with Gade.Carts.Banks.ROM.Constructors;
+private with Gade.Carts.Banks.Pools.Constructors;
 
 generic
 package Gade.Carts.Mixins.Banked_ROM.Constructors is
@@ -8,6 +10,9 @@ package Gade.Carts.Mixins.Banked_ROM.Constructors is
       Content : ROM_Content_NN_Access);
 
 private
+
+   package ROM_Bank_Constructors is new ROM_Banks.Constructors;
+   package ROM_Bank_Pool_Constructors is new ROM_Bank_Pools.Constructors;
 
    procedure Initialize_Banks
      (Pool    : out Bank_Pool;

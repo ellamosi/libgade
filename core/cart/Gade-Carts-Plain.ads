@@ -44,8 +44,7 @@ private
    use ROM_Banks;
 
    type Plain_Cart is new Cart with record
-      --  TODO: Revise inconsitent usage of masks
-      ROM      : Partial_ROM_Bank;
+      ROM      : ROM_Bank;
       RAM      : RAM_Space_Banks.Bank_Access;
       RAM_Path : Path_Access;
    end record;
