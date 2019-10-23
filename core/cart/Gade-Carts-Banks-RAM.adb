@@ -7,7 +7,7 @@ package body Gade.Carts.Banks.RAM is
       V       : Byte)
    is
    begin
-      B.Content (Address + B.Offset) := V;
+      B.Content ((Address and B.Address_Mask) + B.Offset) := V;
    end Write;
 
    overriding

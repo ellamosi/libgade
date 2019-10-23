@@ -33,19 +33,22 @@ private
    RAM_Enable_Value  : constant := 16#0A#;
    RAM_Disable_Value : constant := 16#00#;
 
+
    package Banked_ROM_Mixin is new Mixins.Banked_ROM
      (Base_Cart => Cart, Bank_Index => ROM_Bank_Index);
    use Banked_ROM_Mixin;
    package Banked_RAM_Mixin is new Mixins.Banked_RAM
      (Base_Cart => Banked_ROM_Cart, Bank_Index => RAM_Bank_Index);
    use Banked_RAM_Mixin;
+   package MBC_Mixin is new Mixins.MBC (Base_Cart => Banked_RAM_Cart);
+   use MBC_Mixin;
 --     package Toggled_RAM_Mixin is new Mixins.Toggled_RAM
 --       (Base_Cart => Banked_RAM_Cart);
 --     use Toggled_RAM_Mixin;
-   package MBC_Mixin is new Mixins.MBC (Base_Cart => Banked_RAM_Cart);
-   use MBC_Mixin;
 
-   type MBC1_Cart is new MBC_Mixin.MBC_Cart with record
+   --  use MBC_Mixin, Banked_ROM_Mixin, Banked_RAM_Mixin;
+
+   type MBC1_Cart is new MBC_Cart with record
       Banking_Mode     : Banking_Mode_Type;
       Low_Bank_Select  : Low_Bank_Select_Type;
       High_Bank_Select : High_Bank_Select_Type;

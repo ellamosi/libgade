@@ -38,7 +38,8 @@ private
          Content : Content_NN_Access);
 
       type Memory_Bank is abstract new Base_Memory_Bank with record
-         Offset : Memory_Content_Offset;
+         Offset       : Memory_Content_Offset;
+         Address_Mask : Bank_Address;
       end record;
 
       procedure Initialize_Full

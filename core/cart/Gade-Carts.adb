@@ -98,8 +98,6 @@ package body Gade.Carts is
    begin
       ROM := Load (Path);
 
-      Put_Line ("Header RAM Size: " & Byte'Image (ROM (16#0149#)));
-
       --  Not true for some few rare cart types (multicarts)
       Header := Get_Header (ROM);
       Controller := Controller_Type_For_Cart (Header.Cart_Type);

@@ -1,5 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
 package body Gade.Carts.Mixins.Banked_RAM is
 
    overriding
@@ -33,7 +31,6 @@ package body Gade.Carts.Mixins.Banked_RAM is
 
    procedure Enable_RAM (C : in out Banked_RAM_Cart; Enable : Boolean) is
    begin
-      Put_Line ("Enable_RAM: " & Enable'Img);
       C.Enabled := Enable;
       if Enable then
          C.Accessible_Bank := Select_Bank (C.Banks, C.Accessible_Index);

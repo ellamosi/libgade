@@ -14,7 +14,7 @@ package body Gade.Carts.Banks is
         (B : in out Memory_Bank; Address : Bank_Address; V : out Byte)
       is
       begin
-         V := B.Content (Address + B.Offset);
+         V := B.Content ((Address and B.Address_Mask) + B.Offset);
       end Read;
 
       procedure Initialize_Full
@@ -25,6 +25,7 @@ package body Gade.Carts.Banks is
       begin
          Base_Memory_Bank (B).Initialize_Base (Content);
          B.Offset := Offset;
+         B.Address_Mask := Address_Mask (Content.all'Length);
       end Initialize_Full;
 
       overriding
@@ -34,6 +35,7 @@ package body Gade.Carts.Banks is
          V       : out Byte)
       is
       begin
+         --  TODO: turn the full formula into a function for re-use
          V := B.Content (Memory_Content_Address (Address and B.Address_Mask));
       end Read;
 
