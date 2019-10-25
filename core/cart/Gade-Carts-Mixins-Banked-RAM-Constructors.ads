@@ -1,22 +1,18 @@
-private with Gade.Carts.Banks.RAM;
 private with Gade.Carts.Banks.RAM.Constructors;
-private with Gade.Carts.Banks.Blank;
 private with Gade.Carts.Banks.Pools.Constructors;
 
 generic
-package Gade.Carts.Mixins.Banked_RAM.Constructors is
+package Gade.Carts.Mixins.Banked.RAM.Constructors is
 
    procedure Initialize
      (C    : in out Banked_RAM_Cart'Class;
       Size : RAM_Size_Type;
-      Path : String); --  This needs config and cart info objects
+      Path : String); --  This will eventually need config and cart info objects
 
 private
 
-   package RAM_Banks is new RAM_Space_Banks.RAM;
    package RAM_Bank_Constructors is new RAM_Banks.Constructors;
-   package Blank_Banks is new RAM_Space_Banks.Blank;
-   package Bank_Pool_Constructors is new RAM_Bank_Pools.Constructors;
+   package Bank_Pool_Constructors is new Bank_Pools.Constructors;
 
    Banks_For_RAM_Size : constant array (RAM_Size_Type)
      of Bank_Count :=
@@ -32,4 +28,4 @@ private
       Content : RAM_Content_Access;
       Size    : RAM_Size_Type);
 
-end Gade.Carts.Mixins.Banked_RAM.Constructors;
+end Gade.Carts.Mixins.Banked.RAM.Constructors;

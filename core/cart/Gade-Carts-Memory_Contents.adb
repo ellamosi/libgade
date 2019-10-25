@@ -28,7 +28,7 @@ package body Gade.Carts.Memory_Contents is
       procedure Print_Banks;
       procedure Print_Banks is
          use Ada.Text_IO;
-         Banks : constant Bank_Count := Bank_Count (ROM_Size / Bank_Size);
+         Banks : constant Bank_Count := Bank_Count (ROM_Size / ROM_Bank_Size);
       begin
          for i in 0 .. Banks - 1 loop
             Put_Line ("Loading bank " & i'Img);

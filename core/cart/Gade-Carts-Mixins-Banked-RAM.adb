@@ -1,4 +1,4 @@
-package body Gade.Carts.Mixins.Banked_RAM is
+package body Gade.Carts.Mixins.Banked.RAM is
 
    overriding
    procedure Read_RAM
@@ -7,7 +7,7 @@ package body Gade.Carts.Mixins.Banked_RAM is
       V       : out Byte)
    is
    begin
-      C.Accessible_Bank.Read (Rebase (Address), V);
+      C.Accessible_Bank.Read (Decode (Address), V);
    end Read_RAM;
 
    overriding
@@ -17,12 +17,12 @@ package body Gade.Carts.Mixins.Banked_RAM is
       V       : Byte)
    is
    begin
-      C.Accessible_Bank.Write (Rebase (Address), V);
+      C.Accessible_Bank.Write (Decode (Address), V);
    end Write_RAM;
 
    procedure Select_RAM_Bank
      (C : in out Banked_RAM_Cart;
-      I : Bank_Index)
+      I : RAM_Bank_Index)
    is
    begin
       C.Accessible_Index := I;
@@ -35,13 +35,13 @@ package body Gade.Carts.Mixins.Banked_RAM is
       if Enable then
          C.Accessible_Bank := Select_Bank (C.Banks, C.Accessible_Index);
       else
-         C.Accessible_Bank := Bank_Access (Blank_RAM_Banks.Singleton);
+         C.Accessible_Bank := Bank_Access (Blank_Banks.Singleton);
       end if;
    end Enable_RAM;
 
-   function Rebase (Address : External_RAM_IO_Address) return Bank_Address is
+   function Decode (Address : External_RAM_IO_Address) return Bank_Address is
    begin
-      return Bank_Address (Address and Bank_Address_Mask);
-   end Rebase;
+      return Address and Bank_Address_Mask;
+   end Decode;
 
-end Gade.Carts.Mixins.Banked_RAM;
+end Gade.Carts.Mixins.Banked.RAM;

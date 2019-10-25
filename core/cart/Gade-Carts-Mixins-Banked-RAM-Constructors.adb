@@ -1,6 +1,6 @@
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
-package body Gade.Carts.Mixins.Banked_RAM.Constructors is
+package body Gade.Carts.Mixins.Banked.RAM.Constructors is
 
    procedure Initialize
      (C    : in out Banked_RAM_Cart'Class;
@@ -12,9 +12,13 @@ package body Gade.Carts.Mixins.Banked_RAM.Constructors is
       C.Path := new String'(Path);
       Initialize_Banks (C.Banks, C.Content, Size);
       --  The following might belong to reset
-      C.Enabled := False;
-      C.Accessible_Bank := Bank_Access (Blank_Banks.Singleton);
       C.Accessible_Index := 0;
+      C.Enabled := Enabled_Default;
+      if Enabled_Default then
+         C.Accessible_Bank := Select_Bank (C.Banks, C.Accessible_Index);
+      else
+         C.Accessible_Bank := Bank_Access (Blank_Banks.Singleton);
+      end if;
    end Initialize;
 
    procedure Initialize_Banks
@@ -34,13 +38,13 @@ package body Gade.Carts.Mixins.Banked_RAM.Constructors is
       else
          --  Only trust the header information to an extent, cap the banks
          --  to the maximum addressable ones by the controller.
-         Actual_Banks := Bank_Count'Min (Max_Banks, Reported_Banks);
-         for I in 0 .. Bank_Index (Actual_Banks - 1) loop
-            Offset := Memory_Content_Offset (I) * Bank_Size;
+         Actual_Banks := Bank_Count'Min (Total_Bank_Count, Reported_Banks);
+         for I in 0 .. RAM_Bank_Index (Actual_Banks - 1) loop
+            Offset := Memory_Content_Offset (I) * Content_Byte_Count (Bank_Size);
             Present_Banks (I) := Bank_Access (Create (Content, Offset));
          end loop;
       end if;
       Bank_Pool_Constructors.Initialize (Banks, Present_Banks);
    end Initialize_Banks;
 
-end Gade.Carts.Mixins.Banked_RAM.Constructors;
+end Gade.Carts.Mixins.Banked.RAM.Constructors;

@@ -313,6 +313,6 @@ private
 --          Huds_on_Huc_3             => None,
 --          Huds_on_Huc_1             => None);
 
-   type Cart_Handler is tagged null record;
+   --  type Cart_Handler is tagged null record;
 
 end Gade.Carts;

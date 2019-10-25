@@ -1,7 +1,6 @@
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
-private with Gade.Carts.Banks.ROM.Constructors;
-private with Gade.Carts.Banks.RAM.Constructors;
-private with Gade.Carts.Banks.Blank;
+private with Gade.Carts.Mixins.Banked.ROM.Constructors;
+private with Gade.Carts.Mixins.Banked.RAM.Constructors;
 
 package Gade.Carts.Plain.Constructors is
 
@@ -13,11 +12,8 @@ package Gade.Carts.Plain.Constructors is
 
 private
 
-   package ROM_Bank_Constructors is new ROM_Banks.Constructors;
-   package RAM_Bank_Constructors is new RAM_Banks.Constructors;
-   use ROM_Bank_Constructors, RAM_Bank_Constructors;
-
-   package Blank_RAM_Banks is new RAM_Space_Banks.Blank;
+   package Plain_ROM_Constructors is new Plain_ROM_Mixin.Constructors;
+   package Plain_RAM_Constructors is new Plain_RAM_Mixin.Constructors;
 
    procedure Initialize
      (C        : out Plain_Cart'Class;

@@ -1,7 +1,6 @@
 private with Gade.Carts.Mixins.MBC;
-private with Gade.Carts.Mixins.Banked_ROM;
-private with Gade.Carts.Mixins.Banked_RAM;
---  private with Gade.Carts.Mixins.Toggled_RAM;
+private with Gade.Carts.Mixins.Banked.ROM;
+private with Gade.Carts.Mixins.Banked.RAM;
 
 package Gade.Carts.MBC1 is
 
@@ -13,8 +12,8 @@ package Gade.Carts.MBC1 is
 
 private
 
-   type ROM_Bank_Index is range 0 .. 127;
-   type RAM_Bank_Index is range 0 .. 3;
+   ROM_Bank_Count : constant := 128;
+   RAM_Bank_Count : constant := 4;
 
    type Banking_Mode_Type is (ROM, RAM);
    for Banking_Mode_Type use
@@ -33,20 +32,15 @@ private
    RAM_Enable_Value  : constant := 16#0A#;
    RAM_Disable_Value : constant := 16#00#;
 
-
-   package Banked_ROM_Mixin is new Mixins.Banked_ROM
-     (Base_Cart => Cart, Bank_Index => ROM_Bank_Index);
-   use Banked_ROM_Mixin;
-   package Banked_RAM_Mixin is new Mixins.Banked_RAM
-     (Base_Cart => Banked_ROM_Cart, Bank_Index => RAM_Bank_Index);
-   use Banked_RAM_Mixin;
-   package MBC_Mixin is new Mixins.MBC (Base_Cart => Banked_RAM_Cart);
-   use MBC_Mixin;
---     package Toggled_RAM_Mixin is new Mixins.Toggled_RAM
---       (Base_Cart => Banked_RAM_Cart);
---     use Toggled_RAM_Mixin;
-
-   --  use MBC_Mixin, Banked_ROM_Mixin, Banked_RAM_Mixin;
+   package Banked_ROM_Mixin is new Gade.Carts.Mixins.Banked.ROM
+     (Base_Cart => Cart,
+      Banks     => ROM_Bank_Count);
+   package Banked_RAM_Mixin is new Gade.Carts.Mixins.Banked.RAM
+     (Base_Cart => Banked_ROM_Mixin.Banked_ROM_Cart,
+      Banks     => RAM_Bank_Count);
+   package MBC_Mixin is new Mixins.MBC
+     (Base_Cart => Banked_RAM_Mixin.Banked_RAM_Cart);
+   use Banked_ROM_Mixin, Banked_RAM_Mixin, MBC_Mixin;
 
    type MBC1_Cart is new MBC_Cart with record
       Banking_Mode     : Banking_Mode_Type;

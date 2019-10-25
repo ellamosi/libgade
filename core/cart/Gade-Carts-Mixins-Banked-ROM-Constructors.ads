@@ -3,7 +3,7 @@ private with Gade.Carts.Banks.ROM.Constructors;
 private with Gade.Carts.Banks.Pools.Constructors;
 
 generic
-package Gade.Carts.Mixins.Banked_ROM.Constructors is
+package Gade.Carts.Mixins.Banked.ROM.Constructors is
 
    procedure Initialize
      (C       : in out Banked_ROM_Cart'Class;
@@ -12,7 +12,8 @@ package Gade.Carts.Mixins.Banked_ROM.Constructors is
 private
 
    package ROM_Bank_Constructors is new ROM_Banks.Constructors;
-   package ROM_Bank_Pool_Constructors is new ROM_Bank_Pools.Constructors;
+   package ROM_Bank_Pool_Constructors is new Bank_Pools.Constructors;
+   use Address_Space_Banks, Bank_Pools;
 
    procedure Initialize_Banks
      (Pool    : out Bank_Pool;
@@ -23,4 +24,4 @@ private
      (Accessible_Banks : out Accessible_Bank_Array;
       Pool             : Bank_Pool);
 
-end Gade.Carts.Mixins.Banked_ROM.Constructors;
+end Gade.Carts.Mixins.Banked.ROM.Constructors;

@@ -85,8 +85,8 @@ package body Gade.Carts.MBC1 is
          when ROM => Low_Bank_Index := 0;
          when RAM => Low_Bank_Index := ROM_Bank_Index (High_Part * 2**5);
       end case;
-      C.Select_ROM_Bank (Bank0, Low_Bank_Index);
-      C.Select_ROM_Bank (Bank1, High_Bank_Index);
+      C.Select_ROM_Bank (0, Low_Bank_Index);
+      C.Select_ROM_Bank (1, High_Bank_Index);
    end Select_ROM_Bank;
 
    procedure Select_RAM_Bank (C : in out MBC1_Cart) is

@@ -1,5 +1,5 @@
-private with Gade.Carts.Mixins.Banked_ROM.Constructors;
-private with Gade.Carts.Mixins.Banked_RAM.Constructors;
+private with Gade.Carts.Mixins.Banked.ROM.Constructors;
+private with Gade.Carts.Mixins.Banked.RAM.Constructors;
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
 package Gade.Carts.MBC1.Constructors is

@@ -1,6 +1,5 @@
-private with Gade.Carts.Banks;
-private with Gade.Carts.Banks.ROM;
-private with Gade.Carts.Banks.RAM;
+private with Gade.Carts.Mixins.Banked.ROM;
+private with Gade.Carts.Mixins.Banked.RAM;
 
 package Gade.Carts.Plain is
 
@@ -10,46 +9,17 @@ package Gade.Carts.Plain is
 
    subtype Plain_Cart_NN_Access is not null Plain_Cart_Access;
 
-   overriding
-   procedure Read_ROM
-     (C       : in out Plain_Cart;
-      Address : External_ROM_IO_Address;
-      V       : out Byte);
-
-   overriding
-   procedure Read_RAM
-     (C       : in out Plain_Cart;
-      Address : External_RAM_IO_Address;
-      V       : out Byte);
-
-   overriding
-   procedure Write_RAM
-     (C       : in out Plain_Cart;
-      Address : External_RAM_IO_Address;
-      V       : Byte);
-
 private
 
-   ROM_Bank_Size    : constant      := 16#8000#;
-   RAM_Bank_Size    : constant      := 16#2000#;
-   RAM_Address_Mask : constant Word := 16#1FFF#;
+   package Plain_ROM_Mixin is new Gade.Carts.Mixins.Banked.ROM
+     (Base_Cart        => Cart,
+      Banks            => 1,
+      Accessible_Banks => 1);
+   package Plain_RAM_Mixin is new Gade.Carts.Mixins.Banked.RAM
+     (Base_Cart          => Plain_ROM_Mixin.Banked_ROM_Cart,
+      Banks              => 1,
+      Enabled_By_Default => True);
 
-   type Path_Access is access String;
-
-   package ROM_Space_Banks is new Gade.Carts.Banks (ROM_Bank_Size);
-   package RAM_Space_Banks is new Gade.Carts.Banks (RAM_Bank_Size);
-
-   package ROM_Banks is new ROM_Space_Banks.ROM;
-   package RAM_Banks is new RAM_Space_Banks.RAM;
-   use ROM_Banks;
-
-   type Plain_Cart is new Cart with record
-      ROM      : ROM_Bank;
-      RAM      : RAM_Space_Banks.Bank_Access;
-      RAM_Path : Path_Access;
-   end record;
-
-   function Rebase (Address : External_RAM_IO_Address)
-      return RAM_Space_Banks.Bank_Address;
+   type Plain_Cart is new Plain_RAM_Mixin.Banked_RAM_Cart with null record;
 
 end Gade.Carts.Plain;

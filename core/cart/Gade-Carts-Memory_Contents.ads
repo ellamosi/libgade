@@ -4,9 +4,12 @@ package Gade.Carts.Memory_Contents is
 
    --  TODO: Separate ROM/RAM concerns
 
-   Bank_Size : constant := 16 * 1024; -- Bytes
-   Max_Banks : constant := 512; -- 8 MB for MBC5 (512 x 16 kByte)
-   Max_Bytes : constant := Max_Banks * Bank_Size;
+   --  TODO: This might need to go, ROM bank size is variable Plain VS Most MBC
+   --  vs MBC6 for example. Is not really a ROM chip concern.
+   ROM_Bank_Size : constant := 16 * 1024; -- Bytes
+
+   Max_Banks     : constant := 512; -- 8 MB for MBC5 (512 x 16 kByte)
+   Max_Bytes     : constant := Max_Banks * ROM_Bank_Size;
 
    type Bank_Count is range 0 .. Max_Banks;
    subtype Bank_Index_Range is Bank_Count range 0 .. Max_Banks - 1;
