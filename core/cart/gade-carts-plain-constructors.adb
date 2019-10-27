@@ -17,10 +17,16 @@ package body Gade.Carts.Plain.Constructors is
       Header   : Cart_Header_Access;
       RAM_Path : String)
    is
-      RAM_Size : constant Plain_RAM_Size_Type := Header.RAM_Size;
+      use Plain_RAM_Mixin.Banked_RAM_Spaces;
+
+      RAM_Content : RAM_Content_Access := null;
    begin
+      --  TODO: This conditional is ugly
+      if Header.RAM_Size /= None then
+         RAM_Content := Create (Header.RAM_Size, Max_Content_Size);
+      end if;
       Plain_ROM_Constructors.Initialize (C, Content);
-      Plain_RAM_Constructors.Initialize (C, RAM_Size, RAM_Path);
+      Plain_RAM_Constructors.Initialize (C, RAM_Content, RAM_Path);
    end Initialize;
 
 end Gade.Carts.Plain.Constructors;

@@ -34,7 +34,11 @@ package Gade.Carts.Memory_Contents is
 
    subtype RAM_Allocation_Size is RAM_Size_Type range RAM_16kbit .. RAM_512kbit;
 
-   function Create (Size : RAM_Allocation_Size) return RAM_Content_NN_Access;
+   function Create
+     (Reported_Size : RAM_Allocation_Size;
+      Max_Size      : Content_Byte_Count) return RAM_Content_NN_Access;
+
+   function Create (Size : Content_Byte_Count) return RAM_Content_NN_Access;
 
    procedure Load
      (Path : String;

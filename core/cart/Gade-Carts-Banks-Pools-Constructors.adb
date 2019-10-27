@@ -22,4 +22,14 @@ package body Gade.Carts.Banks.Pools.Constructors is
       end loop;
    end Initialize;
 
+   procedure Initialize
+     (Pool : out Bank_Pool;
+      BF   : in out Bank_Factory'Class)
+   is
+   begin
+      for I in Bank_Index'Range loop
+         Pool.Banks (I) := BF.Create_Bank (I);
+      end loop;
+   end Initialize;
+
 end Gade.Carts.Banks.Pools.Constructors;

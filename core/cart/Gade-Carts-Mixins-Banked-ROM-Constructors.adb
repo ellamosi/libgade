@@ -22,7 +22,7 @@ package body Gade.Carts.Mixins.Banked.ROM.Constructors is
 
       Offset : Memory_Content_Offset;
    begin
-      for I in 0 .. ROM_Bank_Index (N_Banks - 1) loop
+      for I in 0 .. Bank_Index (N_Banks - 1) loop
          Offset := Memory_Content_Offset (I) * Content_Byte_Count (Bank_Size);
          Present_Banks (I) := Bank_Access (Create (Content, Offset));
       end loop;
@@ -33,10 +33,10 @@ package body Gade.Carts.Mixins.Banked.ROM.Constructors is
      (Accessible_Banks : out Accessible_Bank_Array;
       Pool             : Bank_Pool)
    is
-      I : ROM_Bank_Index;
+      I : Bank_Index;
    begin
-      for AI in Accessible_ROM_Bank_Index loop
-         I := ROM_Bank_Index (AI);
+      for AI in Accessible_Bank_Index loop
+         I := Bank_Index (AI);
          Accessible_Banks (AI) := ROM_Bank_Access (Select_Bank (Pool, I));
       end loop;
    end Initialize_Accessible_Banks;

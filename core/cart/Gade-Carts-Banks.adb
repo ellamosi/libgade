@@ -13,21 +13,26 @@ package body Gade.Carts.Banks is
          B.Address_Mask := Address_Mask (Content.all'Length);
       end Initialize;
 
-      overriding procedure Read
-        (B : in out Memory_Bank; Address : Bank_Address; V : out Byte)
+      overriding
+      procedure Read
+        (B       : in out Memory_Bank;
+         Address : Bank_Address;
+         V       : out Byte)
       is
       begin
-         V := B.Content ((Address and B.Address_Mask) + B.Offset);
+         V := B.Content (Decode (B, Address));
       end Read;
 
-   end Memory_Bank_Mixin;
+      function Decode
+        (B       : Memory_Bank'Class;
+         Address : Bank_Address)
+         return Memory_Content_Address
+      is
+      begin
+         return Memory_Content_Address (Address and B.Address_Mask) + B.Offset;
+      end Decode;
 
-   function "+" (Left : Bank_Address; Right : Memory_Content_Offset)
-                 return Memory_Content_Address
-   is
-   begin
-      return Memory_Content_Address (Left) + Right;
-   end "+";
+   end Memory_Bank_Mixin;
 
    function Address_Mask (Content_Size : Natural) return Bank_Address
    is

@@ -7,7 +7,11 @@ generic
    Enabled_By_Default : in Boolean := False;
 package Gade.Carts.Mixins.Banked.RAM is
 
-   type RAM_Bank_Index is new Bank_Index_Type range 0 .. Banks - 1;
+   package Banked_RAM_Spaces is new Banked_Spaces
+     (Banks            => Banks,
+      Accessible_Banks => 1,
+      Address_Space    => External_RAM_IO_Address);
+   use Banked_RAM_Spaces;
 
    type Banked_RAM_Cart is abstract new Base_Cart with private;
 
@@ -25,7 +29,7 @@ package Gade.Carts.Mixins.Banked.RAM is
 
    procedure Select_RAM_Bank
      (C : in out Banked_RAM_Cart;
-      I : RAM_Bank_Index);
+      I : Bank_Index);
 
    procedure Enable_RAM (C : in out Banked_RAM_Cart; Enable : Boolean);
 
@@ -35,12 +39,10 @@ private
 
    type Path_Access is access String;
 
-   package Banked_ROM_Spaces is new Banked_Spaces
-     (Base_Cart             => Base_Cart,
-      Accessible_Bank_Index => Unbanked_Bank_Index,
-      Bank_Index            => RAM_Bank_Index,
-      Address_Space         => External_RAM_IO_Address);
-   use Banked_ROM_Spaces;
+   package RAM_Space_Carts is new Banked_Space_Carts
+     (Base_Cart => Base_Cart,
+      BS        => Banked_RAM_Spaces);
+   use RAM_Space_Carts;
 
    package RAM_Banks is new Address_Space_Banks.RAM;
    package Blank_Banks is new Address_Space_Banks.Blank;
@@ -48,7 +50,7 @@ private
 
    type Banked_RAM_Cart is abstract new Banked_Space_Cart with record
       Accessible_Bank  : Bank_Access;
-      Accessible_Index : RAM_Bank_Index;
+      Accessible_Index : Bank_Index;
       Enabled          : Boolean;
       Content          : RAM_Content_Access;
       Path             : Path_Access;

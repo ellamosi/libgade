@@ -1,7 +1,6 @@
 private with Gade.Carts.Mixins.MBC;
-private with Gade.Carts.Mixins.Banked_ROM;
-private with Gade.Carts.Mixins.Plain_RAM;
-private with Gade.Carts.Mixins.Toggled_RAM;
+private with Gade.Carts.Mixins.Banked.ROM;
+private with Gade.Carts.Mixins.Banked.RAM;
 
 package Gade.Carts.MBC2 is
 
@@ -13,9 +12,10 @@ package Gade.Carts.MBC2 is
 
 private
 
-   type ROM_Bank_Index is range 0 .. 15;
+   ROM_Bank_Count : constant := 16;
+   RAM_Bank_Count : constant := 1;
 
-   Max_RAM_Bytes : constant := 512;
+   --  Max_RAM_Bytes : constant := 512;
 
    Bank_Select_Accept_Mask : constant Word := 16#0100#;
    Bank_Select_Mask        : constant Byte := 16#0F#;
@@ -24,30 +24,17 @@ private
    RAM_Enable_Mask        : constant Byte := 16#0F#;
    RAM_Enable_Value       : constant Byte := 16#0A#;
 
-   RAM_Content_Mask : constant Byte := 16#F0#;
-
-   package Banked_ROM_Mixin is new Mixins.Banked_ROM (Cart, ROM_Bank_Index);
-   use Banked_ROM_Mixin;
-   package Plain_RAM_Mixin is new Mixins.Plain_RAM (Banked_ROM_Cart);
-   use Plain_RAM_Mixin;
-   package Toggled_RAM_Mixin is new Mixins.Toggled_RAM (Plain_RAM_Cart);
-   use Toggled_RAM_Mixin;
-   package MBC_Mixin is new Mixins.MBC (Toggled_RAM_Cart);
-   use MBC_Mixin;
+   package Banked_ROM_Mixin is new Gade.Carts.Mixins.Banked.ROM
+     (Base_Cart => Cart,
+      Banks     => ROM_Bank_Count);
+   package MBC2_RAM_Mixin is new Gade.Carts.Mixins.Banked.RAM
+     (Base_Cart => Banked_ROM_Mixin.Banked_ROM_Cart,
+      Banks     => RAM_Bank_Count);
+   package MBC_Mixin is new Mixins.MBC
+     (Base_Cart => MBC2_RAM_Mixin.Banked_RAM_Cart);
+   use Banked_ROM_Mixin, MBC_Mixin;
 
    type MBC2_Cart is new MBC_Mixin.MBC_Cart with null record;
-
-   overriding
-   procedure Read_RAM
-     (C       : in out MBC2_Cart;
-      Address : External_RAM_IO_Address;
-      V       : out Byte);
-
-   overriding
-   procedure Write_RAM
-     (C       : in out MBC2_Cart;
-      Address : External_RAM_IO_Address;
-      V       : Byte);
 
    overriding
    procedure Enable_RAM

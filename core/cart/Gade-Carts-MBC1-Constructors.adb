@@ -1,3 +1,5 @@
+
+
 package body Gade.Carts.MBC1.Constructors is
 
    function Create
@@ -18,9 +20,16 @@ package body Gade.Carts.MBC1.Constructors is
       Header   : Cart_Header_Access;
       RAM_Path : String)
    is
+      use Banked_RAM_Mixin.Banked_RAM_Spaces;
+
+      RAM_Content : RAM_Content_Access := null;
    begin
+      --  TODO: This conditional is ugly
+      if Header.RAM_Size /= None then
+         RAM_Content := Create (Header.RAM_Size, Max_Content_Size);
+      end if;
       Banked_ROM_Constructors.Initialize (C, Content);
-      Banked_RAM_Constructors.Initialize (C, Header.RAM_Size, RAM_Path);
+      Banked_RAM_Constructors.Initialize (C, RAM_Content, RAM_Path);
       --  TODO: Revise how banks are selected upon initialization/reset
       C.Low_Bank_Select := 1;
       C.High_Bank_Select := 0;

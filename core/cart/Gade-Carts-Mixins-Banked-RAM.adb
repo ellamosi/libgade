@@ -22,7 +22,7 @@ package body Gade.Carts.Mixins.Banked.RAM is
 
    procedure Select_RAM_Bank
      (C : in out Banked_RAM_Cart;
-      I : RAM_Bank_Index)
+      I : Bank_Index)
    is
    begin
       C.Accessible_Index := I;

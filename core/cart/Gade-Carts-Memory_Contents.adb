@@ -47,11 +47,21 @@ package body Gade.Carts.Memory_Contents is
       return ROM;
    end Load;
 
-   function Create (Size : RAM_Allocation_Size) return RAM_Content_NN_Access is
-      Content_Size : constant Content_Byte_Count :=
-        Content_Size_For_RAM_Size (Size);
+   function Create
+     (Reported_Size : RAM_Allocation_Size;
+      Max_Size      : Content_Byte_Count) return RAM_Content_NN_Access
+   is
+      Reported_Content_Size : Content_Byte_Count;
+   begin
+      --  Only trust the header information to an extent, cap the content size
+      --  to the maximum addressable by the controller.
+      Reported_Content_Size := Content_Size_For_RAM_Size (Reported_Size);
+      return Create (Content_Byte_Count'Min (Reported_Content_Size, Max_Size));
+   end Create;
+
+   function Create (Size : Content_Byte_Count) return RAM_Content_NN_Access is
       Result : constant RAM_Content_NN_Access :=
-        new RAM_Content (0 .. Content_Size - 1);
+         new RAM_Content (0 .. Size - 1);
    begin
       return Result;
    end Create;

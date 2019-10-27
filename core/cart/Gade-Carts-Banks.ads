@@ -46,12 +46,12 @@ private
          Address : Bank_Address;
          V       : out Byte);
 
-   end Memory_Bank_Mixin;
+      function Decode
+        (B       : Memory_Bank'Class;
+         Address : Bank_Address)
+         return Memory_Content_Address;
 
-   function "+"
-     (Left  : Bank_Address;
-      Right : Memory_Content_Offset) return Memory_Content_Address;
-   pragma Inline ("+");
+   end Memory_Bank_Mixin;
 
    function Address_Mask (Content_Size : Natural) return Bank_Address;
 

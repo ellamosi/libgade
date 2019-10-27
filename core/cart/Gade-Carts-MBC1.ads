@@ -40,7 +40,7 @@ private
       Banks     => RAM_Bank_Count);
    package MBC_Mixin is new Mixins.MBC
      (Base_Cart => Banked_RAM_Mixin.Banked_RAM_Cart);
-   use Banked_ROM_Mixin, Banked_RAM_Mixin, MBC_Mixin;
+   use MBC_Mixin;
 
    type MBC1_Cart is new MBC_Cart with record
       Banking_Mode     : Banking_Mode_Type;

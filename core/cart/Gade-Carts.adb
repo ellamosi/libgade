@@ -21,21 +21,6 @@ with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
 
 package body Gade.Carts is
 
---     function Create_RAM_Space_Handler
---       (Header   : Cart_Header;
---        ROM_Path : String) return Spaces.RAM.Handler_Access;
---
---     function Create_ROM_Space_Handler
---       (Header      : Cart_Header;
---        ROM_Content : ROM.Content_Access;
---        RAM_Handler : Spaces.RAM.Handler_Access) return Spaces.ROM.Handler_Access;
---
---     function Get_Header
---       (Content : Cart.ROM.Content_Access)
---        return Cart_Header_Access;
-
-
-
    function Get_Header
      (Content : ROM_Content_Access)
       return Cart_Header_Access;
@@ -94,7 +79,7 @@ package body Gade.Carts is
       Header     : Cart_Header_Access;
       Controller : Controller_Type;
 
-      RAM : constant String := RAM_Path (Path);
+      Save : constant String := RAM_Path (Path);
    begin
       ROM := Load (Path);
 
@@ -107,67 +92,16 @@ package body Gade.Carts is
 
       case Controller is
          when Cartridge_Info.None =>
-            return Cart_Access (Plain.Constructors.Create (ROM, Header, RAM));
+            return Cart_Access (Plain.Constructors.Create (ROM, Header, Save));
          when Cartridge_Info.MBC1 =>
-            return Cart_Access (MBC1.Constructors.Create (ROM, Header, RAM));
+            return Cart_Access (MBC1.Constructors.Create (ROM, Header, Save));
 --           when Cartridge_Info.MBC2 =>
---              return Cart_Access (MBC2.Constructors.Create (ROM, Header, RAM));
+--              return Cart_Access (MBC2.Constructors.Create (ROM, Header, Save));
          when others =>
-            return Cart_Access (Plain.Constructors.Create (ROM, Header, RAM));
+            return Cart_Access (Plain.Constructors.Create (ROM, Header, Save));
       end case;
    end Load_ROM;
---
---     function Create_RAM_Space_Handler
---       (Header   : Cart_Header;
---        ROM_Path : String) return Spaces.RAM.Handler_Access
---     is
---        package Blank_RAM_Handler  renames Gade.Cart.Spaces.RAM.Blank;
---        package Banked_RAM_Handler renames Gade.Cart.Spaces.RAM.Banked;
---        package MBC2_RAM_Handler   renames Gade.Cart.Spaces.RAM.MBC2;
---        package MBC3_RAM_Handler   renames Gade.Cart.Spaces.RAM.Banked.MBC3;
---        subtype Handler_Access is Spaces.RAM.Handler_Access;
---        RAM_Handler_Kind : constant RAM_Handler_Kind_Type :=
---          RAM_Handler_Kind_For_Cart (Header.Cart_Type);
---        Path : constant String := RAM_Path (ROM_Path);
---     begin
---        return
---          (case RAM_Handler_Kind is
---              when None =>
---                 Handler_Access (Blank_RAM_Handler.Create),
---              when MBC1 =>
---                 Handler_Access (Banked_RAM_Handler.Create (Header.RAM_Size, Path)),
---              when MBC2 =>
---                 Handler_Access (MBC2_RAM_Handler.Create (Path)),
---              when MBC3_RAM =>
---                 Handler_Access (MBC3_RAM_Handler.Create (Header.RAM_Size, Path))
---          );
---     end Create_RAM_Space_Handler;
---
---     function Create_ROM_Space_Handler
---       (Header      : Cart_Header;
---        ROM_Content : ROM.Content_Access;
---        RAM_Handler : Spaces.RAM.Handler_Access) return Spaces.ROM.Handler_Access
---     is
---        subtype Handler_Access is Spaces.ROM.Handler_Access;
---        Controller : constant Controller_Type :=
---          Controller_Type_For_Cart (Header.Cart_Type);
---     begin
---        Put_Line ("Cartridge type: " & Header.Cart_Type'Img);
---        Put_Line ("Controller type: " & Controller'Img);
---        return
---          (case Controller is
---              when Cartridge_Info.None =>
---                 Handler_Access (Spaces.ROM.Plain.Create (ROM_Content)),
---              when Cartridge_Info.MBC1 =>
---                 Handler_Access (Spaces.ROM.MBC.MBC1.Create (ROM_Content, RAM_Handler)),
---              when Cartridge_Info.MBC2 =>
---                 Handler_Access (Spaces.ROM.MBC.MBC2.Create (ROM_Content, RAM_Handler)),
---              when Cartridge_Info.MBC3 =>
---                 Handler_Access (Spaces.ROM.MBC.MBC3.Create (ROM_Content, RAM_Handler)),
---              when others =>
---                 raise Program_Error with "Unsupported cartridge controller! " & Controller'Img);
---     end Create_ROM_Space_Handler;
---
+
    function RAM_Path (ROM_Path : String) return String is
    begin
       return
@@ -175,7 +109,6 @@ package body Gade.Carts is
                  Name                 => Base_Name (ROM_Path),
                  Extension            => "sav");
    end RAM_Path;
-
 
 --     function RTC_Path (ROM_Path : String) return String is
 --     begin
