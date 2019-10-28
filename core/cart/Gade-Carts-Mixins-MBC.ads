@@ -32,7 +32,7 @@ package Gade.Carts.Mixins.MBC is
 
    --  MBC1: 2000-3FFF - ROM Bank Number (Write Only) 0, 20h, 40h, 60h are mapped to +1
    --        4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) NOOOOOOOOOOOOO
-   --  MBC2: 2000-3FFF - ROM Bank Number (Write Only) - Address restrictions
+   --  MBC2: 0000-3FFF - ROM Bank Number (Write Only) - Address restrictions
    --  MBC3: 2000-3FFF - ROM Bank Number (Write Only) 0 maps to 1
    --  MBC5: 2000-2FFF - Low 8 bits of ROM Bank Number (Write Only)
    --        3000-3FFF - High bit of ROM Bank Number (Write Only)

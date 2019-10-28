@@ -1,5 +1,18 @@
 package body Gade.Carts.MBC2.Constructors is
 
+   overriding
+   function Create_Bank
+     (F : in out MBC2_RAM_Bank_Factory;
+      I : Bank_Index) return Bank_NN_Access
+   is
+      pragma Unreferenced (I);
+   begin
+      if F.Bank = null then
+         F.Bank := MBC2_RAM_Bank_Constructors.Create (F.Content);
+      end if;
+      return Bank_NN_Access (F.Bank);
+   end Create_Bank;
+
    function Create
      (Content  : ROM_Content_Access;
       Header   : Cart_Header_Access;
@@ -18,12 +31,14 @@ package body Gade.Carts.MBC2.Constructors is
       Header   : Cart_Header_Access;
       RAM_Path : String)
    is
-
+      pragma Unreferenced (Header);
+      RAM_Content : RAM_Content_Access := null;
+      BF          : MBC2_RAM_Bank_Factory;
    begin
+      RAM_Content := Create (RAM_Bytes);
+      BF.Content := RAM_Content;
       Banked_ROM_Constructors.Initialize (C, Content);
-      --  TODO: Got to adjust constructor so special RAM kind can be created
-      --  with the right bank types.
-      MBC2_RAM_Constructors.Initialize (C, Header.RAM_Size, RAM_Path);
+      MBC2_RAM_Constructors.Initialize (C, RAM_Content, RAM_Path, BF);
    end Initialize;
 
 end Gade.Carts.MBC2.Constructors;

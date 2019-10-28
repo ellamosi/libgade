@@ -1,5 +1,5 @@
-private with Gade.Carts.Banks.Blank;
-private with Gade.Carts.Banks.RAM;
+with Gade.Carts.Banks.Blank;
+with Gade.Carts.Banks.RAM;
 
 generic
    type Base_Cart is abstract new Cart with private;
@@ -12,6 +12,11 @@ package Gade.Carts.Mixins.Banked.RAM is
       Accessible_Banks => 1,
       Address_Space    => External_RAM_IO_Address);
    use Banked_RAM_Spaces;
+
+   --  Make bank package instances visible so specialized factories do not
+   --  require re-instancing them, resulting in incompatible types.
+   package RAM_Banks is new Address_Space_Banks.RAM;
+   package Blank_Banks is new Address_Space_Banks.Blank;
 
    type Banked_RAM_Cart is abstract new Base_Cart with private;
 
@@ -33,7 +38,10 @@ package Gade.Carts.Mixins.Banked.RAM is
 
    procedure Enable_RAM (C : in out Banked_RAM_Cart; Enable : Boolean);
 
+   function Is_RAM_Enabled (C : Banked_RAM_Cart) return Boolean;
+
 private
+   use Address_Space_Banks, Bank_Pools;
 
    Enabled_Default : constant Boolean := Enabled_By_Default;
 
@@ -43,10 +51,6 @@ private
      (Base_Cart => Base_Cart,
       BS        => Banked_RAM_Spaces);
    use RAM_Space_Carts;
-
-   package RAM_Banks is new Address_Space_Banks.RAM;
-   package Blank_Banks is new Address_Space_Banks.Blank;
-   use Address_Space_Banks, Bank_Pools;
 
    type Banked_RAM_Cart is abstract new Banked_Space_Cart with record
       Accessible_Bank  : Bank_Access;

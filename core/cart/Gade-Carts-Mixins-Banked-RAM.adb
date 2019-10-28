@@ -39,6 +39,11 @@ package body Gade.Carts.Mixins.Banked.RAM is
       end if;
    end Enable_RAM;
 
+   function Is_RAM_Enabled (C : Banked_RAM_Cart) return Boolean is
+   begin
+      return C.Enabled;
+   end Is_RAM_Enabled;
+
    function Decode (Address : External_RAM_IO_Address) return Bank_Address is
    begin
       return Address and Bank_Address_Mask;

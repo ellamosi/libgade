@@ -8,7 +8,7 @@ package body Gade.Carts.Banks.RAM.MBC2 is
    is
    begin
       RAM_Bank (B).Read (Address, V);
-      V := V and Value_Mask;
+      V := V or Value_Mask;
    end Read;
 
    overriding
@@ -18,7 +18,7 @@ package body Gade.Carts.Banks.RAM.MBC2 is
       V       : Byte)
    is
    begin
-      RAM_Bank (B).Write (Address, V and Value_Mask);
+      RAM_Bank (B).Write (Address, V or Value_Mask);
    end Write;
 
 end Gade.Carts.Banks.RAM.MBC2;

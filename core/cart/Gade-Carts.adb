@@ -17,7 +17,7 @@ with Ada.Text_IO;     use Ada.Text_IO;
 with Gade.Carts.Memory_Contents;    use Gade.Carts.Memory_Contents;
 with Gade.Carts.Plain.Constructors; use Gade.Carts.Plain.Constructors;
 with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
---  with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
+with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
 
 package body Gade.Carts is
 
@@ -95,8 +95,8 @@ package body Gade.Carts is
             return Cart_Access (Plain.Constructors.Create (ROM, Header, Save));
          when Cartridge_Info.MBC1 =>
             return Cart_Access (MBC1.Constructors.Create (ROM, Header, Save));
---           when Cartridge_Info.MBC2 =>
---              return Cart_Access (MBC2.Constructors.Create (ROM, Header, Save));
+         when Cartridge_Info.MBC2 =>
+            return Cart_Access (MBC2.Constructors.Create (ROM, Header, Save));
          when others =>
             return Cart_Access (Plain.Constructors.Create (ROM, Header, Save));
       end case;
