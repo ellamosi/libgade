@@ -48,8 +48,8 @@ package body Gade.Carts.Memory_Contents is
    end Load;
 
    function Create
-     (Reported_Size : RAM_Allocation_Size;
-      Max_Size      : Content_Byte_Count) return RAM_Content_NN_Access
+     (Reported_Size : RAM_Size_Type;
+      Max_Size      : Content_Byte_Count) return RAM_Content_Access
    is
       Reported_Content_Size : Content_Byte_Count;
    begin

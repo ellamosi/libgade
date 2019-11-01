@@ -1,5 +1,3 @@
-
-
 package body Gade.Carts.MBC1.Constructors is
 
    function Create

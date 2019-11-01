@@ -7,14 +7,13 @@ package body Gade.Carts.MBC1 is
       Value   : Byte)
    is
       pragma Unreferenced (Address);
-
-      Masked_Value : constant Byte := Value and RAM_Enable_Mask;
    begin
       --  TODO: Review disabling values
-      case Masked_Value is
-         when RAM_Enable_Value  => C.Enable_RAM (True);
-         when RAM_Disable_Value => C.Enable_RAM (False);
-         when others            => null;
+      case Value and RAM_Enable_Mask is
+         when RAM_Enable_Value => C.Enable_RAM (True);
+         when others           => C.Enable_RAM (False);
+--           when RAM_Disable_Value => C.Enable_RAM (False);
+--           when others            => null;
       end case;
    end Enable_RAM;
 

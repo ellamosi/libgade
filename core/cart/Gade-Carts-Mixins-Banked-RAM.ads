@@ -1,5 +1,7 @@
 with Gade.Carts.Banks.Blank;
 with Gade.Carts.Banks.RAM;
+with Gade.Carts.Banks.RTC;
+with Gade.Carts.Banks.RAM.MBC2;
 
 generic
    type Base_Cart is abstract new Cart with private;
@@ -16,6 +18,8 @@ package Gade.Carts.Mixins.Banked.RAM is
    --  Make bank package instances visible so specialized factories do not
    --  require re-instancing them, resulting in incompatible types.
    package RAM_Banks is new Address_Space_Banks.RAM;
+   package MBC2_RAM_Banks is new RAM_Banks.MBC2;
+   package RTC_Banks is new Address_Space_Banks.RTC;
    package Blank_Banks is new Address_Space_Banks.Blank;
 
    type Banked_RAM_Cart is abstract new Base_Cart with private;

@@ -1,6 +1,5 @@
 private with Gade.Carts.Mixins.Banked.ROM.Constructors;
 private with Gade.Carts.Mixins.Banked.RAM.Constructors;
-private with Gade.Carts.Banks.RAM.MBC2;
 private with Gade.Carts.Banks.RAM.MBC2.Constructors;
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
@@ -17,12 +16,12 @@ private
    package Banked_ROM_Constructors is new Banked_ROM_Mixin.Constructors;
 
    package MBC2_RAM_Constructors is new MBC2_RAM_Mixin.Constructors;
-   use MBC2_RAM_Constructors, MBC2_RAM_Constructors.Bank_Pool_Constructors;
+   --  use MBC2_RAM_Constructors, MBC2_RAM_Constructors.Bank_Pool_Constructors;
 
-   package MBC2_RAM_Banks is new MBC2_RAM_Mixin.RAM_Banks.MBC2;
+   --  package MBC2_RAM_Banks is new MBC2_RAM_Mixin.RAM_Banks.MBC2;
    package MBC2_RAM_Bank_Constructors is new MBC2_RAM_Banks.Constructors;
+   use MBC2_RAM_Constructors.RAM_Bank_Factories.Bank_Pool_Constructors; -- Not pretty
    use MBC2_RAM_Banks;
-
    use MBC2_RAM_Mixin.Banked_RAM_Spaces;
    use MBC2_RAM_Mixin.Banked_RAM_Spaces.Address_Space_Banks;
 

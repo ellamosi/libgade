@@ -1,11 +1,20 @@
-private with Gade.Carts.Banks.RAM.Constructors;
-with Gade.Carts.Banks.Pools.Constructors;
+--  private with Gade.Carts.Banks.RAM.Constructors;
+with Gade.Carts.Mixins.Banked.RAM.Factories;
 
 generic
 package Gade.Carts.Mixins.Banked.RAM.Constructors is
 
-   package Bank_Pool_Constructors is new Bank_Pools.Constructors;
-   use Address_Space_Banks, Bank_Pool_Constructors;
+   --  TODO: This should not be needed
+   --  package Bank_Pool_Constructors is new Bank_Pools.Constructors;
+   --  use Address_Space_Banks, Bank_Pool_Constructors;
+   --  use Bank_Pool_Constructors;
+
+
+   package RAM_Bank_Factories is new Gade.Carts.Mixins.Banked.RAM.Factories;
+   --  package Banked_RAM_Bank_Factory_Constructors is new Banked_RAM_Bank_Factories.Constructors;
+   --  TODO: Should not be through bank pools
+   use RAM_Bank_Factories;
+   use Bank_Pool_Constructors;
 
    --  This will eventually need config and cart info objects... or not
    procedure Initialize
@@ -19,9 +28,9 @@ package Gade.Carts.Mixins.Banked.RAM.Constructors is
       Path    : String;
       BF      : in out Bank_Factory'Class);
 
-private
-
-   package RAM_Bank_Constructors is new RAM_Banks.Constructors;
+--  private
+--
+--     package RAM_Bank_Constructors is new RAM_Banks.Constructors;
 
 --     package Bank_Factories is new Address_Space_Banks.Factories;
 --     use Bank_Factories;
@@ -51,24 +60,14 @@ private
 --
 --     function Create_Blank_Bank_Factory return Bank_Factory'Class;
 
-   type Factory_Banks is array (Bank_Index) of Bank_Access;
-
-   type Default_Bank_Factory is new Bank_Factory with record
-      Banks   : Factory_Banks; -- Keep track of created banks
-      Content : RAM_Content_Access;
-      N_Banks : Bank_Count;
-   end record;
-
-   overriding
-   function Create_Bank
-     (F : in out Default_Bank_Factory;
-      I : Bank_Index) return Bank_NN_Access;
-
-   type Blank_Bank_Factory is new Bank_Factory with null record;
-
-   overriding
-   function Create_Bank
-     (F : in out Blank_Bank_Factory;
-      I : Bank_Index) return Bank_NN_Access;
+--     type Factory_Banks is array (Bank_Index) of Bank_Access;
+--
+--     type Default_Bank_Factory is new Bank_Factory with record
+--        Banks   : Factory_Banks; -- Keep track of created banks
+--        Content : RAM_Content_Access;
+--        N_Banks : Bank_Count;
+--     end record;
+--
+--     type Blank_Bank_Factory is new Bank_Factory with null record;
 
 end Gade.Carts.Mixins.Banked.RAM.Constructors;
