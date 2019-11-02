@@ -22,6 +22,8 @@ package body Gade.Dev.Display is
       Display.Map.LCDC := Default_LCD_Control;
       Display.Map.STAT := Default_LCD_Status;
       Display.Map.CURLINE := Starting_Line;
+      Display.Map.SCROLLX := 0;
+      Display.Map.SCROLLY := 0;
       Display.DMA_Copy_Ongoing := False;
       Display.Display_Handler.Reset;
    end Reset;

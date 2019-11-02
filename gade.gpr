@@ -2,7 +2,13 @@ with "gade_common.gpr";
 
 project Gade is
 
-   for Source_Dirs use ("core", "core/cart", "core/public");
+   for Source_Dirs use
+     ("core",
+      "core/public",
+      "core/carts",
+      "core/carts/banks",
+      "core/carts/mixins",
+      "core/carts/common");
    for Object_Dir use Gade_Common'Object_Dir;
    for Languages use Gade_Common'Languages;
 
