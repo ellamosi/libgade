@@ -1,6 +1,15 @@
 package body Gade.Carts.Mixins.Banked.ROM is
    use Bank_Pools;
 
+   procedure Reset_ROM (C : in out Banked_ROM_Cart) is
+      I : Bank_Index;
+   begin
+      for AI in Accessible_Bank_Index loop
+         I := Bank_Index (AI);
+         C.Select_ROM_Bank (AI, I);
+      end loop;
+   end Reset_ROM;
+
    overriding
    procedure Read_ROM
      (C       : in out Banked_ROM_Cart;

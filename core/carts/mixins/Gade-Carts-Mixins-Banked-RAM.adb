@@ -1,5 +1,16 @@
 package body Gade.Carts.Mixins.Banked.RAM is
 
+   procedure Reset_RAM (C : in out Banked_RAM_Cart) is
+   begin
+      C.Accessible_Index := 0;
+      C.Enabled := Enabled_Default;
+      if Enabled_Default then
+         C.Accessible_Bank := Select_Bank (C.Banks, C.Accessible_Index);
+      else
+         C.Accessible_Bank := Bank_Access (Blank_Banks.Singleton);
+      end if;
+   end Reset_RAM;
+
    overriding
    procedure Read_RAM
      (C       : in out Banked_RAM_Cart;
@@ -19,6 +30,28 @@ package body Gade.Carts.Mixins.Banked.RAM is
    begin
       C.Accessible_Bank.Write (Decode (Address), V);
    end Write_RAM;
+
+   overriding
+   procedure Load_RAM (C : in out Banked_RAM_Cart) is
+   begin
+      --  This will likely end up changing, but:
+      --  - Expect Path not to be present if cart has no battery save
+      --  - Expect Content not to be present if cart no RAM chip
+      if C.Path /= null and C.Content /= null then
+         Memory_Contents.Load (C.Path.all, C.Content.all);
+      end if;
+   end Load_RAM;
+
+   overriding
+   procedure Save_RAM (C : in out Banked_RAM_Cart) is
+   begin
+      --  This will likely end up changing, but:
+      --  - Expect Path not to be present if cart has no battery save
+      --  - Expect Content not to be present if cart no RAM chip
+      if C.Path /= null and C.Content /= null then
+         Memory_Contents.Save (C.Path.all, C.Content.all);
+      end if;
+   end Save_RAM;
 
    procedure Select_RAM_Bank
      (C : in out Banked_RAM_Cart;

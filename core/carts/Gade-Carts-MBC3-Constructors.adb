@@ -1,5 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
 package body Gade.Carts.MBC3.Constructors is
 
    function Create
@@ -28,7 +26,6 @@ package body Gade.Carts.MBC3.Constructors is
       C.RTC := null;
       --  TODO: Define constant for this
       if Header.Cart_Type in ROM_MBC3_TIMER_BATT .. ROM_MBC3_TIMER_RAM_BATT then
-         Put_Line ("Creating RTC");
          C.RTC := new Clock; -- TODO: use proper constructor
          Reset (C.RTC.all);
       end if;
@@ -36,6 +33,7 @@ package body Gade.Carts.MBC3.Constructors is
       MBC3_Bank_Factories.Initialize (Bank_Factory, RAM_Content, C.RTC);
       Banked_ROM_Constructors.Initialize (C, Content);
       Banked_RAM_Constructors.Initialize (C, RAM_Content, RAM_Path, Bank_Factory);
+      Reset (C);
    end Initialize;
 
    package body MBC3_Bank_Factories is
@@ -63,7 +61,6 @@ package body Gade.Carts.MBC3.Constructors is
             --  RTC available, set up the RTC banks as such
             --  TODO: figure out which RTC register call the constructor with
             Register := Clock_Register'Val (I - RTC_Bank_Range'First);
-            Put_Line ("Creating RTC Bank" & Register'Image);
             F.Banks (I) := Bank_Access (RTC_Bank_Constructors.Create (F.RTC, Register));
             Result := F.Banks (I);
          elsif I in RTC_Bank_Range and F.RTC /= null and F.RTC = null then

@@ -51,12 +51,17 @@ package body Gade.Carts.Memory_Contents is
      (Reported_Size : RAM_Size_Type;
       Max_Size      : Content_Byte_Count) return RAM_Content_Access
    is
-      Reported_Content_Size : Content_Byte_Count;
+      Reported_Content_Size, Actual_Size : Content_Byte_Count;
    begin
       --  Only trust the header information to an extent, cap the content size
       --  to the maximum addressable by the controller.
       Reported_Content_Size := Content_Size_For_RAM_Size (Reported_Size);
-      return Create (Content_Byte_Count'Min (Reported_Content_Size, Max_Size));
+      Actual_Size := Content_Byte_Count'Min (Reported_Content_Size, Max_Size);
+      if Actual_Size > 0 then
+         return Create (Actual_Size);
+      else
+         return null;
+      end if;
    end Create;
 
    function Create (Size : Content_Byte_Count) return RAM_Content_NN_Access is

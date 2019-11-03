@@ -19,9 +19,4 @@ private
      (Pool    : out Bank_Pool;
       Content : ROM_Content_NN_Access);
 
-   --  Might end up belonging to reset
-   procedure Initialize_Accessible_Banks
-     (Accessible_Banks : out Accessible_Bank_Array;
-      Pool             : Bank_Pool);
-
 end Gade.Carts.Mixins.Banked.ROM.Constructors;

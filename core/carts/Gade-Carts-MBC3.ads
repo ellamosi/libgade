@@ -11,6 +11,9 @@ package Gade.Carts.MBC3 is
 
    subtype MBC3_Cart_NN_Access is not null MBC3_Cart_Access;
 
+   overriding
+   procedure Reset (C : in out MBC3_Cart);
+
 private
    use Gade.Carts.RTC;
 

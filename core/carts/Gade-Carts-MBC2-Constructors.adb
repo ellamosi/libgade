@@ -39,6 +39,7 @@ package body Gade.Carts.MBC2.Constructors is
       BF.Content := RAM_Content;
       Banked_ROM_Constructors.Initialize (C, Content);
       MBC2_RAM_Constructors.Initialize (C, RAM_Content, RAM_Path, BF);
+      Reset (C);
    end Initialize;
 
 end Gade.Carts.MBC2.Constructors;

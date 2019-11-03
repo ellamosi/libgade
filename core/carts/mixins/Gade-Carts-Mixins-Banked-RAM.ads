@@ -24,6 +24,8 @@ package Gade.Carts.Mixins.Banked.RAM is
 
    type Banked_RAM_Cart is abstract new Base_Cart with private;
 
+   procedure Reset_RAM (C : in out Banked_RAM_Cart);
+
    overriding
    procedure Read_RAM
      (C       : in out Banked_RAM_Cart;
@@ -35,6 +37,12 @@ package Gade.Carts.Mixins.Banked.RAM is
      (C       : in out Banked_RAM_Cart;
       Address : External_RAM_IO_Address;
       V       : Byte);
+
+   overriding
+   procedure Load_RAM (C : in out Banked_RAM_Cart);
+
+   overriding
+   procedure Save_RAM (C : in out Banked_RAM_Cart);
 
    procedure Select_RAM_Bank
      (C : in out Banked_RAM_Cart;

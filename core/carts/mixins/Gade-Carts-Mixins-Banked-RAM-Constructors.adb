@@ -21,14 +21,7 @@ package body Gade.Carts.Mixins.Banked.RAM.Constructors is
       C.Content := Content;
       C.Path := new String'(Path);
       Initialize (C.Banks, BF);
-      --  The following might belong to reset
-      C.Accessible_Index := 0;
-      C.Enabled := Enabled_Default;
-      if Enabled_Default then
-         C.Accessible_Bank := Select_Bank (C.Banks, C.Accessible_Index);
-      else
-         C.Accessible_Bank := Bank_Access (Blank_Banks.Singleton);
-      end if;
+      Reset (C);
    end Initialize;
 
 end Gade.Carts.Mixins.Banked.RAM.Constructors;

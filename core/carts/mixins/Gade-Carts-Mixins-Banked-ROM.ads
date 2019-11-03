@@ -14,6 +14,8 @@ package Gade.Carts.Mixins.Banked.ROM is
 
    type Banked_ROM_Cart is abstract new Base_Cart with private;
 
+   procedure Reset_ROM (C : in out Banked_ROM_Cart);
+
    overriding
    procedure Read_ROM
      (C       : in out Banked_ROM_Cart;

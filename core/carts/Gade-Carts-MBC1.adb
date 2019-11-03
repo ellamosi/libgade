@@ -1,6 +1,16 @@
 package body Gade.Carts.MBC1 is
 
    overriding
+   procedure Reset (C : in out MBC1_Cart) is
+   begin
+      C.Reset_ROM;
+      C.Reset_RAM;
+      C.Low_Bank_Select := 1;
+      C.High_Bank_Select := 0;
+      C.Banking_Mode := ROM;
+   end Reset;
+
+   overriding
    procedure Enable_RAM
      (C       : in out MBC1_Cart;
       Address : RAM_Enable_Address;

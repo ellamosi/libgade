@@ -1,5 +1,3 @@
---  limited with Gade.Cart.Spaces.ROM;
---  limited with Gade.Cart.Spaces.RAM;
 private with Gade.Cartridge_Info;
 
 private package Gade.Carts is
@@ -140,7 +138,9 @@ private package Gade.Carts is
 
    subtype Cart_NN_Access is not null Cart_Access;
 
-   --  procedure Initialize (C : out Cart);
+   function Load_ROM (Path : String) return Cart_NN_Access;
+
+   procedure Reset (C : in out Cart) is null;
 
    procedure Read_ROM
      (C       : in out Cart;
@@ -162,22 +162,15 @@ private package Gade.Carts is
       Address : External_RAM_IO_Address;
       V       : Byte) is null;
 
---     procedure Load_ROM
---       (ROM_Handler : out Spaces.ROM.Handler_Access;
---        RAM_Handler : out Spaces.RAM.Handler_Access;
---        Path        : String);
+   procedure Load_RAM (C : in out Cart) is null;
 
-   function Load_ROM (Path : String) return Cart_NN_Access;
+   procedure Save_RAM (C : in out Cart) is null;
 
 private
 
    Blank_Value : constant Byte := 16#FF#;
 
-   type Cart is abstract tagged record
-      null;
-      --  Current_ROM_Banks : ROM_Banks;
-      --  Current_RAM_Bank  : Gade.Cart.Banked.RAM.Handler_Access;
-   end record;
+   type Cart is abstract tagged null record;
 
    use Gade.Cartridge_Info;
 
@@ -280,39 +273,5 @@ private
         Bandai_TAMA5              => Bandai_TAMA5,
         Huds_on_Huc_3             => Huds_on_Huc_3,
         Huds_on_Huc_1             => Huds_on_Huc_1);
---
---     type RAM_Handler_Kind_Type is
---       (None, Plain_Cart, MBC1_Cart, MBC2_Cart, MBC3_Cart);
---
---     RAM_Handler_Kind_For_Cart : constant array (Cart_Type)
---       of RAM_Handler_Kind_Type :=
---         (ROM_ONLY                  => Plain_Cart,
---          ROM_MBC1                  => MBC1_Cart,
---          ROM_MBC1_RAM              => MBC1_Cart,
---          ROM_MBC1_RAM_BATT         => MBC1_Cart,
---          ROM_MBC2                  => MBC1_Cart,
---          ROM_MBC2_BATT             => MBC1_Cart,
---          ROM_RAM                   => Plain_Cart,
---          ROM_RAM_BATT              => Plain_Cart,
---          ROM_MM01                  => None,
---          ROM_MM01_SRAM             => None,
---          ROM_MM01_SRAM_BATT        => None,
---          ROM_MBC3_TIMER_BATT       => MBC3_Cart,
---          ROM_MBC3_TIMER_RAM_BATT   => MBC3_Cart,
---          ROM_MBC3                  => MBC3_Cart,
---          ROM_MBC3_RAM              => MBC3_Cart,
---          ROM_MBC3_RAM_BATT         => MBC3_Cart,
---          ROM_MBC5                  => None,
---          ROM_MBC5_RAM              => None,
---          ROM_MBC5_RAM_BATT         => None,
---          ROM_MBC5_RUMBLE           => None,
---          ROM_MBC5_RUMBLE_SRAM      => None,
---          ROM_MBC5_RUMBLE_SRAM_BATT => None,
---          Pocket_Camera             => None,
---          Bandai_TAMA5              => None,
---          Huds_on_Huc_3             => None,
---          Huds_on_Huc_1             => None);
-
-   --  type Cart_Handler is tagged null record;
 
 end Gade.Carts;

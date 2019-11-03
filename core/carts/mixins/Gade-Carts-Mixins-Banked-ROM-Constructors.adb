@@ -6,7 +6,7 @@ package body Gade.Carts.Mixins.Banked.ROM.Constructors is
    is
    begin
       Initialize_Banks (C.Banks, Content);
-      Initialize_Accessible_Banks (C.Accessible_Banks, C.Banks);
+      Reset (C);
    end Initialize;
 
    procedure Initialize_Banks
@@ -15,12 +15,11 @@ package body Gade.Carts.Mixins.Banked.ROM.Constructors is
    is
       use ROM_Bank_Constructors, ROM_Bank_Pool_Constructors;
 
-      Size    : constant Content_Byte_Count := Content.all'Length;
-      N_Banks : Bank_Count;
+      Size : constant Content_Byte_Count := Content.all'Length;
 
+      N_Banks       : Bank_Count;
       Present_Banks : Bank_Array := (others => null);
-
-      Offset : Memory_Content_Offset;
+      Offset        : Memory_Content_Offset;
    begin
       N_Banks := Bank_Count (Size / Content_Byte_Count (Bank_Size));
       N_Banks := Bank_Count'Max (1, N_Banks);
@@ -30,17 +29,5 @@ package body Gade.Carts.Mixins.Banked.ROM.Constructors is
       end loop;
       Initialize (Pool, Present_Banks);
    end Initialize_Banks;
-
-   procedure Initialize_Accessible_Banks
-     (Accessible_Banks : out Accessible_Bank_Array;
-      Pool             : Bank_Pool)
-   is
-      I : Bank_Index;
-   begin
-      for AI in Accessible_Bank_Index loop
-         I := Bank_Index (AI);
-         Accessible_Banks (AI) := ROM_Bank_Access (Select_Bank (Pool, I));
-      end loop;
-   end Initialize_Accessible_Banks;
 
 end Gade.Carts.Mixins.Banked.ROM.Constructors;

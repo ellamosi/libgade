@@ -66,7 +66,7 @@ package body Gade.Interfaces is
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin
-      --  G.GB.External_RAM.Save;
+      G.GB.Cart.Save_RAM;
       Put_Line ("Finalize");
       Free (G);
    end Finalize;

@@ -3,6 +3,14 @@ with Ada.Text_IO; use Ada.Text_IO;
 package body Gade.Carts.MBC3 is
 
    overriding
+   procedure Reset (C : in out MBC3_Cart) is
+   begin
+      C.Reset_ROM;
+      C.Reset_RAM;
+      --  TODO: Reset RTC (without clearing actual time data)
+   end Reset;
+
+   overriding
    procedure Enable_RAM
      (C       : in out MBC3_Cart;
       Address : RAM_Enable_Address;

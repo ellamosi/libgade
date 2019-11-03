@@ -22,16 +22,10 @@ package body Gade.Carts.MBC1.Constructors is
 
       RAM_Content : RAM_Content_Access := null;
    begin
-      --  TODO: This conditional is ugly
-      if Header.RAM_Size /= None then
-         RAM_Content := Create (Header.RAM_Size, Max_Content_Size);
-      end if;
+      RAM_Content := Create (Header.RAM_Size, Max_Content_Size);
       Banked_ROM_Constructors.Initialize (C, Content);
       Banked_RAM_Constructors.Initialize (C, RAM_Content, RAM_Path);
-      --  TODO: Revise how banks are selected upon initialization/reset
-      C.Low_Bank_Select := 1;
-      C.High_Bank_Select := 0;
-      C.Banking_Mode := ROM;
+      C.Reset;
    end Initialize;
 
 end Gade.Carts.MBC1.Constructors;
