@@ -1,5 +1,5 @@
-with Ada.Directories; use Ada.Directories;
-with Ada.Text_IO;     use Ada.Text_IO;
+with Ada.Directories;
+with Ada.Text_IO;
 
 with Gade.Carts.Memory_Contents;    use Gade.Carts.Memory_Contents;
 with Gade.Carts.Plain.Constructors; use Gade.Carts.Plain.Constructors;
@@ -12,6 +12,8 @@ package body Gade.Carts is
    function Get_Header
      (Content : ROM_Content_Access)
       return Cart_Header_Access;
+
+   function RAM_Path (ROM_Path : String) return String;
 
    procedure Read_ROM
      (C       : in out Cart;
@@ -33,10 +35,9 @@ package body Gade.Carts is
       V := Blank_Value;
    end Read_RAM;
 
-   function RAM_Path (ROM_Path : String) return String;
-   --  function RTC_Path (ROM_Path : String) return String;
-
    function Load_ROM (Path : String) return Cart_NN_Access is
+      use Ada.Text_IO;
+
       ROM        : ROM_Content_Access;
       Header     : Cart_Header_Access;
       Controller : Controller_Type;
@@ -47,7 +48,7 @@ package body Gade.Carts is
    begin
       ROM := Load (Path);
 
-      --  Not accurate for some few rare cart types (multicarts)
+      --  Header might not be accurate for some few rare cart types (multicarts)
       Header := Get_Header (ROM);
       Controller := Controller_Type_For_Cart (Header.Cart_Type);
 
@@ -72,21 +73,42 @@ package body Gade.Carts is
       return C;
    end Load_ROM;
 
+   procedure Load_RAM (C : in out Cart) is
+      use Ada.Streams.Stream_IO;
+
+      File : File_Type;
+   begin
+      if C.Persistent then
+         Open (File, In_File, C.Save_Path.all);
+         Cart'Class (C).Load_RAM_File (File); --  Redispatch
+         Close (File);
+      end if;
+   exception
+      when Name_Error =>
+         null;
+         --  Ada.Text_IO.Put_Line ("No save file found");
+   end Load_RAM;
+
+   procedure Save_RAM (C : in out Cart) is
+      use Ada.Streams.Stream_IO;
+
+      File : File_Type;
+   begin
+      if C.Persistent then
+         Create (File, Out_File, C.Save_Path.all);
+         Cart'Class (C).Save_RAM_File (File); --  Redispatch
+         Close (File);
+      end if;
+   end Save_RAM;
+
    function RAM_Path (ROM_Path : String) return String is
+      use Ada.Directories;
    begin
       return
         Compose (Containing_Directory => Containing_Directory (ROM_Path),
                  Name                 => Base_Name (ROM_Path),
                  Extension            => "sav");
    end RAM_Path;
-
---     function RTC_Path (ROM_Path : String) return String is
---     begin
---        return
---          Compose (Containing_Directory => Containing_Directory (ROM_Path),
---                   Name                 => Base_Name (ROM_Path),
---                   Extension            => "rtc");
---     end RTC_Path;
 
    function Get_Header
      (Content : ROM_Content_Access)

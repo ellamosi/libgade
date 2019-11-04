@@ -1,3 +1,5 @@
+with Gade.Carts.Constructors;
+
 package body Gade.Carts.MBC2.Constructors is
 
    overriding
@@ -31,14 +33,18 @@ package body Gade.Carts.MBC2.Constructors is
       Header   : Cart_Header_Access;
       RAM_Path : String)
    is
-      pragma Unreferenced (Header);
       RAM_Content : RAM_Content_Access := null;
       BF          : MBC2_RAM_Bank_Factory;
+      Has_Battery : Boolean;
+      Savable     : Boolean;
    begin
       RAM_Content := Create (RAM_Bytes);
       BF.Content := RAM_Content;
+      Has_Battery := Cart_Type_Info_For_Cart (Header.Cart_Type).Battery;
+      Savable := RAM_Content /= null and Has_Battery;
+      Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable);
       Banked_ROM_Constructors.Initialize (C, Content);
-      MBC2_RAM_Constructors.Initialize (C, RAM_Content, RAM_Path, BF);
+      MBC2_RAM_Constructors.Initialize (C, RAM_Content, BF);
       Reset (C);
    end Initialize;
 

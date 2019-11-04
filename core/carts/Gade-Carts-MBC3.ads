@@ -49,7 +49,8 @@ private
    use MBC_Mixin;
 
    type MBC3_Cart is new MBC_Cart with record
-      RTC : Clock_Access;
+      RTC              : Clock_Access;
+      Last_Latch_Value : Byte;
    end record;
 
    subtype ROM_Bank_Select_Address is
@@ -74,6 +75,16 @@ private
      (C       : in out MBC3_Cart;
       Address : Bank_Select_Address;
       Value   : Byte);
+
+   overriding
+   procedure Load_RAM_File
+     (C    : in out MBC3_Cart;
+      File : Ada.Streams.Stream_IO.File_Type);
+
+   overriding
+   procedure Save_RAM_File
+     (C    : in out MBC3_Cart;
+      File : Ada.Streams.Stream_IO.File_Type);
 
    procedure Select_ROM_Bank (C : in out MBC3_Cart; Value : Byte);
 

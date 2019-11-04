@@ -1,4 +1,4 @@
-with Ada.Text_IO; use Ada.Text_IO;
+with Gade.Carts.RTC.File_IO;
 
 package body Gade.Carts.MBC3 is
 
@@ -7,8 +7,31 @@ package body Gade.Carts.MBC3 is
    begin
       C.Reset_ROM;
       C.Reset_RAM;
-      --  TODO: Reset RTC (without clearing actual time data)
+      C.Last_Latch_Value := 16#01#;
+      if C.RTC /= null then Reset (C.RTC.all); end if;
    end Reset;
+
+   overriding
+   procedure Load_RAM_File
+     (C    : in out MBC3_Cart;
+      File : Ada.Streams.Stream_IO.File_Type)
+   is
+      use Gade.Carts.RTC.File_IO;
+   begin
+      Banked_RAM_Mixin.Banked_RAM_Cart (C).Load_RAM_File (File);
+      if C.RTC /= null then Load (C.RTC.all, File); end if;
+   end Load_RAM_File;
+
+   overriding
+   procedure Save_RAM_File
+     (C    : in out MBC3_Cart;
+      File : Ada.Streams.Stream_IO.File_Type)
+   is
+      use Gade.Carts.RTC.File_IO;
+   begin
+      Banked_RAM_Mixin.Banked_RAM_Cart (C).Save_RAM_File (File);
+      if C.RTC /= null then Save (C.RTC.all, File); end if;
+   end Save_RAM_File;
 
    overriding
    procedure Enable_RAM
@@ -18,6 +41,7 @@ package body Gade.Carts.MBC3 is
    is
       pragma Unreferenced (Address);
    begin
+      --  TODO: This could probably be shared with MBC1
       case Value and RAM_Enable_Mask is
          when RAM_Enable_Value => C.Enable_RAM (True);
          when others           => C.Enable_RAM (False);
@@ -29,12 +53,13 @@ package body Gade.Carts.MBC3 is
      (C       : in out MBC3_Cart;
       Value   : Byte)
    is
-      pragma Unreferenced (Value);
+      Latch_Sequence_Completed : constant Boolean :=
+        C.Last_Latch_Value = 16#00# and Value = 16#01#;
    begin
-      if C.RTC /= null then
-         Put_Line ("Latch");
+      if C.RTC /= null and Latch_Sequence_Completed then
          Latch (C.RTC.all);
       end if;
+      C.Last_Latch_Value := Value;
    end Write_Special;
 
    overriding

@@ -38,12 +38,6 @@ package Gade.Carts.Mixins.Banked.RAM is
       Address : External_RAM_IO_Address;
       V       : Byte);
 
-   overriding
-   procedure Load_RAM (C : in out Banked_RAM_Cart);
-
-   overriding
-   procedure Save_RAM (C : in out Banked_RAM_Cart);
-
    procedure Select_RAM_Bank
      (C : in out Banked_RAM_Cart;
       I : Bank_Index);
@@ -57,8 +51,6 @@ private
 
    Enabled_Default : constant Boolean := Enabled_By_Default;
 
-   type Path_Access is access String;
-
    package RAM_Space_Carts is new Banked_Space_Carts
      (Base_Cart => Base_Cart,
       BS        => Banked_RAM_Spaces);
@@ -69,8 +61,17 @@ private
       Accessible_Index : Bank_Index;
       Enabled          : Boolean;
       Content          : RAM_Content_Access;
-      Path             : Path_Access;
    end record;
+
+   overriding
+   procedure Load_RAM_File
+     (C    : in out Banked_RAM_Cart;
+      File : Ada.Streams.Stream_IO.File_Type);
+
+   overriding
+   procedure Save_RAM_File
+     (C    : in out Banked_RAM_Cart;
+      File : Ada.Streams.Stream_IO.File_Type);
 
    function Decode (Address : External_RAM_IO_Address) return Bank_Address;
    pragma Inline (Decode);

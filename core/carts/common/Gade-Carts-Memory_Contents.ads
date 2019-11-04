@@ -1,4 +1,5 @@
 private with Ada.Directories;
+with Ada.Streams.Stream_IO; use Ada.Streams.Stream_IO;
 
 package Gade.Carts.Memory_Contents is
 
@@ -7,6 +8,7 @@ package Gade.Carts.Memory_Contents is
    --  TODO: This might need to go, ROM bank size is variable Plain VS Most MBC
    --  vs MBC6 for example. Is not really a ROM chip concern.
    ROM_Bank_Size : constant := 16 * 1024; -- Bytes
+   RAM_Bank_Size : constant := 8 * 1024; -- Bytes
 
    Max_Banks     : constant := 512; -- 8 MB for MBC5 (512 x 16 kByte)
    Max_Bytes     : constant := Max_Banks * ROM_Bank_Size;
@@ -39,12 +41,12 @@ package Gade.Carts.Memory_Contents is
    function Create (Size : Content_Byte_Count) return RAM_Content_NN_Access;
 
    procedure Load
-     (Path : String;
-      RAM  : out RAM_Content);
+     (RAM  : out RAM_Content;
+      File : File_Type);
 
    procedure Save
-     (Path : String;
-      RAM  : RAM_Content);
+     (RAM  : RAM_Content;
+      File : File_Type);
 
 private
    use Ada.Directories;

@@ -18,12 +18,12 @@ package body Gade.Carts.MBC1 is
    is
       pragma Unreferenced (Address);
    begin
-      --  TODO: Review disabling values
+      --  TODO: Review disabling values, some sources state that 0 in the 4
+      --  lower bits is the only value that will disable the RAM (but likely
+      --  any value other than A does.
       case Value and RAM_Enable_Mask is
          when RAM_Enable_Value => C.Enable_RAM (True);
          when others           => C.Enable_RAM (False);
---           when RAM_Disable_Value => C.Enable_RAM (False);
---           when others            => null;
       end case;
    end Enable_RAM;
 

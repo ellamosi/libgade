@@ -32,26 +32,22 @@ package body Gade.Carts.Mixins.Banked.RAM is
    end Write_RAM;
 
    overriding
-   procedure Load_RAM (C : in out Banked_RAM_Cart) is
+   procedure Load_RAM_File
+     (C    : in out Banked_RAM_Cart;
+      File : Ada.Streams.Stream_IO.File_Type)
+   is
    begin
-      --  This will likely end up changing, but:
-      --  - Expect Path not to be present if cart has no battery save
-      --  - Expect Content not to be present if cart no RAM chip
-      if C.Path /= null and C.Content /= null then
-         Memory_Contents.Load (C.Path.all, C.Content.all);
-      end if;
-   end Load_RAM;
+      Memory_Contents.Load (C.Content.all, File);
+   end Load_RAM_File;
 
    overriding
-   procedure Save_RAM (C : in out Banked_RAM_Cart) is
+   procedure Save_RAM_File
+     (C    : in out Banked_RAM_Cart;
+      File : Ada.Streams.Stream_IO.File_Type)
+   is
    begin
-      --  This will likely end up changing, but:
-      --  - Expect Path not to be present if cart has no battery save
-      --  - Expect Content not to be present if cart no RAM chip
-      if C.Path /= null and C.Content /= null then
-         Memory_Contents.Save (C.Path.all, C.Content.all);
-      end if;
-   end Save_RAM;
+      Memory_Contents.Save (C.Content.all, File);
+   end Save_RAM_File;
 
    procedure Select_RAM_Bank
      (C : in out Banked_RAM_Cart;

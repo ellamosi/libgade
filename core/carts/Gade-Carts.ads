@@ -1,4 +1,5 @@
 private with Gade.Cartridge_Info;
+private with Ada.Streams.Stream_IO;
 
 private package Gade.Carts is
 
@@ -146,7 +147,6 @@ private package Gade.Carts is
      (C       : in out Cart;
       Address : External_ROM_IO_Address;
       V       : out Byte);
-
    procedure Write_ROM
      (C       : in out Cart;
       Address : External_ROM_IO_Address;
@@ -156,23 +156,34 @@ private package Gade.Carts is
      (C       : in out Cart;
       Address : External_RAM_IO_Address;
       V       : out Byte);
-
    procedure Write_RAM
      (C       : in out Cart;
       Address : External_RAM_IO_Address;
       V       : Byte) is null;
 
-   procedure Load_RAM (C : in out Cart) is null;
-
-   procedure Save_RAM (C : in out Cart) is null;
+   procedure Load_RAM (C : in out Cart);
+   procedure Save_RAM (C : in out Cart);
 
 private
 
-   Blank_Value : constant Byte := 16#FF#;
+   type Path_Access is access String;
 
-   type Cart is abstract tagged null record;
+   type Cart is abstract tagged record
+      Save_Path  : Path_Access;
+      Persistent : Boolean;
+   end record;
+
+   procedure Load_RAM_File
+     (C    : in out Cart;
+      File : Ada.Streams.Stream_IO.File_Type) is null;
+
+   procedure Save_RAM_File
+     (C    : in out Cart;
+      File : Ada.Streams.Stream_IO.File_Type) is null;
 
    use Gade.Cartridge_Info;
+
+   Blank_Value : constant Byte := 16#FF#;
 
    for Cart_Type use
      (ROM_ONLY                  => 16#00#,
@@ -273,5 +284,41 @@ private
         Bandai_TAMA5              => Bandai_TAMA5,
         Huds_on_Huc_3             => Huds_on_Huc_3,
         Huds_on_Huc_1             => Huds_on_Huc_1);
+
+   type Cart_Type_Info is record
+      Controller : Controller_Type;
+      RAM        : Boolean;
+      Battery    : Boolean;
+      Timer      : Boolean;
+      Rumble     : Boolean;
+   end record;
+
+   Cart_Type_Info_For_Cart : constant array (Cart_Type) of Cart_Type_Info :=
+     (ROM_ONLY                  => (None, False, False, False, False),
+      ROM_MBC1                  => (MBC1, False, False, False, False),
+      ROM_MBC1_RAM              => (MBC1, True, False, False, False),
+      ROM_MBC1_RAM_BATT         => (MBC1, True, True, False, False),
+      ROM_MBC2                  => (MBC2, True, False, False, False),
+      ROM_MBC2_BATT             => (MBC2, True, True, False, False),
+      ROM_RAM                   => (None, True, False, False, False),
+      ROM_RAM_BATT              => (None, True, True, False, False),
+      ROM_MM01                  => (MM01, False, False, False, False),
+      ROM_MM01_SRAM             => (MM01, True, False, False, False),
+      ROM_MM01_SRAM_BATT        => (MM01, True, True, False, False),
+      ROM_MBC3_TIMER_BATT       => (MBC3, False, True, True, False),
+      ROM_MBC3_TIMER_RAM_BATT   => (MBC3, True, True, True, False),
+      ROM_MBC3                  => (MBC3, False, False, False, False),
+      ROM_MBC3_RAM              => (MBC3, True, False, False, False),
+      ROM_MBC3_RAM_BATT         => (MBC3, True, True, False, False),
+      ROM_MBC5                  => (MBC5, False, False, False, False),
+      ROM_MBC5_RAM              => (MBC5, True, False, False, False),
+      ROM_MBC5_RAM_BATT         => (MBC5, True, True, False, False),
+      ROM_MBC5_RUMBLE           => (MBC5, False, False, False, True),
+      ROM_MBC5_RUMBLE_SRAM      => (MBC5, True, False, False, True),
+      ROM_MBC5_RUMBLE_SRAM_BATT => (MBC5, True, True, False, True),
+      Pocket_Camera             => (Pocket_Camera, True, True, False, False),
+      Bandai_TAMA5              => (Bandai_TAMA5, True, True, False, False),
+      Huds_on_Huc_3             => (Huds_on_Huc_3, True, True, False, False),
+      Huds_on_Huc_1             => (Huds_on_Huc_1, True, True, False, False));
 
 end Gade.Carts;

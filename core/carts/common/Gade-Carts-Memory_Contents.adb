@@ -1,5 +1,4 @@
-with Ada.Directories;       use Ada.Directories;
-with Ada.Streams.Stream_IO; use Ada.Streams.Stream_IO;
+with Ada.Directories; use Ada.Directories;
 with Ada.Text_IO;
 
 package body Gade.Carts.Memory_Contents is
@@ -68,35 +67,28 @@ package body Gade.Carts.Memory_Contents is
       Result : constant RAM_Content_NN_Access :=
          new RAM_Content (0 .. Size - 1);
    begin
+      Result.all := (others => Blank_Value);
       return Result;
    end Create;
 
    procedure Load
-     (Path : String;
-      RAM  : out RAM_Content)
+     (RAM  : out RAM_Content;
+      File : File_Type)
    is
-      File         : File_Type;
       Input_Stream : Stream_Access;
    begin
-      Open (File, In_File, Path);
       Input_Stream := Ada.Streams.Stream_IO.Stream (File);
       RAM_Content'Read (Input_Stream, RAM);
-      Close (File);
-   exception
-      when Ada.Streams.Stream_IO.Name_Error => RAM := (others => 16#FF#);
    end Load;
 
    procedure Save
-     (Path : String;
-      RAM  : RAM_Content)
+     (RAM  : RAM_Content;
+      File : File_Type)
    is
-      File          : File_Type;
       Output_Stream : Stream_Access;
    begin
-      Create (File, Out_File, Path);
       Output_Stream := Ada.Streams.Stream_IO.Stream (File);
       RAM_Content'Write (Output_Stream, RAM);
-      Close (File);
    end Save;
 
 end Gade.Carts.Memory_Contents;

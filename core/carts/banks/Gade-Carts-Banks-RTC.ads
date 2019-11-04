@@ -3,7 +3,7 @@ with Gade.Carts.RTC; use Gade.Carts.RTC;
 generic
 package Gade.Carts.Banks.RTC is
 
-   type Clock_Register is (Seconds, Minutes, Hours, Days_Low, Days_High);
+   --  type Clock_Register is (Seconds, Minutes, Hours, Days_Low, Days_High);
 
    type RTC_Bank is new Bank with private;
 
@@ -17,11 +17,17 @@ package Gade.Carts.Banks.RTC is
       Address : Bank_Address;
       V       : out Byte);
 
+   overriding
+   procedure Write
+     (B       : in out RTC_Bank;
+      Address : Bank_Address;
+      V       : Byte);
+
 private
 
    type RTC_Bank is new Bank with record
-      RTC      : Clock_Access;
-      Register : Clock_Register;
+      RTC : Clock_Access;
+      R   : Register;
    end record;
 
 --     type Seconds_RTC_Bank is new RTC_Bank with null record;
