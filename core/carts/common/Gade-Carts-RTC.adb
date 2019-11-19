@@ -40,29 +40,14 @@ package body Gade.Carts.RTC is
    begin
       Ada.Text_IO.Put_Line ("  Elapsed:    " & Counter_Image (Clk.Elapsed));
       Ada.Text_IO.Put_Line ("  Latched:    " & Counter_Image (Clk.Latched));
-      Ada.Text_IO.Put_Line ("  Updated_At: " & Image (Clk.Updated_At));
    end Print;
 
    procedure Reset (Clk : in out Clock) is
    begin
       --  An actual reset of the GB would not result in the RTC actually
-      --  resetting. Might need to add some logic to handle syncing the state
-      --  with the rest of the system later on though.
+      --  resetting.
       null;
    end Reset;
-
-   procedure Refresh (Clk : in out Clock) is
-      Now : constant Time := Ada.Calendar.Clock;
-   begin
-      if not Clk.Elapsed.Halted then
-         Clk.Elapsed.Span := Now - Clk.Updated_At + Clk.Elapsed.Span;
-         if Clk.Elapsed.Span >= Max_Span then
-            Clk.Elapsed.Carry := True;
-            Clk.Elapsed.Span := Clk.Elapsed.Span - Max_Span;
-         end if;
-      end if;
-      Clk.Updated_At := Now;
-   end Refresh;
 
    procedure Read
      (Clk   : in out Clock;
@@ -79,8 +64,6 @@ package body Gade.Carts.RTC is
    is
       Regs : Counter_Registers;
    begin
-      Refresh (Clk);
-      To_Registers (Clk.Elapsed, Regs);
       Regs.Indexed (Reg) := Value;
       To_Counter (Regs, Clk.Elapsed);
    end Write;
@@ -88,10 +71,35 @@ package body Gade.Carts.RTC is
    procedure Latch (Clk : in out Clock) is
    begin
       Ada.Text_IO.Put_Line ("Latched");
-      Refresh (Clk);
       Clk.Latched := Clk.Elapsed;
       To_Registers (Clk.Latched, Clk.Registers);
    end Latch;
+
+   procedure Report_Cycles
+     (Clk    : in out Clock;
+      Cycles : Positive)
+   is
+      New_Cycles, Seconds : Natural;
+   begin
+      New_Cycles := Clk.Cycles + Cycles;
+      Clk.Cycles := New_Cycles mod Cycles_Per_Second;
+      if New_Cycles > Cycles_Per_Second and not Clk.Elapsed.Halted then
+         Seconds := New_Cycles / Cycles_Per_Second;
+         Increase_Counter (Clk.Elapsed, Duration (Seconds));
+      end if;
+   end Report_Cycles;
+
+   procedure Increase_Counter
+     (C    : in out Counter;
+      Span : Duration)
+   is
+   begin
+      C.Span := C.Span + Span;
+      while C.Span >= Max_Span loop
+         C.Carry := True;
+         C.Span := Duration'Max (C.Span - Max_Span, 0.0);
+      end loop;
+   end Increase_Counter;
 
    function Elapsed (Regs : Counter_Registers) return Duration is
       Seconds : Natural;

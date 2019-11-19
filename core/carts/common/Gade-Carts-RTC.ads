@@ -25,6 +25,10 @@ package Gade.Carts.RTC is
 
    procedure Latch (Clk : in out Clock);
 
+   procedure Report_Cycles
+     (Clk    : in out Clock;
+      Cycles : Positive);
+
 private
    use Ada.Calendar;
 
@@ -37,6 +41,8 @@ private
    type Plain_Counter_Registers is array (Register'Range) of Byte;
 
    Day_Count_Cardinality : constant := 512;
+
+   Cycles_Per_Second : constant := 4_190_000;
 
    type Day_Count is mod Day_Count_Cardinality;
 
@@ -68,10 +74,10 @@ private
    for Counter_Registers'Bit_Order use System.Low_Order_First;
 
    type Clock is record
-      Elapsed    : Counter;
-      Latched    : Counter;
-      Registers  : Counter_Registers;
-      Updated_At : Time;
+      Elapsed   : Counter;
+      Latched   : Counter;
+      Registers : Counter_Registers;
+      Cycles    : Natural;
    end record;
 
    Max_Span : constant Duration :=
@@ -87,7 +93,9 @@ private
    function Counter_Image (C : Counter) return String;
    procedure Print (Clk : Clock);
 
-   procedure Refresh (Clk : in out Clock);
+   procedure Increase_Counter
+     (C    : in out Counter;
+      Span : Duration);
 
    function Elapsed (Regs : Counter_Registers) return Duration;
 

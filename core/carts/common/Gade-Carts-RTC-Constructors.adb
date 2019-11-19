@@ -14,7 +14,7 @@ package body Gade.Carts.RTC.Constructors is
       Clk.Elapsed := Default_Counter_Values;
       Clk.Latched := Default_Counter_Values;
       To_Registers (Default_Counter_Values, Clk.Registers);
-      Clk.Updated_At := Ada.Calendar.Clock;
+      Clk.Cycles := 0;
    end Initialize;
 
 end Gade.Carts.RTC.Constructors;

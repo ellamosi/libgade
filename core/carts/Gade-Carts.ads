@@ -164,6 +164,10 @@ private package Gade.Carts is
    procedure Load_RAM (C : in out Cart);
    procedure Save_RAM (C : in out Cart);
 
+   procedure Report_Cycles
+     (C      : in out Cart;
+      Cycles : Positive) is null;
+
 private
 
    type Path_Access is access String;

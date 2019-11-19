@@ -45,8 +45,8 @@ package body Gade.Interfaces is
       Video : Gade.Video_Buffer.RGB32_Display_Buffer_Access) is
       Frame_Finished : Boolean := False;
       Instruction_Cycles, Interrupt_Cycles : Natural;
+      Frame_Cycles : Natural := 0;
    begin
-      Interrupt_Cycles := 0;
       while not Frame_Finished loop
          Instruction_Cycles := 1;
          if not G.GB.CPU.Halted then
@@ -58,8 +58,10 @@ package body Gade.Interfaces is
          if Interrupt_Cycles > 0 then
             Report_Cycles (G.GB, Video, Interrupt_Cycles);
          end if;
+         Frame_Cycles := Frame_Cycles + Instruction_Cycles + Interrupt_Cycles;
          Gade.Dev.Display.Check_Frame_Finished (G.GB.Display, Frame_Finished);
       end loop;
+      Report_Frame (G.GB, Frame_Cycles);
    end Next_Frame;
 
    procedure Finalize (G : in out Gade_Type) is
@@ -70,11 +72,5 @@ package body Gade.Interfaces is
       Put_Line ("Finalize");
       Free (G);
    end Finalize;
-
-   --  TODO: Remove
-   procedure Test is
-   begin
-      null;
-   end Test;
 
 end Gade.Interfaces;

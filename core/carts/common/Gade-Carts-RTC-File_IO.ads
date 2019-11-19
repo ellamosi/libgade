@@ -88,8 +88,14 @@ private
 
    procedure Read (File : File_Type; Clk_Data : out Clock_Data);
 
-   procedure To_Clock (Clk_Data : Clock_Data; Clk : out Clock);
-   procedure To_Clock_Data (Clk : Clock; Clk_Data : out Clock_Data);
+   procedure To_Clock
+     (Clk_Data  : Clock_Data;
+      Loaded_At : Time;
+      Clk       : out Clock);
+   procedure To_Clock_Data
+     (Clk      : Clock;
+      Saved_At : Time;
+      Clk_Data : out Clock_Data);
 
    procedure To_Counter_Data
      (Registers : Counter_Registers;

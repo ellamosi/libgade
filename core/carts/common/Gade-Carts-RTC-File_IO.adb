@@ -63,19 +63,34 @@ package body Gade.Carts.RTC.File_IO is
       To_Counter_Data (Registers, C_Data);
    end To_Counter_Data;
 
-   procedure To_Clock (Clk_Data : Clock_Data; Clk : out Clock) is
+   procedure To_Clock
+     (Clk_Data  : Clock_Data;
+      Loaded_At : Time;
+      Clk       : out Clock)
+   is
+      Saved_At : Time;
+      Elapsed  : Duration;
    begin
-      Clk.Updated_At := To_Ada_Time (Interfaces.C.long (Clk_Data.Saved_At));
       To_Counter (Clk_Data.Time, Clk.Elapsed);
       To_Counter (Clk_Data.Latched, Clk.Latched);
+      if not Clk.Elapsed.Halted then
+         Saved_At := To_Ada_Time (Interfaces.C.long (Clk_Data.Saved_At));
+         --  Ignore timestamps in the future by only allowing positive spans
+         Elapsed := Duration'Max (Loaded_At - Saved_At, 0.0);
+         Increase_Counter (Clk.Elapsed, Elapsed);
+      end if;
    end To_Clock;
 
-   procedure To_Clock_Data (Clk : Clock; Clk_Data : out Clock_Data) is
+   procedure To_Clock_Data
+     (Clk      : Clock;
+      Saved_At : Time;
+      Clk_Data : out Clock_Data)
+   is
    begin
       Clk_Data.Content_64 := (others => 0);
       To_Counter_Data (Clk.Elapsed, Clk_Data.Time);
       To_Counter_Data (Clk.Latched, Clk_Data.Latched);
-      Clk_Data.Saved_At := Integer_64 (To_Unix_Time (Clk.Updated_At));
+      Clk_Data.Saved_At := Integer_64 (To_Unix_Time (Saved_At));
    end To_Clock_Data;
 
    procedure Read (File : File_Type; Clk_Data : out Clock_Data) is
@@ -88,10 +103,8 @@ package body Gade.Carts.RTC.File_IO is
       Input_Stream := Ada.Streams.Stream_IO.Stream (File);
       Clk_Data.Saved_At := 0;
       if Tail_Size >= Clock_Data_64_Size then
-         Ada.Text_IO.Put_Line ("64 bit RTC data");
          Clock_Data_64_Buffer'Read (Input_Stream, Clk_Data.Content_64);
       else
-         Ada.Text_IO.Put_Line ("32 bit RTC data");
          Clock_Data_32_Buffer'Read (Input_Stream, Clk_Data.Content_32);
       end if;
    end Read;
@@ -103,8 +116,7 @@ package body Gade.Carts.RTC.File_IO is
       Clk_Data : Clock_Data;
    begin
       Read (File, Clk_Data);
-      Ada.Text_IO.Put_Line ("Timestamp64:" & Clk_Data.Saved_At'Img);
-      To_Clock (Clk_Data, Clk);
+      To_Clock (Clk_Data, Ada.Calendar.Clock, Clk);
       Ada.Text_IO.Put_Line ("Loaded RTC:");
       Print (Clk);
    exception
@@ -118,14 +130,11 @@ package body Gade.Carts.RTC.File_IO is
       File : Ada.Streams.Stream_IO.File_Type)
    is
       Output_Stream : Stream_Access;
-      Updated_Clk   : Clock;
       Clk_Data      : Clock_Data;
    begin
-      Updated_Clk := Clk;
-      Refresh (Updated_Clk);
       Ada.Text_IO.Put_Line ("Saving RTC:");
-      Print (Updated_Clk);
-      To_Clock_Data (Updated_Clk, Clk_Data);
+      Print (Clk);
+      To_Clock_Data (Clk, Ada.Calendar.Clock, Clk_Data);
       Output_Stream := Ada.Streams.Stream_IO.Stream (File);
       Clock_Data_64_Buffer'Write (Output_Stream, Clk_Data.Content_64);
    exception

@@ -9,7 +9,8 @@ package body Gade.GB is
    procedure Reset (GB : in out GB_Type) is
    begin
       Reset (GB.CPU);
-      --  if GB.Cart /= null then GB.Cart.Reset; end if;
+      --  FIXME: Should not need the null check:
+      if GB.Cart /= null then GB.Cart.Reset; end if;
       VRAM.Reset (GB.Video_RAM);
       OAM.Reset (GB.Video_OAM);
       Joypad.Reset (GB.Joypad);
@@ -29,5 +30,14 @@ package body Gade.GB is
       Report_Cycles (GB.Display, GB, Video, Cycles);
       Report_Cycles (GB.Timer, GB, Cycles);
    end Report_Cycles;
+
+   procedure Report_Frame
+     (GB     : in out GB_Type;
+      Cycles : Positive)
+   is
+   begin
+      --  FIXME: Should not need the null check:
+      if GB.Cart /= null then GB.Cart.Report_Cycles (Cycles); end if;
+   end Report_Frame;
 
 end Gade.GB;

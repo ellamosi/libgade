@@ -14,6 +14,11 @@ package Gade.Carts.MBC3 is
    overriding
    procedure Reset (C : in out MBC3_Cart);
 
+   overriding
+   procedure Report_Cycles
+     (C      : in out MBC3_Cart;
+      Cycles : Positive);
+
 private
    use Gade.Carts.RTC;
 

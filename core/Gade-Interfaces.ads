@@ -23,9 +23,6 @@ package Gade.Interfaces is
 
    procedure Finalize (G : in out Gade_Type);
 
-   --  TODO: Remove
-   procedure Test;
-
 private
 
    type Opaque_Gade_Type;

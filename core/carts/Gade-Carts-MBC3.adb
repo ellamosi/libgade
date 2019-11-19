@@ -88,4 +88,13 @@ package body Gade.Carts.MBC3 is
       C.Select_RAM_Bank (Bank_Index (Value and RAM_Index_Mask));
    end Select_RAM_Bank;
 
+   overriding
+   procedure Report_Cycles
+     (C      : in out MBC3_Cart;
+      Cycles : Positive)
+   is
+   begin
+      if C.RTC /= null then Report_Cycles (C.RTC.all, Cycles); end if;
+   end Report_Cycles;
+
 end Gade.Carts.MBC3;
