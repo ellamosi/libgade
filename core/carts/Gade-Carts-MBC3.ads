@@ -1,6 +1,4 @@
 private with Gade.Carts.Mixins.MBC;
-private with Gade.Carts.Mixins.Banked.ROM;
-private with Gade.Carts.Mixins.Banked.RAM;
 private with Gade.Carts.RTC;
 
 package Gade.Carts.MBC3 is
@@ -39,18 +37,10 @@ private
    ROM_Index_Mask : constant := 16#7F#;
    RAM_Index_Mask : constant := 16#0F#;
 
-   RAM_Enable_Mask   : constant := 16#0F#;
-   RAM_Enable_Value  : constant := 16#0A#;
-   RAM_Disable_Value : constant := 16#00#;
-
-   package Banked_ROM_Mixin is new Gade.Carts.Mixins.Banked.ROM
+   package MBC_Mixin is new Gade.Carts.Mixins.MBC
      (Base_Cart => Cart,
-      Banks     => ROM_Bank_Count);
-   package Banked_RAM_Mixin is new Gade.Carts.Mixins.Banked.RAM
-     (Base_Cart => Banked_ROM_Mixin.Banked_ROM_Cart,
-      Banks     => RAM_Bank_Count);
-   package MBC_Mixin is new Mixins.MBC
-     (Base_Cart => Banked_RAM_Mixin.Banked_RAM_Cart);
+      ROM_Banks => ROM_Bank_Count,
+      RAM_Banks => RAM_Bank_Count);
    use MBC_Mixin;
 
    type MBC3_Cart is new MBC_Cart with record
@@ -63,12 +53,6 @@ private
 
    subtype RAM_Bank_Select_Address is
      Bank_Select_Address range 16#4000# .. 16#5FFF#;
-
-   overriding
-   procedure Enable_RAM
-     (C       : in out MBC3_Cart;
-      Address : RAM_Enable_Address;
-      Value   : Byte);
 
    overriding
    procedure Write_Special

@@ -16,22 +16,22 @@ package body Gade.Carts.MBC2.Constructors is
    end Create_Bank;
 
    function Create
-     (Content  : ROM_Content_Access;
-      Header   : Cart_Header_Access;
-      RAM_Path : String)
+     (ROM_Content : ROM_Content_Access;
+      Header      : Cart_Header_Access;
+      RAM_Path    : String)
       return MBC2_Cart_NN_Access
    is
       Result : constant MBC2_Cart_NN_Access := new MBC2_Cart;
    begin
-      Initialize (Result.all, Content, Header, RAM_Path);
+      Initialize (Result.all, ROM_Content, Header, RAM_Path);
       return Result;
    end Create;
 
    procedure Initialize
-     (C        : out MBC2_Cart'Class;
-      Content  : ROM_Content_Access;
-      Header   : Cart_Header_Access;
-      RAM_Path : String)
+     (C           : out MBC2_Cart'Class;
+      ROM_Content : ROM_Content_Access;
+      Header      : Cart_Header_Access;
+      RAM_Path    : String)
    is
       RAM_Content : RAM_Content_Access := null;
       BF          : MBC2_RAM_Bank_Factory;
@@ -43,8 +43,7 @@ package body Gade.Carts.MBC2.Constructors is
       Has_Battery := Cart_Type_Info_For_Cart (Header.Cart_Type).Battery;
       Savable := RAM_Content /= null and Has_Battery;
       Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable);
-      Banked_ROM_Constructors.Initialize (C, Content);
-      MBC2_RAM_Constructors.Initialize (C, RAM_Content, BF);
+      ROM_RAM_Constructors.Initialize (C, ROM_Content, RAM_Content, BF);
       Reset (C);
    end Initialize;
 

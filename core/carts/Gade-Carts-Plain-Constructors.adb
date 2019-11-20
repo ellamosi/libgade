@@ -14,12 +14,12 @@ package body Gade.Carts.Plain.Constructors is
    end Create;
 
    procedure Initialize
-     (C        : out Plain_Cart'Class;
-      Content  : ROM_Content_Access;
-      Header   : Cart_Header_Access;
-      RAM_Path : String)
+     (C           : out Plain_Cart'Class;
+      ROM_Content : ROM_Content_Access;
+      Header      : Cart_Header_Access;
+      RAM_Path    : String)
    is
-      use Plain_RAM_Mixin.Banked_RAM_Spaces;
+      use ROM_RAM_Mixin.Banked_RAM_Mixin.Banked_RAM_Spaces;
 
       RAM_Content : RAM_Content_Access;
       Has_Battery : Boolean;
@@ -29,8 +29,7 @@ package body Gade.Carts.Plain.Constructors is
       Has_Battery := Cart_Type_Info_For_Cart (Header.Cart_Type).Battery;
       Savable := RAM_Content /= null and Has_Battery;
       Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable);
-      Plain_ROM_Constructors.Initialize (C, Content);
-      Plain_RAM_Constructors.Initialize (C, RAM_Content);
+      ROM_RAM_Constructors.Initialize (C, ROM_Content, RAM_Content);
    end Initialize;
 
 end Gade.Carts.Plain.Constructors;

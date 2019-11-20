@@ -17,4 +17,17 @@ package body Gade.Carts.Mixins.MBC is
       end case;
    end Write_ROM;
 
+   procedure Enable_RAM
+     (C       : in out MBC_Cart;
+      Address : RAM_Enable_Address;
+      V       : Byte)
+   is
+      pragma Unreferenced (Address);
+   begin
+      case V and RAM_Enable_Mask is
+         when RAM_Enable_Value => C.Enable_RAM (True);
+         when others           => C.Enable_RAM (False);
+      end case;
+   end Enable_RAM;
+
 end Gade.Carts.Mixins.MBC;

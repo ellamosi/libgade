@@ -1,5 +1,4 @@
-private with Gade.Carts.Mixins.Banked.ROM;
-private with Gade.Carts.Mixins.Banked.RAM;
+private with Gade.Carts.Mixins.ROM_RAM;
 
 package Gade.Carts.Plain is
 
@@ -14,15 +13,14 @@ package Gade.Carts.Plain is
 
 private
 
-   package Plain_ROM_Mixin is new Gade.Carts.Mixins.Banked.ROM
-     (Base_Cart        => Cart,
-      Banks            => 1,
-      Accessible_Banks => 1);
-   package Plain_RAM_Mixin is new Gade.Carts.Mixins.Banked.RAM
-     (Base_Cart          => Plain_ROM_Mixin.Banked_ROM_Cart,
-      Banks              => 1,
-      Enabled_By_Default => True);
+   package ROM_RAM_Mixin is new Gade.Carts.Mixins.ROM_RAM
+     (Base_Cart              => Cart,
+      ROM_Banks              => 1,
+      RAM_Banks              => 1,
+      Accessible_ROM_Banks   => 1,
+      RAM_Enabled_By_Default => True);
+   use ROM_RAM_Mixin;
 
-   type Plain_Cart is new Plain_RAM_Mixin.Banked_RAM_Cart with null record;
+   type Plain_Cart is new ROM_RAM_Cart with null record;
 
 end Gade.Carts.Plain;

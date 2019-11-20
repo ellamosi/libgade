@@ -1,6 +1,4 @@
---  private with Gade.Carts.Mixins.MBC;
-private with Gade.Carts.Mixins.Banked.ROM;
-private with Gade.Carts.Mixins.Banked.RAM;
+private with Gade.Carts.Mixins.ROM_RAM;
 
 package Gade.Carts.MBC2 is
 
@@ -32,19 +30,13 @@ private
    subtype Lower_ROM_IO_Address is
      External_ROM_IO_Address range 16#0000# .. 16#3FFF#;
 
-   package Banked_ROM_Mixin is new Gade.Carts.Mixins.Banked.ROM
+   package ROM_RAM_Mixin is new Gade.Carts.Mixins.ROM_RAM
      (Base_Cart => Cart,
-      Banks     => ROM_Bank_Count);
-   package MBC2_RAM_Mixin is new Gade.Carts.Mixins.Banked.RAM
-     (Base_Cart => Banked_ROM_Mixin.Banked_ROM_Cart,
-      Banks     => RAM_Bank_Count);
---     package MBC_Mixin is new Mixins.MBC
---       (Base_Cart => MBC2_RAM_Mixin.Banked_RAM_Cart);
---     use MBC_Mixin;
-   use MBC2_RAM_Mixin;
+      ROM_Banks => ROM_Bank_Count,
+      RAM_Banks => RAM_Bank_Count);
+   use ROM_RAM_Mixin;
 
-   --  type MBC2_Cart is new MBC_Mixin.MBC_Cart with null record;
-   type MBC2_Cart is new MBC2_RAM_Mixin.Banked_RAM_Cart with null record;
+   type MBC2_Cart is new ROM_RAM_Cart with null record;
 
    overriding
    procedure Write_ROM
@@ -53,13 +45,11 @@ private
       Value   : Byte);
 
    procedure Enable_RAM
-     (C       : in out MBC2_Cart;
-      --  Address : RAM_Enable_Address;
-      Value   : Byte);
+     (C     : in out MBC2_Cart;
+      Value : Byte);
 
    procedure Select_Bank
-     (C       : in out MBC2_Cart;
-      --  Address : Bank_Select_Address;
-      Value   : Byte);
+     (C     : in out MBC2_Cart;
+      Value : Byte);
 
 end Gade.Carts.MBC2;

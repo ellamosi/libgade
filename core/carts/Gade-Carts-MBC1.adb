@@ -1,4 +1,5 @@
 package body Gade.Carts.MBC1 is
+   use MBC_Mixin.ROM_RAM_Mixin;
 
    overriding
    procedure Reset (C : in out MBC1_Cart) is
@@ -9,23 +10,6 @@ package body Gade.Carts.MBC1 is
       C.High_Bank_Select := 0;
       C.Banking_Mode := ROM;
    end Reset;
-
-   overriding
-   procedure Enable_RAM
-     (C       : in out MBC1_Cart;
-      Address : RAM_Enable_Address;
-      Value   : Byte)
-   is
-      pragma Unreferenced (Address);
-   begin
-      --  TODO: Review disabling values, some sources state that 0 in the 4
-      --  lower bits is the only value that will disable the RAM (but likely
-      --  any value other than A does.
-      case Value and RAM_Enable_Mask is
-         when RAM_Enable_Value => C.Enable_RAM (True);
-         when others           => C.Enable_RAM (False);
-      end case;
-   end Enable_RAM;
 
    overriding
    procedure Write_Special

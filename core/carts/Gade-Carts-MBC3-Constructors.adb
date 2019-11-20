@@ -4,22 +4,22 @@ with Gade.Carts.RTC.Constructors;
 package body Gade.Carts.MBC3.Constructors is
 
    function Create
-     (Content  : ROM_Content_Access;
-      Header   : Cart_Header_Access;
-      RAM_Path : String)
+     (ROM_Content : ROM_Content_Access;
+      Header      : Cart_Header_Access;
+      RAM_Path    : String)
       return MBC3_Cart_NN_Access
    is
       Result : constant MBC3_Cart_NN_Access := new MBC3_Cart;
    begin
-      Initialize (Result.all, Content, Header, RAM_Path);
+      Initialize (Result.all, ROM_Content, Header, RAM_Path);
       return Result;
    end Create;
 
    procedure Initialize
-     (C        : out MBC3_Cart'Class;
-      Content  : ROM_Content_Access;
-      Header   : Cart_Header_Access;
-      RAM_Path : String)
+     (C           : out MBC3_Cart'Class;
+      ROM_Content : ROM_Content_Access;
+      Header      : Cart_Header_Access;
+      RAM_Path    : String)
    is
       use Banked_RAM_Mixin.Banked_RAM_Spaces;
 
@@ -37,8 +37,7 @@ package body Gade.Carts.MBC3.Constructors is
       Savable := Has_Battery and (Has_Timer or RAM_Content /= null);
       Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable);
       MBC3_Bank_Factories.Initialize (Bank_Factory, RAM_Content, C.RTC);
-      Banked_ROM_Constructors.Initialize (C, Content);
-      Banked_RAM_Constructors.Initialize (C, RAM_Content, Bank_Factory);
+      MBC_Constructors.Initialize (C, ROM_Content, RAM_Content, Bank_Factory);
       Reset (C);
    end Initialize;
 

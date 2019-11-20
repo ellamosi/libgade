@@ -1,5 +1,9 @@
+with Gade.Carts.Mixins.ROM_RAM;
+with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
+
 generic
    type Base_Cart is abstract new Cart with private;
+   ROM_Banks, RAM_Banks : in Bank_Count;
 package Gade.Carts.Mixins.MBC is
 
    --  ROM Reading
@@ -31,8 +35,8 @@ package Gade.Carts.Mixins.MBC is
    --  ROM Bank Select
 
    --  MBC1: 2000-3FFF - ROM Bank Number (Write Only) 0, 20h, 40h, 60h are mapped to +1
-   --        4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) NOOOOOOOOOOOOO
-   --  MBC2: 0000-3FFF - ROM Bank Number (Write Only) - Address restrictions
+   --        4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only)
+   --  MBC2: 0000-3FFF - ROM Bank Number (Write Only) - Address restrictions!
    --  MBC3: 2000-3FFF - ROM Bank Number (Write Only) 0 maps to 1
    --  MBC5: 2000-2FFF - Low 8 bits of ROM Bank Number (Write Only)
    --        3000-3FFF - High bit of ROM Bank Number (Write Only)
@@ -51,11 +55,17 @@ package Gade.Carts.Mixins.MBC is
    --  MBC3: 6000-7FFF - Latch Clock Data (Write Only)
    --  MBC5: -
 
-   type MBC_Cart is abstract new Base_Cart with private;
-
-   subtype RAM_Enable_Address is Word range 16#0000# .. 16#1FFF#;
+   subtype RAM_Enable_Address  is Word range 16#0000# .. 16#1FFF#;
    subtype Bank_Select_Address is Word range 16#2000# .. 16#5FFF#;
-   subtype Special_Address is Word range 16#6000# .. 16#7FFF#;
+   subtype Special_Address     is Word range 16#6000# .. 16#7FFF#;
+
+   package ROM_RAM_Mixin is new Gade.Carts.Mixins.ROM_RAM
+     (Base_Cart => Base_Cart,
+      ROM_Banks => ROM_Banks,
+      RAM_Banks => RAM_Banks);
+   use ROM_RAM_Mixin;
+
+   type MBC_Cart is abstract new ROM_RAM_Cart with private;
 
    overriding
    procedure Write_ROM
@@ -66,7 +76,7 @@ package Gade.Carts.Mixins.MBC is
    procedure Enable_RAM
      (C       : in out MBC_Cart;
       Address : RAM_Enable_Address;
-      V       : Byte) is null;
+      V       : Byte);
 
    procedure Select_Bank
      (C       : in out MBC_Cart;
@@ -79,6 +89,10 @@ package Gade.Carts.Mixins.MBC is
 
 private
 
-   type MBC_Cart is abstract new Base_Cart with null record;
+   RAM_Enable_Mask   : constant := 16#0F#;
+   RAM_Enable_Value  : constant := 16#0A#;
+   RAM_Disable_Value : constant := 16#00#; -- Unclear, any value may disable it
+
+   type MBC_Cart is abstract new ROM_RAM_Cart with null record;
 
 end Gade.Carts.Mixins.MBC;

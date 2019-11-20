@@ -1,6 +1,5 @@
 with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
-private with Gade.Carts.Mixins.Banked.ROM.Constructors;
-private with Gade.Carts.Mixins.Banked.RAM.Constructors;
+private with Gade.Carts.Mixins.ROM_RAM.Constructors;
 
 package Gade.Carts.Plain.Constructors is
 
@@ -12,14 +11,13 @@ package Gade.Carts.Plain.Constructors is
 
 private
 
-   package Plain_ROM_Constructors is new Plain_ROM_Mixin.Constructors;
-   package Plain_RAM_Constructors is new Plain_RAM_Mixin.Constructors;
+   package ROM_RAM_Constructors is new ROM_RAM_Mixin.Constructors;
 
    procedure Initialize
-     (C        : out Plain_Cart'Class;
-      Content  : ROM_Content_Access;
-      Header   : Cart_Header_Access;
-      RAM_Path : String);
+     (C           : out Plain_Cart'Class;
+      ROM_Content : ROM_Content_Access;
+      Header      : Cart_Header_Access;
+      RAM_Path    : String);
 
    subtype Plain_RAM_Size_Type is RAM_Size_Type range None .. RAM_64kbit;
 

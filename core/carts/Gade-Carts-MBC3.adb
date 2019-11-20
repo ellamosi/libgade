@@ -1,6 +1,7 @@
 with Gade.Carts.RTC.File_IO;
 
 package body Gade.Carts.MBC3 is
+   use MBC_Mixin.ROM_RAM_Mixin;
 
    overriding
    procedure Reset (C : in out MBC3_Cart) is
@@ -32,21 +33,6 @@ package body Gade.Carts.MBC3 is
       Banked_RAM_Mixin.Banked_RAM_Cart (C).Save_RAM_File (File);
       if C.RTC /= null then Save (C.RTC.all, File); end if;
    end Save_RAM_File;
-
-   overriding
-   procedure Enable_RAM
-     (C       : in out MBC3_Cart;
-      Address : RAM_Enable_Address;
-      Value   : Byte)
-   is
-      pragma Unreferenced (Address);
-   begin
-      --  TODO: This could probably be shared with MBC1
-      case Value and RAM_Enable_Mask is
-         when RAM_Enable_Value => C.Enable_RAM (True);
-         when others           => C.Enable_RAM (False);
-      end case;
-   end Enable_RAM;
 
    overriding
    procedure Write_Special
