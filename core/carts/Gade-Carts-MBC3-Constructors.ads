@@ -1,6 +1,7 @@
+with Gade.Carts.Mem.ROM; use Gade.Carts.Mem.ROM;
+with Gade.Carts.Mem.RAM; use Gade.Carts.Mem.RAM;
 private with Gade.Carts.Mixins.MBC.Constructors;
 private with Gade.Carts.Banks.RTC.Constructors;
-with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
 package Gade.Carts.MBC3.Constructors is
 

@@ -1,4 +1,4 @@
-with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
+with Gade.Carts.Mem.ROM; use Gade.Carts.Mem.ROM;
 private with Gade.Carts.Banks.ROM.Constructors;
 private with Gade.Carts.Banks.Pools.Constructors;
 

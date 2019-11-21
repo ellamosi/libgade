@@ -1,4 +1,5 @@
 with Gade.Carts.Constructors;
+with Gade.Carts.Mem.RAM; use Gade.Carts.Mem.RAM;
 
 package body Gade.Carts.Plain.Constructors is
 
@@ -20,6 +21,8 @@ package body Gade.Carts.Plain.Constructors is
       RAM_Path    : String)
    is
       use ROM_RAM_Mixin.Banked_RAM_Mixin.Banked_RAM_Spaces;
+
+
 
       RAM_Content : RAM_Content_Access;
       Has_Battery : Boolean;

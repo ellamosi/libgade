@@ -1,3 +1,4 @@
+with Gade.Carts.Mem.RAM; use Gade.Carts.Mem.RAM;
 with Gade.Carts.Banks.Blank;
 with Gade.Carts.Banks.RAM;
 with Gade.Carts.Banks.RTC;
@@ -5,14 +6,15 @@ with Gade.Carts.Banks.RAM.MBC2;
 
 generic
    type Base_Cart is abstract new Cart with private;
-   Banks              : in Bank_Count;
+   Banks              : in Positive;
    Enabled_By_Default : in Boolean := False;
 package Gade.Carts.Mixins.Banked.RAM is
 
    package Banked_RAM_Spaces is new Banked_Spaces
      (Banks            => Banks,
       Accessible_Banks => 1,
-      Address_Space    => External_RAM_IO_Address);
+      Address_Space    => External_RAM_IO_Address,
+      Content_Size     => RAM_Content_Size);
    use Banked_RAM_Spaces;
 
    --  Make bank package instances visible so specialized factories do not

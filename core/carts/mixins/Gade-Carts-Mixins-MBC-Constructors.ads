@@ -1,4 +1,5 @@
-with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
+with Gade.Carts.Mem.ROM; use Gade.Carts.Mem.ROM;
+with Gade.Carts.Mem.RAM; use Gade.Carts.Mem.RAM;
 with Gade.Carts.Mixins.ROM_RAM.Constructors;
 
 generic

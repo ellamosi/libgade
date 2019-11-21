@@ -1,5 +1,7 @@
-private with Gade.Carts.Banks.RAM.Constructors;
 with Gade.Carts.Banks.Pools.Constructors;
+private with Gade.Carts.Banks.RAM.Constructors;
+
+--  TODO: Potentially define this inside Constructors instead
 
 generic
 package Gade.Carts.Mixins.Banked.RAM.Factories is

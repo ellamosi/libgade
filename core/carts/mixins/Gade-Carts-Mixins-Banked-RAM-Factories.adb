@@ -24,7 +24,7 @@ package body Gade.Carts.Mixins.Banked.RAM.Factories is
    is
       use RAM_Bank_Constructors;
 
-      Offset : Memory_Content_Offset;
+      Offset : RAM_Address;
       Original_Index : Bank_Index;
    begin
       if F.Banks (I) = null and Bank_Count (I) >= F.N_Banks then
@@ -34,7 +34,7 @@ package body Gade.Carts.Mixins.Banked.RAM.Factories is
          F.Banks (I) := F.Create_Bank (Original_Index);
       elsif F.Banks (I) = null and Bank_Count (I) < F.N_Banks then
          --  Create actual RAM Bank
-         Offset := Memory_Content_Offset (I) * Content_Byte_Count (Bank_Size);
+         Offset := RAM_Address (Natural (I) * Bank_Size);
          F.Banks (I) := Bank_Access (Create (F.Content, Offset));
       end if;
       return F.Banks (I);

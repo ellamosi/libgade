@@ -1,9 +1,8 @@
 with Gade.Carts.Mixins.ROM_RAM;
-with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
 generic
    type Base_Cart is abstract new Cart with private;
-   ROM_Banks, RAM_Banks : in Bank_Count;
+   ROM_Banks, RAM_Banks : in Positive;
 package Gade.Carts.Mixins.MBC is
 
    --  ROM Reading

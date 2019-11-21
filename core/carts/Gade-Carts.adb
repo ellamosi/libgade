@@ -1,7 +1,7 @@
 with Ada.Directories;
 with Ada.Text_IO;
 
-with Gade.Carts.Memory_Contents;    use Gade.Carts.Memory_Contents;
+with Gade.Carts.Mem.ROM;            use Gade.Carts.Mem.ROM;
 with Gade.Carts.Plain.Constructors; use Gade.Carts.Plain.Constructors;
 with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
 with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;

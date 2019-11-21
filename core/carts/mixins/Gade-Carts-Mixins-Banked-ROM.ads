@@ -1,15 +1,17 @@
+with Gade.Carts.Mem.ROM; use Gade.Carts.Mem.ROM;
 private with Gade.Carts.Banks.ROM;
 
 generic
    type Base_Cart is abstract new Cart with private;
-   Banks            : in Bank_Count;
-   Accessible_Banks : in Bank_Count := 2;
+   Banks            : in Positive;
+   Accessible_Banks : in Positive := 2;
 package Gade.Carts.Mixins.Banked.ROM is
 
    package Banked_ROM_Spaces is new Banked_Spaces
      (Banks            => Banks,
       Accessible_Banks => Accessible_Banks,
-      Address_Space    => External_ROM_IO_Address);
+      Address_Space    => External_ROM_IO_Address,
+      Content_Size     => ROM_Content_Size);
    use Banked_ROM_Spaces;
 
    type Banked_ROM_Cart is abstract new Base_Cart with private;

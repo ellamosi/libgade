@@ -1,4 +1,5 @@
 with Gade.Carts.Constructors;
+with Gade.Carts.Mem.RAM; use Gade.Carts.Mem.RAM;
 
 package body Gade.Carts.MBC1.Constructors is
 

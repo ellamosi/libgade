@@ -37,7 +37,7 @@ package body Gade.Carts.Mixins.Banked.RAM is
       File : Ada.Streams.Stream_IO.File_Type)
    is
    begin
-      Memory_Contents.Load (C.Content.all, File);
+      Load (C.Content.all, File);
    end Load_RAM_File;
 
    overriding
@@ -46,7 +46,7 @@ package body Gade.Carts.Mixins.Banked.RAM is
       File : Ada.Streams.Stream_IO.File_Type)
    is
    begin
-      Memory_Contents.Save (C.Content.all, File);
+      Save (C.Content.all, File);
    end Save_RAM_File;
 
    procedure Select_RAM_Bank

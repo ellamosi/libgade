@@ -1,10 +1,8 @@
-with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
-
 generic
-   Size : in Word; --  TODO: Potentially adjust type
+   Size : in Positive;
 package Gade.Carts.Banks is
 
-   subtype Bank_Address is Word range 16#0000# .. Size - 1;
+   subtype Bank_Address is Word range 0 .. Word (Size - 1);
 
    type Bank is abstract tagged private;
 
@@ -24,35 +22,38 @@ private
 
    generic
       type Base_Bank is abstract new Bank with private;
-      type Content_Type is new Memory_Content;
-      type Content_Access is access all Content_Type;
-      type Content_NN_Access is not null access all Content_Type;
+      type Address is range <>;
+      type Content is array (Address range <>) of Byte;
+      type Content_Access is access all Content;
+      type Content_NN_Access is not null access all Content;
    package Memory_Bank_Mixin is
 
       type Memory_Bank is abstract new Base_Bank with record
          Content      : Content_Access;
-         Offset       : Memory_Content_Offset;
+         Offset       : Address;
          Address_Mask : Bank_Address;
       end record;
 
       procedure Initialize
         (B       : out Memory_Bank'Class;
          Content : Content_NN_Access;
-         Offset  : Memory_Content_Offset);
+         Offset  : Address);
 
       overriding
       procedure Read
-        (B       : in out Memory_Bank;
-         Address : Bank_Address;
-         V       : out Byte);
+        (B    : in out Memory_Bank;
+         Addr : Bank_Address;
+         V    : out Byte);
 
       function Decode
-        (B       : Memory_Bank'Class;
-         Address : Bank_Address)
-         return Memory_Content_Address;
+        (B    : Memory_Bank'Class;
+         Addr : Bank_Address)
+         return Address;
+
+   private
+
+      function Address_Mask (Mem : Content) return Bank_Address;
 
    end Memory_Bank_Mixin;
-
-   function Address_Mask (Content_Size : Natural) return Bank_Address;
 
 end Gade.Carts.Banks;

@@ -1,6 +1,5 @@
 with Gade.Carts.Mixins.Banked.ROM;
 with Gade.Carts.Mixins.Banked.RAM;
-with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
 --  This package is just a shortcut to instantiate both ROM and RAM mixins in
 --  a single go and simplifying declarations. All types of carts may potentially
@@ -8,8 +7,8 @@ with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
 generic
    type Base_Cart is abstract new Cart with private;
-   ROM_Banks, RAM_Banks   : in Bank_Count;
-   Accessible_ROM_Banks   : in Bank_Count := 2;
+   ROM_Banks, RAM_Banks   : in Positive;
+   Accessible_ROM_Banks   : in Positive := 2;
    RAM_Enabled_By_Default : in Boolean := False;
 package Gade.Carts.Mixins.ROM_RAM is
 
