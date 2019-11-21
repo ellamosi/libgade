@@ -21,10 +21,8 @@ package body Gade.Carts.MBC3.Constructors is
       Header      : Cart_Header_Access;
       RAM_Path    : String)
    is
-      use Banked_RAM_Mixin.Banked_RAM_Spaces;
-
       RAM_Content  : RAM_Content_Access;
-      Bank_Factory : MBC3_Bank_Factories.MBC3_RAM_Bank_Factory;
+      Bank_Factory : MBC3_RAM_Bank_Factory;
       Has_Battery  : Boolean;
       Has_Timer    : Boolean;
       Savable      : Boolean;
@@ -36,52 +34,48 @@ package body Gade.Carts.MBC3.Constructors is
       RAM_Content := Create (Header.RAM_Size, Max_Content_Size);
       Savable := Has_Battery and (Has_Timer or RAM_Content /= null);
       Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable);
-      MBC3_Bank_Factories.Initialize (Bank_Factory, RAM_Content, C.RTC);
+      Initialize (Bank_Factory, RAM_Content, C.RTC);
       MBC_Constructors.Initialize (C, ROM_Content, RAM_Content, Bank_Factory);
       Reset (C);
    end Initialize;
 
-   package body MBC3_Bank_Factories is
+   procedure Initialize
+     (Bank_Factory : in out MBC3_RAM_Bank_Factory'Class;
+      Content      : RAM_Content_Access;
+      RTC          : Clock_Access)
+   is
+   begin
+      Default_Bank_Factory (Bank_Factory).Initialize (Content);
+      Bank_Factory.RTC := RTC;
+      Bank_Factory.Banks := (others => null);
+   end Initialize;
 
-      procedure Initialize
-        (Bank_Factory : in out MBC3_RAM_Bank_Factory'Class;
-         Content      : RAM_Content_Access;
-         RTC          : Clock_Access)
-      is
-      begin
-         Default_Bank_Factory (Bank_Factory).Initialize (Content);
-         Bank_Factory.RTC := RTC;
-         Bank_Factory.Banks := (others => null);
-      end Initialize;
+   overriding
+   function Create_Bank
+     (F : in out MBC3_RAM_Bank_Factory;
+      I : Bank_Index) return Bank_NN_Access
+   is
+      use Banked_RAM_Mixin, RTC_Bank_Constructors;
 
-      overriding
-      function Create_Bank
-        (F : in out MBC3_RAM_Bank_Factory;
-         I : Bank_Index) return Bank_NN_Access
-      is
-         use RTC_Bank_Constructors;
-
-         Result       : Bank_Access;
-         RTC_Register : Register;
-      begin
-         if I in RTC_Bank_Range and F.RTC /= null then
-            --  RTC available, set up the RTC banks as such
-            RTC_Register := Register'Val (I - RTC_Bank_Range'First);
-            F.Banks (I) := Bank_Access (Create (F.RTC, RTC_Register));
-            Result := F.Banks (I);
-         elsif I in RTC_Bank_Range and F.RTC = null then
-            --  No RTC available, set RTC banks as blank
-            Result := Bank_Access (Blank_Banks.Singleton);
-         elsif I > RTC_Bank_Range'Last then
-            --  Unkown behavior for banks past RTC range, set as blank
-            Result := Bank_Access (Blank_Banks.Singleton);
-         else --  I < RTC_Bank_Range'First
-            --  Use standard memory bank factory for banks under RTC range
-            Result := Default_Bank_Factory (F).Create_Bank (I);
-         end if;
-         return Result;
-      end Create_Bank;
-
-   end MBC3_Bank_Factories;
+      Result       : Bank_Access;
+      RTC_Register : Register;
+   begin
+      if I in RTC_Bank_Range and F.RTC /= null then
+         --  RTC available, set up the RTC banks as such
+         RTC_Register := Register'Val (I - RTC_Bank_Range'First);
+         F.Banks (I) := Bank_Access (Create (F.RTC, RTC_Register));
+         Result := F.Banks (I);
+      elsif I in RTC_Bank_Range and F.RTC = null then
+         --  No RTC available, set RTC banks as blank
+         Result := Bank_Access (Blank_Banks.Singleton);
+      elsif I > RTC_Bank_Range'Last then
+         --  Unkown behavior for banks past RTC range, set as blank
+         Result := Bank_Access (Blank_Banks.Singleton);
+      else --  I < RTC_Bank_Range'First
+         --  Use standard memory bank factory for banks under RTC range
+         Result := Default_Bank_Factory (F).Create_Bank (I);
+      end if;
+      return Result;
+   end Create_Bank;
 
 end Gade.Carts.MBC3.Constructors;

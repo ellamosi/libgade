@@ -8,7 +8,10 @@ package Gade.Carts.Mixins.ROM_RAM.Constructors is
 
    package ROM_Constructors is new Banked_ROM_Mixin.Constructors;
    package RAM_Constructors is new Banked_RAM_Mixin.Constructors;
-   use RAM_Constructors.RAM_Bank_Factories.Bank_Pool_Constructors;
+
+   package RAM_Bank_Pool_Constructors
+   renames RAM_Constructors.Bank_Pool_Constructors;
+   use RAM_Bank_Pool_Constructors;
 
    procedure Initialize
      (C           : in out ROM_RAM_Cart'Class;

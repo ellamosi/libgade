@@ -12,11 +12,22 @@ package Gade.Carts.Mixins.Banked.ROM.Constructors is
 private
 
    package ROM_Bank_Constructors is new ROM_Banks.Constructors;
-   package ROM_Bank_Pool_Constructors is new Bank_Pools.Constructors;
-   use Address_Space_Banks, Bank_Pools;
 
-   procedure Initialize_Banks
-     (Pool    : out Bank_Pool;
-      Content : ROM_Content_NN_Access);
+   package Bank_Pool_Constructors is new Bank_Pools.Constructors;
+   use Bank_Pool_Constructors;
+   use Address_Space_Banks;
+
+   function Create_Offset_Bank
+     (Content : ROM_Content_Access;
+      Offset  : ROM_Address)
+      return Bank_NN_Access;
+
+   package ROM_Bank_Factories is new Default_Bank_Factories
+     (Address            => ROM_Address,
+      Content            => ROM_Content,
+      Content_Access     => ROM_Content_Access,
+      Bank_Count         => Bank_Count,
+      Blank_Banks        => Blank_Banks,
+      Create_Offset_Bank => Create_Offset_Bank);
 
 end Gade.Carts.Mixins.Banked.ROM.Constructors;

@@ -6,8 +6,12 @@ generic
 package Gade.Carts.Mixins.MBC.Constructors is
 
    package ROM_RAM_Constructors is new ROM_RAM_Mixin.Constructors;
-   use ROM_RAM_Constructors;
-   use RAM_Constructors.RAM_Bank_Factories.Bank_Pool_Constructors;
+   package ROM_Constructors renames ROM_RAM_Constructors.ROM_Constructors;
+   package RAM_Constructors renames ROM_RAM_Constructors.RAM_Constructors;
+
+   package RAM_Bank_Pool_Constructors
+   renames ROM_RAM_Constructors.RAM_Bank_Pool_Constructors;
+   use RAM_Bank_Pool_Constructors;
 
    procedure Initialize
      (C           : in out MBC_Cart'Class;

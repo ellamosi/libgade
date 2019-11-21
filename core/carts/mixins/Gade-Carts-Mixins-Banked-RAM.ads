@@ -19,6 +19,7 @@ package Gade.Carts.Mixins.Banked.RAM is
 
    --  Make bank package instances visible so specialized factories do not
    --  require re-instancing them, resulting in incompatible types.
+   package Address_Space_Banks renames Banked_RAM_Spaces.Address_Space_Banks;
    package RAM_Banks is new Address_Space_Banks.RAM;
    package MBC2_RAM_Banks is new RAM_Banks.MBC2;
    package RTC_Banks is new Address_Space_Banks.RTC;

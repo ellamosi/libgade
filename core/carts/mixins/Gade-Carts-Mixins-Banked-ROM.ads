@@ -1,5 +1,6 @@
 with Gade.Carts.Mem.ROM; use Gade.Carts.Mem.ROM;
-private with Gade.Carts.Banks.ROM;
+with Gade.Carts.Banks.ROM;
+with Gade.Carts.Banks.Blank;
 
 generic
    type Base_Cart is abstract new Cart with private;
@@ -13,6 +14,12 @@ package Gade.Carts.Mixins.Banked.ROM is
       Address_Space    => External_ROM_IO_Address,
       Content_Size     => ROM_Content_Size);
    use Banked_ROM_Spaces;
+
+   --  Make bank package instances visible so specialized factories do not
+   --  require re-instancing them, resulting in incompatible types.
+   package Address_Space_Banks renames Banked_ROM_Spaces.Address_Space_Banks;
+   package ROM_Banks is new Address_Space_Banks.ROM;
+   package Blank_Banks is new Address_Space_Banks.Blank;
 
    type Banked_ROM_Cart is abstract new Base_Cart with private;
 
@@ -30,6 +37,7 @@ package Gade.Carts.Mixins.Banked.ROM is
       I  : Bank_Index);
 
 private
+   use Address_Space_Banks, ROM_Banks;
 
    ROM_Space_Size : constant := 16#8000#;
 
@@ -37,9 +45,6 @@ private
      (Base_Cart => Base_Cart,
       BS        => Banked_ROM_Spaces);
    use ROM_Space_Carts;
-
-   package ROM_Banks is new Address_Space_Banks.ROM;
-   use ROM_Banks, Address_Space_Banks;
 
    type Accessible_Bank_Array is
      array (Accessible_Bank_Index) of ROM_Bank_Access;

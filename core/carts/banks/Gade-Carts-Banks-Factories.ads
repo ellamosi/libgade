@@ -1,3 +1,5 @@
+--  TODO: Delete, not used
+
 generic
    type Bank_Index is range <>;
 package Gade.Carts.Banks.Factories is

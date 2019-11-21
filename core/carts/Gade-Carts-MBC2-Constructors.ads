@@ -15,14 +15,16 @@ private
 
    package ROM_RAM_Constructors is new ROM_RAM_Mixin.Constructors;
    use ROM_RAM_Constructors;
+   use RAM_Constructors.Bank_Pool_Constructors;
 
-   package MBC2_RAM_Banks is new ROM_RAM_Mixin.Banked_RAM_Mixin.RAM_Banks.MBC2;
+   package Banked_RAM_Mixin renames ROM_RAM_Mixin.Banked_RAM_Mixin;
+   use Banked_RAM_Mixin.Banked_RAM_Spaces;
+   use Banked_RAM_Mixin.Address_Space_Banks;
+
+   package MBC2_RAM_Banks is new Banked_RAM_Mixin.RAM_Banks.MBC2;
    use MBC2_RAM_Banks;
 
    package MBC2_RAM_Bank_Constructors is new MBC2_RAM_Banks.Constructors;
-   use RAM_Constructors.RAM_Bank_Factories.Bank_Pool_Constructors;
-   use ROM_RAM_Mixin.Banked_RAM_Mixin.Banked_RAM_Spaces;
-   use ROM_RAM_Mixin.Banked_RAM_Mixin.Banked_RAM_Spaces.Address_Space_Banks;
 
    type MBC2_RAM_Bank_Factory is new Bank_Factory with record
       Content : RAM_Content_Access;
