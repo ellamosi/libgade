@@ -44,8 +44,7 @@ package body Gade.Carts.RTC is
 
    procedure Reset (Clk : in out Clock) is
    begin
-      --  An actual reset of the GB would not result in the RTC actually
-      --  resetting.
+      --  An actual reset of the GB would not result in the RTC resetting.
       null;
    end Reset;
 

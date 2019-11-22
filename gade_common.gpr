@@ -34,7 +34,7 @@ abstract project Gade_Common is
       end case;
       for Default_Switches ("ada") use Compiler'Default_Switches ("Ada") &
         ("-gnatwa",             -- Activate most optional warnings
-         --  "-gnatwe",             -- Treat warnings and style checks as errors
+         "-gnatwe",             -- Treat warnings and style checks as errors
          "-gnaty",              -- Style checking
          "-gnatyO",             -- Check that overriding subprograms are explicitly marked as such
          "-gnatyM120",          -- Set maximum line length

@@ -21,21 +21,26 @@ private
    use Gade.Carts.RTC;
 
    ROM_Bank_Count : constant := 128;
-   RAM_Bank_Count : constant := 16; -- 4 For actual MBC3, 8 for MBC30 + RTC
+   RAM_Bank_Count : constant := 16; -- (4 for MBC3, 8 for MBC30) + 8 for RTC
 
-   --  0110 <= 6 MBC30 Bank 6 MBC3 Bank 2
-   --  0111 <= 7 MBC30 Bank 7 MBC3 Bank 3
-   --  1000 <= 8 RTC S
-   --  1001 <= 9 RTC M
-   --  1010 <= A RTC H
-   --  1011 <= B RTC DL
-   --  1100 <= C RTC DH
-   --  1101 <= D ????
-   --  1110 <= E ????
-   --  1111 <= F ????
+   --  Exact behavior of the upper RAM banks, a few assuptions were made:
+   --  2#0110# <= 16#6# MBC30 Bank 6 MBC3 Bank 2
+   --  2#0111# <= 16#7# MBC30 Bank 7 MBC3 Bank 3
+   --  2#1000# <= 16#8# RTC S
+   --  2#1001# <= 16#9# RTC M
+   --  2#1010# <= 16#A# RTC H
+   --  2#1011# <= 16#B# RTC DL
+   --  2#1100# <= 16#C# RTC DH
+   --  2#1101# <= 16#D# ???? Assumed blank (FF)
+   --  2#1110# <= 16#E# ???? Assumed blank (FF)
+   --  2#1111# <= 16#F# ???? Assumed blank (FF)
 
-   ROM_Index_Mask : constant := 16#7F#;
-   RAM_Index_Mask : constant := 16#0F#;
+   ROM_Index_Mask : constant Byte := 16#7F#;
+   RAM_Index_Mask : constant Byte := 16#0F#;
+
+   Latch_Sequence : constant array (0 .. 1) of Byte := (16#00#, 16#01#);
+
+   Initial_Latch_Value : constant Byte := 16#01#;
 
    package MBC_Mixin is new Gade.Carts.Mixins.MBC
      (Base_Cart => Cart,

@@ -16,18 +16,18 @@ private
    ROM_Bank_Count : constant := 128;
    RAM_Bank_Count : constant := 4;
 
-   type Banking_Mode_Type is (ROM, RAM);
+   type Banking_Mode_Type is (Mode_0, Mode_1);
    for Banking_Mode_Type use
-     (ROM => 0,
-      RAM => 1);
+     (Mode_0 => 0,
+      Mode_1 => 1);
 
    Banking_Mode_Mask : constant := 16#01#;
 
    type Low_Bank_Select_Type  is mod 2**5;
    type High_Bank_Select_Type is mod 2**2;
 
-   Low_Select_Mask  : constant := 16#1F#;
-   High_Select_Mask : constant := 16#03#;
+   Low_Select_Mask  : constant Byte := 16#1F#;
+   High_Select_Mask : constant Byte := 16#03#;
 
    package MBC_Mixin is new Gade.Carts.Mixins.MBC
      (Base_Cart => Cart,

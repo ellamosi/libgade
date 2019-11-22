@@ -16,27 +16,17 @@ package body Gade.Carts.MBC2 is
       end if;
    end Write_ROM;
 
-   procedure Enable_RAM
-     (C     : in out MBC2_Cart;
-      Value : Byte)
-   is
-   begin
-      case Value and RAM_Enable_Mask is
-         when RAM_Enable_Value => C.Enable_RAM (True);
-         when others           => C.Enable_RAM (False);
-      end case;
-   end Enable_RAM;
-
    procedure Select_Bank
      (C     : in out MBC2_Cart;
       Value : Byte)
    is
-      use Banked_ROM_Mixin.Banked_ROM_Spaces;
-      Index : Bank_Index;
+      use MBC_Mixin.ROM_RAM_Mixin.Banked_ROM_Mixin.Banked_ROM_Spaces;
+
+      Requested_Index, Actual_Index : Bank_Index;
    begin
-      Index := Bank_Index (Value and Bank_Select_Mask);
-      if Index = 0 then Index := 1; end if;
-      C.Select_ROM_Bank (1, Index);
+      Requested_Index := Bank_Index (Value and Bank_Select_Mask);
+      Actual_Index := Bank_Index'Max (Requested_Index, 1);
+      C.Select_ROM_Bank (1, Actual_Index);
    end Select_Bank;
 
 end Gade.Carts.MBC2;

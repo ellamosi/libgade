@@ -9,7 +9,7 @@ package body Gade.Carts.Mixins.MBC is
    begin
       case Address is
          when RAM_Enable_Address  =>
-            Enable_RAM (MBC_Cart'Class (C), Address, V);
+            Enable_RAM (MBC_Cart'Class (C), V);
          when Bank_Select_Address =>
             Select_Bank (MBC_Cart'Class (C), Address, V);
          when Special_Address     =>
@@ -18,11 +18,9 @@ package body Gade.Carts.Mixins.MBC is
    end Write_ROM;
 
    procedure Enable_RAM
-     (C       : in out MBC_Cart;
-      Address : RAM_Enable_Address;
-      V       : Byte)
+     (C : in out MBC_Cart;
+      V : Byte)
    is
-      pragma Unreferenced (Address);
    begin
       case V and RAM_Enable_Mask is
          when RAM_Enable_Value => C.Enable_RAM (True);

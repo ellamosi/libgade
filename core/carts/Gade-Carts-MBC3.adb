@@ -7,7 +7,7 @@ package body Gade.Carts.MBC3 is
    procedure Reset (C : in out MBC3_Cart) is
    begin
       MBC_Cart (C).Reset;
-      C.Last_Latch_Value := 16#01#;
+      C.Last_Latch_Value := Initial_Latch_Value;
       if C.RTC /= null then Reset (C.RTC.all); end if;
    end Reset;
 
@@ -39,7 +39,7 @@ package body Gade.Carts.MBC3 is
       Value   : Byte)
    is
       Latch_Sequence_Completed : constant Boolean :=
-        C.Last_Latch_Value = 16#00# and Value = 16#01#;
+        (C.Last_Latch_Value, Value) = Latch_Sequence;
    begin
       if C.RTC /= null and Latch_Sequence_Completed then
          Latch (C.RTC.all);

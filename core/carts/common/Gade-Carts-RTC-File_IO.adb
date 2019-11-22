@@ -2,7 +2,6 @@ with Ada.Calendar.Conversions;   use Ada.Calendar.Conversions;
 with Ada.Exceptions;             use Ada.Exceptions;
 with Ada.Text_IO;
 with Interfaces.C;
-with Gade.Carts.Memory_Contents; use Gade.Carts.Memory_Contents;
 
 package body Gade.Carts.RTC.File_IO is
 

@@ -20,23 +20,25 @@ private
 
    Counter_Data_Size : constant := 20;
 
+   RAM_Bank_Size : constant := External_RAM_IO_Address'Range_Length;
+
    type Counter_Data is record
-      Seconds   : Unsigned_32;
-      Minutes   : Unsigned_32;
-      Hours     : Unsigned_32;
-      Days_Low  : Unsigned_32;
-      Days_Top  : Days_Top_Type;
-      Carry     : Boolean;
-      Halted    : Boolean;
+      Seconds  : Unsigned_32;
+      Minutes  : Unsigned_32;
+      Hours    : Unsigned_32;
+      Days_Low : Unsigned_32;
+      Days_Top : Days_Top_Type;
+      Carry    : Boolean;
+      Halted   : Boolean;
    end record;
    for Counter_Data use record
-      Seconds   at  0 range 0 .. 31;
-      Minutes   at  4 range 0 .. 31;
-      Hours     at  8 range 0 .. 31;
-      Days_Low  at 12 range 0 .. 31;
-      Days_Top  at 16 range 0 .. 0;
-      Halted    at 16 range 6 .. 6;
-      Carry     at 16 range 7 .. 7;
+      Seconds  at  0 range 0 .. 31;
+      Minutes  at  4 range 0 .. 31;
+      Hours    at  8 range 0 .. 31;
+      Days_Low at 12 range 0 .. 31;
+      Days_Top at 16 range 0 .. 0;
+      Halted   at 16 range 6 .. 6;
+      Carry    at 16 range 7 .. 7;
    end record;
    for Counter_Data'Size use Counter_Data_Size * 8;
 

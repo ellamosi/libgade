@@ -73,9 +73,8 @@ package Gade.Carts.Mixins.MBC is
       V       : Byte);
 
    procedure Enable_RAM
-     (C       : in out MBC_Cart;
-      Address : RAM_Enable_Address;
-      V       : Byte);
+     (C : in out MBC_Cart;
+      V : Byte);
 
    procedure Select_Bank
      (C       : in out MBC_Cart;
@@ -88,9 +87,8 @@ package Gade.Carts.Mixins.MBC is
 
 private
 
-   RAM_Enable_Mask   : constant := 16#0F#;
-   RAM_Enable_Value  : constant := 16#0A#;
-   RAM_Disable_Value : constant := 16#00#; -- Unclear, any value may disable it
+   RAM_Enable_Mask  : constant := 16#0F#;
+   RAM_Enable_Value : constant := 16#0A#;
 
    type MBC_Cart is abstract new ROM_RAM_Cart with null record;
 

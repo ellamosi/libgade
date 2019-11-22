@@ -7,7 +7,7 @@ package body Gade.Carts.MBC1 is
       MBC_Cart (C).Reset;
       C.Low_Bank_Select := 1;
       C.High_Bank_Select := 0;
-      C.Banking_Mode := ROM;
+      C.Banking_Mode := Mode_0;
    end Reset;
 
    overriding
@@ -70,14 +70,15 @@ package body Gade.Carts.MBC1 is
    procedure Select_ROM_Bank (C : in out MBC1_Cart) is
       use Banked_ROM_Mixin.Banked_ROM_Spaces;
 
-      Low_Bank_Index, High_Bank_Index : Bank_Index;
-      Low_Part : constant Natural := Natural (C.Low_Bank_Select);
+      Low_Part  : constant Natural := Natural (C.Low_Bank_Select);
       High_Part : constant Natural := Natural (C.High_Bank_Select);
+
+      Low_Bank_Index, High_Bank_Index : Bank_Index;
    begin
       High_Bank_Index := Bank_Index (High_Part * 2**5 + Low_Part);
       case C.Banking_Mode is
-         when ROM => Low_Bank_Index := 0;
-         when RAM => Low_Bank_Index := Bank_Index (High_Part * 2**5);
+         when Mode_0 => Low_Bank_Index := 0;
+         when Mode_1 => Low_Bank_Index := Bank_Index (High_Part * 2**5);
       end case;
       C.Select_ROM_Bank (0, Low_Bank_Index);
       C.Select_ROM_Bank (1, High_Bank_Index);
@@ -89,8 +90,8 @@ package body Gade.Carts.MBC1 is
       Index : Bank_Index;
    begin
       case C.Banking_Mode is
-         when ROM => Index := 0;
-         when RAM => Index := Bank_Index (C.High_Bank_Select);
+         when Mode_0 => Index := 0;
+         when Mode_1 => Index := Bank_Index (C.High_Bank_Select);
       end case;
       C.Select_RAM_Bank (Index);
    end Select_RAM_Bank;
