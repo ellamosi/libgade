@@ -22,8 +22,6 @@ package body Gade.Carts.Plain.Constructors is
    is
       use ROM_RAM_Mixin.Banked_RAM_Mixin.Banked_RAM_Spaces;
 
-
-
       RAM_Content : RAM_Content_Access;
       Has_Battery : Boolean;
       Savable     : Boolean;

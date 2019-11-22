@@ -8,9 +8,6 @@ package Gade.Carts.MBC2 is
 
    subtype MBC2_Cart_NN_Access is not null MBC2_Cart_Access;
 
-   overriding
-   procedure Reset (C : in out MBC2_Cart);
-
 private
 
    ROM_Bank_Count : constant := 16;

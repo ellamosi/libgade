@@ -1,13 +1,6 @@
 package body Gade.Carts.MBC2 is
 
    overriding
-   procedure Reset (C : in out MBC2_Cart) is
-   begin
-      C.Reset_ROM;
-      C.Reset_RAM;
-   end Reset;
-
-   overriding
    procedure Write_ROM
      (C       : in out MBC2_Cart;
       Address : External_ROM_IO_Address;

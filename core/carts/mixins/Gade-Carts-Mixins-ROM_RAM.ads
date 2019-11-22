@@ -24,6 +24,9 @@ package Gade.Carts.Mixins.ROM_RAM is
 
    type ROM_RAM_Cart is new Banked_RAM_Cart with private;
 
+   overriding
+   procedure Reset (C : in out ROM_RAM_Cart);
+
 private
 
    type ROM_RAM_Cart is new Banked_RAM_Cart with null record;

@@ -6,8 +6,7 @@ package body Gade.Carts.MBC3 is
    overriding
    procedure Reset (C : in out MBC3_Cart) is
    begin
-      C.Reset_ROM;
-      C.Reset_RAM;
+      MBC_Cart (C).Reset;
       C.Last_Latch_Value := 16#01#;
       if C.RTC /= null then Reset (C.RTC.all); end if;
    end Reset;

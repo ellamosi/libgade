@@ -8,9 +8,6 @@ package Gade.Carts.Plain is
 
    subtype Plain_Cart_NN_Access is not null Plain_Cart_Access;
 
-   overriding
-   procedure Reset (C : in out Plain_Cart);
-
 private
 
    package ROM_RAM_Mixin is new Gade.Carts.Mixins.ROM_RAM

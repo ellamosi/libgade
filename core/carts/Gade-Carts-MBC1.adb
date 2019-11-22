@@ -4,8 +4,7 @@ package body Gade.Carts.MBC1 is
    overriding
    procedure Reset (C : in out MBC1_Cart) is
    begin
-      C.Reset_ROM;
-      C.Reset_RAM;
+      MBC_Cart (C).Reset;
       C.Low_Bank_Select := 1;
       C.High_Bank_Select := 0;
       C.Banking_Mode := ROM;
