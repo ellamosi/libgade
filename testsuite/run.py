@@ -138,8 +138,10 @@ def find_testcases():
     Yield Testcase instances for all testcases found in TESTS_DIR.
     """
     for dirpath, dirnames, filenames in os.walk(TESTS_DIR):
-        if 'tc.gpr' in filenames:
-            yield Testcase(dirpath)
+        dirnames.sort()
+        for dirname in dirnames:
+            if 'tc.gpr' in filenames:
+                yield Testcase(dirpath)
 
 
 parser = argparse.ArgumentParser('Run the testsuite')
