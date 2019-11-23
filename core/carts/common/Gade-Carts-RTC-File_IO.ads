@@ -1,4 +1,5 @@
 with Ada.Streams.Stream_IO;
+private with Ada.Calendar;
 private with Interfaces;
 private with System;
 
@@ -13,7 +14,7 @@ package Gade.Carts.RTC.File_IO is
       File : Ada.Streams.Stream_IO.File_Type);
 
 private
-   use Interfaces, Ada.Streams.Stream_IO;
+   use Ada.Calendar, Interfaces, Ada.Streams.Stream_IO;
 
    Days_Low_Cardinality : constant := 256;
    type Days_Top_Type is mod 2;

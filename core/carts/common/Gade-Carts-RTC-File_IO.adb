@@ -3,6 +3,8 @@ with Ada.Exceptions;             use Ada.Exceptions;
 with Ada.Text_IO;
 with Interfaces.C;
 
+with Gade.Carts.RTC.Text_IO; use Gade.Carts.RTC.Text_IO;
+
 package body Gade.Carts.RTC.File_IO is
 
    procedure To_Counter_Registers
@@ -15,9 +17,6 @@ package body Gade.Carts.RTC.File_IO is
       Days : constant Unsigned_32 :=
         C_Data.Days_Low + Days_Top * Days_Low_Cardinality;
    begin
-      Ada.Text_IO.Put_Line ("To_Counter_Registers.SS" & C_Data.Seconds'Img);
-      Ada.Text_IO.Put_Line ("To_Counter_Registers.MM" & C_Data.Minutes'Img);
-      Ada.Text_IO.Put_Line ("To_Counter_Registers.HH" & C_Data.Hours'Img);
       Registers.Seconds := Byte (C_Data.Seconds);
       Registers.Minutes := Byte (C_Data.Minutes);
       Registers.Hours   := Byte (C_Data.Hours);

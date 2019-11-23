@@ -1,4 +1,3 @@
-private with Ada.Calendar;
 private with System;
 
 package Gade.Carts.RTC is
@@ -30,7 +29,6 @@ package Gade.Carts.RTC is
       Cycles : Positive);
 
 private
-   use Ada.Calendar;
 
    type Counter is record
       Span   : Duration;
@@ -84,14 +82,6 @@ private
      Duration (Day_Count_Cardinality * 24 * 60 * 60);
 
    Seconds_Day : constant Duration := Duration (24 * 60 * 60);
-
-   function Days (D : Duration) return Natural;
-   function Truncate (D : Duration) return Day_Duration;
-   function Maximum (Left, Right : Duration) return Duration;
-
-   function Duration_Image (D : Duration) return String;
-   function Counter_Image (C : Counter) return String;
-   procedure Print (Clk : Clock);
 
    procedure Increase_Counter
      (C    : in out Counter;
