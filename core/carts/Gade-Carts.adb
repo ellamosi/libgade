@@ -9,6 +9,11 @@ with Gade.Carts.MBC3.Constructors;  use Gade.Carts.MBC3.Constructors;
 
 package body Gade.Carts is
 
+   package Plain_Carts renames Plain.Constructors;
+   package MBC1_Carts renames MBC1.Constructors;
+   package MBC2_Carts renames MBC2.Constructors;
+   package MBC3_Carts renames MBC3.Constructors;
+
    function Get_Header
      (Content : ROM_Content_Access)
       return Cart_Header_Access;
@@ -42,13 +47,12 @@ package body Gade.Carts is
       Header     : Cart_Header_Access;
       Controller : Controller_Type;
 
-      Save : constant String := RAM_Path (Path);
+      Save_Path : constant String := RAM_Path (Path);
 
       C : Cart_Access;
    begin
       ROM := Load (Path);
 
-      --  Header might not be accurate for some few rare cart types (multicarts)
       Header := Get_Header (ROM);
       Controller := Controller_Type_For_Cart (Header.Cart_Type);
 
@@ -57,15 +61,15 @@ package body Gade.Carts is
 
       case Controller is
          when Cartridge_Info.None =>
-            C := Cart_Access (Plain.Constructors.Create (ROM, Header, Save));
+            C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path));
          when Cartridge_Info.MBC1 =>
-            C := Cart_Access (MBC1.Constructors.Create (ROM, Header, Save));
+            C := Cart_Access (MBC1_Carts.Create (ROM, Header.all, Save_Path));
          when Cartridge_Info.MBC2 =>
-            C := Cart_Access (MBC2.Constructors.Create (ROM, Header, Save));
+            C := Cart_Access (MBC2_Carts.Create (ROM, Header.all, Save_Path));
          when Cartridge_Info.MBC3 =>
-            C := Cart_Access (MBC3.Constructors.Create (ROM, Header, Save));
+            C := Cart_Access (MBC3_Carts.Create (ROM, Header.all, Save_Path));
          when others =>
-            C := Cart_Access (Plain.Constructors.Create (ROM, Header, Save));
+            C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path));
       end case;
 
       C.Load_RAM;
@@ -80,13 +84,12 @@ package body Gade.Carts is
    begin
       if C.Persistent then
          Open (File, In_File, C.Save_Path.all);
-         Cart'Class (C).Load_RAM_File (File); --  Redispatch
+         Cart'Class (C).Load_RAM_File (File);
          Close (File);
       end if;
    exception
       when Name_Error =>
-         null;
-         --  Ada.Text_IO.Put_Line ("No save file found");
+         null; --  TODO: Log "save not found" when having a propper logger
    end Load_RAM;
 
    procedure Save_RAM (C : in out Cart) is
@@ -96,7 +99,7 @@ package body Gade.Carts is
    begin
       if C.Persistent then
          Create (File, Out_File, C.Save_Path.all);
-         Cart'Class (C).Save_RAM_File (File); --  Redispatch
+         Cart'Class (C).Save_RAM_File (File);
          Close (File);
       end if;
    end Save_RAM;

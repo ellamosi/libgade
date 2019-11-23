@@ -5,7 +5,7 @@ package body Gade.Carts.MBC3.Constructors is
 
    function Create
      (ROM_Content : ROM_Content_Access;
-      Header      : Cart_Header_Access;
+      Header      : Cart_Header;
       RAM_Path    : String)
       return MBC3_Cart_NN_Access
    is
@@ -18,7 +18,7 @@ package body Gade.Carts.MBC3.Constructors is
    procedure Initialize
      (C           : out MBC3_Cart'Class;
       ROM_Content : ROM_Content_Access;
-      Header      : Cart_Header_Access;
+      Header      : Cart_Header;
       RAM_Path    : String)
    is
       RAM_Content  : RAM_Content_Access;

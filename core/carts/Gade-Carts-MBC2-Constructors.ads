@@ -7,7 +7,7 @@ package Gade.Carts.MBC2.Constructors is
 
    function Create
      (ROM_Content : ROM_Content_Access;
-      Header      : Cart_Header_Access;
+      Header      : Cart_Header;
       RAM_Path    : String)
       return MBC2_Cart_NN_Access;
 
@@ -39,7 +39,7 @@ private
    procedure Initialize
      (C           : out MBC2_Cart'Class;
       ROM_Content : ROM_Content_Access;
-      Header      : Cart_Header_Access;
-      RAM_Path    : String); --  This is going to need more args!
+      Header      : Cart_Header;
+      RAM_Path    : String);
 
 end Gade.Carts.MBC2.Constructors;

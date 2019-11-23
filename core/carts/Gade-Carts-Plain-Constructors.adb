@@ -5,7 +5,7 @@ package body Gade.Carts.Plain.Constructors is
 
    function Create
      (Content  : ROM_Content_Access;
-      Header   : Cart_Header_Access;
+      Header   : Cart_Header;
       RAM_Path : String) return Plain_Cart_NN_Access
    is
       Result : constant Plain_Cart_NN_Access := new Plain_Cart;
@@ -17,7 +17,7 @@ package body Gade.Carts.Plain.Constructors is
    procedure Initialize
      (C           : out Plain_Cart'Class;
       ROM_Content : ROM_Content_Access;
-      Header      : Cart_Header_Access;
+      Header      : Cart_Header;
       RAM_Path    : String)
    is
       use ROM_RAM_Mixin.Banked_RAM_Mixin.Banked_RAM_Spaces;

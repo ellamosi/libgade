@@ -5,7 +5,7 @@ package Gade.Carts.MBC1.Constructors is
 
    function Create
      (ROM_Content : ROM_Content_Access;
-      Header      : Cart_Header_Access; -- Could be made a non acces argument, type needs to be separated
+      Header      : Cart_Header;
       RAM_Path    : String)
       return MBC1_Cart_NN_Access;
 
@@ -16,7 +16,7 @@ private
    procedure Initialize
      (C           : out MBC1_Cart'Class;
       ROM_Content : ROM_Content_Access;
-      Header      : Cart_Header_Access;
-      RAM_Path    : String); --  This is going to need more args!
+      Header      : Cart_Header;
+      RAM_Path    : String);
 
 end Gade.Carts.MBC1.Constructors;
