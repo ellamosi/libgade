@@ -5,54 +5,52 @@ generic
    ROM_Banks, RAM_Banks : in Positive;
 package Gade.Carts.Mixins.MBC is
 
-   --  ROM Reading
-
-   --  MBC1: 0000-3FFF - ROM Bank 00 (Read Only)
-   --  MBC2: 0000-3FFF - ROM Bank 00 (Read Only)
-   --  MBC3: 0000-3FFF - ROM Bank 00 (Read Only)
-   --  MBC5: 0000-3FFF - ROM Bank 00 (Read Only)
-
-   --  MBC1: 4000-7FFF - ROM Bank 01-7F (Read Only) banks 20h, 40h, 60h not supported
-   --  MBC2: 4000-7FFF - ROM Bank 01-0F (Read Only) only 16 banks
-   --  MBC3: 4000-7FFF - ROM Bank 01-7F (Read Only) banks 20h, 40h, 60h supported
-   --  MBC5: 4000-7FFF - ROM Bank 00-1FF (Read Only)
-
-   --  RAM Reading/Writing
-
-   --  MBC1: A000-BFFF - RAM Bank 00-03, if any (Read/Write)
-   --  MBC2: A000-A1FF - 512x4bits RAM, built-in into the MBC2 chip (Read/Write)
-   --  MBC3: A000-BFFF - RAM Bank 00-03, if any (Read/Write)
-   --  MBC5: A000-BFFF - RTC Register 08-0C (Read/Write)
-
-   --  RAM Enable
-
-   --  MBC1: 0000-1FFF - RAM Enable (Write Only) (Value based)
-   --  MBC2: 0000-1FFF - RAM Enable (Write Only) (Value based - Address restrictions)
-   --  MBC3: 0000-1FFF - RAM and Timer Enable (Write Only) (Value based, always affects timer)
-   --  MBC5: 0000-1FFF - RAM Enable (Write Only) (Value based)
-
-   --  ROM Bank Select
-
-   --  MBC1: 2000-3FFF - ROM Bank Number (Write Only) 0, 20h, 40h, 60h are mapped to +1
-   --        4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only)
-   --  MBC2: 0000-3FFF - ROM Bank Number (Write Only) - Address restrictions!
-   --  MBC3: 2000-3FFF - ROM Bank Number (Write Only) 0 maps to 1
-   --  MBC5: 2000-2FFF - Low 8 bits of ROM Bank Number (Write Only)
-   --        3000-3FFF - High bit of ROM Bank Number (Write Only)
-
-   --  RAM Bank Select
-
-   --  MBC1: 4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only)
-   --  MBC2: -
-   --  MBC3: 4000-5FFF - RAM Bank Number - or - RTC Register Select (Write Only)
-   --  MBC5: 4000-5FFF - RAM Bank Number (Write Only)
-
-   --  Special
-
-   --  MBC1: 6000-7FFF - ROM/RAM Mode Select (Write Only)
-   --  MBC2: -
-   --  MBC3: 6000-7FFF - Latch Clock Data (Write Only)
-   --  MBC5: -
+   --  All MBC style controllers implement similar behavior when writing to the
+   --  ROM address space:
+   --
+   --  Writing to 0000-1FFF: Enables/Disables RAM
+   --    MBC1: No special considerations
+   --    MBC2: Address restrictions apply
+   --    MBC3: No special considerations
+   --    MBC5: No special considerations
+   --
+   --  Writing to 2000-5FFF: Perform Bank Select
+   --    MBC1: 2000-3FFF - ROM Bank Number
+   --          4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number
+   --    MBC2: 2000-3FFF - ROM Bank Number - Address restrictions!
+   --          4000-5FFF - Unused
+   --    MBC3: 2000-3FFF - ROM Bank Number
+   --          4000-5FFF - RAM Bank Number - or - RTC Register Select
+   --    MBC5: 2000-2FFF - Low 8 bits of ROM Bank Number
+   --          3000-3FFF - High bit of ROM Bank Number
+   --
+   --  Writing to 6000-7FFF: Special Functions
+   --    MBC1: Banking Mode Select
+   --    MBC2: Unused
+   --    MBC3: Latch RTC Data
+   --    MBC5: Unused
+   --
+   --  So, aside from MBC2, which can override Write_ROM to handle its own
+   --  address ranges and restrictions, it is possible to deffer a ROM write
+   --  to a purpose specific handling procedure and have this behavior be
+   --  shared across MBC1, MBC3 and MBC5.
+   --
+   --  As the logic to handle Bank Selection and the Special Functions change
+   --  for each specific cart types, these will have to be defined in
+   --  the concrete implementations.
+   --
+   --  The logic to check whether is a RAM Enable command seems to be the same
+   --  on every MBC controller, and uses the lower 4 bits of the value being
+   --  written to the ROM:
+   --    16#A#                   - Enables RAM
+   --    Values other than 16#A# - Disable RAM
+   --
+   --  MBC2 also shares this behavior as long as the address written to
+   --  satisfies its specific ranges and restrictions.
+   --
+   --  As all MBC based carts support ROM and RAM banking, the mixin includes
+   --  the instantiation of the ROM_RAM mixin, so it doesn't need to be
+   --  re-instantiated for each of the individual MBC cart types.
 
    subtype RAM_Enable_Address  is Word range 16#0000# .. 16#1FFF#;
    subtype Bank_Select_Address is Word range 16#2000# .. 16#5FFF#;
