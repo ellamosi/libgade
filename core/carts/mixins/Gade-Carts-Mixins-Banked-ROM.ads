@@ -39,8 +39,6 @@ package Gade.Carts.Mixins.Banked.ROM is
 private
    use Address_Space_Banks, ROM_Banks;
 
-   ROM_Space_Size : constant := 16#8000#;
-
    package ROM_Space_Carts is new Banked_Space_Carts
      (Base_Cart => Base_Cart,
       BS        => Banked_ROM_Spaces);
