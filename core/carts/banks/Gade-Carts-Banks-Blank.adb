@@ -11,14 +11,10 @@ package body Gade.Carts.Banks.Blank is
       V := Blank_Value;
    end Read;
 
-   Singleton_Instance : Blank_Bank_Access;
+   Singleton_Instance : constant Blank_Bank_NN_Access := new Blank_Bank;
 
    function Singleton return Blank_Bank_NN_Access is
    begin
-      --  FIXME: Could make thread safe
-      if Singleton_Instance = null then
-         Singleton_Instance := new Blank_Bank;
-      end if;
       return Singleton_Instance;
    end Singleton;
 
