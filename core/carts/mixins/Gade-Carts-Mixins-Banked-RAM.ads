@@ -60,10 +60,10 @@ private
    use RAM_Space_Carts;
 
    type Banked_RAM_Cart is abstract new Banked_Space_Cart with record
+      Content          : RAM_Content_Access;
       Accessible_Bank  : Bank_Access;
       Accessible_Index : Bank_Index;
       Enabled          : Boolean;
-      Content          : RAM_Content_Access;
    end record;
 
    overriding

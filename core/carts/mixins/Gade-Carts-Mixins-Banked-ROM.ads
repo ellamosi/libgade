@@ -50,6 +50,7 @@ private
      array (Accessible_Bank_Index) of ROM_Bank_Access;
 
    type Banked_ROM_Cart is abstract new Banked_Space_Cart with record
+      Content          : ROM_Content_Access;
       Accessible_Banks : Accessible_Bank_Array;
    end record;
 

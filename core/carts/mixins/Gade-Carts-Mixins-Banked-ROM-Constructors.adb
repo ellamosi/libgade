@@ -9,7 +9,7 @@ package body Gade.Carts.Mixins.Banked.ROM.Constructors is
       BF : Default_Bank_Factory;
    begin
       Initialize (BF, Content);
-      --  C.Content := Content;
+      C.Content := Content;
       Initialize (C.Banks, BF);
       Reset (C);
    end Initialize;
