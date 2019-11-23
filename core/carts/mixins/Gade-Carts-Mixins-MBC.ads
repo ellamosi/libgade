@@ -87,8 +87,8 @@ package Gade.Carts.Mixins.MBC is
 
 private
 
-   RAM_Enable_Mask  : constant := 16#0F#;
-   RAM_Enable_Value : constant := 16#0A#;
+   RAM_Enable_Mask  : constant Byte := 16#0F#;
+   RAM_Enable_Value : constant Byte := 16#0A#;
 
    type MBC_Cart is abstract new ROM_RAM_Cart with null record;
 
