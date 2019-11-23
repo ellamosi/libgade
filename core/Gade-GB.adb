@@ -1,16 +1,18 @@
+with Gade.Carts.Blank;
+
 package body Gade.GB is
 
    procedure Create (GB : out GB_Type) is
    begin
       Display.Create (GB.Display);
+      GB.Cart := Cart_Access (Gade.Carts.Blank.Singleton);
       Reset (GB);
    end Create;
 
    procedure Reset (GB : in out GB_Type) is
    begin
       Reset (GB.CPU);
-      --  FIXME: Should not need the null check:
-      if GB.Cart /= null then GB.Cart.Reset; end if;
+      GB.Cart.Reset;
       VRAM.Reset (GB.Video_RAM);
       OAM.Reset (GB.Video_OAM);
       Joypad.Reset (GB.Joypad);
@@ -36,8 +38,7 @@ package body Gade.GB is
       Cycles : Positive)
    is
    begin
-      --  FIXME: Should not need the null check:
-      if GB.Cart /= null then GB.Cart.Report_Cycles (Cycles); end if;
+      GB.Cart.Report_Cycles (Cycles);
    end Report_Frame;
 
 end Gade.GB;
