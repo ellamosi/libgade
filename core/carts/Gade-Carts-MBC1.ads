@@ -16,8 +16,8 @@ private
    ROM_Bank_Count : constant := 128;
    RAM_Bank_Count : constant := 4;
 
-   type Banking_Mode_Type is (Mode_0, Mode_1);
-   for Banking_Mode_Type use
+   type MBC1_Banking_Mode is (Mode_0, Mode_1);
+   for MBC1_Banking_Mode use
      (Mode_0 => 0,
       Mode_1 => 1);
 
@@ -36,7 +36,7 @@ private
    use MBC_Mixin;
 
    type MBC1_Cart is new MBC_Cart with record
-      Banking_Mode     : Banking_Mode_Type;
+      Banking_Mode     : MBC1_Banking_Mode;
       Low_Bank_Select  : Low_Bank_Select_Type;
       High_Bank_Select : High_Bank_Select_Type;
    end record;
@@ -72,6 +72,6 @@ private
 
    procedure Change_Banking_Mode
      (C        : in out MBC1_Cart;
-      New_Mode : Banking_Mode_Type);
+      New_Mode : MBC1_Banking_Mode);
 
 end Gade.Carts.MBC1;

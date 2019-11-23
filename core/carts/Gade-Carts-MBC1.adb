@@ -15,15 +15,15 @@ package body Gade.Carts.MBC1 is
      (C       : in out MBC1_Cart;
       Value   : Byte)
    is
-      New_Mode : constant Banking_Mode_Type :=
-        Banking_Mode_Type'Val (Value and Banking_Mode_Mask);
+      New_Mode : constant MBC1_Banking_Mode :=
+        MBC1_Banking_Mode'Val (Value and Banking_Mode_Mask);
    begin
       C.Change_Banking_Mode (New_Mode);
    end Write_Special;
 
    procedure Change_Banking_Mode
      (C        : in out MBC1_Cart;
-      New_Mode : Banking_Mode_Type)
+      New_Mode : MBC1_Banking_Mode)
    is
       Mode_Changes : constant Boolean := New_Mode /= C.Banking_Mode;
    begin
