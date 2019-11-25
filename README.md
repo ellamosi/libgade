@@ -14,7 +14,7 @@ Why Ada? I learned to program in Ada, and I always felt that it was a more relia
 
 #### What works
 - Full CPU emulation (Passes Blargg's CPU instruction tests)
-- ROM, MBC1, MBC2 cartridge types
+- Plain, MBC1, MBC2, MBC3 cartridge types with saves and MBC3 RTC support
 - Joypad
 - Timer
 - Background Layer
@@ -31,5 +31,6 @@ Why Ada? I learned to program in Ada, and I always felt that it was a more relia
 #### Next steps
 - Performance optimizations (GPU rendering)
 - Performance optimizations (CPU interpretation/Interrupt handling)
-- More cartridge types, including ones with RAM
-
+- Streamline test suite with simple test scripts
+- Add a safe way to do integration testing with commercial ROMs
+- Support for more cartridge types
