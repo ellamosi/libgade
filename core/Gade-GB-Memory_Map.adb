@@ -23,13 +23,13 @@ package body Gade.GB.Memory_Map is
    begin
       case Address is
          when External_ROM_IO_Address =>
-            GB.External_ROM.Read (GB, Address, Value);
+            GB.Cart.Read_ROM (Address, Value);
          when VRAM_IO_Address =>
             GB.Video_RAM.Read (GB, Address, Value);
          when Internal_RAM_Echo_IO_Address =>
             Value := GB.Content (Address - 16#2000#);
          when External_RAM_IO_Address =>
-            GB.External_RAM.Read (GB, Address, Value);
+            GB.Cart.Read_RAM (Address, Value);
          when OAM_IO_Address =>
             GB.Video_OAM.Read (GB, Address, Value);
          when Joypad_IO_Address =>
@@ -63,13 +63,13 @@ package body Gade.GB.Memory_Map is
    begin
       case Address is
          when External_ROM_IO_Address =>
-            GB.External_ROM.Write (GB, Address, Value);
+            GB.Cart.Write_ROM (Address, Value);
          when VRAM_IO_Address =>
             GB.Video_RAM.Write (GB, Address, Value);
          when Internal_RAM_Echo_IO_Address =>
             GB.Content (Address - 16#2000#) := Value;
          when External_RAM_IO_Address =>
-            GB.External_RAM.Write (GB, Address, Value);
+            GB.Cart.Write_RAM (Address, Value);
          when OAM_IO_Address =>
             GB.Video_OAM.Write (GB, Address, Value);
          when Joypad_IO_Address =>

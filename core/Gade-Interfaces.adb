@@ -7,6 +7,7 @@ with Gade.Video_Buffer; use Gade.Video_Buffer;
 with Gade.Dev.CPU.Instructions.Exec;        use Gade.Dev.CPU.Instructions.Exec;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
+with Gade.Carts;
 
 package body Gade.Interfaces is
 
@@ -29,7 +30,7 @@ package body Gade.Interfaces is
      (G    : Gade_Type;
       Path : String) is
    begin
-      G.GB.External_ROM.Load_ROM (Path);
+      G.GB.Cart := Gade.Carts.Load_ROM (Path);
    end Load_ROM;
 
    procedure Set_Input_Reader
@@ -44,8 +45,8 @@ package body Gade.Interfaces is
       Video : Gade.Video_Buffer.RGB32_Display_Buffer_Access) is
       Frame_Finished : Boolean := False;
       Instruction_Cycles, Interrupt_Cycles : Natural;
+      Frame_Cycles : Natural := 0;
    begin
-      Interrupt_Cycles := 0;
       while not Frame_Finished loop
          Instruction_Cycles := 1;
          if not G.GB.CPU.Halted then
@@ -57,16 +58,19 @@ package body Gade.Interfaces is
          if Interrupt_Cycles > 0 then
             Report_Cycles (G.GB, Video, Interrupt_Cycles);
          end if;
+         Frame_Cycles := Frame_Cycles + Instruction_Cycles + Interrupt_Cycles;
          Gade.Dev.Display.Check_Frame_Finished (G.GB.Display, Frame_Finished);
       end loop;
+      Report_Frame (G.GB, Frame_Cycles);
    end Next_Frame;
 
-   procedure Finalize (This : in out Gade_Type) is
+   procedure Finalize (G : in out Gade_Type) is
       procedure Free is new Ada.Unchecked_Deallocation
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin
+      G.GB.Cart.Save_RAM;
       Put_Line ("Finalize");
-      Free (This);
+      Free (G);
    end Finalize;
 
 end Gade.Interfaces;

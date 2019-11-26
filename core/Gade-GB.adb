@@ -1,15 +1,18 @@
+with Gade.Carts.Blank;
+
 package body Gade.GB is
 
    procedure Create (GB : out GB_Type) is
    begin
       Display.Create (GB.Display);
+      GB.Cart := Cart_Access (Gade.Carts.Blank.Singleton);
       Reset (GB);
    end Create;
 
    procedure Reset (GB : in out GB_Type) is
    begin
       Reset (GB.CPU);
-      External_RAM.Reset (GB.External_RAM);
+      GB.Cart.Reset;
       VRAM.Reset (GB.Video_RAM);
       OAM.Reset (GB.Video_OAM);
       Joypad.Reset (GB.Joypad);
@@ -30,45 +33,12 @@ package body Gade.GB is
       Report_Cycles (GB.Timer, GB, Cycles);
    end Report_Cycles;
 
---
---     procedure Read_Screen_Buffer
---        (GameBoy : GameBoy_Type;
---         Buffer  : out Video_Buffer_Type) is
---     begin
---        Gade.Display.Read_Screen_Buffer
---           (GameBoy.GB.MM.Display,
---            GameBoy.GB.MM.Video_RAM,
---            GameBoy.GB.MM.Video_OAM,
---            Buffer);
---     end Read_Screen_Buffer;
---
---     procedure Read_Background
---        (GameBoy : GameBoy_Type;
---         Map_High, Tile_High : Boolean;
---         Buffer  : out Background_Buffer_Type) is
---     begin
---        Gade.Display.Read_Background
---           (GameBoy.GB.MM.Display,
---            GameBoy.GB.MM.Video_RAM,
---            Map_High, Tile_High,
---            Buffer);
---     end Read_Background;
---
---     procedure Read_Tiles
---        (GameBoy   : GameBoy_Type;
---         Tile_High : Boolean;
---         Buffer    : out Tile_Buffer_Type) is
---     begin
---        Gade.Display.Read_Tiles
---           (GameBoy.GB.MM.Display,
---            GameBoy.GB.MM.Video_RAM,
---            Tile_High,
---            Buffer);
---     end Read_Tiles;
---
---     function Read_Palettes (GameBoy : GameBoy_Type) return Palette_Info_Type is
---     begin
---        return Gade.Display.Read_Palettes(GameBoy.GB.MM.Display);
---     end Read_Palettes;
+   procedure Report_Frame
+     (GB     : in out GB_Type;
+      Cycles : Positive)
+   is
+   begin
+      GB.Cart.Report_Cycles (Cycles);
+   end Report_Frame;
 
 end Gade.GB;

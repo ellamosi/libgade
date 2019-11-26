@@ -1,7 +1,7 @@
 with Ada.Unchecked_Conversion;
 
 package Gade is
-
+   pragma Pure;
 private
 
    Byte_Size : constant := 8;
@@ -19,9 +19,9 @@ private
    for Word'Size use Word_Size;
 
    --  To use the target machine's native integer type (no representation
-   --  clause is used). Guarantees that the architecture supports at least
-   --  17 bits which are used for fast carry checks on 16 bit operations.
-   type Native_Unsigned is mod 2 ** 17;
+   --  clause is used). The architecture should supports at least 17 bits which
+   --  are used for fast carry checks on 16 bit operations.
+   type Native_Unsigned is mod 2 ** Natural'Size;
 
    function To_Signed is
       new Ada.Unchecked_Conversion (Source => Byte,

@@ -29,9 +29,10 @@ package body Test_LCD_Output is
    function Allocate_Bitmap return not null Any_Bitmap_Buffer is
       type Pixel_Data is new Bitmap.UInt24_Array
         (1 .. Display_Width * Display_Height) with Pack;
+      type Pixel_Data_Access is access Pixel_Data;
       BM : constant Any_Memory_Mapped_Bitmap_Buffer :=
         new Memory_Mapped_Bitmap_Buffer;
-      Data : constant access Pixel_Data := new Pixel_Data;
+      Data : constant Pixel_Data_Access := new Pixel_Data;
    begin
       BM.Actual_Width := Display_Width;
       BM.Actual_Height := Display_Height;

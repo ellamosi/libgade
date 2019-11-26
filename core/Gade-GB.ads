@@ -1,14 +1,13 @@
-with Gade.Dev;              use Gade.Dev;
-with Gade.Dev.Cartridge;    use Gade.Dev.Cartridge;
-with Gade.Dev.CPU;          use Gade.Dev.CPU;
-with Gade.Dev.VRAM;         use Gade.Dev.VRAM;
-with Gade.Dev.External_RAM; use Gade.Dev.External_RAM;
-with Gade.Dev.OAM;          use Gade.Dev.OAM;
-with Gade.Dev.Joypad;       use Gade.Dev.Joypad;
-with Gade.Dev.Timer;        use Gade.Dev.Timer;
-with Gade.Dev.Display;      use Gade.Dev.Display;
+with Gade.Dev;            use Gade.Dev;
+with Gade.Dev.CPU;        use Gade.Dev.CPU;
+with Gade.Dev.VRAM;       use Gade.Dev.VRAM;
+with Gade.Dev.OAM;        use Gade.Dev.OAM;
+with Gade.Dev.Joypad;     use Gade.Dev.Joypad;
+with Gade.Dev.Timer;      use Gade.Dev.Timer;
+with Gade.Dev.Display;    use Gade.Dev.Display;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Video_Buffer;   use Gade.Video_Buffer;
+with Gade.Carts;          use Gade.Carts;
 
 private package Gade.GB is
 
@@ -27,26 +26,16 @@ private package Gade.GB is
 
    type Memory_Bytes is array (Word'Range) of Byte;
 
-   type GB_Public_Type is abstract tagged record
+   type GB_Public_Type is abstract tagged limited record
       CPU              : aliased CPU_Context;
-      --  0000
-      External_ROM     : aliased External_ROM_Type;
-      --  8000
+      Cart             : Carts.Cart_Access := null;
       Video_RAM        : aliased VRAM_Type;
-      --  A000
-      External_RAM     : aliased External_RAM_Type;
-      --  C000 Intenal RAM / E000 Intenal RAM Echo
-      Content          : Memory_Bytes; -- TODO: redo!
-      --  FE00
+      Content          : Memory_Bytes;
       Video_OAM        : aliased OAM_Type;
-      --  FF40
       Interrupt_Flag   : aliased Interrupt_Flag_Type;
       Joypad           : aliased Joypad_Type;
       Timer            : aliased Timer_Type;
       Display          : aliased Display_Type;
-      --  FF4C: Empty but unusable for I/O
-      --  FF80: Internal RAM
-      --  FFFF
       Interrupt_Enable : aliased Interrupt_Enable_Type;
    end record;
 
@@ -56,9 +45,14 @@ private package Gade.GB is
 
    procedure Reset (GB : in out GB_Type);
 
+   --  TODO: Revisit how sync components for performance/cleanliness
    procedure Report_Cycles
      (GB     : in out GB_Type;
       Video  : RGB32_Display_Buffer_Access;
+      Cycles : Positive);
+
+   procedure Report_Frame
+     (GB     : in out GB_Type;
       Cycles : Positive);
 
 private
