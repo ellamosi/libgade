@@ -25,7 +25,6 @@ Why Ada? I learned to program in Ada, and I always felt that it was a more relia
 #### What does not work
 - Sound
 - Other cartridge controller types
-- Game saves
 - Accurate timings
 
 #### Next steps
