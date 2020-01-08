@@ -17,6 +17,9 @@ package Gade.Carts.MBC3 is
      (C      : in out MBC3_Cart;
       Cycles : Positive);
 
+   overriding
+   procedure Finalize (C : in out MBC3_Cart);
+
 private
    use Gade.Carts.RTC;
 

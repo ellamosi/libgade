@@ -36,6 +36,9 @@ package Gade.Carts.Mixins.Banked.ROM is
       AI : Accessible_Bank_Index;
       I  : Bank_Index);
 
+   overriding
+   procedure Finalize (C : in out Banked_ROM_Cart);
+
 private
    use Address_Space_Banks, ROM_Banks;
 

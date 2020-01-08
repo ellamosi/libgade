@@ -7,6 +7,8 @@ with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
 with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
 with Gade.Carts.MBC3.Constructors;  use Gade.Carts.MBC3.Constructors;
 
+with Gade.Carts.Plain; use Gade.Carts.Plain;
+
 package body Gade.Carts is
 
    package Plain_Carts renames Plain.Constructors;
@@ -125,5 +127,12 @@ package body Gade.Carts is
    begin
       return Convert (Content (0)'Access);
    end Get_Header;
+
+   overriding
+   procedure Finalize (C : in out Cart) is
+   begin
+      Ada.Text_IO.Put_Line ("Cart.Finalize");
+      Free (C.Save_Path);
+   end Finalize;
 
 end Gade.Carts;

@@ -26,6 +26,9 @@ package Gade.Carts.Mem.RAM is
      (RAM  : RAM_Content;
       File : File_Type);
 
+   procedure Free is new Ada.Unchecked_Deallocation
+     (Object => RAM_Content, Name => RAM_Content_Access);
+
 private
 
    package Common is new Mem.Common

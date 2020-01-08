@@ -96,4 +96,11 @@ package body Gade.Carts.MBC1 is
       C.Select_RAM_Bank (Index);
    end Select_RAM_Bank;
 
+   overriding
+   procedure Finalize (C : in out MBC1_Cart) is
+   begin
+      MBC_Cart (C).Finalize;
+      Cart (C).Finalize;
+   end Finalize;
+
 end Gade.Carts.MBC1;

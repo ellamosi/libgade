@@ -16,9 +16,16 @@ package Gade.Carts.Banks is
 
    procedure Write (B : in out Bank; Address : Bank_Address; V : Byte) is null;
 
+   procedure Free (BA : in out Bank_Access);
+
 private
 
    type Bank is abstract tagged null record;
+
+   procedure Free_Bank is new Ada.Unchecked_Deallocation
+     (Object => Bank'Class, Name => Bank_Access);
+
+   procedure Free (BA : in out Bank_Access) renames Free_Bank;
 
    generic
       type Base_Bank is abstract new Bank with private;

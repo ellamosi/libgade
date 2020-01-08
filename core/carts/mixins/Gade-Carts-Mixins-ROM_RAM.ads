@@ -22,13 +22,13 @@ package Gade.Carts.Mixins.ROM_RAM is
       Enabled_By_Default => RAM_Enabled_By_Default);
    use Banked_RAM_Mixin;
 
-   type ROM_RAM_Cart is new Banked_RAM_Cart with private;
+   type ROM_RAM_Cart is abstract new Banked_RAM_Cart with private;
 
    overriding
    procedure Reset (C : in out ROM_RAM_Cart);
 
 private
 
-   type ROM_RAM_Cart is new Banked_RAM_Cart with null record;
+   type ROM_RAM_Cart is abstract new Banked_RAM_Cart with null record;
 
 end Gade.Carts.Mixins.ROM_RAM;

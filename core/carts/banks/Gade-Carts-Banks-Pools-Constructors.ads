@@ -6,8 +6,9 @@ package Gade.Carts.Banks.Pools.Constructors is
    type Bank_Factory is abstract tagged null record;
 
    function Create_Bank
-     (F : in out Bank_Factory;
-      I : Bank_Index) return Bank_NN_Access is abstract;
+     (F           : in out Bank_Factory;
+      I           : Bank_Index;
+      Deallocable : Boolean) return Bank_NN_Access is abstract;
 
    generic
       type Address is range <>;
@@ -30,8 +31,9 @@ package Gade.Carts.Banks.Pools.Constructors is
 
       overriding
       function Create_Bank
-        (F : in out Default_Bank_Factory;
-         I : Bank_Index) return Bank_NN_Access;
+        (F           : in out Default_Bank_Factory;
+         I           : Bank_Index;
+         Deallocable : Boolean) return Bank_NN_Access;
 
    private
 

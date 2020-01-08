@@ -4,9 +4,12 @@ package Gade.Carts.Plain is
 
    type Plain_Cart is new Cart with private;
 
-   type Plain_Cart_Access is access Plain_Cart'Class;
+   type Plain_Cart_Access is access all Plain_Cart;
 
    subtype Plain_Cart_NN_Access is not null Plain_Cart_Access;
+
+   overriding
+   procedure Finalize (C : in out Plain_Cart);
 
 private
 

@@ -16,6 +16,9 @@ package Gade.Carts.Mem.ROM is
 
    function Load (Path : String) return ROM_Content_Access;
 
+   procedure Free is new Ada.Unchecked_Deallocation
+     (Object => ROM_Content, Name => ROM_Content_Access);
+
 private
 
    package Common is new Mem.Common

@@ -1,3 +1,4 @@
+with Ada.Text_IO;
 package body Gade.Carts.Mixins.Banked is
 
    function Bit_Size (N : Positive) return Natural is
@@ -12,5 +13,16 @@ package body Gade.Carts.Mixins.Banked is
       end loop;
       return Bit_Count;
    end Bit_Size;
+
+   package body Banked_Space_Carts is
+
+      overriding
+      procedure Finalize (C : in out Banked_Space_Cart) is
+      begin
+         Ada.Text_IO.Put_Line ("Mixins.Banked.Finalize");
+         Bank_Pools.Finalize (C.Banks);
+      end Finalize;
+
+   end Banked_Space_Carts;
 
 end Gade.Carts.Mixins.Banked;

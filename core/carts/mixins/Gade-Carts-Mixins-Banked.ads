@@ -51,6 +51,11 @@ private
          Banks : Bank_Pools.Bank_Pool;
       end record;
 
+      overriding
+      procedure Finalize (C : in out Banked_Space_Cart);
+
+   private
+
    end Banked_Space_Carts;
 
 end Gade.Carts.Mixins.Banked;

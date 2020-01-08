@@ -8,6 +8,9 @@ package Gade.Carts.Blank is
 
    function Singleton return Blank_Cart_NN_Access;
 
+   overriding
+   procedure Finalize (C : in out Blank_Cart) is null;
+
 private
 
    type Blank_Cart is new Cart with null record;

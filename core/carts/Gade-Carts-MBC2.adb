@@ -29,4 +29,11 @@ package body Gade.Carts.MBC2 is
       C.Select_ROM_Bank (1, Actual_Index);
    end Select_Bank;
 
+   overriding
+   procedure Finalize (C : in out MBC2_Cart) is
+   begin
+      MBC_Cart (C).Finalize;
+      Cart (C).Finalize;
+   end Finalize;
+
 end Gade.Carts.MBC2;

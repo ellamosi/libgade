@@ -31,8 +31,9 @@ package body Gade.Carts.Banks.Pools.Constructors is
 
       overriding
       function Create_Bank
-        (F : in out Default_Bank_Factory;
-         I : Bank_Index) return Bank_NN_Access
+        (F           : in out Default_Bank_Factory;
+         I           : Bank_Index;
+         Deallocable : Boolean) return Bank_NN_Access
       is
          Offset         : Address;
          Original_Index : Bank_Index;

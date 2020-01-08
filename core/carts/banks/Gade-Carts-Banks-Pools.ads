@@ -10,10 +10,13 @@ package Gade.Carts.Banks.Pools is
      (Pool : Bank_Pool;
       I    : Bank_Index) return Bank_NN_Access;
 
+   procedure Finalize (Pool : in out Bank_Pool);
+
 private
 
    type Bank_Pool is record
-      Banks : Bank_Array;
+      Banks         : Bank_Array;
+      Created_Banks : Bank_Array;
    end record;
 
 end Gade.Carts.Banks.Pools;

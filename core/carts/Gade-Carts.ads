@@ -1,3 +1,5 @@
+with Ada.Finalization; use Ada.Finalization;
+with Ada.Unchecked_Deallocation;
 private with Gade.Cartridge_Info;
 private with Ada.Streams.Stream_IO;
 
@@ -133,7 +135,7 @@ private package Gade.Carts is
    subtype External_ROM_IO_Address is Word range 16#0000# .. 16#7FFF#;
    subtype External_RAM_IO_Address is Word range 16#A000# .. 16#BFFF#;
 
-   type Cart is abstract tagged private;
+   type Cart is abstract new Controlled with private;
 
    type Cart_Access is access all Cart'Class;
 
@@ -168,11 +170,19 @@ private package Gade.Carts is
      (C      : in out Cart;
       Cycles : Positive) is null;
 
+   overriding
+   procedure Finalize (C : in out Cart);
+
+   procedure Free (C : in out Cart_Access);
+
 private
 
    type Path_Access is access String;
 
-   type Cart is abstract tagged record
+   procedure Free is new Ada.Unchecked_Deallocation
+     (Object => String, Name => Path_Access);
+
+   type Cart is abstract new Controlled with record
       Save_Path  : Path_Access;
       Persistent : Boolean;
    end record;
@@ -184,6 +194,11 @@ private
    procedure Save_RAM_File
      (C    : in out Cart;
       File : Ada.Streams.Stream_IO.File_Type) is null;
+
+   procedure Free_Cart is new Ada.Unchecked_Deallocation
+     (Object => Cart'Class, Name => Cart_Access);
+
+   procedure Free (C : in out Cart_Access) renames Free_Cart;
 
    use Gade.Cartridge_Info;
 

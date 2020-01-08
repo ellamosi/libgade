@@ -11,6 +11,9 @@ package Gade.Carts.MBC1 is
    overriding
    procedure Reset (C : in out MBC1_Cart);
 
+   overriding
+   procedure Finalize (C : in out MBC1_Cart);
+
 private
 
    ROM_Bank_Count : constant := 128;

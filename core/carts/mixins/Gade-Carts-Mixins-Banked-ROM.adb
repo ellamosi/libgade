@@ -42,4 +42,11 @@ package body Gade.Carts.Mixins.Banked.ROM is
       Bank_Addr := Address and Bank_Address_Mask;
    end Decode;
 
+   overriding
+   procedure Finalize (C : in out Banked_ROM_Cart) is
+   begin
+      Free (C.Content);
+      Banked_Space_Cart (C).Finalize;
+   end Finalize;
+
 end Gade.Carts.Mixins.Banked.ROM;

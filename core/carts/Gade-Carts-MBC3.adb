@@ -1,4 +1,5 @@
 with Gade.Carts.RTC.File_IO;
+with Ada.Text_IO;
 
 package body Gade.Carts.MBC3 is
    use MBC_Mixin.ROM_RAM_Mixin;
@@ -81,5 +82,14 @@ package body Gade.Carts.MBC3 is
    begin
       if C.RTC /= null then Report_Cycles (C.RTC.all, Cycles); end if;
    end Report_Cycles;
+
+   overriding
+   procedure Finalize (C : in out MBC3_Cart) is
+   begin
+      Ada.Text_IO.Put_Line ("MBC3.Finalize1");
+      MBC_Cart (C).Finalize;
+      Ada.Text_IO.Put_Line ("MBC3.Finalize2");
+      Cart (C).Finalize;
+   end Finalize;
 
 end Gade.Carts.MBC3;

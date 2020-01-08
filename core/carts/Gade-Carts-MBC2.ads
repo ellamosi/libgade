@@ -14,6 +14,9 @@ package Gade.Carts.MBC2 is
       Address : External_ROM_IO_Address;
       Value   : Byte);
 
+   overriding
+   procedure Finalize (C : in out MBC2_Cart);
+
 private
 
    ROM_Bank_Count : constant := 16;
