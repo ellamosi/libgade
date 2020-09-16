@@ -93,6 +93,7 @@ package body Gade.Dev.Display is
       Video   : RGB32_Display_Buffer_Access;
       Cycles  : Positive) is
    begin
+      Display.Cycles := Display.Cycles + Cycles;
       if Display.Map.LCDC.LCD_Operation then
          Gade.Dev.Display.Handlers.Report_Cycles
            (Display.Display_Handler.all,
@@ -112,6 +113,10 @@ package body Gade.Dev.Display is
       Finished : out Boolean) is
    begin
       Finished := Display.Frame_Finished;
+--        if Finished then
+--           Put_Line ("FF" & Display.Cycles'Img);
+--           Display.Cycles := 0;
+--        end if;
       Display.Frame_Finished := False;
    end Check_Frame_Finished;
 

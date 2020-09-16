@@ -25,7 +25,8 @@ package body Gade.Carts.Banks.Pools.Constructors is
             Bank_Factory.Banks (0) := Bank_Access (Blank_Banks.Singleton);
          else
             --  Count the actual (non mirrored) memory banks
-            Bank_Factory.N_Banks := Bank_Count (Content'Length / Size);
+            Bank_Factory.N_Banks := Bank_Count'Max
+              (Bank_Count (Content'Length / Size), 1);
          end if;
       end Initialize;
 

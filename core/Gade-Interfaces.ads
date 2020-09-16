@@ -1,5 +1,6 @@
 limited with Gade.Input_Reader;
 limited with Gade.Video_Buffer;
+limited with Gade.Audio_Buffer;
 
 package Gade.Interfaces is
 
@@ -20,6 +21,14 @@ package Gade.Interfaces is
    procedure Next_Frame
      (G     : Gade_Type;
       Video : Gade.Video_Buffer.RGB32_Display_Buffer_Access);
+
+   procedure Run_For
+     (G                 : Gade_Type;
+      Requested_Samples : Positive;
+      Generated_Samples : out Natural;
+      Video             : Gade.Video_Buffer.RGB32_Display_Buffer_Access;
+      Audio             : Gade.Audio_Buffer.Audio_Buffer_Access;
+      Frame_Finished    : out Boolean);
 
    procedure Finalize (G : in out Gade_Type);
 

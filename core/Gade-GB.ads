@@ -5,8 +5,10 @@ with Gade.Dev.OAM;        use Gade.Dev.OAM;
 with Gade.Dev.Joypad;     use Gade.Dev.Joypad;
 with Gade.Dev.Timer;      use Gade.Dev.Timer;
 with Gade.Dev.Display;    use Gade.Dev.Display;
+with Gade.Audio;          use Gade.Audio;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Video_Buffer;   use Gade.Video_Buffer;
+with Gade.Audio_Buffer;   use Gade.Audio_Buffer;
 with Gade.Carts;          use Gade.Carts;
 
 private package Gade.GB is
@@ -36,6 +38,7 @@ private package Gade.GB is
       Joypad           : aliased Joypad_Type;
       Timer            : aliased Timer_Type;
       Display          : aliased Display_Type;
+      Audio            : aliased Audio_Type;
       Interrupt_Enable : aliased Interrupt_Enable_Type;
    end record;
 
@@ -49,10 +52,12 @@ private package Gade.GB is
    procedure Report_Cycles
      (GB     : in out GB_Type;
       Video  : RGB32_Display_Buffer_Access;
+      Audio  : Audio_Buffer_Access;
       Cycles : Positive);
 
    procedure Report_Frame
      (GB     : in out GB_Type;
+      Audio  : Audio_Buffer_Access;
       Cycles : Positive);
 
 private
