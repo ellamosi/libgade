@@ -129,12 +129,6 @@ package body Gade.Audio is
       T.Tick := 1;
    end Start;
 
---     procedure Restart (T : in out Timer) is
---     begin
---        Reset (T);
---        Start (T);
---     end Restart;
-
    procedure Reset (T : in out Timer) is
    begin
       T.Remaining := T.Initial;
@@ -150,7 +144,6 @@ package body Gade.Audio is
 
    procedure Tick (T : in out Timer) is
    begin
-      --  Put_Line ("Timer :=" & T.Remaining'Img & " -" & T.Tick'Img);
       T.Remaining := T.Remaining - T.Tick;
    end Tick;
 
@@ -167,11 +160,8 @@ package body Gade.Audio is
       Ch.Rem_Pulse_Cycles := 1;
       Ch.Pulse_Cycles := (1, 1);
       Setup (Ch.Envelope_Timer);
-      --  Ch.Rem_Vol_Env_Ticks := 1;
       Ch.Env_Step := 0;
-      --  Ch.Env_Period_Tick := 0;
-      Ch.Rem_Length_Ticks := 1;
-      Ch.Length_Tick := 0;
+      Setup (Ch.Length_Timer);
       Ch.Volume := 0;
       Ch.Env_Start_Volume := 0;
       Ch.Enabled := False;
@@ -210,7 +200,6 @@ package body Gade.Audio is
       Set_Volume (Ch, Ch.Env_Start_Volume);
       Trigger_Length (Ch);
 
-      --  Put_Line ("Cycles:" & Ch.Pulse_Cycles'Img & " Vol" & Ch.Volume'Img);
       Ch.Enabled := True;
    end Trigger;
 
@@ -223,27 +212,21 @@ package body Gade.Audio is
    begin
       Ch.Duty := Duty;
       if Enable then
-         Ch.Rem_Length_Ticks := 64 - Natural (Load);
-         Ch.Length_Tick := 1;
+         Setup (Ch.Length_Timer, 64 - Natural (Load));
+         Start (Ch.Length_Timer);
       else
-         Ch.Rem_Length_Ticks := 1;
-         Ch.Length_Tick := 0;
+         Stop (Ch.Length_Timer);
       end if;
    end Reload_Length;
 
    procedure Trigger_Volume_Envelope (Ch : in out Square_Channel_State) is
    begin
-      Put_Line ("Envelope_Timer Reset (Trigger)");
       Reset (Ch.Envelope_Timer);
    end Trigger_Volume_Envelope;
 
    procedure Trigger_Length (Ch : in out Square_Channel_State) is
    begin
-      --  256 for Wave
-      if Ch.Rem_Length_Ticks = 0 then
-         Ch.Length_Tick := 1;
-         Ch.Rem_Length_Ticks := 64;
-      end if;
+      Reset (Ch.Length_Timer);
    end Trigger_Length;
 
    --  During a trigger event, several things occur:
@@ -351,16 +334,13 @@ package body Gade.Audio is
 
    procedure Length_Step (Ch : in out Square_Channel_State) is
    begin
-      Ch.Rem_Length_Ticks := Ch.Rem_Length_Ticks - Ch.Length_Tick;
-      if Ch.Rem_Length_Ticks = 0 then
+      Tick (Ch.Length_Timer);
+      if Has_Finished (Ch.Length_Timer) then
          Set_Volume (Ch, 0);
          Ch.Level := Ch.Pulse_Levels (Ch.Pulse_State);
-         --  Stop ticking
-         Ch.Rem_Length_Ticks := 1;
-         Ch.Length_Tick := 0;
-         --  TODO: Should stop vol envelope too!
-         --  Ch.Env_Period_Tick := 0;
-         Stop (Ch.Envelope_Timer);
+
+         Stop (Ch.Length_Timer);
+         Stop (Ch.Envelope_Timer); -- TODO: Maybe stop sweep too?
       end if;
    end Length_Step;
 

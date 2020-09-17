@@ -232,9 +232,7 @@ private
       Pulse_State          : Pulse_State_Type;
       Rem_Pulse_Cycles     : Natural;
       Enabled              : Boolean;
-      --  length
-      Rem_Length_Ticks     : Natural;
-      Length_Tick          : Natural;
+      Length_Timer         : Timer;
       --  Turn envelope into its own record?
       Envelope_Timer       : Timer;
       Env_Step             : Integer;
