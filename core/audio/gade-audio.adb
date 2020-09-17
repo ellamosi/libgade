@@ -14,18 +14,7 @@ package body Gade.Audio is
    begin
       Put_Line ("Audio Reset");
 
---        Audio.Elapsed_Cycles := 0;
---        Audio.Edge_Cycles := 0;
---        Audio.Level_High := Sample'Last;
---        Audio.Level_Low := Sample'First;
---        Audio.Level := 0;
---        Audio.Current := True;
---        Audio.Period := 1;
       Audio.Elapsed_Cycles := 0;
---        Audio.Envelope_Cycles := 0;
---        Audio.Length_Cycles := 0;
---        Audio.Sequencer_Cycles := 0;
-
       Audio.Frame_Seq_Step_Idx := 0;
       Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
 
@@ -271,12 +260,15 @@ package body Gade.Audio is
       if Period > 0 then
          Setup (Ch.Envelope_Timer, Positive (Period));
 
+         --  TODO: Make this more readable, shouldn't nest
          if ((Volume /= 0 and Direction = Down) or
              (Volume /= Channel_Max_Level and Direction = Up))
          then
             Start (Ch.Envelope_Timer);
             Ch.Env_Step := Envelope_Steps (Direction);
          end if;
+      else
+         Stop (Ch.Envelope_Timer);
       end if;
    end Set_Volume_Envelope;
 
@@ -321,7 +313,9 @@ package body Gade.Audio is
       Tick (Ch.Envelope_Timer);
       if Has_Finished (Ch.Envelope_Timer) then
          --  Trigger volume change, preserving pulse state
+         Put_Line ("Ch.Volume" & Ch.Volume'Img & "Ch.Env_Step" & Ch.Env_Step'Img);
          New_Volume := Channel_Volume_Type (Integer (Ch.Volume) + Ch.Env_Step);
+         Put_Line ("New_Volume" & New_Volume'Img);
          Set_Volume (Ch, New_Volume);
 
          if Ch.Volume = Channel_Max_Level or Ch.Volume = 0 then
