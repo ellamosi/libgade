@@ -68,6 +68,7 @@ package body Gade.Audio is
          Put_Line ("SQ1 Trigger f:" & Audio.Map.Square1.Frequency'Img &
                      " SW P:" & Audio.Map.Square1.Sweep_Period'Img &
                      " SW S:" & Audio.Map.Square1.Shift'Img);
+         --  TODO: Combine these two methods?
          Trigger (Audio.Square1_State, Audio.Map.Square1.Frequency);
          Trigger_Frequency_Sweep
            (Audio.Square1_State,
@@ -117,6 +118,47 @@ package body Gade.Audio is
          Put_Line ("Exception");
    end Write;
 
+   procedure Setup (T : out Timer; Ticks : Positive := 1) is
+   begin
+      T.Initial := Ticks;
+      Stop (T);
+   end Setup;
+
+   procedure Start (T : in out Timer) is
+   begin
+      T.Tick := 1;
+   end Start;
+
+--     procedure Restart (T : in out Timer) is
+--     begin
+--        Reset (T);
+--        Start (T);
+--     end Restart;
+
+   procedure Reset (T : in out Timer) is
+   begin
+      T.Remaining := T.Initial;
+   end Reset;
+
+   procedure Stop (T : in out Timer) is
+   begin
+      --  Reset timer, that way we can transparently tick a stopped timer that
+      --  had finished.
+      Reset (T);
+      T.Tick := 0;
+   end Stop;
+
+   procedure Tick (T : in out Timer) is
+   begin
+      --  Put_Line ("Timer :=" & T.Remaining'Img & " -" & T.Tick'Img);
+      T.Remaining := T.Remaining - T.Tick;
+   end Tick;
+
+   function Has_Finished (T : Timer) return Boolean is
+   begin
+      return T.Remaining = 0;
+   end Has_Finished;
+
    procedure Reset (Ch : out Square_Channel_State) is
    begin
       Ch.Pulse_State := Pulse_Low;
@@ -124,20 +166,24 @@ package body Gade.Audio is
       Ch.Pulse_Levels := (0, 0);
       Ch.Rem_Pulse_Cycles := 1;
       Ch.Pulse_Cycles := (1, 1);
-      Ch.Rem_Vol_Env_Ticks := 1;
+      Setup (Ch.Envelope_Timer);
+      --  Ch.Rem_Vol_Env_Ticks := 1;
       Ch.Env_Step := 0;
-      Ch.Env_Period_Tick := 0;
+      --  Ch.Env_Period_Tick := 0;
       Ch.Rem_Length_Ticks := 1;
       Ch.Length_Tick := 0;
       Ch.Volume := 0;
       Ch.Env_Start_Volume := 0;
       Ch.Enabled := False;
       Ch.Duty := Half;
+   end Reset;
 
+   overriding
+   procedure Reset (Ch : out Frequency_Sweep_Channel_State) is
+   begin
+      Square_Channel_State (Ch).Reset;
       Ch.Sweep_Negate := False;
-      Ch.Freq_Sweep_Ticks := 1;
-      Ch.Freq_Sweep_Tick := 0;
-      Ch.Rem_Sweep_Ticks := 1;
+      Setup (Ch.Sweep_Timer);
    end Reset;
 
    --  Writing a value to NRx4 with bit 7 set causes the following things to
@@ -158,14 +204,8 @@ package body Gade.Audio is
      (Ch        : in out Square_Channel_State;
       Frequency : Frequency_Type)
    is
---        Hi_Mult : constant Natural := Hi_Duty_Sample_Multiplier (Ch.Duty);
---        Lo_Mult : constant Natural := Lo_Duty_Sample_Multiplier (Ch.Duty);
-      Period : constant Natural := 2048 - Natural (Frequency);
    begin
---        Ch.Pulse_Cycles :=
---          (Pulse_Low  => Pulse_Cycles_Base * Lo_Mult,
---           Pulse_High => Pulse_Cycles_Base * Hi_Mult);
-      Set_Period (Ch, Period);
+      Set_Frequency (Ch, Frequency);
       Trigger_Volume_Envelope (Ch);
       Set_Volume (Ch, Ch.Env_Start_Volume);
       Trigger_Length (Ch);
@@ -193,9 +233,8 @@ package body Gade.Audio is
 
    procedure Trigger_Volume_Envelope (Ch : in out Square_Channel_State) is
    begin
-      if Ch.Env_Period_Tick /= 0 then -- Enabled. Should isolate vol env
-         Ch.Rem_Vol_Env_Ticks := Ch.Env_Period_Ticks;
-      end if;
+      Put_Line ("Envelope_Timer Reset (Trigger)");
+      Reset (Ch.Envelope_Timer);
    end Trigger_Volume_Envelope;
 
    procedure Trigger_Length (Ch : in out Square_Channel_State) is
@@ -215,32 +254,25 @@ package body Gade.Audio is
    --  - If the sweep shift is non-zero, frequency calculation and the overflow
    --    check are performed immediately.
    procedure Trigger_Frequency_Sweep
-     (Ch        : in out Square_Channel_State;
+     (Ch        : in out Frequency_Sweep_Channel_State;
       Frequency : Frequency_Type;
       Period    : Sweep_Period_Type;
       Negate    : Boolean;
       Shift     : Sweep_Shift_Type)
    is
-      --  pragma Unreferenced (Negate);
-
-      --  Initial_Freq : Natural;
-      --  New_Freq : Frequency_Type;
    begin
-      --  Put_Line ("Period" & Period'Img & " Shift:" & Shift'Img);
-      --  Initial_Freq := Natural (Frequency);
-      Ch.Sweep_Shift := Shift;
-      if Period /= 0 or Shift /= 0 then
-         --  Enable ticking
-         Ch.Freq_Sweep_Ticks := Natural (Period);
-         Ch.Rem_Sweep_Ticks := Ch.Freq_Sweep_Ticks;
-         Ch.Freq_Sweep_Tick := 1;
+      if Period > 0 and Shift > 0 then
+         Ch.Sweep_Shift := Shift;
+         --  Enable timer
+         Setup (Ch.Sweep_Timer, Natural (Period));
+         Start (Ch.Sweep_Timer);
+
          Ch.Shadow_Frequency := Frequency;
          Ch.Sweep_Negate := Negate;
 
          --  if Shift /= 0 then Frequency_Sweep_Step (Ch); end if;
       else
-         Ch.Rem_Sweep_Ticks := 1;
-         Ch.Freq_Sweep_Tick := 0;
+         Stop (Ch.Sweep_Timer);
       end if;
    end Trigger_Frequency_Sweep;
 
@@ -252,15 +284,16 @@ package body Gade.Audio is
    is
    begin
       Ch.Env_Start_Volume := Volume;
-      if Period > 0 and ((Volume /= 0 and Direction = Down) or (Volume /= Channel_Max_Level and Direction = Up)) then
-         Ch.Env_Period_Ticks := Natural (Period);
-         Ch.Env_Period_Tick := 1;
-         Ch.Env_Step := Envelope_Steps (Direction);
-         Ch.Rem_Vol_Env_Ticks := Ch.Env_Period_Ticks;
-      else
-         --  Disable enevelope ticking
-         Ch.Rem_Vol_Env_Ticks := 1;
-         Ch.Env_Period_Tick := 0;
+
+      if Period > 0 then
+         Setup (Ch.Envelope_Timer, Positive (Period));
+
+         if ((Volume /= 0 and Direction = Down) or
+             (Volume /= Channel_Max_Level and Direction = Up))
+         then
+            Start (Ch.Envelope_Timer);
+            Ch.Env_Step := Envelope_Steps (Direction);
+         end if;
       end if;
    end Set_Volume_Envelope;
 
@@ -274,35 +307,26 @@ package body Gade.Audio is
       Ch.Pulse_Levels := (-Volume_Sample, Volume_Sample);
    end Set_Volume;
 
-   procedure Set_Period
-     (Ch     : in out Square_Channel_State;
-      Period : Natural)
+   procedure Set_Frequency
+     (Ch   : in out Square_Channel_State;
+      Freq : Frequency_Type)
    is
+      Period : constant Natural := 2048 - Natural (Freq);
       Hi_Mult : constant Natural := Hi_Duty_Sample_Multiplier (Ch.Duty) / 2;
       Lo_Mult : constant Natural := Lo_Duty_Sample_Multiplier (Ch.Duty) / 2;
    begin
       Ch.Pulse_Cycles :=
         (Pulse_Low  => Period * Lo_Mult,
          Pulse_High => Period * Hi_Mult);
-   end Set_Period;
+   end Set_Frequency;
 
    procedure Square_Step (Ch : in out Square_Channel_State; S : out Sample) is
    begin
       S := Ch.Level;
-      --  Put_Line (S'Img);
---        Ch.Elapsed_Pulse_Cycles := Ch.Elapsed_Pulse_Cycles + 1;
---        if Ch.Elapsed_Pulse_Cycles >= Ch.Pulse_Cycles then
---           Ch.Pulse_State := Next_Pulse_State (Ch.Pulse_State);
---           Put_Line (Ch.Level'Img & " =>" & Ch.Pulse_Levels (Ch.Pulse_State)'Img);
---           Ch.Elapsed_Pulse_Cycles := 0;
---           Ch.Level := Ch.Pulse_Levels (Ch.Pulse_State);
---        end if;
       if not Ch.Enabled then return; end if;
       Ch.Rem_Pulse_Cycles := Ch.Rem_Pulse_Cycles - 1;
       if Ch.Rem_Pulse_Cycles = 0 then
-         --  Put_Line (Ch.Level'Img & '.');
          Ch.Pulse_State := Next_Pulse_State (Ch.Pulse_State);
-         --  Put_Line (Ch.Level'Img & " =>" & Ch.Pulse_Levels (Ch.Pulse_State)'Img);
          Ch.Rem_Pulse_Cycles := Ch.Pulse_Cycles (Ch.Pulse_State);
          Ch.Level := Ch.Pulse_Levels (Ch.Pulse_State);
       end if;
@@ -311,30 +335,22 @@ package body Gade.Audio is
    procedure Envelope_Step (Ch : in out Square_Channel_State) is
       New_Volume : Channel_Volume_Type;
    begin
-      --  Put_Line ("VE Tick" & Ch.Volume'Img & " Rem ticks:" & Ch.Rem_Vol_Env_Ticks'Img);
-      --
-      Ch.Rem_Vol_Env_Ticks := Ch.Rem_Vol_Env_Ticks - Ch.Env_Period_Tick;
-      if Ch.Rem_Vol_Env_Ticks = 0 then
-         --
+      Tick (Ch.Envelope_Timer);
+      if Has_Finished (Ch.Envelope_Timer) then
          --  Trigger volume change, preserving pulse state
-         --  Put_Line ("VE Step" & Integer'Image (Integer (Ch.Volume) + Ch.Env_Step));
          New_Volume := Channel_Volume_Type (Integer (Ch.Volume) + Ch.Env_Step);
          Set_Volume (Ch, New_Volume);
-         --  Ch.Level := Ch.Pulse_Levels (Ch.Pulse_State); -- Maybe skip this so volume does not affect pulse flatness?
-         --  Stop period ticking if necessary
+
          if Ch.Volume = Channel_Max_Level or Ch.Volume = 0 then
-            --- Put_Line ("Envelope vol change");
-            --  Stop ticking
-            Ch.Env_Period_Tick := 0;
-            --  Put_Line ("Envelope Finished");
+            Stop (Ch.Envelope_Timer);
+         else
+            Reset (Ch.Envelope_Timer);
          end if;
-         Ch.Rem_Vol_Env_Ticks := Ch.Env_Period_Ticks;
       end if;
    end Envelope_Step;
 
    procedure Length_Step (Ch : in out Square_Channel_State) is
    begin
-      --  Put_Line ("Rem:" & Ch.Rem_Length_Ticks'Img & "T" & Ch.Length_Tick'Img);
       Ch.Rem_Length_Ticks := Ch.Rem_Length_Ticks - Ch.Length_Tick;
       if Ch.Rem_Length_Ticks = 0 then
          Set_Volume (Ch, 0);
@@ -343,69 +359,47 @@ package body Gade.Audio is
          Ch.Rem_Length_Ticks := 1;
          Ch.Length_Tick := 0;
          --  TODO: Should stop vol envelope too!
-         Ch.Env_Period_Tick := 0;
-         Put_Line ("LE");
+         --  Ch.Env_Period_Tick := 0;
+         Stop (Ch.Envelope_Timer);
       end if;
    end Length_Step;
 
-   procedure Frequency_Sweep_Shift (Ch : in out Square_Channel_State) is
+   procedure Frequency_Sweep_Shift (Ch : in out Frequency_Sweep_Channel_State) is
       New_Freq : Frequency_Type;
-      --  Overflow : Boolean;
-      Period : Natural;
-      --  Shift : Integer;
-      Shift : Natural;
       Shifted : Integer;
+      Out_Of_Range : Boolean;
    begin
       --  Frequency calculation consists of taking the value in the frequency
       --  shadow register, shifting it right by sweep shift, optionally
       --  negating the value, and summing this with the frequency shadow
       --  register to produce a new frequency.
-      --  New_Freq := Ch.Shadow_Frequency * 2 ** Natural (Ch.Sweep_Shift);
-      Shift := Integer (Ch.Sweep_Shift);
-      Shifted := (Integer (Ch.Shadow_Frequency) / 2 ** Shift);
-      Put_Line ("Shift:" & Shift'Img & " Shifted:" & Shifted'Img);
+      Shifted := (Integer (Ch.Shadow_Frequency) / 2 ** Natural (Ch.Sweep_Shift));
       if Ch.Sweep_Negate then
          --  Down
          New_Freq := Ch.Shadow_Frequency - Frequency_Type (Shifted);
-         if New_Freq > Ch.Shadow_Frequency then
-            --  Underflow
-            Put_Line ("Sweep Underflow");
-            Ch.Rem_Sweep_Ticks := 1;
-            Ch.Freq_Sweep_Tick := 0;
-            Ch.Enabled := False;
-         else
-            Ch.Shadow_Frequency := New_Freq;
-            Ch.Rem_Sweep_Ticks := Ch.Freq_Sweep_Ticks;
-            Period  := 2048 - Natural (New_Freq);
-            Put_Line ("Sweep New Freq (Dec):" & New_Freq'Img);
-            Set_Period (Ch, Period);
-            --  TODO: Update register
-         end if;
+         Out_Of_Range := New_Freq > Ch.Shadow_Frequency;
       else
          --  Up
          New_Freq := Ch.Shadow_Frequency + Frequency_Type (Shifted);
-         if New_Freq < Ch.Shadow_Frequency then
-            --  Overflow
-            Put_Line ("Sweep Overflow");
-            Ch.Rem_Sweep_Ticks := 1;
-            Ch.Freq_Sweep_Tick := 0;
-            Ch.Enabled := False;
-         else
-            Ch.Shadow_Frequency := New_Freq;
-            Ch.Rem_Sweep_Ticks := Ch.Freq_Sweep_Ticks;
-            Period  := 2048 - Natural (New_Freq);
-            Put_Line ("Sweep New Freq (Inc):" & New_Freq'Img);
-            Set_Period (Ch, Period);
-            --  TODO: Update register
-         end if;
+         Out_Of_Range := New_Freq < Ch.Shadow_Frequency;
+      end if;
+
+      if Out_Of_Range then
+         Stop (Ch.Sweep_Timer);
+         Ch.Enabled := False;
+      else
+         Ch.Shadow_Frequency := New_Freq;
+         Reset (Ch.Sweep_Timer);
+         Put_Line ("Sweep New Freq (Dec):" & New_Freq'Img);
+         Set_Frequency (Ch, New_Freq);
+         --  TODO: Update register
       end if;
    end Frequency_Sweep_Shift;
 
-   procedure Frequency_Sweep_Step (Ch : in out Square_Channel_State) is
+   procedure Frequency_Sweep_Step (Ch : in out Frequency_Sweep_Channel_State) is
    begin
-      --  Put_Line ("FS Step:" & Ch.Rem_Sweep_Ticks'Img & " -" & Ch.Freq_Sweep_Tick'Img);
-      Ch.Rem_Sweep_Ticks := Ch.Rem_Sweep_Ticks - Ch.Freq_Sweep_Tick;
-      if Ch.Rem_Sweep_Ticks = 0 then Frequency_Sweep_Shift (Ch); end if;
+      Tick (Ch.Sweep_Timer);
+      if Has_Finished (Ch.Sweep_Timer) then Frequency_Sweep_Shift (Ch); end if;
    end Frequency_Sweep_Step;
 
    procedure Tick_Frame_Sequencer (Audio : in out Audio_Type) is

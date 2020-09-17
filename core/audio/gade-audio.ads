@@ -35,6 +35,21 @@ private package Gade.Audio is
 
 private
 
+   subtype Tick_Type is Natural range 0 .. 1;
+
+   type Timer is record
+      Initial   : Positive;
+      Remaining : Natural;
+      Tick      : Tick_Type;
+   end record;
+
+   procedure Setup (T : out Timer; Ticks : Positive := 1);
+   procedure Start (T : in out Timer);
+   procedure Reset (T : in out Timer);
+   procedure Stop (T : in out Timer);
+   procedure Tick (T : in out Timer);
+   function Has_Finished (T : Timer) return Boolean;
+
    type Duty_Type is (Eighth, Quarter, Half, Three_Quarters);
    for Duty_Type use
      (Eighth         => 2#00#,
@@ -210,35 +225,22 @@ private
    Envelope_Steps : constant array (Envelope_Direction_Type) of Integer :=
      (-1, 1);
 
-   type Square_Channel_State is record
+   type Square_Channel_State is tagged record
       Level                : Sample;
       Pulse_Levels         : Pulse_Levels_Type;
       Pulse_Cycles         : Pulse_Cycles_Type;
       Pulse_State          : Pulse_State_Type;
-      Elapsed_Pulse_Cycles : Natural; -- Deprecate
       Rem_Pulse_Cycles     : Natural;
       Enabled              : Boolean;
       --  length
       Rem_Length_Ticks     : Natural;
       Length_Tick          : Natural;
-      --  Turn this into its own record?
-      Rem_Vol_Env_Ticks    : Natural;
-      --  Env_Period           : Natural;
-      Env_Period_Ticks     : Natural;
-      Env_Period_Tick      : Natural;
+      --  Turn envelope into its own record?
+      Envelope_Timer       : Timer;
       Env_Step             : Integer;
       Env_Start_Volume     : Channel_Volume_Type;
       Volume               : Channel_Volume_Type;
       Duty                 : Duty_Type;
-
-      --  Freq sweep exclusive:
-      Freq_Sweep_Enabled   : Boolean;
-      Shadow_Frequency     : Frequency_Type;
-      Freq_Sweep_Tick      : Natural;
-      Freq_Sweep_Ticks     : Natural;
-      Rem_Sweep_Ticks      : Natural;
-      Sweep_Shift          : Sweep_Shift_Type;
-      Sweep_Negate         : Boolean;
    end record;
 
    type Base_Channel is tagged null record;
@@ -256,11 +258,6 @@ private
       Duty   : Duty_Type);
    procedure Trigger_Volume_Envelope (Ch : in out Square_Channel_State);
    procedure Trigger_Length (Ch : in out Square_Channel_State);
-   procedure Trigger_Frequency_Sweep (Ch        : in out Square_Channel_State;
-      Frequency : Frequency_Type;
-      Period    : Sweep_Period_Type;
-      Negate    : Boolean;
-                                      Shift     : Sweep_Shift_Type);
 
    procedure Set_Volume_Envelope
      (Ch        : in out Square_Channel_State;
@@ -271,14 +268,33 @@ private
    procedure Set_Volume
      (Ch     : in out Square_Channel_State;
       Volume : Channel_Volume_Type);
-   procedure Set_Period
-     (Ch     : in out Square_Channel_State;
-      Period : Natural);
+   procedure Set_Frequency
+     (Ch   : in out Square_Channel_State;
+      Freq : Frequency_Type);
    procedure Square_Step (Ch : in out Square_Channel_State; S : out Sample);
    procedure Envelope_Step (Ch : in out Square_Channel_State);
    procedure Length_Step (Ch : in out Square_Channel_State);
-   procedure Frequency_Sweep_Step (Ch : in out Square_Channel_State);
-   procedure Frequency_Sweep_Shift (Ch : in out Square_Channel_State);
+
+   type Frequency_Sweep_Channel_State is new Square_Channel_State with record
+      Freq_Sweep_Enabled : Boolean;
+      Shadow_Frequency   : Frequency_Type;
+      Sweep_Timer        : Timer;
+      Sweep_Shift        : Sweep_Shift_Type;
+      Sweep_Negate       : Boolean;
+   end record;
+
+   overriding
+   procedure Reset (Ch : out Frequency_Sweep_Channel_State);
+
+   procedure Trigger_Frequency_Sweep
+     (Ch        : in out Frequency_Sweep_Channel_State;
+      Frequency : Frequency_Type;
+      Period    : Sweep_Period_Type;
+      Negate    : Boolean;
+      Shift     : Sweep_Shift_Type);
+
+   procedure Frequency_Sweep_Step (Ch : in out Frequency_Sweep_Channel_State);
+   procedure Frequency_Sweep_Shift (Ch : in out Frequency_Sweep_Channel_State);
 
    --  TODO: Calculate these constants/double them
    Hi_Duty_Sample_Multiplier : constant array (Duty_Type) of Natural :=
@@ -337,7 +353,7 @@ private
 
    type Audio_Type is tagged record
       Map              : Audio_Map_Type;
-      Square1_State    : Square_Channel_State;
+      Square1_State    : Frequency_Sweep_Channel_State;
       Square2_State    : Square_Channel_State;
       Elapsed_Cycles   : Natural;
 --        Envelope_Cycles  : Natural;
