@@ -6,6 +6,8 @@ package body Gade.GB is
    begin
       Display.Create (GB.Display);
       GB.Cart := Cart_Access (Gade.Carts.Blank.Singleton);
+      --  TODO: Re-evaluate how Audi device is created
+      Create (GB.Audio);
       Reset (GB);
    end Create;
 
@@ -43,7 +45,7 @@ package body Gade.GB is
    is
    begin
       GB.Cart.Report_Cycles (Cycles);
-      GB.Audio.Flush_Frame (Audio, Cycles);
+      Flush_Frame (GB.Audio, Audio, Cycles);
    end Report_Frame;
 
 end Gade.GB;

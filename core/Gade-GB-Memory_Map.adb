@@ -41,7 +41,7 @@ package body Gade.GB.Memory_Map is
          when Display_IO_Address =>
             GB.Display.Read (GB, Address, Value);
          when Audio_IO_Address =>
-            GB.Audio.Read (Address, Value);
+            Read (GB.Audio, Address, Value);
          when Interrupt_Enable_IO_Address =>
             GB.Interrupt_Enable.Read (GB, Address, Value);
          when others =>
@@ -83,7 +83,7 @@ package body Gade.GB.Memory_Map is
          when Display_IO_Address =>
             GB.Display.Write (GB, Address, Value);
          when Audio_IO_Address =>
-            GB.Audio.Write (Address, Value);
+            Write (GB.Audio, Address, Value);
          when Interrupt_Enable_IO_Address =>
             GB.Interrupt_Enable.Write (GB, Address, Value);
          when others =>
