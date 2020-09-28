@@ -2,6 +2,10 @@ with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 
 private package Gade.Audio is
 
+   ------- Should be somewhere else (Channel package?)
+   type Channel_Register is (NRx0, NRx1, NRx2, NRx3, NRx4);
+   type Register_Masks is array (Channel_Register'Range) of Byte;
+
    subtype Audio_IO_Address is Word range 16#FF10# .. 16#FF3F#;
 
    type Audio_Type is private;
@@ -37,7 +41,6 @@ private
    Blank_Value : constant Byte := 16#FF#;
 
    type Channel is (NR1, NR2, NR3, NR4);
-   type Channel_Register is (NRx0, NRx1, NRx2, NRx3, NRx4);
 
    Channel_Count : constant := Channel'Range_Length;
    Channel_Register_Count : constant := Channel_Register'Range_Length;

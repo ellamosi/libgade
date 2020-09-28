@@ -1,9 +1,9 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Exceptions; use Ada.Exceptions;
 
-package body Gade.Audio.Square is
+package body Gade.Audio.Square.Plain is
 
-   procedure Reset (Ch : out Square_Channel) is
+   procedure Reset (Ch : out Plain_Square_Channel) is
    begin
       Put_Line ("Base Reset");
 
@@ -22,56 +22,57 @@ package body Gade.Audio.Square is
       Ch.Enabled := False;
       Ch.Duty := Half;
 
-      Extended_Reset (Square_Channel'Class (Ch));
+      --  TODO: Initialize all registers
+
+      Ch.Read_Masks := Get_Read_Masks (Plain_Square_Channel'Class (Ch));
+      Extended_Reset (Plain_Square_Channel'Class (Ch));
    end Reset;
 
+   function Get_Read_Masks (Ch : Plain_Square_Channel) return Register_Masks is
+      pragma Unreferenced (Ch);
+   begin
+      return Read_Masks;
+   end Get_Read_Masks;
+
    procedure Read
-     (Ch       : in out Square_Channel'Class;
+     (Ch       : in out Plain_Square_Channel'Class;
       Register : Channel_Register;
       Value    : out Byte)
    is
    begin
-      case Register is
-         when NRx0 => NRx0_Read (Ch, Value);
-         when others => Value := 16#FF#; --  TODO: Actually return values
-      end case;
+      Value := Ch.IO.Space (Register) or Ch.Read_Masks (Register);
    end Read;
 
    procedure Write
-     (Ch       : in out Square_Channel'Class;
+     (Ch       : in out Plain_Square_Channel'Class;
       Register : Channel_Register;
       Value    : Byte)
    is
    begin
+      Ch.IO.Space (Register) := Value;
+      --  TODO: Should probably only set things upon trigger
       case Register is
          when NRx0 => -- Unused
-            NRx0_Write (Ch, Value);
+            null;
          when NRx1 => -- Duty/LengthLoad
-            Ch.IO.Space (Register) := Value;
-            Reload_Length (Ch, Ch.IO.Length_Enable, Ch.IO.Length_Load, Ch.IO.Duty);
-         when NRx2 => -- Volume
-            Ch.IO.Space (Register) := Value;
-            Set_Volume_Envelope (Ch, Ch.IO.Volume, Ch.IO.Period, Ch.IO.Envelope_Direction);
-         when NRx4 => -- Control/Trigger/FreqHi
-            Ch.IO.Space (Register) := Value;
-            Trigger (Ch, Ch.IO.Frequency);
-         when others =>
-            Ch.IO.Space (Register) := Value;
+            --  Counter can be reloaded at any time
+            Reload_Length (Ch);
+         when NRx2 =>
+            --  Volume
+            --  Writing to NRx2 causes obscure effects on the volume that differ
+            --  on different Game Boy models (see obscure behavior).
+            Set_Volume_Envelope (Ch);
+         when NRx3 => -- FreqLo
+            null;
+         when NRx4 =>
+            --  Control/Trigger/FreqHi
+            Trigger (Ch);
       end case;
    exception
       when E : others =>
          Put_Line ("Unexpected Square Channel Exception");
          Put_Line (Exception_Information (E));
    end Write;
-
-   procedure NRx0_Read
-     (Ch    : in out Square_Channel;
-      Value : out Byte)
-   is
-      pragma Unreferenced (Ch);
-   begin
-      Value := Blank_Value;
-   end NRx0_Read;
 
    --  Writing a value to NRx4 with bit 7 set causes the following things to
    --  occur:
@@ -87,53 +88,45 @@ package body Gade.Audio.Square is
    --
    --  Note that if the channel's DAC is off, after the above actions occur the
    --  channel will be immediately disabled again.
-   procedure Trigger
-     (Ch        : in out Square_Channel;
-      Frequency : Frequency_Type)
-   is
+   procedure Trigger (Ch : in out Plain_Square_Channel) is
    begin
-      Set_Frequency (Ch, Frequency);
-      Trigger_Volume_Envelope (Ch);
-      Set_Volume (Ch, Ch.Volume_Envelope.Start_Volume);
-      Trigger_Length (Ch);
+      if Ch.IO.Trigger then
+         Set_Frequency (Ch, Ch.IO.Frequency);
+         Trigger_Volume_Envelope (Ch);
+         Set_Volume (Ch, Ch.Volume_Envelope.Start_Volume);
+         Trigger_Length (Ch);
 
-      Ch.Enabled := True;
+         Ch.Enabled := True;
 
-      Extended_Trigger (Square_Channel'Class (Ch), Frequency);
+         Extended_Trigger (Plain_Square_Channel'Class (Ch));
+      end if;
    end Trigger;
 
-   procedure Reload_Length
-     (Ch     : in out Square_Channel;
-      Enable : Boolean;
-      Load   : Length_Load_Type; -- Up to 256 for wave
-      Duty   : Duty_Type)
-   is
+   procedure Reload_Length (Ch : in out Plain_Square_Channel) is
    begin
-      Ch.Duty := Duty;
-      if Enable then
-         Setup (Ch.Length_Timer, 64 - Natural (Load));
+      Ch.Duty := Ch.IO.Duty;
+      if Ch.IO.Length_Enable then
+         Setup (Ch.Length_Timer, 64 - Natural (Ch.IO.Length_Load));
          Start (Ch.Length_Timer);
       else
          Stop (Ch.Length_Timer);
       end if;
    end Reload_Length;
 
-   procedure Trigger_Volume_Envelope (Ch : in out Square_Channel) is
+   procedure Trigger_Volume_Envelope (Ch : in out Plain_Square_Channel) is
    begin
       Reset (Ch.Volume_Envelope.TMR);
    end Trigger_Volume_Envelope;
 
-   procedure Trigger_Length (Ch : in out Square_Channel) is
+   procedure Trigger_Length (Ch : in out Plain_Square_Channel) is
    begin
       Reset (Ch.Length_Timer);
    end Trigger_Length;
 
-   procedure Set_Volume_Envelope
-     (Ch        : in out Square_Channel;
-      Volume    : Channel_Volume_Type;
-      Period    : Period_Type;
-      Direction : Envelope_Direction_Type)
-   is
+   procedure Set_Volume_Envelope (Ch : in out Plain_Square_Channel) is
+      Volume    : constant Channel_Volume_Type := Ch.IO.Volume;
+      Period    : constant Period_Type := Ch.IO.Period;
+      Direction : constant Envelope_Direction_Type := Ch.IO.Envelope_Direction;
    begin
       Ch.Volume_Envelope.Start_Volume := Volume;
 
@@ -153,7 +146,7 @@ package body Gade.Audio.Square is
    end Set_Volume_Envelope;
 
    procedure Set_Volume
-     (Ch     : in out Square_Channel;
+     (Ch     : in out Plain_Square_Channel;
       Volume : Channel_Volume_Type)
    is
       Volume_Sample : constant Sample := Sample (Volume);
@@ -163,7 +156,7 @@ package body Gade.Audio.Square is
    end Set_Volume;
 
    procedure Set_Frequency
-     (Ch   : in out Square_Channel;
+     (Ch   : in out Plain_Square_Channel;
       Freq : Frequency_Type)
    is
       Period : constant Natural := 2048 - Natural (Freq);
@@ -175,12 +168,12 @@ package body Gade.Audio.Square is
          Pulse_High => Period * Hi_Mult);
    end Set_Frequency;
 
-   procedure Disable (Ch : in out Square_Channel) is
+   procedure Disable (Ch : in out Plain_Square_Channel) is
    begin
       Ch.Enabled := False;
    end Disable;
 
-   procedure Square_Step (Ch : in out Square_Channel; S : out Sample) is
+   procedure Square_Step (Ch : in out Plain_Square_Channel; S : out Sample) is
    begin
       S := Ch.Level;
       if not Ch.Enabled then return; end if;
@@ -192,13 +185,13 @@ package body Gade.Audio.Square is
       end if;
    end Square_Step;
 
-   procedure Envelope_Step (Ch : in out Square_Channel) is
+   procedure Envelope_Step (Ch : in out Plain_Square_Channel) is
       New_Volume : Channel_Volume_Type;
    begin
       Tick (Ch.Volume_Envelope.TMR);
       if Has_Finished (Ch.Volume_Envelope.TMR) then
          --  Trigger volume change, preserving pulse state
-         Put_Line ("Ch.Volume" & Ch.Volume'Img & "Ch.Env_Step" & Ch.Volume_Envelope.Step'Img);
+         --  Put_Line ("Ch.Volume" & Ch.Volume'Img & "Ch.Env_Step" & Ch.Volume_Envelope.Step'Img);
          New_Volume := Channel_Volume_Type (Integer (Ch.Volume) + Ch.Volume_Envelope.Step);
          Put_Line ("New_Volume" & New_Volume'Img);
          Set_Volume (Ch, New_Volume);
@@ -211,7 +204,7 @@ package body Gade.Audio.Square is
       end if;
    end Envelope_Step;
 
-   procedure Length_Step (Ch : in out Square_Channel) is
+   procedure Length_Step (Ch : in out Plain_Square_Channel) is
    begin
       Tick (Ch.Length_Timer);
       if Has_Finished (Ch.Length_Timer) then
@@ -224,4 +217,4 @@ package body Gade.Audio.Square is
       end if;
    end Length_Step;
 
-end Gade.Audio.Square;
+end Gade.Audio.Square.Plain;

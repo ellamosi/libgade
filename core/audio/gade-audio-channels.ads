@@ -1,12 +1,12 @@
 with System;
 
-private package Gade.Audio.Square is
+private package Gade.Audio.Channels is
 
-   type Frequency_Type is mod 2 ** 11;
-
-   type Square_Channel is abstract tagged private;
+   type Audio_Channel is abstract tagged private;
 
 private
+
+   type Frequency_Type is mod 2 ** 11;
 
    type Channel_Volume_Type is mod 2 ** 4;
    type Sweep_Period_Type is mod 2 ** 3;
@@ -67,4 +67,4 @@ private
       IO : Channel_IO;
    end record;
 
-end Gade.Audio.Square;
+end Gade.Audio.Channels;
