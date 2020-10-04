@@ -79,7 +79,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
      (Channel : Sweeping_Square_Channel) return Byte
    is
    begin
-      return Channel.NRx1;
+      return Channel.NRx0;
    end Read_NRx0;
 
    overriding
@@ -90,7 +90,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       NRx0_In : constant NRx0_Frequency_Sweep_IO
         := To_NRx0_Frequency_Sweep_IO (Value);
    begin
-      Channel.NRx1 := Value or NRx0_Sweep_Mask;
+      Channel.NRx0 := Value or NRx0_Sweep_Mask;
       Channel.Sweep_Period := Actual_Effect_Periods (NRx0_In.Period);
       Channel.Sweep_Negate := NRx0_In.Negate;
       Channel.Sweep_Shift  := NRx0_In.Shift;
