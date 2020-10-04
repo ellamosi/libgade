@@ -1,70 +1,127 @@
-with System;
+with Ada.Unchecked_Conversion;
+with Gade.Audio.Timers; use Gade.Audio.Timers;
 
-private package Gade.Audio.Channels is
+package Gade.Audio.Channels is
+
+   --  type Channel_Register is (NRx0, NRx1, NRx2, NRx3, NRx4);
 
    type Audio_Channel is abstract tagged private;
 
+   procedure Reset (Ch : out Audio_Channel) is abstract;
+
+   function Read
+     (Channel  : Audio_Channel'Class;
+      Register : Channel_Register)
+      return Byte;
+
+   procedure Write
+     (Channel  : in out Audio_Channel'Class;
+      Register : Channel_Register;
+      Value    : Byte);
+
+   procedure Step (Channel : in out Audio_Channel; S : out Sample) is abstract;
+
+   procedure Length_Step (Channel : in out Audio_Channel) is abstract;
+
 private
 
-   type Frequency_Type is mod 2 ** 11;
+   --  Basically just more of an interface than anything
+   type Audio_Channel is abstract tagged null record;
 
-   type Channel_Volume_Type is mod 2 ** 4;
-   type Sweep_Period_Type is mod 2 ** 3;
-   type Sweep_Shift_Type is mod 2 ** 3;
+   Blank_Value : constant Byte := 16#FF#;
 
-   type Duty_Type is (Eighth, Quarter, Half, Three_Quarters);
-   for Duty_Type use
-     (Eighth         => 2#00#,
-      Quarter        => 2#01#,
-      Half           => 2#10#,
-      Three_Quarters => 2#11#);
-   type Length_Load_Type is mod 2 ** 6;
+   function Read_Blank (Channel : Audio_Channel) return Byte;
 
-   type Envelope_Direction_Type is (Down, Up);
-   for Envelope_Direction_Type use (Down => 0, Up => 1);
-   type Period_Type is mod 2 ** 3;
+   function Read_NRx0 (Channel : Audio_Channel) return Byte renames Read_Blank;
+   function Read_NRx1 (Channel : Audio_Channel) return Byte renames Read_Blank;
+   function Read_NRx2 (Channel : Audio_Channel) return Byte renames Read_Blank;
+   function Read_NRx3 (Channel : Audio_Channel) return Byte renames Read_Blank;
+   function Read_NRx4 (Channel : Audio_Channel) return Byte renames Read_Blank;
 
-   type Channel_IO_Space is array (Channel_Register'Range) of Byte;
-   type Channel_IO (Access_Type : Audio_Access_Type := Named) is record
-      case Access_Type is
-         when Named =>
-            --  NRx0 (unused on SQ2)
-            Sweep_Period       : Sweep_Period_Type;
-            Negate             : Boolean;
-            Shift              : Sweep_Shift_Type;
-            --  NRx1
-            Duty               : Duty_Type;
-            Length_Load        : Length_Load_Type;
-            --  NRx2
-            Volume             : Channel_Volume_Type;
-            Envelope_Direction : Envelope_Direction_Type;
-            Period             : Period_Type;
-            --  NRx3 + NRx4
-            Frequency          : Frequency_Type;
-            Trigger            : Boolean;
-            Length_Enable      : Boolean;
-         when Address =>
-            Space              : Channel_IO_Space;
-      end case;
-   end record with Unchecked_Union;
-   for Channel_IO use record
-      Sweep_Period       at 0 range 4 .. 6;
-      Negate             at 0 range 3 .. 3;
-      Shift              at 0 range 0 .. 2;
-      Duty               at 1 range 6 .. 7;
-      Length_Load        at 1 range 0 .. 5;
-      Volume             at 2 range 4 .. 7;
-      Envelope_Direction at 2 range 3 .. 3;
-      Period             at 2 range 0 .. 2;
-      Frequency          at 3 range 0 .. 10;
-      Trigger            at 4 range 7 .. 7;
-      Length_Enable      at 4 range 6 .. 6;
-   end record;
-   for Channel_IO'Scalar_Storage_Order use System.Low_Order_First;
-   for Channel_IO'Size use 40;
+   procedure Write_NRx0 (Channel : in out Audio_Channel; Value : Byte) is null;
+   procedure Write_NRx1 (Channel : in out Audio_Channel; Value : Byte) is null;
+   procedure Write_NRx2 (Channel : in out Audio_Channel; Value : Byte) is null;
+   procedure Write_NRx3 (Channel : in out Audio_Channel; Value : Byte) is null;
+   procedure Write_NRx4 (Channel : in out Audio_Channel; Value : Byte) is null;
 
-   type Square_Channel is abstract tagged record
-      IO : Channel_IO;
-   end record;
+   generic
+      Length_Bits : Positive;
+   package Base is
+
+      --  Adds length and trigger functionality
+      type Base_Audio_Channel is abstract new Audio_Channel with private;
+
+      overriding
+      procedure Reset (Channel : out Base_Audio_Channel);
+
+      overriding
+      procedure Step (Channel : in out Base_Audio_Channel; S : out Sample);
+
+      procedure Trigger (Channel : in out Base_Audio_Channel) is null;
+
+      overriding
+      function Read_NRx4 (Channel : Base_Audio_Channel) return Byte;
+
+      overriding
+      procedure Write_NRx1 (Channel : in out Base_Audio_Channel; Value : Byte);
+
+      overriding
+      procedure Write_NRx4 (Channel : in out Base_Audio_Channel; Value : Byte);
+
+      function Enabled (Channel : Base_Audio_Channel) return Boolean;
+
+      procedure Disable (Channel : in out Base_Audio_Channel);
+
+      procedure Next_Sample_Level
+        (Channel      : in out Base_Audio_Channel;
+         Sample_Level : out Sample;
+         Level_Cycles : out Positive) is abstract;
+
+      overriding
+      procedure Length_Step (Channel : in out Base_Audio_Channel);
+
+   private
+
+      Length_Max : constant Natural := 2 ** Length_Bits;
+      NRx1_Length_Mask : constant Byte := Byte (Length_Max - 1);
+
+      NRx4_Length_Enable_Mask : constant Byte := 16#BF#;
+
+      type NRx4_Common_IO is record
+         Trigger       : Boolean;
+         Length_Enable : Boolean;
+      end record;
+      for NRx4_Common_IO use record
+         Trigger       at 0 range 7 .. 7;
+         Length_Enable at 0 range 6 .. 6;
+      end record;
+      for NRx4_Common_IO'Size use 8;
+
+      function To_NRx4_Common_IO is new Ada.Unchecked_Conversion
+        (Source => Byte,
+         Target => NRx4_Common_IO);
+
+      function To_Byte is new Ada.Unchecked_Conversion
+        (Source => NRx4_Common_IO,
+         Target => Byte);
+
+      type Base_Audio_Channel is abstract new Audio_Channel with record
+         Enabled      : Boolean; --  TODO: Not sure if really needed?
+                                 --  Probably yes, as it can be enabled without using the length timer.
+                                 --  Could use the Sample timer to derive it, though
+         Length_Timer : Repeatable_Timer;
+         Sample_Timer : Timer;
+         Level        : Sample;
+      end record;
+
+      procedure Reload_Length (Channel : in out Base_Audio_Channel;
+                               Length  : Natural);
+
+   end Base;
+
+   type Effect_Period_IO is mod 2 ** 3;
+
+   Actual_Effect_Periods : constant array (Effect_Period_IO'Range) of Positive
+     := (8, 1, 2, 3, 4, 5, 6, 7);
 
 end Gade.Audio.Channels;

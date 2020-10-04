@@ -20,6 +20,9 @@ package Gade.Audio.Square.Sweeping is
 
 private
 
+   type Sweep_Period_Type is mod 2 ** 3;
+   type Sweep_Shift_Type is mod 2 ** 3;
+
    Sweep_IO_Mask : constant Byte := 16#80#; --  Most significant bit is unused
 
    type Sweeping_Square_Channel is new Plain_Square_Channel with record

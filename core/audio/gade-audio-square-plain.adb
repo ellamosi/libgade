@@ -64,9 +64,13 @@ package body Gade.Audio.Square.Plain is
             Set_Volume_Envelope (Ch);
          when NRx3 => -- FreqLo
             null;
+            Put_Line ("Write Freq Low (Old) - V:" & Value'Img & " NRx3" & Ch.IO.Space (NRx3)'Img &
+                        " NRx4" & Ch.IO.Space (NRx4)'Img & " Freq" & Ch.IO.Frequency'Img);
          when NRx4 =>
             --  Control/Trigger/FreqHi
             Trigger (Ch);
+            Put_Line ("Write Freq High (Old) - V:" & Value'Img & " NRx3" & Ch.IO.Space (NRx3)'Img &
+                        " NRx4" & Ch.IO.Space (NRx4)'Img & " Freq" & Ch.IO.Frequency'Img);
       end case;
    exception
       when E : others =>
@@ -91,6 +95,7 @@ package body Gade.Audio.Square.Plain is
    procedure Trigger (Ch : in out Plain_Square_Channel) is
    begin
       if Ch.IO.Trigger then
+         Put_Line ("Legacy Trigger");
          Set_Frequency (Ch, Ch.IO.Frequency);
          Trigger_Volume_Envelope (Ch);
          Set_Volume (Ch, Ch.Volume_Envelope.Start_Volume);
@@ -166,6 +171,9 @@ package body Gade.Audio.Square.Plain is
       Ch.Pulse_Cycles :=
         (Pulse_Low  => Period * Lo_Mult,
          Pulse_High => Period * Hi_Mult);
+
+      Put_Line ("Pulse Cycles Old:" & Ch.Pulse_Cycles (Pulse_Low)'Img & Ch.Pulse_Cycles (Pulse_High)'Img &
+                " Freq" & Freq'Img);
    end Set_Frequency;
 
    procedure Disable (Ch : in out Plain_Square_Channel) is

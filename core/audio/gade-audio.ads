@@ -2,6 +2,8 @@ with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 
 private package Gade.Audio is
 
+   package Test is end Test;
+
    ------- Should be somewhere else (Channel package?)
    type Channel_Register is (NRx0, NRx1, NRx2, NRx3, NRx4);
    type Register_Masks is array (Channel_Register'Range) of Byte;
@@ -52,45 +54,6 @@ private
    subtype Control_Address is Audio_IO_Address range 16#FF24# .. 16#FF26#;
 
    subtype Tick_Type is Natural range 0 .. 1;
-
-   type Timer is record
-      Initial   : Positive;
-      Remaining : Natural;
-      Tick      : Tick_Type;
-   end record;
-
-   procedure Setup (T : out Timer; Ticks : Positive := 1);
-   procedure Start (T : in out Timer);
-   procedure Reset (T : in out Timer);
-   procedure Stop (T : in out Timer);
-   procedure Tick (T : in out Timer);
-   function Has_Finished (T : Timer) return Boolean;
-
---     type Wave_Channel_Type is record
---        --  Need new Length Load type
---        Frequency          : Frequency_Type;
---        --  Need volume code
---        Trigger            : Boolean;
---        Length_Enable      : Boolean;
---     end record;
---     for Wave_Channel_Type use record
---        Frequency          at 3 range 0 .. 10;
---        Trigger            at 4 range 7 .. 7;
---        Length_Enable      at 4 range 6 .. 6;
---     end record;
---     for Wave_Channel_Type'Size use 40;
---
---     type Noise_Channel_Type is record
---        Length_Load        : Length_Load_Type;
---        Trigger            : Boolean;
---        Length_Enable      : Boolean;
---     end record;
---     for Noise_Channel_Type use record
---        Length_Load        at 1 range 0 .. 5;
---        Trigger            at 4 range 7 .. 7;
---        Length_Enable      at 4 range 6 .. 6;
---     end record;
---     for Noise_Channel_Type'Size use 40;
 
    type Audio_Access_Type is (Named, Address);
 
