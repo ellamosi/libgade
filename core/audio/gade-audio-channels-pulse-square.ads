@@ -64,9 +64,6 @@ private
    end record;
 
    overriding
-   procedure Trigger (Channel : in out Square_Channel);
-
-   overriding
    procedure Next_Sample_Level
      (Channel      : in out Square_Channel;
       Sample_Level : out Sample;

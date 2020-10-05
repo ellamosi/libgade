@@ -1,12 +1,10 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Exceptions; use Ada.Exceptions;
---  with Gade.Audio.Square.Plain; use Gade.Audio.Square.Plain;
---  with Gade.Audio.Square.Sweeping; use Gade.Audio.Square.Sweeping;
---  with Gade.Audio.Noise; use Gade.Audio.Noise;
 with Gade.Audio.Channels; use Gade.Audio.Channels;
 with Gade.Audio.Channels.Pulse; use Gade.Audio.Channels.Pulse;
 with Gade.Audio.Channels.Pulse.Noise; use Gade.Audio.Channels.Pulse.Noise;
 with Gade.Audio.Channels.Pulse.Square; use Gade.Audio.Channels.Pulse.Square;
+with Gade.Audio.Channels.Wave; use Gade.Audio.Channels.Wave;
 
 with Gade.Audio.Channels.Pulse.Square.Sweeping;
 use Gade.Audio.Channels.Pulse.Square.Sweeping;
@@ -17,7 +15,10 @@ package body Gade.Audio is
       --  Square_1 : Square_Channel;
       Square_1 : Sweeping_Square_Channel;
       Square_2 : Square_Channel;
-      Noise : Noise_Channel;
+      Wave     : Wave_Channel;
+      Noise    : Noise_Channel;
+
+      Wave_Table : aliased Wave_Table_IO;
 
       Elapsed_Cycles   : Natural;
       Frame_Seq_Step_Idx : Frame_Sequencer_Step_Index;
@@ -30,6 +31,7 @@ package body Gade.Audio is
    procedure Create (Audio : aliased out Audio_Type) is
    begin
       Audio := new Opaque_Audio_Type;
+      Audio.Wave.Set_Table (Audio.Wave_Table'Access);
    end Create;
 
    procedure Reset (Audio : in out Audio_Type) is
@@ -42,7 +44,10 @@ package body Gade.Audio is
 
       Reset (Audio.Square_1);
       Reset (Audio.Square_2);
+      Reset (Audio.Wave);
       Reset (Audio.Noise);
+
+      --  TODO: Initialize wave table pattern somehow
 --
 --        Audio.S1 := 0;
 --        Audio.S2 := 0;
@@ -69,15 +74,17 @@ package body Gade.Audio is
    begin
       Value := 16#FF#;
 
+      --  TODO: Use case expression
+
       case Address is
          when NR1_Address => Value := Audio.Square_1.Read (To_Channel_Register (Address));
          when NR2_Address => Value := Audio.Square_2.Read (To_Channel_Register (Address));
-         when NR3_Address => null;
+         when NR3_Address => Value := Audio.Wave.Read (To_Channel_Register (Address));
          when NR4_Address => Value := Audio.Noise.Read (To_Channel_Register (Address));
-         when Control_Address => null;
-         when others =>
-            --  TODO: Unused space and wave table
-            null;
+         when Control_Address => null; -- TODO
+         when Wave_Table_IO_Range => -- TODO consistent range names
+            Value := Audio.Wave_Table.Space (Address);
+         when others => null;
       end case;
    end Read;
 
@@ -90,12 +97,17 @@ package body Gade.Audio is
       case Address is
          when NR1_Address => Audio.Square_1.Write (To_Channel_Register (Address), Value);
          when NR2_Address => Audio.Square_2.Write (To_Channel_Register (Address), Value);
-         when NR3_Address => null;
+         when NR3_Address => Audio.Wave.Write (To_Channel_Register (Address), Value);
          when NR4_Address => Audio.Noise.Write (To_Channel_Register (Address), Value);
          when Control_Address => null;
-         when others =>
-            --  TODO: Unused space and wave table
-            null;
+         when Wave_Table_IO_Range =>
+            Audio.Wave_Table.Space (Address) := Value; -- TODO consistent range names
+--              if Address = Wave_Table_IO_Range'First then
+--                 Put_Line ("Write: " & Value'Img &
+--                           " Read 0:" & Audio.Wave_Table.Table (0)'Img &
+--                             " Read 1:" & Audio.Wave_Table.Table (1)'Img);
+--              end if;
+         when others => null;
       end case;
    end Write;
 
@@ -131,16 +143,18 @@ package body Gade.Audio is
    is
       Target_Cycles : constant Natural := Audio.Elapsed_Cycles + Cycles / 4;
 
-      S1, S2, S3, S_Out : Sample;
+      S1, S2, S3, S4, S_Out : Sample;
       --  Last_Index : constant Natural := Natural (Cycles) / 4 - 1;
    begin
       while Audio.Elapsed_Cycles < Target_Cycles loop
          S1 := 0;
          S2 := 0;
          S3 := 0;
+         S4 := 0;
          Step (Audio.Square_1, S1);
          Step (Audio.Square_2, S2);
-         Step (Audio.Noise, S3);
+         Step (Audio.Wave, S3);
+         Step (Audio.Noise, S4);
 
 --           if S1 /= Audio.S1 then
 --              Put_Line ("S:" & Audio.S1'Img & " C:" & Audio.S1C'Img);
@@ -160,7 +174,7 @@ package body Gade.Audio is
          Tick_Frame_Sequencer (Audio);
 
          --  Put_Line (S2'Img);
-         S_Out := (S1 + S2 + S3) * 8 * 32; -- Temporary master volume and dyn range adjustment
+         S_Out := (S1 + S2 + S3 + S4) * 8 * 32; -- Temporary master volume and dyn range adjustment
          Audio_Buffer (Audio.Elapsed_Cycles) := (S_Out, S_Out);
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;
       end loop;

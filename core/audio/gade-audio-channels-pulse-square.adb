@@ -10,13 +10,6 @@ package body Gade.Audio.Channels.Pulse.Square is
       Channel.NRx1 := 16#3F#;
    end Reset;
 
-   overriding
-   procedure Trigger (Channel : in out Square_Channel) is
-   begin
-      Pulse_Channel (Channel).Trigger;
-      Set_Frequency (Channel, Channel.Frequency_In.Frequency);
-   end Trigger;
-
    procedure Set_Frequency
      (Channel : in out Square_Channel;
       Freq    : Frequency_Type)
@@ -26,6 +19,9 @@ package body Gade.Audio.Channels.Pulse.Square is
       Channel.Pulse_Cycles :=
         (Pulse_Low  => Period * Lo_Duty_Sample_Multiplier (Channel.Duty),
          Pulse_High => Period * Hi_Duty_Sample_Multiplier (Channel.Duty));
+--        Put_Line ("Set_Frequency" &
+--                  Freq'Img & Channel.Pulse_Cycles (Pulse_Low)'Img &
+--                    Freq'Img & Channel.Pulse_Cycles (Pulse_High)'Img);
    end Set_Frequency;
 
    overriding
@@ -59,12 +55,14 @@ package body Gade.Audio.Channels.Pulse.Square is
    procedure Write_NRx3 (Channel : in out Square_Channel; Value : Byte) is
    begin
       Channel.Frequency_In.NRx3 := Value;
+      Set_Frequency (Channel, Channel.Frequency_In.Frequency);
    end Write_NRx3;
 
    overriding
    procedure Write_NRx4 (Channel : in out Square_Channel; Value : Byte) is
    begin
       Channel.Frequency_In.NRx4 := Value;
+      Set_Frequency (Channel, Channel.Frequency_In.Frequency);
       Pulse_Channel (Channel).Write_NRx4 (Value);
    end Write_NRx4;
 

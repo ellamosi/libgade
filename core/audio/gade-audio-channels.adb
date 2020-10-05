@@ -85,7 +85,10 @@ package body Gade.Audio.Channels is
       end Write_NRx1;
 
       overriding
-      procedure Write_NRx4 (Channel : in out Base_Audio_Channel; Value : Byte) is
+      procedure Write_NRx4
+        (Channel : in out Base_Audio_Channel;
+         Value   : Byte)
+      is
          NRx4_In : constant NRx4_Common_IO := To_NRx4_Common_IO (Value);
       begin
          if NRx4_In.Trigger then
