@@ -26,15 +26,15 @@ package body Gade.Audio.Channels.Wave is
       Level_Cycles : out Positive)
    is
       Table_Sample  : Wave_Sample;
-      Shifted_Sample : Sample;
    begin
       Table_Sample := Channel.Table.Table (Channel.Sample_Index);
-      Shifted_Sample := Sample (Table_Sample) * 2 ** Channel.Volume_Shift;
-      Sample_Level := Shifted_Sample mod 16;
+      Sample_Level := Sample (Table_Sample) / 2 ** Channel.Volume_Shift;
+      Sample_Level := Sample_Level * 2 - 15; -- TODO: Should not need this
       Level_Cycles := Channel.Sample_Time;
       Channel.Sample_Index := Channel.Sample_Index + 1;
    end Next_Sample_Level;
 
+   overriding
    procedure Set_Frequency
      (Channel : in out Wave_Channel;
       Freq    : Frequency_Type)
@@ -77,20 +77,5 @@ package body Gade.Audio.Channels.Wave is
       Channel.NRx2 := Value or NRx2_Volume_Mask;
       Channel.Volume_Shift := Volume_Shifts (NRx2_In.Volume);
    end Write_NRx2;
-
-   overriding
-   procedure Write_NRx3 (Channel : in out Wave_Channel; Value : Byte) is
-   begin
-      Channel.Frequency_In.NRx3 := Value;
-      Set_Frequency (Channel, Channel.Frequency_In.Frequency);
-   end Write_NRx3;
-
-   overriding
-   procedure Write_NRx4 (Channel : in out Wave_Channel; Value : Byte) is
-   begin
-      Channel.Frequency_In.NRx4 := Value;
-      Set_Frequency (Channel, Channel.Frequency_In.Frequency);
-      Base.Base_Audio_Channel (Channel).Write_NRx4 (Value);
-   end Write_NRx4;
 
 end Gade.Audio.Channels.Wave;

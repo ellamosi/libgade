@@ -10,6 +10,7 @@ package body Gade.Audio.Channels.Pulse.Square is
       Channel.NRx1 := 16#3F#;
    end Reset;
 
+   overriding
    procedure Set_Frequency
      (Channel : in out Square_Channel;
       Freq    : Frequency_Type)
@@ -50,20 +51,5 @@ package body Gade.Audio.Channels.Pulse.Square is
       Channel.NRx1 := Value or NRx1_Duty_Mask;
       Pulse_Channel (Channel).Write_NRx1 (Value);
    end Write_NRx1;
-
-   overriding
-   procedure Write_NRx3 (Channel : in out Square_Channel; Value : Byte) is
-   begin
-      Channel.Frequency_In.NRx3 := Value;
-      Set_Frequency (Channel, Channel.Frequency_In.Frequency);
-   end Write_NRx3;
-
-   overriding
-   procedure Write_NRx4 (Channel : in out Square_Channel; Value : Byte) is
-   begin
-      Channel.Frequency_In.NRx4 := Value;
-      Set_Frequency (Channel, Channel.Frequency_In.Frequency);
-      Pulse_Channel (Channel).Write_NRx4 (Value);
-   end Write_NRx4;
 
 end Gade.Audio.Channels.Pulse.Square;

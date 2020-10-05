@@ -52,10 +52,10 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
    overriding
    procedure Trigger (Channel : in out Sweeping_Square_Channel) is
    begin
-      Put_Line ("TRIGGER");
+      --  Put_Line ("TRIGGER");
       Square_Channel (Channel).Trigger;
       if Channel.Sweep_Shift > 0 then
-         Put_Line ("Sweep Triggered");
+         --  Put_Line ("Sweep Triggered");
          Setup (Channel.Sweep_Timer, Channel.Sweep_Period);
          Start (Channel.Sweep_Timer);
 

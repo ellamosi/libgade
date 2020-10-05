@@ -1,5 +1,6 @@
 with Ada.Unchecked_Conversion;
 with Gade.Audio.Timers; use Gade.Audio.Timers;
+with System;
 
 package Gade.Audio.Channels is
 
@@ -30,6 +31,10 @@ private
 
    Blank_Value : constant Byte := 16#FF#;
 
+   procedure Trigger (Channel : in out Audio_Channel) is null;
+
+   procedure Disable (Channel : in out Audio_Channel) is null;
+
    function Read_Blank (Channel : Audio_Channel) return Byte;
 
    function Read_NRx0 (Channel : Audio_Channel) return Byte renames Read_Blank;
@@ -44,6 +49,13 @@ private
    procedure Write_NRx3 (Channel : in out Audio_Channel; Value : Byte) is null;
    procedure Write_NRx4 (Channel : in out Audio_Channel; Value : Byte) is null;
 
+
+   type Effect_Period_IO is mod 2 ** 3;
+
+   Actual_Effect_Periods : constant array (Effect_Period_IO'Range)
+     of Positive := (8, 1, 2, 3, 4, 5, 6, 7);
+
+
    generic
       Length_Bits : Positive;
    package Base is
@@ -57,6 +69,7 @@ private
       overriding
       procedure Step (Channel : in out Base_Audio_Channel; S : out Sample);
 
+      overriding
       procedure Trigger (Channel : in out Base_Audio_Channel) is null;
 
       overriding
@@ -70,6 +83,7 @@ private
 
       function Enabled (Channel : Base_Audio_Channel) return Boolean;
 
+      overriding
       procedure Disable (Channel : in out Base_Audio_Channel);
 
       procedure Next_Sample_Level
@@ -119,9 +133,125 @@ private
 
    end Base;
 
-   type Effect_Period_IO is mod 2 ** 3;
+   generic
+      type Base_Channel is abstract new Audio_Channel with private;
+   package Frequency_Mixin is
 
-   Actual_Effect_Periods : constant array (Effect_Period_IO'Range) of Positive
-     := (8, 1, 2, 3, 4, 5, 6, 7);
+      Max_Period : constant := 2 ** 11;
+      type Frequency_Type is mod Max_Period;
+
+      --  TODO: Refactor sweep and make this private?
+      type Frequency_IO (Access_Type : Audio_Access_Type := Named) is record
+         case Access_Type is
+         when Named =>
+            Frequency : Frequency_Type;
+         when Address =>
+            NRx3, NRx4 : Byte;
+         end case;
+      end record with Unchecked_Union;
+      for Frequency_IO use record
+         Frequency at 0 range 0 .. 10;
+         NRx3      at 0 range 0 .. 7;
+         NRx4      at 1 range 0 .. 7;
+      end record;
+      for Frequency_IO'Scalar_Storage_Order use System.Low_Order_First;
+      for Frequency_IO'Size use Byte'Size * 2;
+
+      type Channel_With_Frequency is abstract new Base_Channel with record
+         Frequency_In : Frequency_IO;
+      end record;
+
+      procedure Set_Frequency
+        (Channel : in out Channel_With_Frequency;
+         Freq    : Frequency_Type) is abstract;
+
+      overriding
+      procedure Write_NRx3
+        (Channel : in out Channel_With_Frequency;
+         Value   : Byte);
+
+      overriding
+      procedure Write_NRx4
+        (Channel : in out Channel_With_Frequency;
+         Value   : Byte);
+
+   end Frequency_Mixin;
+
+   generic
+      type Base_Channel is abstract new Audio_Channel with private;
+   package Volume_Envelope_Mixin is
+
+      type Envelope_Volume is mod 2 ** 4;
+      type Envelope_Direction is (Down, Up);
+      for Envelope_Direction use (Down => 0, Up => 1);
+      subtype Envelope_Period is Effect_Period_IO;
+
+      Volume_Max_Level : constant := Envelope_Volume'Last;
+      Volume_Min_Level : constant := Envelope_Volume'First;
+
+
+      type NRx2_Volume_Envelope_IO is record
+         Volume    : Envelope_Volume;
+         Direction : Envelope_Direction;
+         Period    : Envelope_Period;
+      end record;
+      for NRx2_Volume_Envelope_IO use record
+         Volume    at 0 range 4 .. 7;
+         Direction at 0 range 3 .. 3;
+         Period    at 0 range 0 .. 2;
+      end record;
+      for NRx2_Volume_Envelope_IO'Size use Byte'Size;
+
+      function To_NRx2_Volume_Envelope_IO is new Ada.Unchecked_Conversion
+        (Source => Byte,
+         Target => NRx2_Volume_Envelope_IO);
+
+
+      Steps : constant array (Envelope_Direction) of Integer := (-1, 1);
+
+      type Volume_Envelope_Type is record
+         Current_Volume : Natural; --  Keep track of volume for stepping
+         Initial_Volume : Natural;
+         Step           : Integer;
+         Direction      : Envelope_Direction;
+         Period         : Positive;
+         Timer          : Repeatable_Timer;
+      end record;
+
+      function Enabled (Envelope : Volume_Envelope_Type) return Boolean;
+
+      procedure Disable (Envelope : in out Volume_Envelope_Type);
+
+      function Silent (Envelope : Volume_Envelope_Type) return Boolean;
+
+      type Channel_With_Volume_Envelope is abstract new Base_Channel with record
+         NRx2            : Byte;
+         Volume_Envelope : Volume_Envelope_Type;
+      end record;
+
+      overriding
+      procedure Trigger (Channel : in out Channel_With_Volume_Envelope);
+
+      overriding
+      procedure Disable (Channel : in out Channel_With_Volume_Envelope);
+
+      procedure Set_Volume
+        (Channel : in out Channel_With_Volume_Envelope;
+         Volume  : Natural) is abstract;
+
+      overriding
+      function Read_NRx2 (Channel : Channel_With_Volume_Envelope) return Byte;
+
+      overriding
+      procedure Write_NRx2
+        (Channel : in out Channel_With_Volume_Envelope;
+         Value   : Byte);
+
+   private
+
+      procedure Volume_Envelope_Step
+        (Channel : in out Channel_With_Volume_Envelope);
+
+   end Volume_Envelope_Mixin;
 
 end Gade.Audio.Channels;

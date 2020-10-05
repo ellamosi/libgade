@@ -1,5 +1,3 @@
-with System;
-
 package Gade.Audio.Channels.Pulse.Square is
 
    type Square_Channel is new Pulse_Channel with private;
@@ -35,30 +33,13 @@ private
    NRx1_Duty_Mask : constant Byte := 16#3F#;
    NRx1_Duty_Div : constant Byte := 2 ** 6;
 
-   Max_Period : constant := 2 ** 11;
-   type Frequency_Type is mod Max_Period;
 
-   type Frequency_IO (Access_Type : Audio_Access_Type := Named) is record
-      case Access_Type is
-         when Named =>
-            Frequency : Frequency_Type;
-         when Address =>
-            NRx3, NRx4 : Byte;
-      end case;
-   end record with Unchecked_Union;
-   for Frequency_IO use record
-      Frequency at 0 range 0 .. 10;
-      NRx3      at 0 range 0 .. 7;
-      NRx4      at 1 range 0 .. 7;
-   end record;
-   for Frequency_IO'Scalar_Storage_Order use System.Low_Order_First;
-   for Frequency_IO'Size use Byte'Size * 2;
+   package Frequency_Mixin is new Channels.Frequency_Mixin (Pulse_Channel);
+   use Frequency_Mixin;
 
-
-   type Square_Channel is new Pulse_Channel with record
+   type Square_Channel is new Channel_With_Frequency with record
       Pulse_Cycles : Pulse_Cycles_Type;
       Pulse_State  : Pulse_State_Type;
-      Frequency_In : Frequency_IO;
       Duty         : Duty_Type;
       NRx1         : Byte;
    end record;
@@ -76,11 +57,6 @@ private
    procedure Write_NRx1 (Channel : in out Square_Channel; Value : Byte);
 
    overriding
-   procedure Write_NRx3 (Channel : in out Square_Channel; Value : Byte);
-
-   overriding
-   procedure Write_NRx4 (Channel : in out Square_Channel; Value : Byte);
-
    procedure Set_Frequency
      (Channel : in out Square_Channel;
       Freq    : Frequency_Type);
