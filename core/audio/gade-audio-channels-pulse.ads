@@ -21,12 +21,17 @@ private
    Volume_Max_Level : constant := Envelope_Volume'Last;
    Volume_Min_Level : constant := Envelope_Volume'First;
 
+   Final_Edge_Volumes : constant array (Envelope_Direction) of Natural :=
+     (Down => Volume_Min_Level, Up => Volume_Max_Level);
+
    Steps : constant array (Envelope_Direction) of Integer := (-1, 1);
 
    type Pulse_State_Type is (Pulse_Low, Pulse_High);
 
    type Pulse_Levels_Type is array (Pulse_State_Type) of Sample;
 
+
+   NRx2_Volume_Envelope_Mask : constant Byte := 16#00#;
 
    type NRx2_Volume_Envelope_IO is record
       Volume    : Envelope_Volume;
@@ -50,15 +55,34 @@ private
       Initial_Volume : Natural;
       Step           : Integer;
       Direction      : Envelope_Direction;
-      Period         : Positive;
+      Period         : Envelope_Period;
       Timer          : Repeatable_Timer;
    end record;
+
+   procedure Setup
+     (Envelope  : in out Volume_Envelope_Type;
+      Volume    : Envelope_Volume;
+      Direction : Envelope_Direction;
+      Period    : Envelope_Period);
+
+   procedure Trigger (Envelope : in out Volume_Envelope_Type);
 
    function Enabled (Envelope : Volume_Envelope_Type) return Boolean;
 
    procedure Disable (Envelope : in out Volume_Envelope_Type);
 
    function Silent (Envelope : Volume_Envelope_Type) return Boolean;
+
+   procedure Step (Envelope : in out Volume_Envelope_Type);
+
+   function Edge_Volume (Volume : Natural) return Boolean;
+
+   function Final_Edge_Volume
+     (Volume    : Natural;
+      Direction : Envelope_Direction)
+      return Boolean;
+
+   function Current_Volume (Envelope : Volume_Envelope_Type) return Natural;
 
 
    package Base is new Channels.Base (Length_Bit_Size);
@@ -92,5 +116,7 @@ private
 
    overriding
    procedure Disable (Channel : in out Pulse_Channel);
+
+   procedure Update_Volume_Envelope (Channel : in out Pulse_Channel);
 
 end Gade.Audio.Channels.Pulse;

@@ -1,4 +1,7 @@
-package Gade.Audio.Timers is
+generic
+   type Observer_Type is abstract tagged private;
+   with procedure Finished (Observer : in out Observer_Type);
+package Gade.Audio.GenTimers is
 
    type Timer is tagged private;
 
@@ -10,10 +13,7 @@ package Gade.Audio.Timers is
 
    procedure Tick (T : in out Timer);
 
-   generic
-      type Observer_Type is abstract tagged private;
-      with procedure Finished (Observer : in out Observer_Type);
-   procedure Tick_Notify (T : in out Timer; Observer : in out Observer_Type);
+   procedure Tick (T : in out Timer; Observer : in out Observer_Type);
 
    function Has_Finished (T : Timer) return Boolean;
 
@@ -34,24 +34,17 @@ package Gade.Audio.Timers is
    overriding
    procedure Stop (T : in out Repeatable_Timer);
 
-   generic
-      type Observer_Type is abstract tagged private;
-      with procedure Finished (Observer : in out Observer_Type);
-   procedure Tick_Notify_Repeatable
-     (T        : in out Repeatable_Timer;
-      Observer : in out Observer_Type);
-
 private
 
    subtype Tick_Step_Type is Natural range 0 .. 1;
 
    type Timer is tagged record
       Remaining : Natural;
-      Step      : Tick_Step_Type;
+      Tick_Step : Tick_Step_Type;
    end record;
 
    type Repeatable_Timer is new Timer with record
       Initial : Positive;
    end record;
 
-end Gade.Audio.Timers;
+end Gade.Audio.GenTimers;

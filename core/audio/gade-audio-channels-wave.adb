@@ -29,7 +29,7 @@ package body Gade.Audio.Channels.Wave is
    begin
       Table_Sample := Channel.Table.Table (Channel.Sample_Index);
       Sample_Level := Sample (Table_Sample) / 2 ** Channel.Volume_Shift;
-      Sample_Level := Sample_Level * 2 - 15; -- TODO: Should not need this
+      Sample_Level := Sample_Level * 2; -- TODO: Should not need this
       Level_Cycles := Channel.Sample_Time;
       Channel.Sample_Index := Channel.Sample_Index + 1;
    end Next_Sample_Level;
@@ -40,7 +40,7 @@ package body Gade.Audio.Channels.Wave is
       Freq    : Frequency_Type)
    is
    begin
-      Channel.Sample_Time := Positive (Max_Period - Natural (Freq));
+      Channel.Sample_Time := Positive (Max_Period - Natural (Freq)) / 2;
    end Set_Frequency;
 
    overriding

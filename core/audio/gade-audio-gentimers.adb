@@ -1,4 +1,4 @@
-package body Gade.Audio.Timers is
+package body Gade.Audio.GenTimers is
 
    procedure Setup (T : out Timer) is
    begin
@@ -9,24 +9,24 @@ package body Gade.Audio.Timers is
    procedure Start (T : in out Timer'Class; Ticks : Positive) is
    begin
       T.Remaining := Ticks;
-      T.Step := 1;
+      T.Tick_Step := 1;
    end Start;
 
    procedure Stop (T : in out Timer) is
    begin
-      T.Step := 0;
+      T.Tick_Step := 0;
    end Stop;
 
    procedure Tick (T : in out Timer) is
    begin
-      T.Remaining := T.Remaining - T.Step;
+      T.Remaining := T.Remaining - T.Tick_Step;
    end Tick;
 
-   procedure Tick_Notify (T : in out Timer; Observer : in out Observer_Type) is
+   procedure Tick (T : in out Timer; Observer : in out Observer_Type) is
    begin
       Tick (T);
       if Has_Finished (T) then Finished (Observer); end if;
-   end Tick_Notify;
+   end Tick;
 
    --  TODO: Consistency in boolean naming
    function Has_Finished (T : Timer) return Boolean is
@@ -36,7 +36,7 @@ package body Gade.Audio.Timers is
 
    function Enabled (T : Timer) return Boolean is
    begin
-      return T.Step /= 0;
+      return T.Tick_Step /= 0;
    end Enabled;
 
    overriding
@@ -54,7 +54,7 @@ package body Gade.Audio.Timers is
    procedure Start (T : in out Repeatable_Timer) is
    begin
       T.Remaining := T.Initial;
-      T.Step := 1;
+      T.Tick_Step := 1;
    end Start;
 
    procedure Reset (T : in out Repeatable_Timer) is
@@ -71,16 +71,4 @@ package body Gade.Audio.Timers is
       Reset (T);
    end Stop;
 
-   procedure Tick_Notify_Repeatable
-     (T        : in out Repeatable_Timer;
-      Observer : in out Observer_Type)
-   is
-      procedure Tick_Notify_Non_Repeatable is new Tick_Notify
-        (Observer_Type, Finished);
-   begin
-      --  This method could very well be inherited, but there are some
-      --  limitations when using generic procedures that prevent that.
-      Tick_Notify_Non_Repeatable (Timer (T), Observer);
-   end Tick_Notify_Repeatable;
-
-end Gade.Audio.Timers;
+end Gade.Audio.GenTimers;

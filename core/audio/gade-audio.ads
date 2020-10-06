@@ -53,8 +53,6 @@ private
    subtype NR4_Address is Audio_IO_Address range 16#FF1F# .. 16#FF23#;
    subtype Control_Address is Audio_IO_Address range 16#FF24# .. 16#FF26#;
 
-   subtype Tick_Type is Natural range 0 .. 1;
-
    type Audio_Access_Type is (Named, Address);
 
    --  The Frame sequencer triggers the volume envelope tick at 64 Hz

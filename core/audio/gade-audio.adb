@@ -72,20 +72,22 @@ package body Gade.Audio is
       Value   : out Byte)
    is
    begin
-      Value := 16#FF#;
-
-      --  TODO: Use case expression
-
-      case Address is
-         when NR1_Address => Value := Audio.Square_1.Read (To_Channel_Register (Address));
-         when NR2_Address => Value := Audio.Square_2.Read (To_Channel_Register (Address));
-         when NR3_Address => Value := Audio.Wave.Read (To_Channel_Register (Address));
-         when NR4_Address => Value := Audio.Noise.Read (To_Channel_Register (Address));
-         when Control_Address => null; -- TODO
-         when Wave_Table_IO_Range => -- TODO consistent range names
-            Value := Audio.Wave_Table.Space (Address);
-         when others => null;
-      end case;
+      Value :=
+        (case Address is
+            when NR1_Address =>
+              Audio.Square_1.Read (To_Channel_Register (Address)),
+            when NR2_Address =>
+              Audio.Square_2.Read (To_Channel_Register (Address)),
+            when NR3_Address =>
+              Audio.Wave.Read (To_Channel_Register (Address)),
+            when NR4_Address =>
+              Audio.Noise.Read (To_Channel_Register (Address)),
+            when Control_Address =>
+              Blank_Value, -- TODO
+            when Wave_Table_IO_Range => -- TODO consistent range names
+              Audio.Wave_Table.Space (Address),
+            when others =>
+              Blank_Value);
    end Read;
 
    procedure Write
@@ -95,11 +97,16 @@ package body Gade.Audio is
    is
    begin
       case Address is
-         when NR1_Address => Audio.Square_1.Write (To_Channel_Register (Address), Value);
-         when NR2_Address => Audio.Square_2.Write (To_Channel_Register (Address), Value);
-         when NR3_Address => Audio.Wave.Write (To_Channel_Register (Address), Value);
-         when NR4_Address => Audio.Noise.Write (To_Channel_Register (Address), Value);
-         when Control_Address => null;
+         when NR1_Address =>
+            Audio.Square_1.Write (To_Channel_Register (Address), Value);
+         when NR2_Address =>
+            Audio.Square_2.Write (To_Channel_Register (Address), Value);
+         when NR3_Address =>
+            Audio.Wave.Write (To_Channel_Register (Address), Value);
+         when NR4_Address =>
+            Audio.Noise.Write (To_Channel_Register (Address), Value);
+         when Control_Address =>
+            null;
          when Wave_Table_IO_Range =>
             Audio.Wave_Table.Space (Address) := Value; -- TODO consistent range names
 --              if Address = Wave_Table_IO_Range'First then

@@ -1,4 +1,4 @@
---  with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Audio.Channels.Pulse is
 
@@ -11,6 +11,7 @@ package body Gade.Audio.Channels.Pulse is
       Channel.Pulse_Levels := (0, 0);
       Setup (Envelope.Timer);
       Envelope.Step := 0;
+      Envelope.Period := 0;
       Envelope.Current_Volume := 0;
       Envelope.Initial_Volume := 0;
       Envelope.Direction := Down;
@@ -24,49 +25,32 @@ package body Gade.Audio.Channels.Pulse is
 
    overriding
    procedure Write_NRx2 (Channel : in out Pulse_Channel; Value : Byte) is
-      Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
-
       NRx2_In : constant NRx2_Volume_Envelope_IO :=
         To_NRx2_Volume_Envelope_IO (Value);
-      Volume : constant Natural := Natural (NRx2_In.Volume);
-
-      Period : Natural;
    begin
-      Envelope.Initial_Volume := Volume;
-      Envelope.Direction      := NRx2_In.Direction;
-      --  Envelope.Period         := Actual_Effect_Periods (NRx2_In.Period);
-      Period         := Natural (NRx2_In.Period);
+      Channel.NRx2 := Value or NRx2_Volume_Envelope_Mask;
 
-      if Period > 0 then
-         Envelope.Period := Period;
-      --  if Envelope.Period > 0 then
-         --  TODO: Treat 0 period as 8
-         Setup (Envelope.Timer, Envelope.Period);
-
-         --  TODO: Make this more readable, shouldn't require nesting
-         if ((Volume /= Volume_Min_Level and Envelope.Direction = Down) or
-             (Volume /= Volume_Max_Level and Envelope.Direction = Up))
-         then
-            Start (Envelope.Timer);
-            Envelope.Step := Steps (Envelope.Direction);
-         end if;
-      else
-         Stop (Envelope.Timer);
-      end if;
+      Setup
+        (Channel.Volume_Envelope,
+         Volume    => NRx2_In.Volume,
+         Direction => NRx2_In.Direction,
+         Period    => NRx2_In.Period);
    end Write_NRx2;
 
    overriding
    procedure Trigger (Channel : in out Pulse_Channel) is
       Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
    begin
-      --  Base.Base_Audio_Channel (Ch).Trigger;
-      Set_Volume (Channel, Envelope.Initial_Volume);
-      Reset (Envelope.Timer);
+      Base.Base_Audio_Channel (Channel).Trigger;
+
+      Trigger (Envelope);
       if Silent (Envelope) then
          --  Disable the channel altogether for better performance, which is
          --  probably incorrect as writing the volume can have side effects
          --  without re-triggering the channel. Deal with that later.
          Pulse_Channel'Class (Channel).Disable;
+      else
+         Set_Volume (Channel, Envelope.Current_Volume);
       end if;
    end Trigger;
 
@@ -78,28 +62,30 @@ package body Gade.Audio.Channels.Pulse is
       Channel.Pulse_Levels := (-Volume_Sample, Volume_Sample);
    end Set_Volume;
 
-   procedure Volume_Envelope_Step (Channel : in out Pulse_Channel) is
+   procedure Update_Volume_Envelope (Channel : in out Pulse_Channel) is
       Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
-
-      New_Volume : Natural;
    begin
-      Tick (Envelope.Timer);
-      if Has_Finished (Envelope.Timer) then
-         New_Volume := Envelope.Current_Volume + Envelope.Step;
-         --  Put_Line ("New Envelope Volume" & New_Volume'Img);
-         if New_Volume = Volume_Max_Level then
-            Set_Volume (Channel, New_Volume);
-            Stop (Envelope.Timer);
-         elsif New_Volume = Volume_Min_Level then
-            --  Disable the channel altogether for better performance, which is
-            --  probably incorrect as writing the volume can have side effects
-            --  without re-triggering the channel. Deal with that later.
-            Pulse_Channel'Class (Channel).Disable;
-         else
-            Set_Volume (Channel, New_Volume);
-            Reset (Envelope.Timer);
-         end if;
+      Step (Envelope);
+
+      if Envelope.Current_Volume = Volume_Min_Level then
+         Put_Line ("Envelope ended at MIN: Disabling Channel");
+         --  Disable the channel altogether for better performance, which is
+         --  probably incorrect as writing the volume can have side effects
+         --  without re-triggering the channel. Deal with that later.
+         Pulse_Channel'Class (Channel).Disable;
+      else
+         Set_Volume (Channel, Envelope.Current_Volume);
       end if;
+   end Update_Volume_Envelope;
+
+   --  TODO: Call this Tick, reserve step for when timer actually fires
+   procedure Volume_Envelope_Step (Channel : in out Pulse_Channel) is
+      procedure Tick_Notify_Volume_Envelope_Update is new Tick_Notify_Repeatable
+        (Observer_Type => Pulse_Channel,
+         Finished      => Update_Volume_Envelope);
+   begin
+      Tick_Notify_Volume_Envelope_Update
+        (Channel.Volume_Envelope.Timer, Channel);
    end Volume_Envelope_Step;
 
    overriding
@@ -109,6 +95,35 @@ package body Gade.Audio.Channels.Pulse is
       Channel.Set_Volume (0);
       Disable (Channel.Volume_Envelope);
    end Disable;
+
+   procedure Setup
+     (Envelope  : in out Volume_Envelope_Type;
+      Volume    : Envelope_Volume;
+      Direction : Envelope_Direction;
+      Period    : Envelope_Period)
+   is
+   begin
+      Envelope.Initial_Volume := Natural (Volume);
+      Envelope.Direction      := Direction;
+      Envelope.Step           := Steps (Envelope.Direction);
+      Envelope.Period         := Period;
+
+--        Put_Line ("Setting up envelope (Direction: " & Direction'Img &
+--                    " Period:" & Envelope.Period'Img & " Initial" & Volume'Img &
+--                    " Step:" & Envelope.Step'Img & ")");
+   end Setup;
+
+   procedure Trigger (Envelope : in out Volume_Envelope_Type) is
+      Volume : constant Natural := Envelope.Initial_Volume;
+   begin
+      Envelope.Current_Volume := Volume;
+      if Final_Edge_Volume (Volume, Envelope.Direction) or Envelope.Period /= 0
+      then
+         Start (Envelope.Timer, Actual_Effect_Periods (Envelope.Period));
+      else
+         Stop (Envelope.Timer);
+      end if;
+   end Trigger;
 
    function Enabled (Envelope : Volume_Envelope_Type) return Boolean is
    begin
@@ -126,5 +141,34 @@ package body Gade.Audio.Channels.Pulse is
         Envelope.Current_Volume = Volume_Min_Level and
         (not Enabled (Envelope.Timer) or Envelope.Direction = Down);
    end Silent;
+
+   procedure Step (Envelope : in out Volume_Envelope_Type) is
+   begin
+      Envelope.Current_Volume := Envelope.Current_Volume + Envelope.Step;
+      if Edge_Volume (Envelope.Current_Volume) then
+         Disable (Envelope);
+      else
+         Start (Envelope.Timer, Actual_Effect_Periods (Envelope.Period));
+      end if;
+   end Step;
+
+   function Edge_Volume (Volume : Natural) return Boolean is
+   begin
+      return Volume = Volume_Max_Level or Volume = Volume_Min_Level;
+   end Edge_Volume;
+
+   function Final_Edge_Volume
+     (Volume    : Natural;
+      Direction : Envelope_Direction)
+      return Boolean
+   is
+   begin
+      return Final_Edge_Volumes (Direction) = Volume;
+   end Final_Edge_Volume;
+
+   function Current_Volume (Envelope : Volume_Envelope_Type) return Natural is
+   begin
+      return Envelope.Current_Volume;
+   end Current_Volume;
 
 end Gade.Audio.Channels.Pulse;

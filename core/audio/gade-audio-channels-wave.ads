@@ -39,7 +39,7 @@ private
 
    type Wave_Sample_Index is mod 2 ** 5;
 
-   type Wave_Table is array (Wave_Sample_Index'Range) of Wave_Sample;
+   type Wave_Table is array (Wave_Sample_Index) of Wave_Sample;
    pragma Pack (Wave_Table);
    for Wave_Table'Scalar_Storage_Order use System.High_Order_First;
    --  Bytes contain the first sample in the higher bits, last sample in the
@@ -84,7 +84,7 @@ private
       Half    => 2#10#,
       Quarter => 2#11#);
 
-   Volume_Shifts : constant array (Volume_Type'Range) of Natural :=
+   Volume_Shifts : constant array (Volume_Type) of Natural :=
      (None    => 4,
       Full    => 0,
       Half    => 1,
