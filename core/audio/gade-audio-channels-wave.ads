@@ -53,27 +53,6 @@ private
 
    Length_Bit_Size : constant := 8;
 
---     --  TODO: Consider a way to compose frequency definitions/set_frequency with
---     --  square channel. NRx3/NRx4 read/writes too.
---     Max_Period : constant := 2 ** 11;
---     type Frequency_Type is mod Max_Period;
---
---     type Frequency_IO (Access_Type : Audio_Access_Type := Named) is record
---        case Access_Type is
---           when Named =>
---              Frequency : Frequency_Type;
---           when Address =>
---              NRx3, NRx4 : Byte;
---        end case;
---     end record with Unchecked_Union;
---     for Frequency_IO use record
---        Frequency at 0 range 0 .. 10;
---        NRx3      at 0 range 0 .. 7;
---        NRx4      at 1 range 0 .. 7;
---     end record;
---     for Frequency_IO'Scalar_Storage_Order use System.Low_Order_First;
---     for Frequency_IO'Size use Byte'Size * 2;
-
 
    NRx2_Volume_Mask : constant Byte := 16#9F#;
 
