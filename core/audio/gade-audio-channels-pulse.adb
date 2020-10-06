@@ -62,7 +62,7 @@ package body Gade.Audio.Channels.Pulse is
       Channel.Pulse_Levels := (-Volume_Sample, Volume_Sample);
    end Set_Volume;
 
-   procedure Update_Volume_Envelope (Channel : in out Pulse_Channel) is
+   procedure Step_Volume_Envelope (Channel : in out Pulse_Channel) is
       Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
    begin
       Step (Envelope);
@@ -76,17 +76,15 @@ package body Gade.Audio.Channels.Pulse is
       else
          Set_Volume (Channel, Envelope.Current_Volume);
       end if;
-   end Update_Volume_Envelope;
+   end Step_Volume_Envelope;
 
-   --  TODO: Call this Tick, reserve step for when timer actually fires
-   procedure Volume_Envelope_Step (Channel : in out Pulse_Channel) is
-      procedure Tick_Notify_Volume_Envelope_Update is new Tick_Notify_Repeatable
+   procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel) is
+      procedure Tick_Notify_Volume_Envelope_Step is new Tick_Notify_Repeatable
         (Observer_Type => Pulse_Channel,
-         Finished      => Update_Volume_Envelope);
+         Finished      => Step_Volume_Envelope);
    begin
-      Tick_Notify_Volume_Envelope_Update
-        (Channel.Volume_Envelope.Timer, Channel);
-   end Volume_Envelope_Step;
+      Tick_Notify_Volume_Envelope_Step (Channel.Volume_Envelope.Timer, Channel);
+   end Tick_Volume_Envelope;
 
    overriding
    procedure Disable (Channel : in out Pulse_Channel) is
@@ -107,7 +105,6 @@ package body Gade.Audio.Channels.Pulse is
       Envelope.Direction      := Direction;
       Envelope.Step           := Steps (Envelope.Direction);
       Envelope.Period         := Period;
-
 --        Put_Line ("Setting up envelope (Direction: " & Direction'Img &
 --                    " Period:" & Envelope.Period'Img & " Initial" & Volume'Img &
 --                    " Step:" & Envelope.Step'Img & ")");

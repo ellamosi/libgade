@@ -11,8 +11,11 @@ use Gade.Audio.Channels.Pulse.Square.Sweeping;
 
 package body Gade.Audio is
 
+   function To_Channel_Register
+     (Address : Audio_IO_Address)
+      return Channel_Register;
+
    type Opaque_Audio_Type is record
-      --  Square_1 : Square_Channel;
       Square_1 : Sweeping_Square_Channel;
       Square_2 : Square_Channel;
       Wave     : Wave_Channel;
@@ -23,9 +26,6 @@ package body Gade.Audio is
       Elapsed_Cycles   : Natural;
       Frame_Seq_Step_Idx : Frame_Sequencer_Step_Index;
       Rem_Frame_Seq_Ticks : Natural;
---
---        S1, S2 : Sample;
---        S1C, S2C : Natural;
    end record;
 
    procedure Create (Audio : aliased out Audio_Type) is
@@ -48,11 +48,6 @@ package body Gade.Audio is
       Reset (Audio.Noise);
 
       --  TODO: Initialize wave table pattern somehow
---
---        Audio.S1 := 0;
---        Audio.S2 := 0;
---        Audio.S1C := 0;
---        Audio.S2C := 0;
    end Reset;
 
    function To_Channel_Register
@@ -109,11 +104,6 @@ package body Gade.Audio is
             null;
          when Wave_Table_IO_Range =>
             Audio.Wave_Table.Space (Address) := Value; -- TODO consistent range names
---              if Address = Wave_Table_IO_Range'First then
---                 Put_Line ("Write: " & Value'Img &
---                           " Read 0:" & Audio.Wave_Table.Table (0)'Img &
---                             " Read 1:" & Audio.Wave_Table.Table (1)'Img);
---              end if;
          when others => null;
       end case;
    end Write;
@@ -125,18 +115,18 @@ package body Gade.Audio is
          Audio.Frame_Seq_Step_Idx := Audio.Frame_Seq_Step_Idx + 1;
          case Frame_Sequencer_Steps (Audio.Frame_Seq_Step_Idx) is
             when Length_Counter =>
-               Length_Step (Audio.Square_1);
-               Length_Step (Audio.Square_2);
-               Length_Step (Audio.Noise);
+               Tick_Length (Audio.Square_1);
+               Tick_Length (Audio.Square_2);
+               Tick_Length (Audio.Noise);
             when Length_Counter_Frequency_Sweep =>
-               Length_Step (Audio.Square_1);
-               Length_Step (Audio.Square_2);
-               Length_Step (Audio.Noise);
-               Frequency_Sweep_Step (Audio.Square_1);
+               Tick_Length (Audio.Square_1);
+               Tick_Length (Audio.Square_2);
+               Tick_Length (Audio.Noise);
+               Tick_Frequency_Sweep (Audio.Square_1);
             when Volume_Envelope => null;
-               Volume_Envelope_Step (Audio.Square_1);
-               Volume_Envelope_Step (Audio.Square_2);
-               Volume_Envelope_Step (Audio.Noise);
+               Tick_Volume_Envelope (Audio.Square_1);
+               Tick_Volume_Envelope (Audio.Square_2);
+               Tick_Volume_Envelope (Audio.Noise);
             when None => null;
          end case;
          Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
@@ -151,36 +141,19 @@ package body Gade.Audio is
       Target_Cycles : constant Natural := Audio.Elapsed_Cycles + Cycles / 4;
 
       S1, S2, S3, S4, S_Out : Sample;
-      --  Last_Index : constant Natural := Natural (Cycles) / 4 - 1;
    begin
       while Audio.Elapsed_Cycles < Target_Cycles loop
          S1 := 0;
          S2 := 0;
          S3 := 0;
          S4 := 0;
-         Step (Audio.Square_1, S1);
-         Step (Audio.Square_2, S2);
-         Step (Audio.Wave, S3);
-         Step (Audio.Noise, S4);
-
---           if S1 /= Audio.S1 then
---              Put_Line ("S:" & Audio.S1'Img & " C:" & Audio.S1C'Img);
---              if Audio.S1C /= Audio.S2C then
---                 Put_Line ("!!!!!!!!!! WARNING COUNT CHANGE !!!!!!!!!!" & Audio.S1C'Img & Audio.S2C'Img);
---              end if;
---              Audio.S1 := S1;
---              Audio.S2C := Audio.S1C;
---              Audio.S1C := 0;
---              --  Get_Immediate (c);
---           end if;
---
---           Audio.S1C := Audio.S1C + 1;
-         --  S2 := 0;
-         --  Step (Audio.Noise, S3);
+         Next_Sample (Audio.Square_1, S1);
+         Next_Sample (Audio.Square_2, S2);
+         Next_Sample (Audio.Wave, S3);
+         Next_Sample (Audio.Noise, S4);
 
          Tick_Frame_Sequencer (Audio);
 
-         --  Put_Line (S2'Img);
          S_Out := (S1 + S2 + S3 + S4) * 8 * 32; -- Temporary master volume and dyn range adjustment
          Audio_Buffer (Audio.Elapsed_Cycles) := (S_Out, S_Out);
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;

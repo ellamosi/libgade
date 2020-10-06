@@ -47,7 +47,7 @@ package body Gade.Audio.Channels is
       end Reset;
 
       overriding
-      procedure Step (Channel : in out Base_Audio_Channel; S : out Sample) is
+      procedure Next_Sample (Channel : in out Base_Audio_Channel; S : out Sample) is
          New_Sample_Level : Sample;
          New_Level_Time   : Positive;
       begin
@@ -63,7 +63,7 @@ package body Gade.Audio.Channels is
                Start (Channel.Sample_Timer, New_Level_Time);
             end if;
          end if;
-      end Step;
+      end Next_Sample;
 
       overriding
       function Read_NRx4 (Channel : Base_Audio_Channel) return Byte is
@@ -128,14 +128,19 @@ package body Gade.Audio.Channels is
          Stop (Channel.Sample_Timer);
       end Disable;
 
-      overriding
-      procedure Length_Step (Channel : in out Base_Audio_Channel) is
+      procedure Step_Length (Channel : in out Base_Audio_Channel) is
       begin
-         Tick (Channel.Length_Timer);
-         if Has_Finished (Channel.Length_Timer) then
-            Base_Audio_Channel'Class (Channel).Disable;
-         end if;
-      end Length_Step;
+         Base_Audio_Channel'Class (Channel).Disable;
+      end Step_Length;
+
+      overriding
+      procedure Tick_Length (Channel : in out Base_Audio_Channel) is
+         procedure Tick_Notify_Length_Step is new Tick_Notify_Repeatable
+           (Observer_Type => Base_Audio_Channel,
+            Finished      => Step_Length);
+      begin
+         Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
+      end Tick_Length;
 
    end Base;
 

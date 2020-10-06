@@ -10,7 +10,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       Setup (Channel.Sweep_Timer);
    end Reset;
 
-   procedure Frequency_Sweep_Shift (Channel : in out Sweeping_Square_Channel) is
+   procedure Step_Frequency_Sweep (Channel : in out Sweeping_Square_Channel) is
       New_Freq : Frequency_Type;
       Shifted : Integer;
       Out_Of_Range : Boolean;
@@ -39,15 +39,15 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
          Put_Line ("Sweep New Freq:" & New_Freq'Img);
          Channel.Set_Frequency (New_Freq);
       end if;
-   end Frequency_Sweep_Shift;
+   end Step_Frequency_Sweep;
 
-   procedure Frequency_Sweep_Step (Channel : in out Sweeping_Square_Channel) is
+   procedure Tick_Frequency_Sweep (Channel : in out Sweeping_Square_Channel) is
+      procedure Tick_Notify_Frequency_Sweep_Step is new Tick_Notify_Repeatable
+        (Observer_Type => Sweeping_Square_Channel,
+         Finished      => Step_Frequency_Sweep);
    begin
-      Tick (Channel.Sweep_Timer);
-      if Has_Finished (Channel.Sweep_Timer) then
-         Frequency_Sweep_Shift (Channel);
-      end if;
-   end Frequency_Sweep_Step;
+      Tick_Notify_Frequency_Sweep_Step (Channel.Sweep_Timer, Channel);
+   end Tick_Frequency_Sweep;
 
    overriding
    procedure Trigger (Channel : in out Sweeping_Square_Channel) is

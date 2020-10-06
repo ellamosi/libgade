@@ -5,7 +5,7 @@ package Gade.Audio.Channels.Pulse.Square.Sweeping is
    overriding
    procedure Reset (Channel : out Sweeping_Square_Channel);
 
-   procedure Frequency_Sweep_Step (Channel : in out Sweeping_Square_Channel);
+   procedure Tick_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
 
 private
 
@@ -44,7 +44,7 @@ private
    overriding
    procedure Trigger (Channel : in out Sweeping_Square_Channel);
 
-   procedure Frequency_Sweep_Shift (Channel : in out Sweeping_Square_Channel);
+   procedure Step_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
 
    overriding
    procedure Disable (Channel : in out Sweeping_Square_Channel);

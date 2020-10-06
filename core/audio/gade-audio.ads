@@ -2,12 +2,6 @@ with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 
 private package Gade.Audio is
 
-   package Test is end Test;
-
-   ------- Should be somewhere else (Channel package?)
-   type Channel_Register is (NRx0, NRx1, NRx2, NRx3, NRx4);
-   type Register_Masks is array (Channel_Register'Range) of Byte;
-
    subtype Audio_IO_Address is Word range 16#FF10# .. 16#FF3F#;
 
    type Audio_Type is private;
@@ -45,7 +39,6 @@ private
    type Channel is (NR1, NR2, NR3, NR4);
 
    Channel_Count : constant := Channel'Range_Length;
-   Channel_Register_Count : constant := Channel_Register'Range_Length;
 
    subtype NR1_Address is Audio_IO_Address range 16#FF10# .. 16#FF14#;
    subtype NR2_Address is Audio_IO_Address range 16#FF15# .. 16#FF19#;
@@ -81,10 +74,6 @@ private
         Volume_Envelope);
 
    procedure Tick_Frame_Sequencer (Audio : in out Audio_Type);
-
-   function To_Channel_Register
-     (Address : Audio_IO_Address)
-      return Channel_Register;
 
    type Opaque_Audio_Type;
    type Audio_Type is access Opaque_Audio_Type;

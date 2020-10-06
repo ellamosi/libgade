@@ -4,7 +4,8 @@ with System;
 
 package Gade.Audio.Channels is
 
-   --  type Channel_Register is (NRx0, NRx1, NRx2, NRx3, NRx4);
+   type Channel_Register is (NRx0, NRx1, NRx2, NRx3, NRx4);
+   Channel_Register_Count : constant := Channel_Register'Range_Length;
 
    type Audio_Channel is abstract tagged private;
 
@@ -20,9 +21,11 @@ package Gade.Audio.Channels is
       Register : Channel_Register;
       Value    : Byte);
 
-   procedure Step (Channel : in out Audio_Channel; S : out Sample) is abstract;
+   procedure Next_Sample
+     (Channel : in out Audio_Channel;
+      S       : out Sample) is abstract;
 
-   procedure Length_Step (Channel : in out Audio_Channel) is abstract;
+   procedure Tick_Length (Channel : in out Audio_Channel) is abstract;
 
 private
 
@@ -67,7 +70,9 @@ private
       procedure Reset (Channel : out Base_Audio_Channel);
 
       overriding
-      procedure Step (Channel : in out Base_Audio_Channel; S : out Sample);
+      procedure Next_Sample
+        (Channel : in out Base_Audio_Channel;
+         S       : out Sample);
 
       overriding
       procedure Trigger (Channel : in out Base_Audio_Channel) is null;
@@ -92,7 +97,7 @@ private
          Level_Cycles : out Positive) is abstract;
 
       overriding
-      procedure Length_Step (Channel : in out Base_Audio_Channel);
+      procedure Tick_Length (Channel : in out Base_Audio_Channel);
 
    private
 
@@ -130,6 +135,8 @@ private
 
       procedure Reload_Length (Channel : in out Base_Audio_Channel;
                                Length  : Natural);
+
+      procedure Step_Length (Channel : in out Base_Audio_Channel);
 
    end Base;
 
