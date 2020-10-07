@@ -25,6 +25,10 @@ package Gade.Audio.Channels is
      (Channel : in out Audio_Channel;
       S       : out Sample) is abstract;
 
+   procedure Disable (Channel : in out Audio_Channel) is null;
+
+   function Length_Enabled (Ch : Audio_Channel) return Boolean is abstract;
+
    procedure Tick_Length (Channel : in out Audio_Channel) is abstract;
 
 private
@@ -35,8 +39,6 @@ private
    Blank_Value : constant Byte := 16#FF#;
 
    procedure Trigger (Channel : in out Audio_Channel) is null;
-
-   procedure Disable (Channel : in out Audio_Channel) is null;
 
    function Read_Blank (Channel : Audio_Channel) return Byte;
 
@@ -91,6 +93,9 @@ private
       overriding
       procedure Disable (Channel : in out Base_Audio_Channel);
 
+      overriding
+      function Length_Enabled (Channel : Base_Audio_Channel) return Boolean;
+
       procedure Next_Sample_Level
         (Channel      : in out Base_Audio_Channel;
          Sample_Level : out Sample;
@@ -129,6 +134,8 @@ private
                                  --  Probably yes, as it can be enabled without using the length timer.
                                  --  Could use the Sample timer to derive it, though
          Length_Timer : Repeatable_Timer;
+         Length_Enabled : Boolean;
+         Length       : Natural;
          Sample_Timer : Timer;
          Level        : Sample;
       end record;

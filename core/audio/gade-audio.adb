@@ -1,4 +1,5 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Ada.Exceptions; use Ada.Exceptions;
 with Gade.Audio.Channels; use Gade.Audio.Channels;
 with Gade.Audio.Channels.Pulse; use Gade.Audio.Channels.Pulse;
@@ -21,11 +22,16 @@ package body Gade.Audio is
       Wave     : Wave_Channel;
       Noise    : Noise_Channel;
 
+      Output_Control : Channel_Output_Control;
+      Volume_Control : Output_Volume_Control;
+      Power_Control  : Power_Control_Status;
+
       Wave_Table : aliased Wave_Table_IO;
 
       Elapsed_Cycles   : Natural;
       Frame_Seq_Step_Idx : Frame_Sequencer_Step_Index;
       Rem_Frame_Seq_Ticks : Natural;
+      Powered : Boolean;
    end record;
 
    procedure Create (Audio : aliased out Audio_Type) is
@@ -47,6 +53,8 @@ package body Gade.Audio is
       Reset (Audio.Wave);
       Reset (Audio.Noise);
 
+      Audio.Powered := True;
+
       --  TODO: Initialize wave table pattern somehow
    end Reset;
 
@@ -67,22 +75,35 @@ package body Gade.Audio is
       Value   : out Byte)
    is
    begin
+--        if not Audio.Powered and
+--          Address not in Power_Control_Status_IO_Address and
+--          Address not in Wave_Table_IO_Address
+--        then Value := Blank_Value; return; end if;
       Value :=
         (case Address is
-            when NR1_Address =>
+            when NR1_IO_Address =>
               Audio.Square_1.Read (To_Channel_Register (Address)),
-            when NR2_Address =>
+            when NR2_IO_Address =>
               Audio.Square_2.Read (To_Channel_Register (Address)),
-            when NR3_Address =>
+            when NR3_IO_Address =>
               Audio.Wave.Read (To_Channel_Register (Address)),
-            when NR4_Address =>
+            when NR4_IO_Address =>
               Audio.Noise.Read (To_Channel_Register (Address)),
-            when Control_Address =>
-              Blank_Value, -- TODO
-            when Wave_Table_IO_Range => -- TODO consistent range names
+            when Output_Volume_Control_IO_Address =>
+              Audio.Volume_Control.Space,
+            when Channel_Output_Control_IO_Address =>
+              Audio.Output_Control.Space,
+            when Power_Control_Status_IO_Address =>
+              Read_Power_Control_Status (Audio),
+            when Wave_Table_IO_Address => -- TODO consistent range names
               Audio.Wave_Table.Space (Address),
             when others =>
               Blank_Value);
+      Put ("Read @");
+      Put (Integer (Address), Base => 16, Width => 0);
+      Put (' ');
+      Put (Integer (Value), Base => 16, Width => 0);
+      New_Line;
    end Read;
 
    procedure Write
@@ -91,18 +112,34 @@ package body Gade.Audio is
       Value   : Byte)
    is
    begin
+      Put ("Write @");
+      Put (Integer (Address), Base => 16, Width => 0);
+      Put (' ');
+      Put (Integer (Value), Base => 16, Width => 0);
+      New_Line;
+      if not Audio.Powered and
+        Address not in Power_Control_Status_IO_Address and
+        Address not in Wave_Table_IO_Address
+      then return; end if;
       case Address is
-         when NR1_Address =>
+         when NR1_IO_Address =>
+            --  null;
             Audio.Square_1.Write (To_Channel_Register (Address), Value);
-         when NR2_Address =>
+         when NR2_IO_Address =>
+            --  null; --
             Audio.Square_2.Write (To_Channel_Register (Address), Value);
-         when NR3_Address =>
+         when NR3_IO_Address =>
             Audio.Wave.Write (To_Channel_Register (Address), Value);
-         when NR4_Address =>
+         when NR4_IO_Address =>
+            --  null; --
             Audio.Noise.Write (To_Channel_Register (Address), Value);
-         when Control_Address =>
-            null;
-         when Wave_Table_IO_Range =>
+         when Output_Volume_Control_IO_Address =>
+            Audio.Volume_Control.Space := Value;
+         when Channel_Output_Control_IO_Address =>
+            Audio.Output_Control.Space := Value;
+         when Power_Control_Status_IO_Address =>
+            Write_Power_Control_Status (Audio, Value);
+         when Wave_Table_IO_Address =>
             Audio.Wave_Table.Space (Address) := Value; -- TODO consistent range names
          when others => null;
       end case;
@@ -117,10 +154,12 @@ package body Gade.Audio is
             when Length_Counter =>
                Tick_Length (Audio.Square_1);
                Tick_Length (Audio.Square_2);
+               Tick_Length (Audio.Wave);
                Tick_Length (Audio.Noise);
             when Length_Counter_Frequency_Sweep =>
                Tick_Length (Audio.Square_1);
                Tick_Length (Audio.Square_2);
+               Tick_Length (Audio.Wave);
                Tick_Length (Audio.Noise);
                Tick_Frequency_Sweep (Audio.Square_1);
             when Volume_Envelope => null;
@@ -138,29 +177,88 @@ package body Gade.Audio is
       Audio_Buffer : Audio_Buffer_Access;
       Cycles       : Positive)
    is
+      Output_Control : Channel_Output_Control renames Audio.Output_Control;
+
       Target_Cycles : constant Natural := Audio.Elapsed_Cycles + Cycles / 4;
 
-      S1, S2, S3, S4, S_Out : Sample;
+      Enabled_Disabled_Values : array (Boolean) of Sample;
+
+      L_Out, R_Out : Sample;
+      Samples : Channel_Samples;
    begin
+      Enabled_Disabled_Values (False) := 0;
       while Audio.Elapsed_Cycles < Target_Cycles loop
-         S1 := 0;
-         S2 := 0;
-         S3 := 0;
-         S4 := 0;
-         Next_Sample (Audio.Square_1, S1);
-         Next_Sample (Audio.Square_2, S2);
-         Next_Sample (Audio.Wave, S3);
-         Next_Sample (Audio.Noise, S4);
+         Next_Sample (Audio.Square_1, Samples (NR1));
+         Next_Sample (Audio.Square_2, Samples (NR2));
+         Next_Sample (Audio.Wave, Samples (NR3));
+         Next_Sample (Audio.Noise, Samples (NR4));
 
          Tick_Frame_Sequencer (Audio);
 
-         S_Out := (S1 + S2 + S3 + S4) * 8 * 32; -- Temporary master volume and dyn range adjustment
-         Audio_Buffer (Audio.Elapsed_Cycles) := (S_Out, S_Out);
+         L_Out := 0;
+         R_Out := 0;
+         for Ch in Channel loop
+            Enabled_Disabled_Values (True) := Samples (Ch);
+            L_Out := L_Out + Enabled_Disabled_Values (Output_Control.Left (Ch));
+            R_Out := R_Out + Enabled_Disabled_Values (Output_Control.Right (Ch));
+         end loop;
+
+         Audio_Buffer (Audio.Elapsed_Cycles) := (L_Out * 16, R_Out * 16);
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;
       end loop;
    exception
       when E : others => Put_Line (Exception_Information (E));
    end Report_Cycles;
+
+   function Read_Power_Control_Status (Audio : Audio_Type) return Byte is
+      Power_Control : Power_Control_Status renames Audio.Power_Control;
+   begin
+      Power_Control.Length_Status (NR1) := Length_Enabled (Audio.Square_1);
+      Power_Control.Length_Status (NR2) := Length_Enabled (Audio.Square_2);
+      Power_Control.Length_Status (NR3) := Length_Enabled (Audio.Wave);
+      Power_Control.Length_Status (NR4) := Length_Enabled (Audio.Noise);
+      return Power_Control.Space;
+   end Read_Power_Control_Status;
+
+   procedure Write_Power_Control_Status
+     (Audio : in out Audio_Type;
+      Value : Byte)
+   is
+      New_Power_State : Boolean;
+   begin
+      Audio.Power_Control.Space := Value or Power_Control_Status_Write_Mask;
+      New_Power_State := Audio.Power_Control.Power;
+      if Audio.Powered and not New_Power_State then
+         --  TODO: Powering down should clear and prevent accessing most registers
+         Audio.Square_1.Write (NRx0, 0); -- TODO: Have a poweroff method for channels
+         Audio.Square_1.Write (NRx1, 0);
+         Audio.Square_1.Write (NRx2, 0);
+         Audio.Square_1.Write (NRx3, 0);
+         Audio.Square_1.Write (NRx4, 0);
+         Audio.Square_2.Write (NRx0, 0);
+         Audio.Square_2.Write (NRx1, 0);
+         Audio.Square_2.Write (NRx2, 0);
+         Audio.Square_2.Write (NRx3, 0);
+         Audio.Square_2.Write (NRx4, 0);
+         Audio.Wave.Write (NRx0, 0);
+         Audio.Wave.Write (NRx1, 0);
+         Audio.Wave.Write (NRx2, 0);
+         Audio.Wave.Write (NRx3, 0);
+         Audio.Wave.Write (NRx4, 0);
+         Audio.Noise.Write (NRx0, 0);
+         Audio.Noise.Write (NRx1, 0);
+         Audio.Noise.Write (NRx2, 0);
+         Audio.Noise.Write (NRx3, 0);
+         Audio.Noise.Write (NRx4, 0);
+         Audio.Volume_Control.Space := 0;
+         Audio.Output_Control.Space := 0;
+         Disable (Audio.Square_1);
+         Disable (Audio.Square_2);
+         Disable (Audio.Wave);
+         Disable (Audio.Noise);
+      end if;
+      Audio.Powered := New_Power_State;
+   end Write_Power_Control_Status;
 
    procedure Flush_Frame
      (Audio        : in out Audio_Type;

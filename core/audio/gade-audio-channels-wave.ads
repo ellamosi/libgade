@@ -4,9 +4,9 @@ package Gade.Audio.Channels.Wave is
 
    type Wave_Table is private;
 
-   subtype Wave_Table_IO_Range is Word range 16#FF30# .. 16#FF3F#;
+   subtype Wave_Table_IO_Address is Audio_IO_Address range 16#FF30# .. 16#FF3F#;
 
-   type Wave_Table_Bytes is array (Wave_Table_IO_Range) of Byte;
+   type Wave_Table_Bytes is array (Wave_Table_IO_Address) of Byte;
 
    --  TODO: Have a shared discriminant type
    type Table_Access_Type is (Named, Address);
@@ -124,6 +124,9 @@ private
    procedure Set_Frequency
      (Channel : in out Wave_Channel;
       Freq    : Frequency_Type);
+
+   overriding
+   procedure Disable (Channel : in out Wave_Channel);
 
    overriding
    function Read_NRx0 (Channel : Wave_Channel) return Byte;

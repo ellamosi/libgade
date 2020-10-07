@@ -1,3 +1,5 @@
+with Ada.Text_IO; use Ada.Text_IO;
+
 package body Gade.Audio.Channels.Wave is
 
    procedure Set_Table
@@ -32,6 +34,7 @@ package body Gade.Audio.Channels.Wave is
       Sample_Level := Sample_Level * 2; -- TODO: Should not need this
       Level_Cycles := Channel.Sample_Time;
       Channel.Sample_Index := Channel.Sample_Index + 1;
+      --  Put (Sample_Level'Img);
    end Next_Sample_Level;
 
    overriding
@@ -46,9 +49,22 @@ package body Gade.Audio.Channels.Wave is
    overriding
    procedure Trigger (Channel : in out Wave_Channel) is
    begin
+      Put_Line ("Wave Trigger (Power: " & Channel.Powered'Img & ")");
       Base.Base_Audio_Channel (Channel).Trigger;
-      --  TODO
+      Channel.Sample_Index := 0;
+--        if Channel.Powered then
+--
+--        else
+--           Put_Line ("Trigger Unpowered Wave Channel");
+--        end if;
+      --  TODO: Handle 0 length (also on pulse channels)
    end Trigger;
+
+   overriding
+   procedure Disable (Channel : in out Wave_Channel) is
+   begin
+      Base.Base_Audio_Channel (Channel).Disable;
+   end Disable;
 
    overriding
    function Read_NRx0 (Channel : Wave_Channel) return Byte is
@@ -62,6 +78,17 @@ package body Gade.Audio.Channels.Wave is
    begin
       Channel.NRx0 := Value or NRx0_Power_Mask;
       Channel.Powered := NRx0_In.Powered;
+      if not Channel.Powered then
+         Put_Line ("Powering OFF Wave Channel");
+         Wave_Channel'Class (Channel).Disable;
+         --  Registers get cleared when powering off?
+         --  Channel.Volume_Shift := Volume_Shifts (None);
+--           Channel.NRx0 := 0; --  TODO: Mask
+--           Channel.NRx2 := 0; --  TODO: Mask
+--           Channel.Set_Frequency (0);
+      else
+         Put_Line ("Powering ON Wave Channel");
+      end if;
    end Write_NRx0;
 
    overriding
