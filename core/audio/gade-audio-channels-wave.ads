@@ -33,6 +33,9 @@ package Gade.Audio.Channels.Wave is
    overriding
    procedure Reset (Channel : out Wave_Channel);
 
+   overriding
+   procedure Disable (Channel : in out Wave_Channel);
+
 private
 
    type Wave_Sample is mod 2 ** 4;
@@ -124,9 +127,6 @@ private
    procedure Set_Frequency
      (Channel : in out Wave_Channel;
       Freq    : Frequency_Type);
-
-   overriding
-   procedure Disable (Channel : in out Wave_Channel);
 
    overriding
    function Read_NRx0 (Channel : Wave_Channel) return Byte;

@@ -25,7 +25,9 @@ package Gade.Audio.Channels is
      (Channel : in out Audio_Channel;
       S       : out Sample) is abstract;
 
-   procedure Disable (Channel : in out Audio_Channel) is null;
+   procedure Disable (Channel : in out Audio_Channel) is abstract;
+
+   procedure Power_Off (Channel : in out Audio_Channel);
 
    function Length_Enabled (Ch : Audio_Channel) return Boolean is abstract;
 

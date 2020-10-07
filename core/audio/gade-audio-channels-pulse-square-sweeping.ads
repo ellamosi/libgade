@@ -7,6 +7,9 @@ package Gade.Audio.Channels.Pulse.Square.Sweeping is
 
    procedure Tick_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
 
+   overriding
+   procedure Disable (Channel : in out Sweeping_Square_Channel);
+
 private
 
    NRx0_Sweep_Mask : constant Byte := 16#80#;
@@ -45,9 +48,6 @@ private
    procedure Trigger (Channel : in out Sweeping_Square_Channel);
 
    procedure Step_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
-
-   overriding
-   procedure Disable (Channel : in out Sweeping_Square_Channel);
 
    overriding
    function Read_NRx0 (Channel : Sweeping_Square_Channel) return Byte;

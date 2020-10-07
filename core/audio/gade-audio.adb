@@ -230,26 +230,10 @@ package body Gade.Audio is
       New_Power_State := Audio.Power_Control.Power;
       if Audio.Powered and not New_Power_State then
          --  TODO: Powering down should clear and prevent accessing most registers
-         Audio.Square_1.Write (NRx0, 0); -- TODO: Have a poweroff method for channels
-         Audio.Square_1.Write (NRx1, 0);
-         Audio.Square_1.Write (NRx2, 0);
-         Audio.Square_1.Write (NRx3, 0);
-         Audio.Square_1.Write (NRx4, 0);
-         Audio.Square_2.Write (NRx0, 0);
-         Audio.Square_2.Write (NRx1, 0);
-         Audio.Square_2.Write (NRx2, 0);
-         Audio.Square_2.Write (NRx3, 0);
-         Audio.Square_2.Write (NRx4, 0);
-         Audio.Wave.Write (NRx0, 0);
-         Audio.Wave.Write (NRx1, 0);
-         Audio.Wave.Write (NRx2, 0);
-         Audio.Wave.Write (NRx3, 0);
-         Audio.Wave.Write (NRx4, 0);
-         Audio.Noise.Write (NRx0, 0);
-         Audio.Noise.Write (NRx1, 0);
-         Audio.Noise.Write (NRx2, 0);
-         Audio.Noise.Write (NRx3, 0);
-         Audio.Noise.Write (NRx4, 0);
+         Audio.Square_1.Power_Off;
+         Audio.Square_2.Power_Off;
+         Audio.Wave.Power_Off;
+         Audio.Noise.Power_Off;
          Audio.Volume_Control.Space := 0;
          Audio.Output_Control.Space := 0;
          Disable (Audio.Square_1);
