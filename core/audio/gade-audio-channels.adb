@@ -2,6 +2,16 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Audio.Channels is
 
+   procedure Reset (Channel : out Audio_Channel) is
+   begin
+      Channel.Powered := True;
+   end Reset;
+
+   procedure Turn_On (Channel : in out Audio_Channel) is
+   begin
+      Channel.Powered := True;
+   end Turn_On;
+
    function Read
      (Channel  : Audio_Channel'Class;
       Register : Channel_Register)
@@ -23,13 +33,15 @@ package body Gade.Audio.Channels is
       Value    : Byte)
    is
    begin
-      case Register is
+      if Channel.Powered then
+         case Register is
          when NRx0 => Channel.Write_NRx0 (Value);
          when NRx1 => Channel.Write_NRx1 (Value);
          when NRx2 => Channel.Write_NRx2 (Value);
          when NRx3 => Channel.Write_NRx3 (Value);
          when NRx4 => Channel.Write_NRx4 (Value);
-      end case;
+         end case;
+      end if;
    end Write;
 
    function Read_Blank (Channel : Audio_Channel) return Byte is
@@ -42,13 +54,16 @@ package body Gade.Audio.Channels is
    begin
       Audio_Channel'Class (Channel).Disable;
       Audio_Channel'Class (Channel).Reset;
+      Channel.Powered := False;
    end Turn_Off;
 
    package body Base is
       overriding
       procedure Reset (Channel : out Base_Audio_Channel) is
       begin
+         Audio_Channel (Channel).Reset;
          Channel.Enabled := False;
+         Channel.Powered := True;
          Channel.Length_Enabled := False;
          Channel.Level := 0;
          Setup (Channel.Length_Timer);

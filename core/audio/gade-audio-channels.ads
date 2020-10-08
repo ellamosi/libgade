@@ -9,7 +9,7 @@ package Gade.Audio.Channels is
 
    type Audio_Channel is abstract tagged private;
 
-   procedure Reset (Ch : out Audio_Channel) is abstract;
+   procedure Reset (Channel : out Audio_Channel);
 
    function Read
      (Channel  : Audio_Channel'Class;
@@ -29,14 +29,17 @@ package Gade.Audio.Channels is
 
    procedure Turn_Off (Channel : in out Audio_Channel);
 
+   procedure Turn_On (Channel : in out Audio_Channel);
+
    function Length_Enabled (Ch : Audio_Channel) return Boolean is abstract;
 
    procedure Tick_Length (Channel : in out Audio_Channel) is abstract;
 
 private
 
-   --  Basically just more of an interface than anything
-   type Audio_Channel is abstract tagged null record;
+   type Audio_Channel is abstract tagged record
+      Powered : Boolean;
+   end record;
 
    Blank_Value : constant Byte := 16#FF#;
 
@@ -61,7 +64,6 @@ private
 
    Actual_Effect_Periods : constant array (Effect_Period_IO'Range)
      of Positive := (8, 1, 2, 3, 4, 5, 6, 7);
-
 
    generic
       Length_Bits : Positive;
@@ -132,14 +134,16 @@ private
          Target => Byte);
 
       type Base_Audio_Channel is abstract new Audio_Channel with record
-         Enabled      : Boolean; --  TODO: Not sure if really needed?
-                                 --  Probably yes, as it can be enabled without using the length timer.
-                                 --  Could use the Sample timer to derive it, though
-         Length_Timer : Repeatable_Timer;
+         --  TODO: Not sure if really needed?
+         --  Probably yes, as it can be enabled without using the length timer.
+         --  Could use the Sample timer to derive it, though
+         Enabled        : Boolean;
+
+         Length_Timer   : Repeatable_Timer;
          Length_Enabled : Boolean;
-         Length       : Natural;
-         Sample_Timer : Timer;
-         Level        : Sample;
+         Length         : Natural;
+         Sample_Timer   : Timer;
+         Level          : Sample;
       end record;
 
       procedure Reload_Length (Channel : in out Base_Audio_Channel;

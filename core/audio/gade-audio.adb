@@ -75,10 +75,6 @@ package body Gade.Audio is
       Value   : out Byte)
    is
    begin
---        if not Audio.Powered and
---          Address not in Power_Control_Status_IO_Address and
---          Address not in Wave_Table_IO_Address
---        then Value := Blank_Value; return; end if;
       Value :=
         (case Address is
             when NR1_IO_Address =>
@@ -118,8 +114,8 @@ package body Gade.Audio is
       Put (Integer (Value), Base => 16, Width => 0);
       New_Line;
       if not Audio.Powered and
-        Address not in Power_Control_Status_IO_Address and
-        Address not in Wave_Table_IO_Address
+        (Address in Output_Volume_Control_IO_Address or
+        Address in Channel_Output_Control_IO_Address)
       then return; end if;
       case Address is
          when NR1_IO_Address =>
@@ -240,6 +236,11 @@ package body Gade.Audio is
          Disable (Audio.Square_2);
          Disable (Audio.Wave);
          Disable (Audio.Noise);
+      elsif not Audio.Powered and New_Power_State then
+         Audio.Square_1.Turn_On;
+         Audio.Square_2.Turn_On;
+         Audio.Wave.Turn_On;
+         Audio.Noise.Turn_On;
       end if;
       Audio.Powered := New_Power_State;
    end Write_Power_Control_Status;
