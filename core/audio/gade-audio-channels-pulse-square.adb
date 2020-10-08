@@ -7,7 +7,7 @@ package body Gade.Audio.Channels.Pulse.Square is
       Channel.Pulse_State := Pulse_Low;
       Channel.Pulse_Cycles := (1, 1);
       Channel.Duty := Duty_Type'Val (0);
-      Channel.NRx1 := 16#3F#;
+      Channel.NRx1 := NRx1_Duty_Mask;
    end Reset;
 
    overriding

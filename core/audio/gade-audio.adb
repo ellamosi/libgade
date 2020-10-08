@@ -230,10 +230,10 @@ package body Gade.Audio is
       New_Power_State := Audio.Power_Control.Power;
       if Audio.Powered and not New_Power_State then
          --  TODO: Powering down should clear and prevent accessing most registers
-         Audio.Square_1.Power_Off;
-         Audio.Square_2.Power_Off;
-         Audio.Wave.Power_Off;
-         Audio.Noise.Power_Off;
+         Audio.Square_1.Turn_Off;
+         Audio.Square_2.Turn_Off;
+         Audio.Wave.Turn_Off;
+         Audio.Noise.Turn_Off;
          Audio.Volume_Control.Space := 0;
          Audio.Output_Control.Space := 0;
          Disable (Audio.Square_1);

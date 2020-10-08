@@ -7,6 +7,7 @@ package body Gade.Audio.Channels.Pulse.Noise is
       Channel.Clock_Divisor := 1;
       Channel.Clock_Shift := 0;
       Channel.LFSR := 0;
+      Channel.NRx3 := 16#00#;
    end Reset;
 
    overriding

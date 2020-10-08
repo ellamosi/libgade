@@ -7,7 +7,7 @@ package body Gade.Audio.Channels.Pulse is
       Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
    begin
       Base.Base_Audio_Channel (Channel).Reset;
-      Channel.NRx2 := 0;
+      Channel.NRx2 := 16#00#;
       Channel.Pulse_Levels := (0, 0);
       Setup (Envelope.Timer);
       Envelope.Step := 0;

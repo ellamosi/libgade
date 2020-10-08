@@ -4,7 +4,7 @@ package body Gade.Audio.Channels.Wave is
 
    procedure Set_Table
      (Channel : in out Wave_Channel;
-      Table   : Wave_Table_IO_Access)
+      Table   : not null Wave_Table_IO_Access)
    is
    begin
       Channel.Table :=  Table;
@@ -16,8 +16,8 @@ package body Gade.Audio.Channels.Wave is
       Base.Base_Audio_Channel (Channel).Reset;
       Channel.Sample_Index := 0;
       Channel.Sample_Time := 1;
-      Channel.NRx0 := 0; --  TODO: Mask
-      Channel.NRx2 := 0; --  TODO: Mask
+      Channel.NRx0 := NRx0_Power_Mask;
+      Channel.NRx2 := NRx2_Volume_Mask;
       Channel.Volume_Shift := Volume_Shifts (None);
    end Reset;
 

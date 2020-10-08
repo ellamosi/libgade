@@ -5,7 +5,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
    overriding procedure Reset (Channel : out Sweeping_Square_Channel) is
    begin
       Square_Channel (Channel).Reset;
-      Channel.NRx0 := 16#00#;
+      Channel.NRx0 := NRx0_Sweep_Mask;
       Channel.Sweep_Negate := False;
       Setup (Channel.Sweep_Timer);
    end Reset;

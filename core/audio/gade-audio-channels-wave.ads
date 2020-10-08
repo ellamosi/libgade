@@ -28,7 +28,7 @@ package Gade.Audio.Channels.Wave is
    --  TODO: Find a better way to assign the table
    procedure Set_Table
      (Channel : in out Wave_Channel;
-      Table   : Wave_Table_IO_Access);
+      Table   : not null Wave_Table_IO_Access);
 
    overriding
    procedure Reset (Channel : out Wave_Channel);

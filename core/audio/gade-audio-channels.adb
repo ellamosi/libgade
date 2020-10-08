@@ -38,15 +38,11 @@ package body Gade.Audio.Channels is
       return Blank_Value;
    end Read_Blank;
 
-   procedure Power_Off (Channel : in out Audio_Channel) is
+   procedure Turn_Off (Channel : in out Audio_Channel) is
    begin
       Audio_Channel'Class (Channel).Disable;
-      Audio_Channel'Class (Channel).Write_NRx0 (0);
-      Audio_Channel'Class (Channel).Write_NRx1 (0);
-      Audio_Channel'Class (Channel).Write_NRx2 (0);
-      Audio_Channel'Class (Channel).Write_NRx3 (0);
-      Audio_Channel'Class (Channel).Write_NRx4 (0);
-   end Power_Off;
+      Audio_Channel'Class (Channel).Reset;
+   end Turn_Off;
 
    package body Base is
       overriding
