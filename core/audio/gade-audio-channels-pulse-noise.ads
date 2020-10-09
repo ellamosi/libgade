@@ -5,6 +5,9 @@ package Gade.Audio.Channels.Pulse.Noise is
    overriding
    procedure Reset (Channel : out Noise_Channel);
 
+   overriding
+   function Name (Channel : Noise_Channel) return String;
+
 private
 
    type Clock_Shift_Type is mod 2 ** 4;

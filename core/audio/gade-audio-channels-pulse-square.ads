@@ -5,6 +5,9 @@ package Gade.Audio.Channels.Pulse.Square is
    overriding
    procedure Reset (Channel : out Square_Channel);
 
+   overriding
+   function Name (Channel : Square_Channel) return String;
+
 private
 
    Next_Pulse_State : constant array (Pulse_State_Type) of Pulse_State_Type :=

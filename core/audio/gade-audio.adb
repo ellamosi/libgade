@@ -38,6 +38,7 @@ package body Gade.Audio is
    begin
       Audio := new Opaque_Audio_Type;
       Audio.Wave.Set_Table (Audio.Wave_Table'Access);
+
    end Create;
 
    procedure Reset (Audio : in out Audio_Type) is
@@ -54,6 +55,8 @@ package body Gade.Audio is
       Reset (Audio.Noise);
 
       Audio.Powered := True;
+
+      Audio.Power_Control.Space := Power_Control_Status_Write_Mask;
 
       --  TODO: Initialize wave table pattern somehow
    end Reset;
@@ -208,11 +211,15 @@ package body Gade.Audio is
 
    function Read_Power_Control_Status (Audio : Audio_Type) return Byte is
       Power_Control : Power_Control_Status renames Audio.Power_Control;
+      B : Boolean;
    begin
-      Power_Control.Length_Status (NR1) := Length_Enabled (Audio.Square_1);
-      Power_Control.Length_Status (NR2) := Length_Enabled (Audio.Square_2);
+      B := Audio.Square_1.Length_Enabled;
+      Power_Control.Length_Status (NR1) := B;
+      B := Audio.Square_2.Length_Enabled;
+      Power_Control.Length_Status (NR2) := B;
       Power_Control.Length_Status (NR3) := Length_Enabled (Audio.Wave);
       Power_Control.Length_Status (NR4) := Length_Enabled (Audio.Noise);
+
       return Power_Control.Space;
    end Read_Power_Control_Status;
 

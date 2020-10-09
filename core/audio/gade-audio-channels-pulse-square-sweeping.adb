@@ -100,4 +100,11 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
                 "Shift" & Channel.Sweep_Shift'Img);
    end Write_NRx0;
 
+   overriding
+   function Name (Channel : Sweeping_Square_Channel) return String is
+      pragma Unreferenced (Channel);
+   begin
+      return "Square 1";
+   end Name;
+
 end Gade.Audio.Channels.Pulse.Square.Sweeping;

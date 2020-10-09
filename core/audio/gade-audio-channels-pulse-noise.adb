@@ -59,4 +59,11 @@ package body Gade.Audio.Channels.Pulse.Noise is
       Channel.LFSR_Width := NRx3_In.LFSR_Width;
    end Write_NRx3;
 
+   overriding
+   function Name (Channel : Noise_Channel) return String is
+      pragma Unreferenced (Channel);
+   begin
+      return "Noise";
+   end Name;
+
 end Gade.Audio.Channels.Pulse.Noise;

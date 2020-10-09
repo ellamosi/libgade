@@ -35,6 +35,8 @@ package Gade.Audio.Channels is
 
    procedure Tick_Length (Channel : in out Audio_Channel) is abstract;
 
+   function Name (Channel : Audio_Channel) return String is abstract;
+
 private
 
    type Audio_Channel is abstract tagged record
@@ -82,6 +84,9 @@ private
 
       overriding
       procedure Trigger (Channel : in out Base_Audio_Channel) is null;
+
+      function Can_Enable (Channel : Base_Audio_Channel)
+                           return Boolean is abstract;
 
       overriding
       function Read_NRx4 (Channel : Base_Audio_Channel) return Byte;

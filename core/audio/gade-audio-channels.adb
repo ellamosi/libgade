@@ -96,8 +96,8 @@ package body Gade.Audio.Channels is
       function Read_NRx4 (Channel : Base_Audio_Channel) return Byte is
          NRx4_Out : NRx4_Common_IO;
       begin
-         --  TODO: Just save IO byte?
-         NRx4_Out.Length_Enable := Channel.Length_Enabled;
+         --  TODO: Just save IO byte and keep it updated?
+         NRx4_Out.Length_Enable := Enabled (Channel.Length_Timer);
          return To_Byte (NRx4_Out) or NRx4_Length_Enable_Mask;
       end Read_NRx4;
 
@@ -120,19 +120,35 @@ package body Gade.Audio.Channels is
       is
          NRx4_In : constant NRx4_Common_IO := To_NRx4_Common_IO (Value);
       begin
-         Put_Line ("Write_NRx4" & Value'Img);
+         Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Write_NRx4" & Value'Img &
+                   " Timer Finished: " & Has_Finished (Channel.Length_Timer)'Img);
 
          --  Length Enable gets set regardless of trigger:
+         --  Channel.Length_Enabled := NRx4_In.Length_Enable
+
          Channel.Length_Enabled := NRx4_In.Length_Enable;
 
-         if NRx4_In.Trigger then
+         if Channel.Length_Enabled then
+            Resume (Channel.Length_Timer);
+         else
+            --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length timer disabled");
+            Pause (Channel.Length_Timer);
+         end if;
+         if NRx4_In.Trigger and Base_Audio_Channel'Class (Channel).Can_Enable then
             Channel.Enabled := True;
-            Put_Line ("LE: " & Channel.Length_Enabled'Img);
 
+            if Has_Finished (Channel.Length_Timer) and Channel.Length_Enabled then
+               Put_Line ("Trigger Convert length to max (started)");
+               Start (Channel.Length_Timer, Length_Max);
+            elsif Has_Finished (Channel.Length_Timer) and not Channel.Length_Enabled then
+               Put_Line ("Trigger Convert length to max (paused)");
+               Setup (Channel.Length_Timer, Length_Max);
+            end if;
             --  We don't know how long the next sample will be yet, fetch next
             --  sample in the following tick:
             Start (Channel.Sample_Timer, 1);
-            Start (Channel.Length_Timer, Channel.Length);
+            Put_Line (Base_Audio_Channel'Class (Channel).Name & " - LE: " &
+                        Channel.Length_Enabled'Img & ' ' & Enabled (Channel.Length_Timer)'Img);
             Base_Audio_Channel'Class (Channel).Trigger;
          end if;
       end Write_NRx4;
@@ -141,9 +157,15 @@ package body Gade.Audio.Channels is
         (Channel : in out Base_Audio_Channel;
          Length  : Natural) is
       begin
-         Channel.Length := (if Length = 0 then Length_Max else Length);
-         Start (Channel.Length_Timer, Channel.Length);
-         Put_Line ("Reload_Length" & Channel.Length'Img);
+         Channel.Length := Length_Max - Length; --(if Length = 0 then Length_Max else Length_Max - Length);
+         if Channel.Length_Enabled then
+            Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Reload_Length (running)" & Channel.Length'Img);
+            Start (Channel.Length_Timer, Channel.Length);
+         else
+            Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Reload_Length (paused)" & Channel.Length'Img);
+            Setup (Channel.Length_Timer, Channel.Length);
+         end if;
+
 --           if Enabled (Channel.Length_Timer) then
 --              Start (Channel.Length_Timer, Length);
 --           else
@@ -161,25 +183,34 @@ package body Gade.Audio.Channels is
       overriding
       procedure Disable (Channel : in out Base_Audio_Channel) is
       begin
+         Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Disabled");
          Channel.Level := 0;
+
          Channel.Enabled := False;
-         Stop (Channel.Length_Timer);
+         --  Maybe pause instead
+         --  Stop (Channel.Length_Timer);
          Stop (Channel.Sample_Timer);
       end Disable;
 
       overriding
       function Length_Enabled (Channel : Base_Audio_Channel) return Boolean is
       begin
-         return Enabled (Channel.Length_Timer);
+         Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length enable check: " &
+                     Enabled (Channel.Length_Timer)'Img &
+                   " Lenfth Ticks Left:" & Ticks_Remaining (Channel.Length_Timer)'Img);
+         --  return Enabled (Channel.Length_Timer);
+         return Channel.Enabled;
       end Length_Enabled;
 
       procedure Step_Length (Channel : in out Base_Audio_Channel) is
       begin
-         Stop (Channel.Length_Timer);
-         if Channel.Length_Enabled then
-            Put_Line ("Length triggered disable");
+         --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length Timer Stopped");
+         Pause (Channel.Length_Timer);
+         --  Channel.Length_Enabled := False;
+         --  if Channel.Length_Enabled then
+            Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length triggered disable");
             Base_Audio_Channel'Class (Channel).Disable;
-         end if;
+         --  end if;
       end Step_Length;
 
       overriding

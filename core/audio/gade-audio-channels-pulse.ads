@@ -107,6 +107,9 @@ private
    overriding
    procedure Trigger (Channel : in out Pulse_Channel);
 
+   overriding
+   function Can_Enable (Channel : Pulse_Channel) return Boolean;
+
    procedure Set_Volume
      (Channel : in out Pulse_Channel;
       Volume  : Natural);

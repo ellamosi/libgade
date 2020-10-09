@@ -61,6 +61,12 @@ package body Gade.Audio.Channels.Wave is
    end Trigger;
 
    overriding
+   function Can_Enable (Channel : Wave_Channel) return Boolean is
+   begin
+      return Channel.Powered;
+   end Can_Enable;
+
+   overriding
    procedure Disable (Channel : in out Wave_Channel) is
    begin
       Base.Base_Audio_Channel (Channel).Disable;
@@ -104,5 +110,12 @@ package body Gade.Audio.Channels.Wave is
       Channel.NRx2 := Value or NRx2_Volume_Mask;
       Channel.Volume_Shift := Volume_Shifts (NRx2_In.Volume);
    end Write_NRx2;
+
+   overriding
+   function Name (Channel : Wave_Channel) return String is
+      pragma Unreferenced (Channel);
+   begin
+      return "Wave";
+   end Name;
 
 end Gade.Audio.Channels.Wave;

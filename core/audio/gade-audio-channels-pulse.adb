@@ -35,6 +35,14 @@ package body Gade.Audio.Channels.Pulse is
          Volume    => NRx2_In.Volume,
          Direction => NRx2_In.Direction,
          Period    => NRx2_In.Period);
+
+      --  TODO: Reuse this expression
+      if Channel.Volume_Envelope.Initial_Volume = Volume_Min_Level and
+        Channel.Volume_Envelope.Direction = Down
+      then
+         Put_Line ("Powering OFF Wave Channel");
+         Pulse_Channel'Class (Channel).Disable;
+      end if;
    end Write_NRx2;
 
    overriding
@@ -48,11 +56,20 @@ package body Gade.Audio.Channels.Pulse is
          --  Disable the channel altogether for better performance, which is
          --  probably incorrect as writing the volume can have side effects
          --  without re-triggering the channel. Deal with that later.
-         Pulse_Channel'Class (Channel).Disable;
+         --  OR NOT!
+         --  Pulse_Channel'Class (Channel).Disable;
+         null;
       else
          Set_Volume (Channel, Envelope.Current_Volume);
       end if;
    end Trigger;
+
+   overriding
+   function Can_Enable (Channel : Pulse_Channel) return Boolean is
+   begin
+      return Channel.Volume_Envelope.Initial_Volume /= Volume_Min_Level or
+        Channel.Volume_Envelope.Direction = Up;
+   end Can_Enable;
 
    procedure Set_Volume (Channel : in out Pulse_Channel; Volume : Natural) is
       Volume_Sample : constant Sample := Sample (Volume);
@@ -72,7 +89,9 @@ package body Gade.Audio.Channels.Pulse is
          --  Disable the channel altogether for better performance, which is
          --  probably incorrect as writing the volume can have side effects
          --  without re-triggering the channel. Deal with that later.
-         Pulse_Channel'Class (Channel).Disable;
+         --- Pulse_Channel'Class (Channel).Disable;
+         --  OR NOT!
+         null;
       else
          Set_Volume (Channel, Envelope.Current_Volume);
       end if;

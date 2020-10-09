@@ -36,6 +36,9 @@ package Gade.Audio.Channels.Wave is
    overriding
    procedure Disable (Channel : in out Wave_Channel);
 
+   overriding
+   function Name (Channel : Wave_Channel) return String;
+
 private
 
    type Wave_Sample is mod 2 ** 4;
@@ -122,6 +125,9 @@ private
 
    overriding
    procedure Trigger (Channel : in out Wave_Channel);
+
+   overriding
+   function Can_Enable (Channel : Wave_Channel) return Boolean;
 
    overriding
    procedure Set_Frequency

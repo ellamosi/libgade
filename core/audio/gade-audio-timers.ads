@@ -8,6 +8,10 @@ package Gade.Audio.Timers is
 
    procedure Stop (T : in out Timer);
 
+   procedure Pause (T : in out Timer);
+
+   procedure Resume (T : in out Timer);
+
    procedure Tick (T : in out Timer);
 
    generic
@@ -18,6 +22,8 @@ package Gade.Audio.Timers is
    function Has_Finished (T : Timer) return Boolean;
 
    function Enabled (T : Timer) return Boolean;
+
+   function Ticks_Remaining (T : Timer) return Natural;
 
 
    type Repeatable_Timer is new Timer with private;
