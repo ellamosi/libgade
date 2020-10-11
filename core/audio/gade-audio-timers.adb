@@ -35,7 +35,10 @@ package body Gade.Audio.Timers is
    procedure Tick_Notify (T : in out Timer; Observer : in out Observer_Type) is
    begin
       Tick (T);
-      if Has_Finished (T) and Enabled (T) then Finished (Observer); end if;
+      if Has_Finished (T) and Enabled (T) then
+         --  TODO: T.Step := 0; --  Can pause here, simplify consumers
+         Finished (Observer);
+      end if;
    end Tick_Notify;
 
    --  TODO: Consistency in boolean naming

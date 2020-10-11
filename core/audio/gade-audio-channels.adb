@@ -130,10 +130,21 @@ package body Gade.Audio.Channels is
 
          if Channel.Length_Enabled then
             Resume (Channel.Length_Timer);
+            Put_Line ("ENABLING LENGTH!" &
+                        Channel.Length_Timer.Ticks_Remaining'Img & "/" &
+                        Channel.Length'Img);
+--              if Channel.Length_Timer.Ticks_Remaining > Channel.Length / 2 then
+--                 Put_Line ("ENABLING IN FIRST HALF OF PERIOD!");
+--                 --  TODO: Unnest
+--                 Tick (Channel.Length_Timer); --  TODO: This could cause a range error
+--              else
+--                 Put_Line ("ENABLING IN SECOND HALF OF PERIOD!");
+--              end if;
          else
             --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length timer disabled");
             Pause (Channel.Length_Timer);
          end if;
+
          if NRx4_In.Trigger and Base_Audio_Channel'Class (Channel).Can_Enable then
             Channel.Enabled := True;
 
@@ -144,6 +155,9 @@ package body Gade.Audio.Channels is
                Put_Line ("Trigger Convert length to max (paused)");
                Setup (Channel.Length_Timer, Length_Max);
             end if;
+
+
+
             --  We don't know how long the next sample will be yet, fetch next
             --  sample in the following tick:
             Start (Channel.Sample_Timer, 1);
@@ -195,9 +209,10 @@ package body Gade.Audio.Channels is
       overriding
       function Length_Enabled (Channel : Base_Audio_Channel) return Boolean is
       begin
-         Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length enable check: " &
-                     Enabled (Channel.Length_Timer)'Img &
-                   " Lenfth Ticks Left:" & Ticks_Remaining (Channel.Length_Timer)'Img);
+         --  TODO: rename function
+--           Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length enable check: " &
+--                       Enabled (Channel.Length_Timer)'Img &
+--                     " Lenfth Ticks Left:" & Ticks_Remaining (Channel.Length_Timer)'Img);
          --  return Enabled (Channel.Length_Timer);
          return Channel.Enabled;
       end Length_Enabled;
