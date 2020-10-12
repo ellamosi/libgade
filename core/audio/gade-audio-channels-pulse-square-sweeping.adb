@@ -44,7 +44,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
          Channel.Disable;
       else
          Channel.Shadow_Frequency := New_Freq;
-         Reset (Channel.Sweep_Timer);
+         Start (Channel.Sweep_Timer);
          Put_Line ("Sweep New Freq:" & New_Freq'Img);
          Channel.Set_Frequency (New_Freq);
       end if;

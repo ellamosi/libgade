@@ -78,25 +78,32 @@ package body Gade.Audio.Channels is
          Setup (Channel.Sample_Timer);
       end Reset;
 
+      procedure Step_Sample (Channel : in out Base_Audio_Channel) is
+         New_Sample_Level : Sample;
+         New_Level_Time   : Positive;
+      begin
+         --  Could maybe find a way to avoid a dynamic dispatch here for
+         --  performance. Inlinable generic function?
+         Base_Audio_Channel'Class (Channel).Next_Sample_Level
+           (New_Sample_Level, New_Level_Time);
+         Channel.Level := New_Sample_Level;
+         Start (Channel.Sample_Timer, New_Level_Time);
+      end Step_Sample;
+
       overriding
       procedure Next_Sample
         (Channel : in out Base_Audio_Channel;
          S       : out Sample)
       is
-         New_Sample_Level : Sample;
-         New_Level_Time   : Positive;
+         procedure Tick_Notify_Sample_Step is new Tick_Notify
+           (Observer_Type => Base_Audio_Channel,
+            Finished      => Step_Sample);
       begin
          S := Channel.Level;
+         --  TODO: Can probably avoid this IF by just disabling the sample timer
          if Channel.Enabled then
-            Tick (Channel.Sample_Timer);
-            if Has_Finished (Channel.Sample_Timer) then
-               --  Could maybe find a way to avoid a dynamic dispatch here for
-               --  performance. Inlinable generic function?
-               Base_Audio_Channel'Class (Channel).Next_Sample_Level
-                 (New_Sample_Level, New_Level_Time);
-               Channel.Level := New_Sample_Level;
-               Start (Channel.Sample_Timer, New_Level_Time);
-            end if;
+            --  Put_Line ("Tick_Notify_Sample_Step");
+            Tick_Notify_Sample_Step (Channel.Sample_Timer, Channel);
          end if;
       end Next_Sample;
 
@@ -167,17 +174,17 @@ package body Gade.Audio.Channels is
 
             if Length_Timer.Has_Finished and Channel.Enabled and not Trigger
             then
-               Step_Length (Channel); --  Disables channel
-            elsif Length_Timer.Has_Finished then
-               Length_Timer.Pause;
+               Length_Triggered_Disable (Channel); --  Disables channel
             end if;
-         else
+         end if;
+
+         if Length_Timer.Has_Finished or not Length_Enable then
             Length_Timer.Pause;
          end if;
 
          --  TODO: Try to make this cleaner
          if Trigger and Length_Timer.Has_Finished then
-            Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max");
+            Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max (1)");
             Length_Timer.Setup (Length_Max);
          end if;
 
@@ -191,7 +198,7 @@ package body Gade.Audio.Channels is
             end if;
 
             if Channel.Length_Timer.Has_Finished then
-               Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max");
+               Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max (2)");
                Length_Timer.Start (Length_Max);
             end if;
          end if;
@@ -221,11 +228,6 @@ package body Gade.Audio.Channels is
          end if;
       end Reload_Length;
 
-      function Enabled (Channel : Base_Audio_Channel) return Boolean is
-      begin
-         return Channel.Enabled;
-      end Enabled;
-
       overriding
       procedure Disable (Channel : in out Base_Audio_Channel) is
       begin
@@ -239,20 +241,16 @@ package body Gade.Audio.Channels is
       end Disable;
 
       overriding
-      function Length_Enabled (Channel : Base_Audio_Channel) return Boolean is
+      function Enabled (Channel : Base_Audio_Channel) return Boolean is
       begin
-         --  TODO: rename function
---           Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length enable check: " &
---                       Enabled (Channel.Length_Timer)'Img &
---                     " Lenfth Ticks Left:" & Ticks_Remaining (Channel.Length_Timer)'Img);
-         --  return Enabled (Channel.Length_Timer);
          return Channel.Enabled;
-      end Length_Enabled;
+      end Enabled;
 
-      procedure Step_Length (Channel : in out Base_Audio_Channel) is
+      procedure Length_Triggered_Disable (Channel : in out Base_Audio_Channel) is
       begin
          --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length Timer Stopped");
          --  Pause (Channel.Length_Timer); --  TODO: Do this as part of the timer
+         --  Put_Line ("Notify_Length_Step");
          if Channel.Length_Enabled then -- TODO: Unsure if needed
             --  Disabled channel should still clock length
             --  Length counter reaching 0 does NOT disable the length enable flag?
@@ -261,14 +259,15 @@ package body Gade.Audio.Channels is
             Base_Audio_Channel'Class (Channel).Disable;
          end if;
          --  end if;
-      end Step_Length;
+      end Length_Triggered_Disable;
 
       overriding
       procedure Tick_Length (Channel : in out Base_Audio_Channel) is
          procedure Tick_Notify_Length_Step is new Tick_Notify
            (Observer_Type => Base_Audio_Channel,
-            Finished      => Step_Length);
+            Finished      => Length_Triggered_Disable);
       begin
+         --  Put_Line ("Tick_Notify_Length_Step " & Channel.Length_Timer.Ticks_Remaining'Img);
          Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
          --  Put_Line ("Length tick" & Ticks_Remaining (Channel.Length_Timer)'Img);
       end Tick_Length;

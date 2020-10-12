@@ -217,12 +217,12 @@ package body Gade.Audio is
       Power_Control : Power_Control_Status renames Audio.Power_Control;
       B : Boolean;
    begin
-      B := Audio.Square_1.Length_Enabled;
+      B := Audio.Square_1.Enabled;
       Power_Control.Length_Status (NR1) := B;
-      B := Audio.Square_2.Length_Enabled;
+      B := Audio.Square_2.Enabled;
       Power_Control.Length_Status (NR2) := B;
-      Power_Control.Length_Status (NR3) := Length_Enabled (Audio.Wave);
-      Power_Control.Length_Status (NR4) := Length_Enabled (Audio.Noise);
+      Power_Control.Length_Status (NR3) := Enabled (Audio.Wave);
+      Power_Control.Length_Status (NR4) := Enabled (Audio.Noise);
 
       return Power_Control.Space;
    end Read_Power_Control_Status;

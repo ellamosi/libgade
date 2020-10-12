@@ -35,7 +35,7 @@ package Gade.Audio.Channels is
 
    procedure Turn_On (Channel : in out Audio_Channel);
 
-   function Length_Enabled (Ch : Audio_Channel) return Boolean is abstract;
+   function Enabled (Ch : Audio_Channel) return Boolean is abstract;
 
    procedure Tick_Length (Channel : in out Audio_Channel) is abstract;
 
@@ -102,13 +102,11 @@ private
       overriding
       procedure Write_NRx4 (Channel : in out Base_Audio_Channel; Value : Byte);
 
-      function Enabled (Channel : Base_Audio_Channel) return Boolean;
-
       overriding
       procedure Disable (Channel : in out Base_Audio_Channel);
 
       overriding
-      function Length_Enabled (Channel : Base_Audio_Channel) return Boolean;
+      function Enabled (Channel : Base_Audio_Channel) return Boolean;
 
       procedure Next_Sample_Level
         (Channel      : in out Base_Audio_Channel;
@@ -163,7 +161,9 @@ private
       procedure Reload_Length (Channel : in out Base_Audio_Channel;
                                Length  : Natural);
 
-      procedure Step_Length (Channel : in out Base_Audio_Channel);
+      procedure Length_Triggered_Disable (Channel : in out Base_Audio_Channel);
+
+      procedure Step_Sample (Channel : in out Base_Audio_Channel);
 
    end Base;
 

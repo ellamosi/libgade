@@ -42,7 +42,7 @@ package body Gade.Audio.Timers is
    begin
       Tick (T);
       if Has_Finished (T) and Enabled (T) then
-         --  TODO: T.Step := 0; --  Can pause here, simplify consumers
+         Pause (T);
          Finished (Observer);
       end if;
    end Tick_Notify;
