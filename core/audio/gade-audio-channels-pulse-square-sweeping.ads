@@ -38,6 +38,7 @@ private
 
    type Sweeping_Square_Channel is new Square_Channel with record
       --  TODO: Revise names, sweep_ suffixing
+      --  TODO: Remove unused fields
       NRx0             : Byte;
       Sweep_Enabled    : Boolean;
       Shadow_Frequency : Frequency_Type;

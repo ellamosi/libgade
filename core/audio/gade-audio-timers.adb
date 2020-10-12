@@ -13,6 +13,7 @@ package body Gade.Audio.Timers is
    end Start;
 
    procedure Stop (T : in out Timer) is
+      --  TODO: Remove in lieu of Pause
    begin
       T.Step := 0;
    end Stop;
