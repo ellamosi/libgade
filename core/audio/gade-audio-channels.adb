@@ -2,6 +2,14 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Audio.Channels is
 
+   procedure Create
+     (Channel : out Audio_Channel;
+      Audio   : Audio_Type)
+   is
+   begin
+      Channel.Audio := Audio;
+   end Create;
+
    procedure Reset (Channel : out Audio_Channel) is
    begin
       Channel.Powered := True;
@@ -119,6 +127,11 @@ package body Gade.Audio.Channels is
          Value   : Byte)
       is
          NRx4_In : constant NRx4_Common_IO := To_NRx4_Common_IO (Value);
+
+         Length_Was_Enabled : constant Boolean := Channel.Length_Enabled;
+
+         --  TODO: Define this in spec
+         subtype Non_Lengh_Steps is Frame_Sequencer_Step range None .. Volume_Envelope;
       begin
          Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Write_NRx4" & Value'Img &
                    " Timer Finished: " & Has_Finished (Channel.Length_Timer)'Img);
@@ -137,6 +150,33 @@ package body Gade.Audio.Channels is
          else
             Pause (Channel.Length_Timer);
          end if;
+
+         if not Length_Was_Enabled and Channel.Length_Enabled and
+           Current_Frame_Sequencer_Step (Channel.Audio) not in Non_Lengh_Steps
+         then
+            --  Frame sequencer's current step affected length counter, next one will not.
+            --  Extra clocking happens here:
+
+            Tick (Channel.Length_Timer); -- TODO: Figure out underflow case
+            Put_Line ("ENABLING LENGTH IN FIRST HALF OF PERIOD! EXTRA TICK! (Rem:" &
+                      Channel.Length_Timer.Ticks_Remaining'Img & ")");
+            if Has_Finished (Channel.Length_Timer) then
+               Pause (Channel.Length_Timer);
+               Put_Line ("Extra tick caused timer end, should disable");
+            end if;
+         end if;
+
+
+
+--           if Channel.Length_Timer.Ticks_Remaining > Channel.Length / 2 then
+--              Put_Line ("TRIGGER? IN FIRST HALF OF PERIOD!");
+--           else
+--              Put_Line ("TRIGGER? IN SECOND HALF OF PERIOD!");
+--           end if;
+
+
+
+
 
 --           if Channel.Length_Enabled and Has_Finished (Channel.Length_Timer) then
 --              Put_Line ("Trigger Convert length to max (started)");
@@ -243,9 +283,7 @@ package body Gade.Audio.Channels is
          --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length Timer Stopped");
          Pause (Channel.Length_Timer); --  TODO: Do this as part of the timer
          if Channel.Length_Enabled then
-            --  Length counter reaching 0 does not disable the length enable flag.
-         --  Channel.Length_Enabled := False;
-         --  if Channel.Length_Enabled then
+            --  Length counter reaching 0 does NOT disable the length enable flag.
             Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length triggered disable");
             Base_Audio_Channel'Class (Channel).Disable;
          end if;

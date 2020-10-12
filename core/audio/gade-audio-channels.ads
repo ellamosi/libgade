@@ -9,6 +9,10 @@ package Gade.Audio.Channels is
 
    type Audio_Channel is abstract tagged private;
 
+   procedure Create
+     (Channel : out Audio_Channel;
+      Audio   : Audio_Type);
+
    procedure Reset (Channel : out Audio_Channel);
 
    function Read
@@ -40,6 +44,7 @@ package Gade.Audio.Channels is
 private
 
    type Audio_Channel is abstract tagged record
+      Audio   : Audio_Type;
       Powered : Boolean;
    end record;
 

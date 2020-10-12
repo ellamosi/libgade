@@ -133,11 +133,11 @@ private
    Frame_Sequencer_Freq : constant := 512; -- Hz
    Samples_Frame_Sequencer_Tick : constant := Samples_Second / Frame_Sequencer_Freq;
 
-   type Frame_Sequencer_Trigger is
-     (Length_Counter, Frequency_Sweep, Volume_Envelope);
+--     type Frame_Sequencer_Trigger is
+--       (Length_Counter, Frequency_Sweep, Volume_Envelope);
 
    type Frame_Sequencer_Step is
-     (None, Length_Counter, Length_Counter_Frequency_Sweep, Volume_Envelope);
+     (None, Volume_Envelope, Length_Counter, Length_Counter_Frequency_Sweep);
 
    type Frame_Sequencer_Step_Index is mod 8;
 
@@ -151,6 +151,10 @@ private
         None,
         Length_Counter_Frequency_Sweep,
         Volume_Envelope);
+
+   function Current_Frame_Sequencer_Step
+     (Audio : Audio_Type)
+      return Frame_Sequencer_Step;
 
    procedure Tick_Frame_Sequencer (Audio : in out Audio_Type);
 

@@ -37,8 +37,12 @@ package body Gade.Audio is
    procedure Create (Audio : aliased out Audio_Type) is
    begin
       Audio := new Opaque_Audio_Type;
+      Create (Audio.Square_1, Audio);
+      Create (Audio.Square_2, Audio);
+      Create (Audio.Wave, Audio);
+      Create (Audio.Noise, Audio);
+      --  TODO: This should be part of the channel's Create method
       Audio.Wave.Set_Table (Audio.Wave_Table'Access);
-
    end Create;
 
    procedure Reset (Audio : in out Audio_Type) is
@@ -264,5 +268,13 @@ package body Gade.Audio is
       --  Put_Line (Audio.Elapsed_Cycles'Img & " fs");
       Audio.Elapsed_Cycles := 0;
    end Flush_Frame;
+
+   function Current_Frame_Sequencer_Step
+     (Audio : Audio_Type)
+      return Frame_Sequencer_Step
+   is
+   begin
+      return Frame_Sequencer_Steps (Audio.Frame_Seq_Step_Idx);
+   end Current_Frame_Sequencer_Step;
 
 end Gade.Audio;
