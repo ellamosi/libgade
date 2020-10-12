@@ -2,7 +2,12 @@ package body Gade.Audio.Timers is
 
    procedure Setup (T : out Timer) is
    begin
-      T.Remaining := 1;
+      Setup (T, 1);
+   end Setup;
+
+   procedure Setup (T : out Timer; Ticks : Positive) is
+   begin
+      T.Remaining := Ticks;
       Stop (T);
    end Setup;
 
@@ -64,6 +69,7 @@ package body Gade.Audio.Timers is
       Setup (T, 1);
    end Setup;
 
+   overriding
    procedure Setup (T : out Repeatable_Timer; Ticks : Positive) is
    begin
       T.Initial := Ticks;

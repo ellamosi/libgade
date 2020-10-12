@@ -1,8 +1,12 @@
 package Gade.Audio.Timers is
 
+   --  TODO: Cleanup this interface
+
    type Timer is tagged private;
 
    procedure Setup (T : out Timer);
+
+   procedure Setup (T : out Timer; Ticks : Positive);
 
    procedure Start (T : in out Timer'Class; Ticks : Positive);
 
@@ -31,6 +35,7 @@ package Gade.Audio.Timers is
    overriding
    procedure Setup (T : out Repeatable_Timer);
 
+   overriding
    procedure Setup (T : out Repeatable_Timer; Ticks : Positive);
 
    procedure Start (T : in out Repeatable_Timer);
