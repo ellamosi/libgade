@@ -128,22 +128,32 @@ package body Gade.Audio.Channels is
       is
          NRx4_In : constant NRx4_Common_IO := To_NRx4_Common_IO (Value);
 
-         Length_Was_Enabled : constant Boolean := Channel.Length_Enabled;
+         Extra_Tick : Boolean;
+
+         CE : Boolean;
 
          --  TODO: Define this in spec
          subtype Non_Lengh_Steps is Frame_Sequencer_Step range None .. Volume_Envelope;
+         B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) not in Non_Lengh_Steps;
       begin
+         CE := Base_Audio_Channel'Class (Channel).Can_Enable;
          Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Write_NRx4" & Value'Img &
-                   " Timer Finished: " & Has_Finished (Channel.Length_Timer)'Img);
+                     " Timer Finished: " & Has_Finished (Channel.Length_Timer)'Img &
+                     " Length was enabled:" & Channel.Length_Enabled'Img &
+                     " Extra clock FSeq state:" & B'Img & " CE " & CE'Img);
 
-         --  Length Enable gets set regardless of trigger:
-         --  Channel.Length_Enabled := NRx4_In.Length_Enable
+         --  The timer will stop ticking once it reaches 0, but the length
+         --  enable flag will remain on. Need to check timer state and not previous
+         --  flag state.
+         Extra_Tick := not Enabled (Channel.Length_Timer) and NRx4_In.Length_Enable and
+           Current_Frame_Sequencer_Step (Channel.Audio) not in Non_Lengh_Steps;
 
-         Channel.Length_Enabled := NRx4_In.Length_Enable;
-         if Has_Finished (Channel.Length_Timer) and (NRx4_In.Trigger or Channel.Length_Enabled) then
+         if Has_Finished (Channel.Length_Timer) and NRx4_In.Trigger then
             Setup (Channel.Length_Timer, Length_Max);
             Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max");
          end if;
+
+         Channel.Length_Enabled := NRx4_In.Length_Enable;
 
          if Channel.Length_Enabled then
             Resume (Channel.Length_Timer);
@@ -151,74 +161,41 @@ package body Gade.Audio.Channels is
             Pause (Channel.Length_Timer);
          end if;
 
-         if not Length_Was_Enabled and Channel.Length_Enabled and
-           Current_Frame_Sequencer_Step (Channel.Audio) not in Non_Lengh_Steps
-         then
+         if Extra_Tick then
             --  Frame sequencer's current step affected length counter, next one will not.
             --  Extra clocking happens here:
 
-            Tick (Channel.Length_Timer); -- TODO: Figure out underflow case
+            Tick (Channel.Length_Timer); -- TODO: Figure out underflow case, if any.
             Put_Line ("ENABLING LENGTH IN FIRST HALF OF PERIOD! EXTRA TICK! (Rem:" &
                       Channel.Length_Timer.Ticks_Remaining'Img & ")");
-            if Has_Finished (Channel.Length_Timer) then
-               Pause (Channel.Length_Timer);
-               Put_Line ("Extra tick caused timer end, should disable");
-            end if;
          end if;
 
+         --  This was a silly attempt to pass "Disabled DAC shouldn't stop other trigger effects"
+         if Extra_Tick and Has_Finished (Channel.Length_Timer) and not Channel.Enabled and not CE then
+            --  The test:
+            --  Sets length to 1
+            --  triggers/enables length (but cannot really enable as DAC is unpowered).
+            --    A supurious tick happens, which would set length to 0.
+            --    Comment states this event should set length to max (UNCLEAR WHY THIS WOULD HAPPEN?)
+            --  powers DAC
+            --  triggers/disables length, no suppurious tick happens (UNSURE IF RIGHT)
+            --  ending routine triggers/enables length again no suppurious tick happens
+            --  expects length timer to have MAX-1 ticks left (What is expected to trigger that -1 tick?)
 
+--              Setup (Channel.Length_Timer, Length_Max - 1);
+--              Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max");
+            null;
+         end if;
 
---           if Channel.Length_Timer.Ticks_Remaining > Channel.Length / 2 then
---              Put_Line ("TRIGGER? IN FIRST HALF OF PERIOD!");
---           else
---              Put_Line ("TRIGGER? IN SECOND HALF OF PERIOD!");
---           end if;
-
-
-
-
-
---           if Channel.Length_Enabled and Has_Finished (Channel.Length_Timer) then
---              Put_Line ("Trigger Convert length to max (started)");
---              Start (Channel.Length_Timer, Length_Max);
---  --           elsif Has_Finished (Channel.Length_Timer) and not Channel.Length_Enabled then
---  --              --  Resume (Channel.Length_Timer);
---  --              Put_Line ("Trigger Convert length to max (paused)");
---  --              Setup (Channel.Length_Timer, Length_Max);
---  --              Put_Line ("ENABLING LENGTH!" &
---  --                          Channel.Length_Timer.Ticks_Remaining'Img & "/" &
---  --                          Channel.Length'Img);
---  --              if Channel.Length_Timer.Ticks_Remaining > Channel.Length / 2 then
---  --                 Put_Line ("ENABLING IN FIRST HALF OF PERIOD!");
---  --                 --  TODO: Unnest
---  --                 Tick (Channel.Length_Timer); --  TODO: This could cause a range error
---  --              else
---  --                 Put_Line ("ENABLING IN SECOND HALF OF PERIOD!");
---  --              end if;
---           else
---              --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length timer disabled");
---              --  Pause (Channel.Length_Timer);
---              null;
---           end if;
-
-         if NRx4_In.Trigger and Base_Audio_Channel'Class (Channel).Can_Enable then
+         if Extra_Tick and Has_Finished (Channel.Length_Timer) and Channel.Enabled and not NRx4_In.Trigger then
+            --  Pause (Channel.Length_Timer);
+            --  TODO: Actually disable channel
+            --  "If this decrement makes it zero and trigger is clear, the channel is disabled."
+            --  How to do this in a non dirty way?
+            Put_Line ("Extra tick caused timer end, should disable");
+            Step_Length (Channel);
+         elsif NRx4_In.Trigger and Base_Audio_Channel'Class (Channel).Can_Enable then
             Channel.Enabled := True;
-
---              if Channel.Length_Enabled then
---                 Resume (Channel.Length_Timer);
---              end if;
-
-
---              if Has_Finished (Channel.Length_Timer) and Channel.Length_Enabled then
---                 Put_Line ("Trigger Convert length to max (started)");
---                 Start (Channel.Length_Timer, Length_Max);
---              elsif Has_Finished (Channel.Length_Timer) and not Channel.Length_Enabled then
---                 Put_Line ("Trigger Convert length to max (paused)");
---                 Setup (Channel.Length_Timer, Length_Max);
---              end if;
-
-
-
             --  We don't know how long the next sample will be yet, fetch next
             --  sample in the following tick:
             Start (Channel.Sample_Timer, 1);
@@ -282,8 +259,10 @@ package body Gade.Audio.Channels is
       begin
          --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length Timer Stopped");
          Pause (Channel.Length_Timer); --  TODO: Do this as part of the timer
-         if Channel.Length_Enabled then
-            --  Length counter reaching 0 does NOT disable the length enable flag.
+         if Channel.Length_Enabled then -- TODO: Unsure if needed
+            --  Disabled channel should still clock length
+            --  Length counter reaching 0 does NOT disable the length enable flag?
+            --  Channel.Length_Enabled := False;
             Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length triggered disable");
             Base_Audio_Channel'Class (Channel).Disable;
          end if;
@@ -296,8 +275,8 @@ package body Gade.Audio.Channels is
            (Observer_Type => Base_Audio_Channel,
             Finished      => Step_Length);
       begin
-         --  Put_Line ("Tick_Length Enabled" & Enabled (Channel.Length_Timer)'Img);
          Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
+         --  Put_Line ("Length tick" & Ticks_Remaining (Channel.Length_Timer)'Img);
       end Tick_Length;
 
    end Base;
