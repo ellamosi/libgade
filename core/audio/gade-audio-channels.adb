@@ -146,7 +146,8 @@ package body Gade.Audio.Channels is
          --  The timer will stop ticking once it reaches 0, but the length
          --  enable flag will remain on. Need to check timer state and not previous
          --  flag state.
-         Extra_Tick := (not Enabled (Channel.Length_Timer) or not Channel.Length_Enabled) and
+         --  or not Channel.Length_Enabled
+         Extra_Tick := (not Enabled (Channel.Length_Timer)) and
            NRx4_In.Length_Enable and
            Current_Frame_Sequencer_Step (Channel.Audio) not in Non_Lengh_Steps;
 
@@ -176,24 +177,26 @@ package body Gade.Audio.Channels is
                Setup (Channel.Length_Timer, Length_Max);
             end if;
 
-            Resume (Channel.Length_Timer);
-            --  Unsure of this:
-            --  Channel.Length_Enabled := True;
+            if NRx4_In.Length_Enable then
+               Resume (Channel.Length_Timer);
+               --  Unsure of this:
+               --  Channel.Length_Enabled := True;
 
-            if Extra_Tick then
-               Put_Line ("ENABLING LENGTH IN FIRST HALF OF PERIOD! EXTRA TR TICK! (Rem:" &
-                           Channel.Length_Timer.Ticks_Remaining'Img & ")");
-               Tick (Channel.Length_Timer); --  TODO: Handle underflow?
+               if Extra_Tick then
+                  Put_Line ("ENABLING LENGTH IN FIRST HALF OF PERIOD! EXTRA TR TICK! (Rem:" &
+                              Channel.Length_Timer.Ticks_Remaining'Img & ")");
+                  Tick (Channel.Length_Timer); --  TODO: Handle underflow?
+               end if;
+
+               if Has_Finished (Channel.Length_Timer) then
+                  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max");
+                  Setup (Channel.Length_Timer, Length_Max);
+               end if;
+
+               Resume (Channel.Length_Timer);
+               --  Unsure of this:
+               --  Channel.Length_Enabled := True;
             end if;
-
-            if Has_Finished (Channel.Length_Timer) then
-               Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max");
-               Setup (Channel.Length_Timer, Length_Max);
-            end if;
-
-            Resume (Channel.Length_Timer);
-            --  Unsure of this:
-            --  Channel.Length_Enabled := True;
 
             if Base_Audio_Channel'Class (Channel).Can_Enable then
                Channel.Enabled := True;
