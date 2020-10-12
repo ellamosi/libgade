@@ -127,34 +127,55 @@ package body Gade.Audio.Channels is
          --  Channel.Length_Enabled := NRx4_In.Length_Enable
 
          Channel.Length_Enabled := NRx4_In.Length_Enable;
+         if Has_Finished (Channel.Length_Timer) and (NRx4_In.Trigger or Channel.Length_Enabled) then
+            Setup (Channel.Length_Timer, Length_Max);
+            Put_Line (Base_Audio_Channel'Class (Channel).Name & " - 0 length reset to max");
+         end if;
 
          if Channel.Length_Enabled then
             Resume (Channel.Length_Timer);
-            Put_Line ("ENABLING LENGTH!" &
-                        Channel.Length_Timer.Ticks_Remaining'Img & "/" &
-                        Channel.Length'Img);
---              if Channel.Length_Timer.Ticks_Remaining > Channel.Length / 2 then
---                 Put_Line ("ENABLING IN FIRST HALF OF PERIOD!");
---                 --  TODO: Unnest
---                 Tick (Channel.Length_Timer); --  TODO: This could cause a range error
---              else
---                 Put_Line ("ENABLING IN SECOND HALF OF PERIOD!");
---              end if;
          else
-            --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length timer disabled");
             Pause (Channel.Length_Timer);
          end if;
+
+--           if Channel.Length_Enabled and Has_Finished (Channel.Length_Timer) then
+--              Put_Line ("Trigger Convert length to max (started)");
+--              Start (Channel.Length_Timer, Length_Max);
+--  --           elsif Has_Finished (Channel.Length_Timer) and not Channel.Length_Enabled then
+--  --              --  Resume (Channel.Length_Timer);
+--  --              Put_Line ("Trigger Convert length to max (paused)");
+--  --              Setup (Channel.Length_Timer, Length_Max);
+--  --              Put_Line ("ENABLING LENGTH!" &
+--  --                          Channel.Length_Timer.Ticks_Remaining'Img & "/" &
+--  --                          Channel.Length'Img);
+--  --              if Channel.Length_Timer.Ticks_Remaining > Channel.Length / 2 then
+--  --                 Put_Line ("ENABLING IN FIRST HALF OF PERIOD!");
+--  --                 --  TODO: Unnest
+--  --                 Tick (Channel.Length_Timer); --  TODO: This could cause a range error
+--  --              else
+--  --                 Put_Line ("ENABLING IN SECOND HALF OF PERIOD!");
+--  --              end if;
+--           else
+--              --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length timer disabled");
+--              --  Pause (Channel.Length_Timer);
+--              null;
+--           end if;
 
          if NRx4_In.Trigger and Base_Audio_Channel'Class (Channel).Can_Enable then
             Channel.Enabled := True;
 
-            if Has_Finished (Channel.Length_Timer) and Channel.Length_Enabled then
-               Put_Line ("Trigger Convert length to max (started)");
-               Start (Channel.Length_Timer, Length_Max);
-            elsif Has_Finished (Channel.Length_Timer) and not Channel.Length_Enabled then
-               Put_Line ("Trigger Convert length to max (paused)");
-               Setup (Channel.Length_Timer, Length_Max);
-            end if;
+--              if Channel.Length_Enabled then
+--                 Resume (Channel.Length_Timer);
+--              end if;
+
+
+--              if Has_Finished (Channel.Length_Timer) and Channel.Length_Enabled then
+--                 Put_Line ("Trigger Convert length to max (started)");
+--                 Start (Channel.Length_Timer, Length_Max);
+--              elsif Has_Finished (Channel.Length_Timer) and not Channel.Length_Enabled then
+--                 Put_Line ("Trigger Convert length to max (paused)");
+--                 Setup (Channel.Length_Timer, Length_Max);
+--              end if;
 
 
 
@@ -220,11 +241,14 @@ package body Gade.Audio.Channels is
       procedure Step_Length (Channel : in out Base_Audio_Channel) is
       begin
          --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length Timer Stopped");
-         Pause (Channel.Length_Timer);
+         Pause (Channel.Length_Timer); --  TODO: Do this as part of the timer
+         if Channel.Length_Enabled then
+            --  Length counter reaching 0 does not disable the length enable flag.
          --  Channel.Length_Enabled := False;
          --  if Channel.Length_Enabled then
             Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length triggered disable");
             Base_Audio_Channel'Class (Channel).Disable;
+         end if;
          --  end if;
       end Step_Length;
 
