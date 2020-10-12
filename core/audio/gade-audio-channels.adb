@@ -140,12 +140,14 @@ package body Gade.Audio.Channels is
          Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Write_NRx4" & Value'Img &
                      " Timer Rem:" & Ticks_Remaining (Channel.Length_Timer)'Img &
                      " Length was enabled:" & Channel.Length_Enabled'Img &
+                     " Length timer was enabled:" & Enabled (Channel.Length_Timer)'Img &
                      " Extra clock FSeq state:" & B'Img & " CE " & CE'Img);
 
          --  The timer will stop ticking once it reaches 0, but the length
          --  enable flag will remain on. Need to check timer state and not previous
          --  flag state.
-         Extra_Tick := not Enabled (Channel.Length_Timer) and NRx4_In.Length_Enable and
+         Extra_Tick := (not Enabled (Channel.Length_Timer) or not Channel.Length_Enabled) and
+           NRx4_In.Length_Enable and
            Current_Frame_Sequencer_Step (Channel.Audio) not in Non_Lengh_Steps;
 
          Channel.Length_Enabled := NRx4_In.Length_Enable;
@@ -175,6 +177,8 @@ package body Gade.Audio.Channels is
             end if;
 
             Resume (Channel.Length_Timer);
+            --  Unsure of this:
+            --  Channel.Length_Enabled := True;
 
             if Extra_Tick then
                Put_Line ("ENABLING LENGTH IN FIRST HALF OF PERIOD! EXTRA TR TICK! (Rem:" &
@@ -188,6 +192,8 @@ package body Gade.Audio.Channels is
             end if;
 
             Resume (Channel.Length_Timer);
+            --  Unsure of this:
+            --  Channel.Length_Enabled := True;
 
             if Base_Audio_Channel'Class (Channel).Can_Enable then
                Channel.Enabled := True;
