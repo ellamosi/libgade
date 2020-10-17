@@ -45,6 +45,7 @@ private
       Sweep_Timer      : Repeatable_Timer;
       Sweep_Shift      : Sweep_Shift_Type;
       Sweep_Negate     : Boolean;
+      Sweep_Negated    : Boolean;
       Sweep_Period     : Sweep_Period_Type;
    end record;
 
