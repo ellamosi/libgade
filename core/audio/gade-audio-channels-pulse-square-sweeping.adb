@@ -23,34 +23,36 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       New_Frequency : out Integer)
    is
       Shifted  : Integer;
-      --  Shifted : Unsigned_16;
-      Old : Integer;
    begin
       --  Shifted := Shift_Right_Arithmetic (Unsigned_16 (Channel.Shadow_Frequency), Natural (Channel.Sweep_Shift));
       Shifted := (Integer (Channel.Shadow_Frequency) / 2 ** Natural (Channel.Sweep_Shift));
       if Channel.Sweep_Negate then
          --  Down
-         if Channel.Shadow_Frequency > 16#3FF# then
-            Old := Integer (Channel.Shadow_Frequency) - 16#800#;
-            Shifted := (Old / 2 ** Natural (Channel.Sweep_Shift));
-         end if;
+--           if Channel.Shadow_Frequency > 16#3FF# then
+--              Old := Integer (Channel.Shadow_Frequency) - 16#800#;
+--              Shifted := (Old / 2 ** Natural (Channel.Sweep_Shift));
+--           end if;
 
          Put_Line ("Shifted" & Shifted'Img);
 
          Channel.Sweep_Negated := True;
 
-         if Channel.Shadow_Frequency > 16#3FF# then
-            New_Frequency := Natural (Channel.Shadow_Frequency) - 16#800# - Shifted;
-         else
-            New_Frequency := Natural (Channel.Shadow_Frequency) - Shifted;
-         end if;
-         if New_Frequency < 0 then
-            New_Frequency := 16#800# + New_Frequency;
-         end if;
+--           if Channel.Shadow_Frequency > 16#3FF# then
+--              New_Frequency := Natural (Channel.Shadow_Frequency) - 16#800# - Shifted;
+--           else
+--              New_Frequency := Natural (Channel.Shadow_Frequency) - Shifted;
+--           end if;
+         New_Frequency := Natural (Channel.Shadow_Frequency) - Shifted;
+--           if New_Frequency < 0 then
+--              New_Frequency := 16#800# + New_Frequency;
+--           end if;
+
+
          --  New_Freq := Channel.Shadow_Frequency - Frequency_Type (Shifted);
          --  Out_Of_Range := New_Freq > Channel.Shadow_Frequency;
       else
          --  Up
+         Put_Line ("Shifted" & Shifted'Img);
          New_Frequency := Natural (Channel.Shadow_Frequency) + Shifted;
          --  Out_Of_Range := New_Freq < Channel.Shadow_Frequency;
       end if;
@@ -82,6 +84,8 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
 
       if New_Frequency <= 2047 and Channel.Sweep_Shift /= 0 then
          Channel.Shadow_Frequency := Frequency_Type (New_Frequency);
+         --  Hack: Fix frequency reading
+         Channel.Frequency_In.Frequency := Channel.Shadow_Frequency;
          Channel.Set_Frequency (Channel.Shadow_Frequency);
          --  Run calculation AGAIN and do overflow check, but discard new
          --  frequency.
