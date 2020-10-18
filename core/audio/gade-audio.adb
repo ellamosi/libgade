@@ -154,6 +154,7 @@ package body Gade.Audio is
    begin
       Audio.Rem_Frame_Seq_Ticks := Audio.Rem_Frame_Seq_Ticks - Audio.Frame_Seq_Step;
       if Audio.Rem_Frame_Seq_Ticks = 0 then
+         Audio.Frame_Seq_Step_Idx := Audio.Frame_Seq_Step_Idx + 1;
          case Frame_Sequencer_Steps (Audio.Frame_Seq_Step_Idx) is
             when Length_Counter =>
                Tick_Length (Audio.Square_1);
@@ -172,7 +173,6 @@ package body Gade.Audio is
                Tick_Volume_Envelope (Audio.Noise);
             when None => null;
          end case;
-         Audio.Frame_Seq_Step_Idx := Audio.Frame_Seq_Step_Idx + 1;
          Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
       end if;
    end Tick_Frame_Sequencer;
@@ -262,9 +262,10 @@ package body Gade.Audio is
          --   Audio.Frame_Seq_Step_Idx := 0;
          --  When powered on, the frame sequencer is reset so that the next step
          --  will be 0
-         Audio.Frame_Seq_Step_Idx := 0;
+         Audio.Frame_Seq_Step_Idx := 7;
          Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
          Audio.Frame_Seq_Step := 1;
+         Tick_Frame_Sequencer (Audio);
       end if;
       Audio.Powered := New_Power_State;
    end Write_Power_Control_Status;
