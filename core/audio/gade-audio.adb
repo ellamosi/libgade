@@ -32,6 +32,7 @@ package body Gade.Audio is
       Frame_Seq_Step_Idx : Frame_Sequencer_Step_Index;
       Rem_Frame_Seq_Ticks : Natural;
       Powered : Boolean;
+      Frame_Seq_Step : Natural;
    end record;
 
    procedure Create (Audio : aliased out Audio_Type) is
@@ -51,6 +52,7 @@ package body Gade.Audio is
 
       Audio.Elapsed_Cycles := 0;
       Audio.Frame_Seq_Step_Idx := 0;
+      Audio.Frame_Seq_Step := 1;
       Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
 
       Reset (Audio.Square_1);
@@ -150,9 +152,8 @@ package body Gade.Audio is
 
    procedure Tick_Frame_Sequencer (Audio : in out Audio_Type) is
    begin
-      Audio.Rem_Frame_Seq_Ticks := Audio.Rem_Frame_Seq_Ticks - 1;
+      Audio.Rem_Frame_Seq_Ticks := Audio.Rem_Frame_Seq_Ticks - Audio.Frame_Seq_Step;
       if Audio.Rem_Frame_Seq_Ticks = 0 then
-         Audio.Frame_Seq_Step_Idx := Audio.Frame_Seq_Step_Idx + 1;
          case Frame_Sequencer_Steps (Audio.Frame_Seq_Step_Idx) is
             when Length_Counter =>
                Tick_Length (Audio.Square_1);
@@ -171,6 +172,7 @@ package body Gade.Audio is
                Tick_Volume_Envelope (Audio.Noise);
             when None => null;
          end case;
+         Audio.Frame_Seq_Step_Idx := Audio.Frame_Seq_Step_Idx + 1;
          Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
       end if;
    end Tick_Frame_Sequencer;
@@ -243,15 +245,26 @@ package body Gade.Audio is
          Audio.Noise.Turn_Off;
          Audio.Volume_Control.Space := 0;
          Audio.Output_Control.Space := 0;
-         Disable (Audio.Square_1);
-         Disable (Audio.Square_2);
-         Disable (Audio.Wave);
-         Disable (Audio.Noise);
+         --  Turn off and disable?! SHOULD NOT
+--           Disable (Audio.Square_1);
+--           Disable (Audio.Square_2);
+--           Disable (Audio.Wave);
+--           Disable (Audio.Noise);
+
+         Audio.Frame_Seq_Step := 0;
       elsif not Audio.Powered and New_Power_State then
          Audio.Square_1.Turn_On;
          Audio.Square_2.Turn_On;
          Audio.Wave.Turn_On;
          Audio.Noise.Turn_On;
+         --  Unusre about this
+         --  Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
+         --   Audio.Frame_Seq_Step_Idx := 0;
+         --  When powered on, the frame sequencer is reset so that the next step
+         --  will be 0
+         Audio.Frame_Seq_Step_Idx := 0;
+         Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
+         Audio.Frame_Seq_Step := 1;
       end if;
       Audio.Powered := New_Power_State;
    end Write_Power_Control_Status;

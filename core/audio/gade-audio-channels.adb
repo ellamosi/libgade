@@ -67,6 +67,16 @@ package body Gade.Audio.Channels is
 
    package body Base is
       overriding
+      procedure Create
+        (Channel : out Base_Audio_Channel;
+         Audio   : Audio_Type)
+      is
+      begin
+         Audio_Channel (Channel).Create (Audio);
+         Setup (Channel.Length_Timer);
+      end Create;
+
+      overriding
       procedure Reset (Channel : out Base_Audio_Channel) is
       begin
          Audio_Channel (Channel).Reset;
@@ -74,7 +84,6 @@ package body Gade.Audio.Channels is
          Channel.Powered := True;
          Channel.Length_Enabled := False;
          Channel.Level := 0;
-         Setup (Channel.Length_Timer);
          Setup (Channel.Sample_Timer);
       end Reset;
 
@@ -243,6 +252,10 @@ package body Gade.Audio.Channels is
       overriding
       function Enabled (Channel : Base_Audio_Channel) return Boolean is
       begin
+         if Base_Audio_Channel'Class (Channel).Name = "Square 1" then
+            Put_Line ("Enabled? " & Channel.Enabled'Img &
+                        " - LT:" & Channel.Length_Timer.Ticks_Remaining'Img);
+         end if;
          return Channel.Enabled;
       end Enabled;
 
@@ -267,7 +280,9 @@ package body Gade.Audio.Channels is
            (Observer_Type => Base_Audio_Channel,
             Finished      => Length_Triggered_Disable);
       begin
-         --  Put_Line ("Tick_Notify_Length_Step " & Channel.Length_Timer.Ticks_Remaining'Img);
+         if Base_Audio_Channel'Class (Channel).Name = "Square 1" then
+            Put_Line ("Tick_Length " & Channel.Length_Timer.Ticks_Remaining'Img);
+         end if;
          Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
          --  Put_Line ("Length tick" & Ticks_Remaining (Channel.Length_Timer)'Img);
       end Tick_Length;

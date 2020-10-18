@@ -81,6 +81,11 @@ private
       type Base_Audio_Channel is abstract new Audio_Channel with private;
 
       overriding
+      procedure Create
+        (Channel : out Base_Audio_Channel;
+         Audio   : Audio_Type);
+
+      overriding
       procedure Reset (Channel : out Base_Audio_Channel);
 
       overriding
