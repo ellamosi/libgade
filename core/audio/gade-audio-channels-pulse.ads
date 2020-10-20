@@ -6,6 +6,9 @@ package Gade.Audio.Channels.Pulse is
    procedure Reset (Channel : out Pulse_Channel);
 
    overriding
+   procedure Turn_Off (Channel : in out Pulse_Channel);
+
+   overriding
    procedure Disable (Channel : in out Pulse_Channel);
 
    procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel);

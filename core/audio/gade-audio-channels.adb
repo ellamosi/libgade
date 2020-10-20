@@ -20,6 +20,11 @@ package body Gade.Audio.Channels is
       Channel.Powered := True;
    end Turn_On;
 
+   procedure Turn_Off (Channel : in out Audio_Channel) is
+   begin
+      Channel.Powered := False;
+   end Turn_Off;
+
    function Read
      (Channel  : Audio_Channel'Class;
       Register : Channel_Register)
@@ -41,7 +46,7 @@ package body Gade.Audio.Channels is
       Value    : Byte)
    is
    begin
-      if Channel.Powered then
+      if Channel.Powered or Register = NRx1 then
          case Register is
          when NRx0 => Channel.Write_NRx0 (Value);
          when NRx1 => Channel.Write_NRx1 (Value);
@@ -57,13 +62,6 @@ package body Gade.Audio.Channels is
    begin
       return Blank_Value;
    end Read_Blank;
-
-   procedure Turn_Off (Channel : in out Audio_Channel) is
-   begin
-      Audio_Channel'Class (Channel).Disable;
-      Audio_Channel'Class (Channel).Reset;
-      Channel.Powered := False;
-   end Turn_Off;
 
    package body Base is
       overriding
@@ -81,11 +79,35 @@ package body Gade.Audio.Channels is
       begin
          Audio_Channel (Channel).Reset;
          Channel.Enabled := False;
-         Channel.Powered := True;
          Channel.Length_Enabled := False;
          Channel.Level := 0;
          Setup (Channel.Sample_Timer);
       end Reset;
+
+      overriding
+      procedure Turn_Off (Channel : in out Base_Audio_Channel) is
+      begin
+         Audio_Channel (Channel).Turn_Off;
+         Channel.Length_Enabled := False;
+         Channel.Level := 0;
+         Channel.Length_Timer.Pause;
+         Setup (Channel.Sample_Timer);
+      end Turn_Off;
+
+      overriding
+      procedure Turn_On (Channel : in out Base_Audio_Channel) is
+      begin
+         Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Turn On (LE: " & Channel.Length_Enabled'Img &
+                     " Rem:" & Channel.Length_Timer.Ticks_Remaining'Img & ")");
+         Audio_Channel (Channel).Turn_On;
+         if Channel.Length_Enabled then
+            Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Resume LT");
+            Channel.Length_Timer.Resume;
+         end if;
+         Channel.Enabled := False;
+         Channel.Level := 0;
+         Setup (Channel.Sample_Timer);
+      end Turn_On;
 
       procedure Step_Sample (Channel : in out Base_Audio_Channel) is
          New_Sample_Level : Sample;
@@ -156,6 +178,8 @@ package body Gade.Audio.Channels is
          --  TODO: Remove
          B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Steps;
       begin
+         if not Channel.Powered then return; end if;
+
          CE := Base_Audio_Channel'Class (Channel).Can_Enable;
          Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Write_NRx4" & Value'Img &
                      " Timer Rem:" & Length_Timer.Ticks_Remaining'Img &
@@ -252,10 +276,9 @@ package body Gade.Audio.Channels is
       overriding
       function Enabled (Channel : Base_Audio_Channel) return Boolean is
       begin
-         if Base_Audio_Channel'Class (Channel).Name = "Square 1" then
-            Put_Line ("Enabled? " & Channel.Enabled'Img &
-                        " - LT:" & Channel.Length_Timer.Ticks_Remaining'Img);
-         end if;
+         Put_Line (Base_Audio_Channel'Class (Channel).Name &
+                     "Enabled? " & Channel.Enabled'Img &
+                     " - LT:" & Channel.Length_Timer.Ticks_Remaining'Img);
          return Channel.Enabled;
       end Enabled;
 

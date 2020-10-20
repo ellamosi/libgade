@@ -89,6 +89,12 @@ private
       procedure Reset (Channel : out Base_Audio_Channel);
 
       overriding
+      procedure Turn_On (Channel : in out Base_Audio_Channel);
+
+      overriding
+      procedure Turn_Off (Channel : in out Base_Audio_Channel);
+
+      overriding
       procedure Next_Sample
         (Channel : in out Base_Audio_Channel;
          S       : out Sample);

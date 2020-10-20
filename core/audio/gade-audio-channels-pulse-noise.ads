@@ -6,6 +6,9 @@ package Gade.Audio.Channels.Pulse.Noise is
    procedure Reset (Channel : out Noise_Channel);
 
    overriding
+   procedure Turn_Off (Channel : in out Noise_Channel);
+
+   overriding
    function Name (Channel : Noise_Channel) return String;
 
 private

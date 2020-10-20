@@ -6,6 +6,9 @@ package Gade.Audio.Channels.Pulse.Square is
    procedure Reset (Channel : out Square_Channel);
 
    overriding
+   procedure Turn_Off (Channel : in out Square_Channel);
+
+   overriding
    function Name (Channel : Square_Channel) return String;
 
 private

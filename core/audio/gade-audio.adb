@@ -238,6 +238,7 @@ package body Gade.Audio is
       Audio.Power_Control.Space := Value or Power_Control_Status_Write_Mask;
       New_Power_State := Audio.Power_Control.Power;
       if Audio.Powered and not New_Power_State then
+         Put_Line ("===================== APU Power OFF =====================");
          --  TODO: Powering down should clear and prevent accessing most registers
          Audio.Square_1.Turn_Off;
          Audio.Square_2.Turn_Off;
@@ -253,6 +254,7 @@ package body Gade.Audio is
 
          Audio.Frame_Seq_Step := 0;
       elsif not Audio.Powered and New_Power_State then
+         Put_Line ("===================== APU Power ON =====================");
          Audio.Square_1.Turn_On;
          Audio.Square_2.Turn_On;
          Audio.Wave.Turn_On;

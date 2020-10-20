@@ -14,6 +14,19 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       Channel.Sweep_Shift := 0;
    end Reset;
 
+   overriding
+   procedure Turn_Off (Channel : in out Sweeping_Square_Channel) is
+   begin
+      Square_Channel (Channel).Turn_Off;
+      Channel.Sweep_Enabled := False;
+      Channel.NRx0 := NRx0_Sweep_Mask;
+      Channel.Sweep_Negate := False;
+      Channel.Sweep_Negated := False;
+      Setup (Channel.Sweep_Timer);
+      Channel.Sweep_Period := 0;
+      Channel.Sweep_Shift := 0;
+   end Turn_Off;
+
    --  TODO: In spec
    procedure Calculate_New_Frequency_Handle_Overflow
      (Channel       : in out Sweeping_Square_Channel;

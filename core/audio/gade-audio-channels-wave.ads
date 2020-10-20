@@ -34,6 +34,9 @@ package Gade.Audio.Channels.Wave is
    procedure Reset (Channel : out Wave_Channel);
 
    overriding
+   procedure Turn_Off (Channel : in out Wave_Channel);
+
+   overriding
    procedure Disable (Channel : in out Wave_Channel);
 
    overriding

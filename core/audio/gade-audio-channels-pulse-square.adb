@@ -11,6 +11,16 @@ package body Gade.Audio.Channels.Pulse.Square is
    end Reset;
 
    overriding
+   procedure Turn_Off (Channel : in out Square_Channel) is
+   begin
+      Pulse_Channel (Channel).Turn_Off;
+      Channel.Pulse_State := Pulse_Low;
+      Channel.Pulse_Cycles := (1, 1);
+      Channel.Duty := Duty_Type'Val (0);
+      Channel.NRx1 := NRx1_Duty_Mask;
+   end Turn_Off;
+
+   overriding
    procedure Set_Frequency
      (Channel : in out Square_Channel;
       Freq    : Frequency_Type)

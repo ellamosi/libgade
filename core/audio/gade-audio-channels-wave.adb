@@ -22,6 +22,17 @@ package body Gade.Audio.Channels.Wave is
    end Reset;
 
    overriding
+   procedure Turn_Off (Channel : in out Wave_Channel) is
+   begin
+      Base.Base_Audio_Channel (Channel).Turn_Off;
+      Channel.Sample_Index := 0;
+      Channel.Sample_Time := 1;
+      Channel.NRx0 := NRx0_Power_Mask;
+      Channel.NRx2 := NRx2_Volume_Mask;
+      Channel.Volume_Shift := Volume_Shifts (None);
+   end Turn_Off;
+
+   overriding
    procedure Next_Sample_Level
      (Channel      : in out Wave_Channel;
       Sample_Level : out Sample;

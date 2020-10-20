@@ -18,6 +18,21 @@ package body Gade.Audio.Channels.Pulse is
    end Reset;
 
    overriding
+   procedure Turn_Off (Channel : in out Pulse_Channel) is
+      Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
+   begin
+      Base.Base_Audio_Channel (Channel).Turn_Off;
+      Channel.NRx2 := 16#00#;
+      Channel.Pulse_Levels := (0, 0);
+      Setup (Envelope.Timer);
+      Envelope.Step := 0;
+      Envelope.Period := 0;
+      Envelope.Current_Volume := 0;
+      Envelope.Initial_Volume := 0;
+      Envelope.Direction := Down;
+   end Turn_Off;
+
+   overriding
    function Read_NRx2 (Channel : Pulse_Channel) return Byte is
    begin
       return Channel.NRx2; --  Does not require any masking
