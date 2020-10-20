@@ -339,6 +339,13 @@ package body Gade.Audio.Channels is
          Base_Channel (Channel).Write_NRx4 (Value);
       end Write_NRx4;
 
+      overriding
+      procedure Turn_Off (Channel : in out Channel_With_Frequency) is
+      begin
+         Base_Channel (Channel).Turn_Off;
+         Channel.Frequency_In.NRx3 := 0;
+      end Turn_Off;
+
    end Frequency_Mixin;
 
 end Gade.Audio.Channels;

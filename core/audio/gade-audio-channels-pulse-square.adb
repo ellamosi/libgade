@@ -13,7 +13,7 @@ package body Gade.Audio.Channels.Pulse.Square is
    overriding
    procedure Turn_Off (Channel : in out Square_Channel) is
    begin
-      Pulse_Channel (Channel).Turn_Off;
+      Channel_With_Frequency (Channel).Turn_Off;
       Channel.Pulse_State := Pulse_Low;
       Channel.Pulse_Cycles := (1, 1);
       Channel.Duty := Duty_Type'Val (0);

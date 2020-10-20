@@ -221,6 +221,9 @@ private
         (Channel : in out Channel_With_Frequency;
          Value   : Byte);
 
+      overriding
+      procedure Turn_Off (Channel : in out Channel_With_Frequency);
+
    end Frequency_Mixin;
 
 end Gade.Audio.Channels;
