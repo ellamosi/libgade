@@ -9,6 +9,8 @@ with Test_Directories;      use Test_Directories;
 
 with Gade.Interfaces;   use Gade.Interfaces;
 with Gade.Video_Buffer; use Gade.Video_Buffer;
+with Gade.Audio_Buffer; use Gade.Audio_Buffer;
+with Ada.Command_Line;
 
 package body Test_LCD_Output is
 
@@ -18,7 +20,8 @@ package body Test_LCD_Output is
       To   : not null Any_Bitmap_Buffer);
    procedure Run_ROM
      (ROM_File : String;
-      Buffer   : access RGB32_Display_Buffer;
+      V_Buffer : RGB32_Display_Buffer_Access;
+      A_Buffer : Audio_Buffer_Access;
       Frames   : Positive);
    procedure Write_LCD_Output (Buffer : RGB32_Display_Buffer);
 
@@ -68,21 +71,32 @@ package body Test_LCD_Output is
 
    procedure Run_ROM
      (ROM_File : String;
-      Buffer   : access RGB32_Display_Buffer;
+      V_Buffer : RGB32_Display_Buffer_Access;
+      A_Buffer : Audio_Buffer_Access;
       Frames   : Positive)
    is
       G : Gade_Type;
+      Requested_Samples : constant := 1000;
+      Generated_Samples : Positive;
+      FF : Boolean;
+
+      F      : Ada.Streams.Stream_IO.File_Type;
+      Stream : Ada.Streams.Stream_IO.Stream_Access;
    begin
+      Ada.Streams.Stream_IO.Create (F);
+      Stream := Ada.Streams.Stream_IO.Stream (F);
       Create (G);
       Load_ROM (G, Test_Dir & '/' & ROM_File);
       for i in 1 .. Frames loop
-         Next_Frame (G, Buffer);
+         FF := False;
+         while not FF loop
+            Run_For (G, Requested_Samples, Generated_Samples, V_Buffer, A_Buffer, FF);
+            for j in 0 .. Generated_Samples - 1 loop
+               Sample'Write (Stream, A_Buffer (j).Left);
+            end loop;
+         end loop;
       end loop;
    end Run_ROM;
-
-   ----------------------
-   -- Write_LCD_Output --
-   ----------------------
 
    procedure Write_LCD_Output (Buffer : RGB32_Display_Buffer) is
       Output_File : Ada.Streams.Stream_IO.File_Type;
@@ -94,23 +108,27 @@ package body Test_LCD_Output is
       Close (Output_File);
    end Write_LCD_Output;
 
-   ---------------------
-   -- Test_LCD_Output --
-   ---------------------
-
    procedure Run_LCD_Test
      (ROM_File  : String;
       Test_Name : String := "Untitled";
       Frames    : Positive := 100)
    is
-      Buffer   : aliased RGB32_Display_Buffer;
+      V_Buff : aliased RGB32_Display_Buffer;
+      A_Buff : aliased Audio_Buffer_Type;
+
+      V_Buff_Ptr : constant RGB32_Display_Buffer_Access :=
+        V_Buff'Unchecked_Access;
+      A_Buff_Ptr : constant Audio_Buffer_Access :=
+        A_Buff'Unchecked_Access;
    begin
-      Run_ROM (ROM_File, Buffer'Access, Frames);
-      Write_LCD_Output (Buffer);
+      Run_ROM (ROM_File, V_Buff_Ptr, A_Buff_Ptr, Frames);
+      Write_LCD_Output (V_Buff);
       if Binnary_Equal (Test_Dir & "/test.bmp", Test_Dir & "/ref.bmp") then
          Put_Line (Test_Name & " test OK");
+         Ada.Command_Line.Set_Exit_Status (0);
       else
          Put_Line (Test_Name & " test FAILED");
+         Ada.Command_Line.Set_Exit_Status (1);
       end if;
    end Run_LCD_Test;
 

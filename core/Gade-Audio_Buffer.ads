@@ -27,10 +27,10 @@ package Gade.Audio_Buffer is
    Extra_Samples   : constant := 2_064; -- May run for some samples too long
    Maximum_Samples : constant := Samples_Frame + Extra_Samples;
 
-   type Audio_Buffer_Type is new Audio_Buffer (0 .. Maximum_Samples - 1);
-   --  with Convention => C;
+   type Audio_Buffer_Type is new Audio_Buffer (0 .. Maximum_Samples - 1)
+     with Convention => C;
 
-   type Audio_Buffer_Access is access all Audio_Buffer_Type;
-   --  with Convention => C;
+   type Audio_Buffer_Access is access all Audio_Buffer_Type
+     with Convention => C;
 
 end Gade.Audio_Buffer;
