@@ -1,6 +1,1 @@
-Loading bank  0
-Loading bank  1
-Loader: Successfully loaded 2 ROM banks.
-Cartridge type: ROM_MBC1
-Controller type: MBC1
-CPU Instructions: op a,(hl) test OK
+DMG Sound: Length Counter test OK
