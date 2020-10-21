@@ -54,7 +54,8 @@ package body Gade.Audio.Channels.Wave is
       Freq    : Frequency_Type)
    is
    begin
-      Channel.Sample_Time := Positive (Max_Period - Natural (Freq)) / 2;
+      Put_Line ("Wave.Set_Frequency" & Freq'Img);
+      Channel.Sample_Time := Natural'Max ((Max_Period - Natural (Freq)) / 2, 1);
    end Set_Frequency;
 
    overriding
