@@ -71,7 +71,7 @@ package body Gade.Audio.Channels is
       return Blank_Value;
    end Read_Blank;
 
-   package body Base is separate;
+   package body Length_Trigger is separate;
    package body Frequency_Mixin is separate;
 
 end Gade.Audio.Channels;

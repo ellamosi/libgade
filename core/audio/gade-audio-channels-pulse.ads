@@ -6,10 +6,6 @@ package Gade.Audio.Channels.Pulse is
 
 private
 
-   --  All the Pulse based channels have a maximum length of 64, only the wave
-   --  channel differs with a maximum length of 256.
-   Length_Bit_Size : constant := 6;
-
    type Envelope_Volume is mod 2 ** 4;
    type Envelope_Direction is (Down, Up);
    for Envelope_Direction use (Down => 0, Up => 1);
@@ -82,9 +78,14 @@ private
    function Current_Volume (Envelope : Volume_Envelope_Type) return Natural;
 
 
-   package Base is new Channels.Base (Length_Bit_Size);
+   --  All the Pulse based channels have a maximum length of 64, only the wave
+   --  channel differs with a maximum length of 256.
+   Length_Bit_Size : constant := 6;
 
-   subtype Parent is Base.Base_Audio_Channel;
+   package Pulse_Length_Trigger is new Length_Trigger (Length_Bit_Size);
+   use Pulse_Length_Trigger;
+
+   subtype Parent is Length_Trigger_Channel;
    type Pulse_Channel is abstract new Parent with record
       Pulse_Levels    : Pulse_Levels_Type;
       NRx2            : Byte;

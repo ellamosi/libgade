@@ -79,54 +79,58 @@ private
 
    generic
       Length_Bits : Positive;
-   package Base is
+   package Length_Trigger is
 
-      --  Adds length and trigger functionality
-      type Base_Audio_Channel is abstract new Audio_Channel with private;
+      type Length_Trigger_Channel is abstract new Audio_Channel with private;
 
       overriding
       procedure Create
-        (Channel : out Base_Audio_Channel;
+        (Channel : out Length_Trigger_Channel;
          Audio   : Audio_Type);
 
       overriding
-      procedure Turn_On (Channel : in out Base_Audio_Channel);
+      procedure Turn_On (Channel : in out Length_Trigger_Channel);
 
       overriding
       procedure Disable
-        (Channel : in out Base_Audio_Channel;
+        (Channel : in out Length_Trigger_Channel;
          Mode    : Disable_Mode);
 
       overriding
       procedure Next_Sample
-        (Channel : in out Base_Audio_Channel;
+        (Channel : in out Length_Trigger_Channel;
          S       : out Sample);
 
       overriding
-      procedure Trigger (Channel : in out Base_Audio_Channel) is null;
+      procedure Trigger
+        (Channel : in out Length_Trigger_Channel) is null;
 
-      function Can_Enable (Channel : Base_Audio_Channel)
+      function Can_Enable (Channel : Length_Trigger_Channel)
                            return Boolean is abstract;
 
       overriding
-      function Read_NRx4 (Channel : Base_Audio_Channel) return Byte;
+      function Read_NRx4 (Channel : Length_Trigger_Channel) return Byte;
 
       overriding
-      procedure Write_NRx1 (Channel : in out Base_Audio_Channel; Value : Byte);
+      procedure Write_NRx1
+        (Channel : in out Length_Trigger_Channel;
+         Value   : Byte);
 
       overriding
-      procedure Write_NRx4 (Channel : in out Base_Audio_Channel; Value : Byte);
+      procedure Write_NRx4
+        (Channel : in out Length_Trigger_Channel;
+         Value   : Byte);
 
       overriding
-      function Enabled (Channel : Base_Audio_Channel) return Boolean;
+      function Enabled (Channel : Length_Trigger_Channel) return Boolean;
 
       procedure Next_Sample_Level
-        (Channel      : in out Base_Audio_Channel;
+        (Channel      : in out Length_Trigger_Channel;
          Sample_Level : out Sample;
          Level_Cycles : out Positive) is abstract;
 
       overriding
-      procedure Tick_Length (Channel : in out Base_Audio_Channel);
+      procedure Tick_Length (Channel : in out Length_Trigger_Channel);
 
    private
 
@@ -158,7 +162,7 @@ private
          Target => Byte);
 
       subtype Parent is Audio_Channel;
-      type Base_Audio_Channel is abstract new Parent with record
+      type Length_Trigger_Channel is abstract new Parent with record
          --  TODO: Not sure if really needed?
          --  Probably yes, as it can be enabled without using the length timer.
          --  Could use the Sample timer to derive it, though
@@ -171,14 +175,16 @@ private
          Level          : Sample;
       end record;
 
-      procedure Reload_Length (Channel : in out Base_Audio_Channel;
-                               Length  : Natural);
+      procedure Reload_Length
+        (Channel : in out Length_Trigger_Channel;
+         Length  : Natural);
 
-      procedure Length_Triggered_Disable (Channel : in out Base_Audio_Channel);
+      procedure Length_Triggered_Disable
+        (Channel : in out Length_Trigger_Channel);
 
-      procedure Step_Sample (Channel : in out Base_Audio_Channel);
+      procedure Step_Sample (Channel : in out Length_Trigger_Channel);
 
-   end Base;
+   end Length_Trigger;
 
    generic
       type Base_Channel is abstract new Audio_Channel with private;

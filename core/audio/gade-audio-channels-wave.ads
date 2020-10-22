@@ -56,9 +56,6 @@ private
       16#60#, 16#59#, 16#59#, 16#B0#, 16#34#, 16#B8#, 16#2E#, 16#DA#);
 
 
-   Length_Bit_Size : constant := 8;
-
-
    NRx2_Volume_Mask : constant Byte := 16#9F#;
 
    type Volume_Type is (None, Full, Half, Quarter);
@@ -102,13 +99,15 @@ private
       Target => NRx0_Power_IO);
 
 
-   package Base is new Channels.Base (Length_Bit_Size);
-   use Base;
+   Length_Bit_Size : constant := 8;
 
-   package Frequency_Mixin is new Channels.Frequency_Mixin (Base_Audio_Channel);
-   use Frequency_Mixin;
+   package Wave_Length_Trigger is new Length_Trigger (Length_Bit_Size);
+   use Wave_Length_Trigger;
 
-   subtype Parent is Frequency_Mixin.Channel_With_Frequency;
+   package Wave_Frequency_Mixin is new Frequency_Mixin (Length_Trigger_Channel);
+   use Wave_Frequency_Mixin;
+
+   subtype Parent is Channel_With_Frequency;
    type Wave_Channel is new Parent with record
       NRx0, NRx2   : Byte;
       Powered      : Boolean;

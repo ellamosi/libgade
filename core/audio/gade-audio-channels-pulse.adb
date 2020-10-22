@@ -55,7 +55,7 @@ package body Gade.Audio.Channels.Pulse is
    procedure Trigger (Channel : in out Pulse_Channel) is
       Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
    begin
-      Base.Base_Audio_Channel (Channel).Trigger;
+      Parent (Channel).Trigger;
 
       Trigger (Envelope);
       if Silent (Envelope) then
