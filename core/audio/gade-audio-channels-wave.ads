@@ -7,6 +7,9 @@ package Gade.Audio.Channels.Wave is
    type Wave_Channel is new Audio_Channel with private;
 
    overriding
+   procedure Reset (Channel : in out Wave_Channel);
+
+   overriding
    function Name (Channel : Wave_Channel) return String;
 
    function Read_Table
@@ -47,6 +50,10 @@ private
       Space at 0 range 0 .. 16 * Byte'Size - 1;
    end record;
    for Wave_Table_IO'Size use 16 * Byte'Size;
+
+   Initial_DMG_Table : Wave_Table_Bytes :=
+     (16#84#, 16#40#, 16#43#, 16#AA#, 16#2D#, 16#78#, 16#92#, 16#3C#,
+      16#60#, 16#59#, 16#59#, 16#B0#, 16#34#, 16#B8#, 16#2E#, 16#DA#);
 
 
    Length_Bit_Size : constant := 8;

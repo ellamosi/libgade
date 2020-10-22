@@ -3,6 +3,13 @@ with Ada.Text_IO; use Ada.Text_IO;
 package body Gade.Audio.Channels.Wave is
 
    overriding
+   procedure Reset (Channel : in out Wave_Channel) is
+   begin
+      Parent (Channel).Reset;
+      Channel.Table_IO.Space := Initial_DMG_Table;
+   end Reset;
+
+   overriding
    procedure Disable
      (Channel : in out Wave_Channel;
       Mode    : Disable_Mode)
