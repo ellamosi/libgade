@@ -36,9 +36,8 @@ private
 
    Blank_Value : constant Byte := 16#FF#;
 
-   type Channel is (NR1, NR2, NR3, NR4);
-
-   Channel_Count : constant := Channel'Range_Length;
+   type Channel_Id is (NR1, NR2, NR3, NR4);
+   Channel_Count : constant := Channel_Id'Range_Length;
 
    subtype NR1_IO_Address is Audio_IO_Address range 16#FF10# .. 16#FF14#;
    subtype NR2_IO_Address is Audio_IO_Address range 16#FF15# .. 16#FF19#;
@@ -82,9 +81,9 @@ private
    for Output_Volume_Control'Size use Byte'Size;
 
 
-   type Channel_Samples is array (Channel) of Sample;
+   type Channel_Samples is array (Channel_Id) of Sample;
 
-   type Channel_Flags is array (Channel) of Boolean;
+   type Channel_Flags is array (Channel_Id) of Boolean;
    pragma Pack (Channel_Flags);
 
    type Channel_Output_Control (S : Audio_Access_Type := Named) is record

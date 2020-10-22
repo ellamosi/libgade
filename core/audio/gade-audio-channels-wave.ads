@@ -9,9 +9,6 @@ package Gade.Audio.Channels.Wave is
    overriding
    procedure Reset (Channel : in out Wave_Channel);
 
-   overriding
-   function Name (Channel : Wave_Channel) return String;
-
    function Read_Table
      (Channel : Wave_Channel;
       Address : Wave_Table_IO_Address) return Byte;
@@ -20,6 +17,9 @@ package Gade.Audio.Channels.Wave is
      (Channel : in out Wave_Channel;
       Address : Wave_Table_IO_Address;
       Value   : Byte);
+
+   overriding
+   function Id (Channel : Wave_Channel) return Channel_Id;
 
 private
 

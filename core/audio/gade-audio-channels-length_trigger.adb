@@ -18,7 +18,7 @@ package body Length_Trigger is
    is
    begin
       Parent (Channel).Disable (Mode);
-      Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - Disabled");
+      Put_Line (Channel.Name & " - Disabled");
       Channel.Level := 0;
       Channel.Sample_Timer.Pause;
       Channel.Enabled := False;
@@ -31,11 +31,11 @@ package body Length_Trigger is
    overriding
    procedure Turn_On (Channel : in out Length_Trigger_Channel) is
    begin
-      Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - Turn On (LE: " & Channel.Length_Enabled'Img &
+      Put_Line (Channel.Name & " - Turn On (LE: " & Channel.Length_Enabled'Img &
                   " Rem:" & Channel.Length_Timer.Ticks_Remaining'Img & ")");
       Parent (Channel).Turn_On;
       if Channel.Length_Enabled then
-         Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - Resume LT");
+         Put_Line (Channel.Name & " - Resume LT");
          Channel.Length_Timer.Resume;
       end if;
       Channel.Enabled := False;
@@ -115,7 +115,7 @@ package body Length_Trigger is
       if not Channel.Powered then return; end if;
 
       CE := Length_Trigger_Channel'Class (Channel).Can_Enable;
-      Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - Write_NRx4" & Value'Img &
+      Put_Line (Channel.Name & " - Write_NRx4" & Value'Img &
                   " Timer Rem:" & Length_Timer.Ticks_Remaining'Img &
                   " Length was enabled:" & Channel.Length_Enabled'Img &
                   " Length timer was enabled:" & Channel.Length_Timer.Enabled'Img &
@@ -151,7 +151,7 @@ package body Length_Trigger is
 
       --  TODO: Try to make this cleaner
       if Trigger and Length_Timer.Has_Finished then
-         Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - 0 length reset to max (1)");
+         Put_Line (Channel.Name & " - 0 length reset to max (1)");
          Length_Timer.Setup (Length_Max);
       end if;
 
@@ -165,7 +165,7 @@ package body Length_Trigger is
          end if;
 
          if Channel.Length_Timer.Has_Finished then
-            Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - 0 length reset to max (2)");
+            Put_Line (Channel.Name & " - 0 length reset to max (2)");
             Length_Timer.Start (Length_Max);
          end if;
       end if;
@@ -175,7 +175,7 @@ package body Length_Trigger is
          --  We don't know how long the next sample will be yet, fetch next
          --  sample in the following tick:
          Start (Channel.Sample_Timer, 1);
-         Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - LE: " &
+         Put_Line (Channel.Name & " - LE: " &
                      Channel.Length_Enabled'Img & ' ' & Length_Timer.Enabled'Img);
          Length_Trigger_Channel'Class (Channel).Trigger;
       end if;
@@ -187,10 +187,10 @@ package body Length_Trigger is
    begin
       Channel.Length := Length_Max - Length; --(if Length = 0 then Length_Max else Length_Max - Length);
       if Channel.Length_Enabled then
-         Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - Reload_Length (running)" & Channel.Length'Img);
+         Put_Line (Channel.Name & " - Reload_Length (running)" & Channel.Length'Img);
          Start (Channel.Length_Timer, Channel.Length);
       else
-         Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - Reload_Length (paused)" & Channel.Length'Img);
+         Put_Line (Channel.Name & " - Reload_Length (paused)" & Channel.Length'Img);
          Setup (Channel.Length_Timer, Channel.Length);
       end if;
    end Reload_Length;
@@ -215,7 +215,7 @@ package body Length_Trigger is
          --  Disabled channel should still clock length
          --  Length counter reaching 0 does NOT disable the length enable flag?
          --  Channel.Length_Enabled := False;
-         Put_Line (Length_Trigger_Channel'Class (Channel).Name & " - Length triggered disable");
+         Put_Line (Channel.Name & " - Length triggered disable");
          Length_Trigger_Channel'Class (Channel).Disable (Self_Disable);
       end if;
       --  end if;

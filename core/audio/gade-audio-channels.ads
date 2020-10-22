@@ -3,7 +3,7 @@ with Ada.Unchecked_Conversion;
 with Gade.Audio.Timers; use Gade.Audio.Timers;
 with System;
 
-package Gade.Audio.Channels is
+private package Gade.Audio.Channels is
 
    type Channel_Register is (NRx0, NRx1, NRx2, NRx3, NRx4);
    Channel_Register_Count : constant := Channel_Register'Range_Length;
@@ -38,7 +38,9 @@ package Gade.Audio.Channels is
 
    procedure Tick_Length (Channel : in out Audio_Channel) is abstract;
 
-   function Name (Channel : Audio_Channel) return String is abstract;
+   function Id (Ch : Audio_Channel) return Channel_Id is abstract;
+
+   function Name (Channel : Audio_Channel'Class) return String;
 
 private
 

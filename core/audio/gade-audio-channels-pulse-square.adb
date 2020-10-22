@@ -60,10 +60,10 @@ package body Gade.Audio.Channels.Pulse.Square is
    end Write_NRx1;
 
    overriding
-   function Name (Channel : Square_Channel) return String is
+   function Id (Channel : Square_Channel) return Channel_Id is
       pragma Unreferenced (Channel);
    begin
-      return "Square 2";
-   end Name;
+      return NR2;
+   end Id;
 
 end Gade.Audio.Channels.Pulse.Square;

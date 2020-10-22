@@ -3,7 +3,7 @@ package Gade.Audio.Channels.Pulse.Noise is
    type Noise_Channel is new Pulse_Channel with private;
 
    overriding
-   function Name (Channel : Noise_Channel) return String;
+   function Id (Channel : Noise_Channel) return Channel_Id;
 
 private
 

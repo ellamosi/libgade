@@ -71,6 +71,17 @@ package body Gade.Audio.Channels is
       return Blank_Value;
    end Read_Blank;
 
+   function Name (Channel : Audio_Channel'Class) return String is
+      Id : constant Channel_Id := Channel.Id;
+   begin
+      return
+        (case Id is
+            when NR1 => "Square 1",
+            when NR2 => "Square 2",
+            when NR3 => "Wave",
+            when NR4 => "Noise");
+   end Name;
+
    package body Length_Trigger is separate;
    package body Frequency_Mixin is separate;
 

@@ -196,7 +196,7 @@ package body Gade.Audio is
 
          L_Out := 0;
          R_Out := 0;
-         for Ch in Channel loop
+         for Ch in Channel_Id loop
             Enabled_Disabled_Values (True) := Samples (Ch);
             L_Out := L_Out + Enabled_Disabled_Values (Output_Control.Left (Ch));
             R_Out := R_Out + Enabled_Disabled_Values (Output_Control.Right (Ch));

@@ -65,10 +65,10 @@ package body Gade.Audio.Channels.Pulse.Noise is
    end Write_NRx3;
 
    overriding
-   function Name (Channel : Noise_Channel) return String is
+   function Id (Channel : Noise_Channel) return Channel_Id is
       pragma Unreferenced (Channel);
    begin
-      return "Noise";
-   end Name;
+      return NR4;
+   end Id;
 
 end Gade.Audio.Channels.Pulse.Noise;

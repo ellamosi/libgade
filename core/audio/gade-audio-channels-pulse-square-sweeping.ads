@@ -5,7 +5,7 @@ package Gade.Audio.Channels.Pulse.Square.Sweeping is
    procedure Tick_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
 
    overriding
-   function Name (Channel : Sweeping_Square_Channel) return String;
+   function Id (Channel : Sweeping_Square_Channel) return Channel_Id;
 
 private
 

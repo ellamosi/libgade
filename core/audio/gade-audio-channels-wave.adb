@@ -127,10 +127,10 @@ package body Gade.Audio.Channels.Wave is
    end Write_Table;
 
    overriding
-   function Name (Channel : Wave_Channel) return String is
+   function Id (Channel : Wave_Channel) return Channel_Id is
       pragma Unreferenced (Channel);
    begin
-      return "Wave";
-   end Name;
+      return NR3;
+   end Id;
 
 end Gade.Audio.Channels.Wave;
