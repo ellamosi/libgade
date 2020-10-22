@@ -6,9 +6,6 @@ package Gade.Audio.Channels.Pulse.Noise is
    procedure Reset (Channel : out Noise_Channel);
 
    overriding
-   procedure Turn_Off (Channel : in out Noise_Channel);
-
-   overriding
    function Name (Channel : Noise_Channel) return String;
 
 private
@@ -51,13 +48,19 @@ private
      (Source => Byte,
       Target => NRx3_Noise_IO);
 
-   type Noise_Channel is new Pulse_Channel with record
+   subtype Parent is Pulse_Channel;
+   type Noise_Channel is new Parent with record
       Clock_Divisor : Natural;
       Clock_Shift   : Natural;
       LFSR          : Shift_Register;
       LFSR_Width    : LFSR_Width_Mode;
       NRx3          : Byte;
    end record;
+
+   overriding
+   procedure Disable
+     (Channel : in out Noise_Channel;
+      Mode    : Disable_Mode);
 
    overriding
    procedure Trigger (Channel : in out Noise_Channel);

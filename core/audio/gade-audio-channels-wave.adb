@@ -13,7 +13,7 @@ package body Gade.Audio.Channels.Wave is
    overriding
    procedure Reset (Channel : out Wave_Channel) is
    begin
-      Base.Base_Audio_Channel (Channel).Reset;
+      Parent (Channel).Reset;
       Channel.Sample_Index := 0;
       Channel.Sample_Time := 1;
       Channel.NRx0 := NRx0_Power_Mask;
@@ -22,15 +22,20 @@ package body Gade.Audio.Channels.Wave is
    end Reset;
 
    overriding
-   procedure Turn_Off (Channel : in out Wave_Channel) is
+   procedure Disable
+     (Channel : in out Wave_Channel;
+      Mode    : Disable_Mode)
+   is
    begin
-      Base.Base_Audio_Channel (Channel).Turn_Off;
-      Channel.Sample_Index := 0;
-      Channel.Sample_Time := 1;
-      Channel.NRx0 := NRx0_Power_Mask;
-      Channel.NRx2 := NRx2_Volume_Mask;
-      Channel.Volume_Shift := Volume_Shifts (None);
-   end Turn_Off;
+      Parent (Channel).Disable (Mode);
+      if Mode = APU_Power_Off then
+         Channel.Sample_Index := 0;
+         Channel.Sample_Time := 1;
+         Channel.NRx0 := NRx0_Power_Mask;
+         Channel.NRx2 := NRx2_Volume_Mask;
+         Channel.Volume_Shift := Volume_Shifts (None);
+      end if;
+   end Disable;
 
    overriding
    procedure Next_Sample_Level
@@ -62,7 +67,7 @@ package body Gade.Audio.Channels.Wave is
    procedure Trigger (Channel : in out Wave_Channel) is
    begin
       Put_Line ("Wave Trigger (Power: " & Channel.Powered'Img & ")");
-      Base.Base_Audio_Channel (Channel).Trigger;
+      Parent (Channel).Trigger;
       Channel.Sample_Index := 0;
 --        if Channel.Powered then
 --
@@ -79,12 +84,6 @@ package body Gade.Audio.Channels.Wave is
    end Can_Enable;
 
    overriding
-   procedure Disable (Channel : in out Wave_Channel) is
-   begin
-      Base.Base_Audio_Channel (Channel).Disable;
-   end Disable;
-
-   overriding
    function Read_NRx0 (Channel : Wave_Channel) return Byte is
    begin
       return Channel.NRx0;
@@ -98,7 +97,7 @@ package body Gade.Audio.Channels.Wave is
       Channel.Powered := NRx0_In.Powered;
       if not Channel.Powered then
          Put_Line ("Powering OFF Wave Channel");
-         Wave_Channel'Class (Channel).Disable;
+         Wave_Channel'Class (Channel).Disable (DAC_Power_Off);
          --  Registers get cleared when powering off?
          --  Channel.Volume_Shift := Volume_Shifts (None);
 --           Channel.NRx0 := 0; --  TODO: Mask

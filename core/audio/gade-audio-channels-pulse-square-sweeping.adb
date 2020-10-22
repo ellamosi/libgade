@@ -4,7 +4,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
 
    overriding procedure Reset (Channel : out Sweeping_Square_Channel) is
    begin
-      Square_Channel (Channel).Reset;
+      Parent (Channel).Reset;
       Channel.Sweep_Enabled := False;
       Channel.NRx0 := NRx0_Sweep_Mask;
       Channel.Sweep_Negate := False;
@@ -15,17 +15,22 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
    end Reset;
 
    overriding
-   procedure Turn_Off (Channel : in out Sweeping_Square_Channel) is
+   procedure Disable
+     (Channel : in out Sweeping_Square_Channel;
+      Mode    : Disable_Mode)
+   is
    begin
-      Square_Channel (Channel).Turn_Off;
+      Parent (Channel).Disable (Mode);
+      Channel.Sweep_Timer.Pause;
       Channel.Sweep_Enabled := False;
-      Channel.NRx0 := NRx0_Sweep_Mask;
-      Channel.Sweep_Negate := False;
-      Channel.Sweep_Negated := False;
-      Setup (Channel.Sweep_Timer);
-      Channel.Sweep_Period := 0;
-      Channel.Sweep_Shift := 0;
-   end Turn_Off;
+      if Mode = APU_Power_Off then
+         Channel.NRx0 := NRx0_Sweep_Mask;
+         Channel.Sweep_Negate := False;
+         Channel.Sweep_Negated := False;
+         Channel.Sweep_Period := 0;
+         Channel.Sweep_Shift := 0;
+      end if;
+   end Disable;
 
    --  TODO: In spec
    procedure Calculate_New_Frequency_Handle_Overflow
@@ -75,7 +80,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
                   " Negated: " & Channel.Sweep_Negate'Img);
 
       if New_Frequency > Natural (Frequency_Type'Last) then
-         Channel.Disable;
+         Channel.Disable (Self_Disable);
          Channel.Sweep_Enabled := False;
       end if;
    end Calculate_New_Frequency_Handle_Overflow;
@@ -136,7 +141,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       F : Integer;
    begin
       --  Put_Line ("TRIGGER");
-      Square_Channel (Channel).Trigger;
+      Parent (Channel).Trigger;
       Channel.Shadow_Frequency := Channel.Frequency_In.Frequency; -- TODO: save frequency in component
 
       Channel.Sweep_Enabled := Channel.Sweep_Period > 0 or Channel.Sweep_Shift > 0;
@@ -160,14 +165,6 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
          --  Calculate_New_Frequency (Channel);
       end if;
    end Trigger;
-
-   overriding
-   procedure Disable (Channel : in out Sweeping_Square_Channel) is
-   begin
-      Square_Channel (Channel).Disable;
-      Stop (Channel.Sweep_Timer);
-      Channel.Sweep_Enabled := False;
-   end Disable;
 
    overriding
    function Read_NRx0
@@ -206,7 +203,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
          --  prevents you from having the sweep lower the frequency then raise
          --  the frequency without a trigger inbetween.
          Put_Line ("Sweep Negate based disable");
-         Channel.Disable;
+         Channel.Disable (Self_Disable);
       end if;
       --  @enabled = false if !@negate &&
       --  if Channel.Sweep_Period > 0 then

@@ -30,8 +30,6 @@ package Gade.Audio.Channels is
      (Channel : in out Audio_Channel;
       S       : out Sample) is abstract;
 
-   procedure Disable (Channel : in out Audio_Channel) is abstract;
-
    procedure Turn_Off (Channel : in out Audio_Channel);
 
    procedure Turn_On (Channel : in out Audio_Channel);
@@ -51,6 +49,8 @@ private
 
    Blank_Value : constant Byte := 16#FF#;
 
+   type Disable_Mode is (APU_Power_Off, DAC_Power_Off, Self_Disable);
+
    procedure Trigger (Channel : in out Audio_Channel) is null;
 
    function Read_Blank (Channel : Audio_Channel) return Byte;
@@ -66,6 +66,10 @@ private
    procedure Write_NRx2 (Channel : in out Audio_Channel; Value : Byte) is null;
    procedure Write_NRx3 (Channel : in out Audio_Channel; Value : Byte) is null;
    procedure Write_NRx4 (Channel : in out Audio_Channel; Value : Byte) is null;
+
+   procedure Disable
+     (Channel : in out Audio_Channel;
+      Mode    : Disable_Mode);
 
 
    type Effect_Period_IO is mod 2 ** 3;
@@ -92,7 +96,9 @@ private
       procedure Turn_On (Channel : in out Base_Audio_Channel);
 
       overriding
-      procedure Turn_Off (Channel : in out Base_Audio_Channel);
+      procedure Disable
+        (Channel : in out Base_Audio_Channel;
+         Mode    : Disable_Mode);
 
       overriding
       procedure Next_Sample
@@ -113,9 +119,6 @@ private
 
       overriding
       procedure Write_NRx4 (Channel : in out Base_Audio_Channel; Value : Byte);
-
-      overriding
-      procedure Disable (Channel : in out Base_Audio_Channel);
 
       overriding
       function Enabled (Channel : Base_Audio_Channel) return Boolean;
@@ -157,7 +160,8 @@ private
         (Source => NRx4_Common_IO,
          Target => Byte);
 
-      type Base_Audio_Channel is abstract new Audio_Channel with record
+      subtype Parent is Audio_Channel;
+      type Base_Audio_Channel is abstract new Parent with record
          --  TODO: Not sure if really needed?
          --  Probably yes, as it can be enabled without using the length timer.
          --  Could use the Sample timer to derive it, though
@@ -203,7 +207,8 @@ private
       for Frequency_IO'Scalar_Storage_Order use System.Low_Order_First;
       for Frequency_IO'Size use Byte'Size * 2;
 
-      type Channel_With_Frequency is abstract new Base_Channel with record
+      subtype Parent is Base_Channel;
+      type Channel_With_Frequency is abstract new Parent with record
          Frequency_In : Frequency_IO;
       end record;
 
@@ -222,7 +227,9 @@ private
          Value   : Byte);
 
       overriding
-      procedure Turn_Off (Channel : in out Channel_With_Frequency);
+      procedure Disable
+        (Channel : in out Channel_With_Frequency;
+         Mode    : Disable_Mode);
 
    end Frequency_Mixin;
 

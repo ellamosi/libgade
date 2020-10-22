@@ -22,8 +22,15 @@ package body Gade.Audio.Channels is
 
    procedure Turn_Off (Channel : in out Audio_Channel) is
    begin
-      Channel.Powered := False;
+      Audio_Channel'Class (Channel).Disable (APU_Power_Off);
    end Turn_Off;
+
+   procedure Disable
+     (Channel : in out Audio_Channel;
+      Mode    : Disable_Mode) is
+   begin
+      Channel.Powered := Mode /= APU_Power_Off;
+   end Disable;
 
    function Read
      (Channel  : Audio_Channel'Class;
@@ -85,21 +92,28 @@ package body Gade.Audio.Channels is
       end Reset;
 
       overriding
-      procedure Turn_Off (Channel : in out Base_Audio_Channel) is
+      procedure Disable
+        (Channel : in out Base_Audio_Channel;
+         Mode    : Disable_Mode)
+      is
       begin
-         Audio_Channel (Channel).Turn_Off;
-         Channel.Length_Enabled := False;
+         Parent (Channel).Disable (Mode);
+         Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Disabled");
          Channel.Level := 0;
-         Channel.Length_Timer.Pause;
-         Setup (Channel.Sample_Timer);
-      end Turn_Off;
+         Channel.Sample_Timer.Pause;
+         Channel.Enabled := False;
+         if Mode = APU_Power_Off then
+            Channel.Length_Enabled := False;
+            Channel.Length_Timer.Pause;
+         end if;
+      end Disable;
 
       overriding
       procedure Turn_On (Channel : in out Base_Audio_Channel) is
       begin
          Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Turn On (LE: " & Channel.Length_Enabled'Img &
                      " Rem:" & Channel.Length_Timer.Ticks_Remaining'Img & ")");
-         Audio_Channel (Channel).Turn_On;
+         Parent (Channel).Turn_On;
          if Channel.Length_Enabled then
             Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Resume LT");
             Channel.Length_Timer.Resume;
@@ -262,23 +276,11 @@ package body Gade.Audio.Channels is
       end Reload_Length;
 
       overriding
-      procedure Disable (Channel : in out Base_Audio_Channel) is
-      begin
-         Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Disabled");
-         Channel.Level := 0;
-
-         Channel.Enabled := False;
-         --  Maybe pause instead
-         --  Stop (Channel.Length_Timer);
-         Stop (Channel.Sample_Timer);
-      end Disable;
-
-      overriding
       function Enabled (Channel : Base_Audio_Channel) return Boolean is
       begin
-         Put_Line (Base_Audio_Channel'Class (Channel).Name &
-                     "Enabled? " & Channel.Enabled'Img &
-                     " - LT:" & Channel.Length_Timer.Ticks_Remaining'Img);
+--           Put_Line (Base_Audio_Channel'Class (Channel).Name &
+--                       "Enabled? " & Channel.Enabled'Img &
+--                       " - LT:" & Channel.Length_Timer.Ticks_Remaining'Img);
          return Channel.Enabled;
       end Enabled;
 
@@ -292,7 +294,7 @@ package body Gade.Audio.Channels is
             --  Length counter reaching 0 does NOT disable the length enable flag?
             --  Channel.Length_Enabled := False;
             Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length triggered disable");
-            Base_Audio_Channel'Class (Channel).Disable;
+            Base_Audio_Channel'Class (Channel).Disable (Self_Disable);
          end if;
          --  end if;
       end Length_Triggered_Disable;
@@ -303,9 +305,9 @@ package body Gade.Audio.Channels is
            (Observer_Type => Base_Audio_Channel,
             Finished      => Length_Triggered_Disable);
       begin
-         if Base_Audio_Channel'Class (Channel).Name = "Square 1" then
-            Put_Line ("Tick_Length " & Channel.Length_Timer.Ticks_Remaining'Img);
-         end if;
+--           if Base_Audio_Channel'Class (Channel).Name = "Square 1" then
+--              Put_Line ("Tick_Length " & Channel.Length_Timer.Ticks_Remaining'Img);
+--           end if;
          Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
          --  Put_Line ("Length tick" & Ticks_Remaining (Channel.Length_Timer)'Img);
       end Tick_Length;
@@ -340,11 +342,16 @@ package body Gade.Audio.Channels is
       end Write_NRx4;
 
       overriding
-      procedure Turn_Off (Channel : in out Channel_With_Frequency) is
+      procedure Disable
+        (Channel : in out Channel_With_Frequency;
+         Mode    : Disable_Mode)
+      is
       begin
-         Base_Channel (Channel).Turn_Off;
-         Channel.Frequency_In.NRx3 := 0;
-      end Turn_Off;
+         Put_Line ("Freq Mixin Disable");
+         Parent (Channel).Disable (Mode);
+         --  TODO: Could use non branching mask for this
+         if Mode = APU_Power_Off then Channel.Frequency_In.NRx3 := 0; end if;
+      end Disable;
 
    end Frequency_Mixin;
 

@@ -6,9 +6,9 @@ package body Gade.Audio.Channels.Pulse is
    procedure Reset (Channel : out Pulse_Channel) is
       Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
    begin
-      Base.Base_Audio_Channel (Channel).Reset;
+      Parent (Channel).Reset;
       Channel.NRx2 := 16#00#;
-      Channel.Pulse_Levels := (0, 0);
+      Channel.Set_Volume (0);
       Setup (Envelope.Timer);
       Envelope.Step := 0;
       Envelope.Period := 0;
@@ -18,19 +18,25 @@ package body Gade.Audio.Channels.Pulse is
    end Reset;
 
    overriding
-   procedure Turn_Off (Channel : in out Pulse_Channel) is
+   procedure Disable
+     (Channel : in out Pulse_Channel;
+      Mode    : Disable_Mode)
+   is
       Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
    begin
-      Base.Base_Audio_Channel (Channel).Turn_Off;
-      Channel.NRx2 := 16#00#;
-      Channel.Pulse_Levels := (0, 0);
-      Setup (Envelope.Timer);
-      Envelope.Step := 0;
-      Envelope.Period := 0;
-      Envelope.Current_Volume := 0;
-      Envelope.Initial_Volume := 0;
-      Envelope.Direction := Down;
-   end Turn_Off;
+      Parent (Channel).Disable (Mode);
+      Channel.Set_Volume (0);
+      Disable (Channel.Volume_Envelope);
+      if Mode = APU_Power_Off then
+         Channel.NRx2 := 16#00#;
+         Setup (Envelope.Timer);
+         Envelope.Step := 0;
+         Envelope.Period := 0;
+         Envelope.Current_Volume := 0;
+         Envelope.Initial_Volume := 0;
+         Envelope.Direction := Down;
+      end if;
+   end Disable;
 
    overriding
    function Read_NRx2 (Channel : Pulse_Channel) return Byte is
@@ -56,7 +62,7 @@ package body Gade.Audio.Channels.Pulse is
         Channel.Volume_Envelope.Direction = Down
       then
          Put_Line ("Powering OFF Wave Channel");
-         Pulse_Channel'Class (Channel).Disable;
+         Pulse_Channel'Class (Channel).Disable (DAC_Power_Off);
       end if;
    end Write_NRx2;
 
@@ -119,14 +125,6 @@ package body Gade.Audio.Channels.Pulse is
    begin
       Tick_Notify_Volume_Envelope_Step (Channel.Volume_Envelope.Timer, Channel);
    end Tick_Volume_Envelope;
-
-   overriding
-   procedure Disable (Channel : in out Pulse_Channel) is
-   begin
-      Base.Base_Audio_Channel (Channel).Disable;
-      Channel.Set_Volume (0);
-      Disable (Channel.Volume_Envelope);
-   end Disable;
 
    procedure Setup
      (Envelope  : in out Volume_Envelope_Type;

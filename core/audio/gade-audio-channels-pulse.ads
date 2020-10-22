@@ -5,12 +5,6 @@ package Gade.Audio.Channels.Pulse is
    overriding
    procedure Reset (Channel : out Pulse_Channel);
 
-   overriding
-   procedure Turn_Off (Channel : in out Pulse_Channel);
-
-   overriding
-   procedure Disable (Channel : in out Pulse_Channel);
-
    procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel);
 
 private
@@ -93,11 +87,17 @@ private
 
    package Base is new Channels.Base (Length_Bit_Size);
 
-   type Pulse_Channel is abstract new Base.Base_Audio_Channel with record
+   subtype Parent is Base.Base_Audio_Channel;
+   type Pulse_Channel is abstract new Parent with record
       Pulse_Levels    : Pulse_Levels_Type;
       NRx2            : Byte;
       Volume_Envelope : Volume_Envelope_Type;
    end record;
+
+   overriding
+   procedure Disable
+     (Channel : in out Pulse_Channel;
+      Mode    : Disable_Mode);
 
    overriding
    function Read_NRx2 (Channel : Pulse_Channel) return Byte;

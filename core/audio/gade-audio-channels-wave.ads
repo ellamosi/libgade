@@ -34,12 +34,6 @@ package Gade.Audio.Channels.Wave is
    procedure Reset (Channel : out Wave_Channel);
 
    overriding
-   procedure Turn_Off (Channel : in out Wave_Channel);
-
-   overriding
-   procedure Disable (Channel : in out Wave_Channel);
-
-   overriding
    function Name (Channel : Wave_Channel) return String;
 
 private
@@ -107,11 +101,13 @@ private
 
 
    package Base is new Channels.Base (Length_Bit_Size);
+   use Base;
 
-   package Frequency_Mixin is new Channels.Frequency_Mixin (Base.Base_Audio_Channel);
+   package Frequency_Mixin is new Channels.Frequency_Mixin (Base_Audio_Channel);
    use Frequency_Mixin;
 
-   type Wave_Channel is new Channel_With_Frequency with record
+   subtype Parent is Frequency_Mixin.Channel_With_Frequency;
+   type Wave_Channel is new Parent with record
       NRx0, NRx2   : Byte;
       Powered      : Boolean;
       Volume_Shift : Natural;
@@ -125,6 +121,10 @@ private
      (Channel      : in out Wave_Channel;
       Sample_Level : out Sample;
       Level_Cycles : out Positive);
+
+   overriding
+   procedure Disable (Channel : in out Wave_Channel;
+                      Mode    : Disable_Mode);
 
    overriding
    procedure Trigger (Channel : in out Wave_Channel);

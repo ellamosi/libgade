@@ -6,9 +6,6 @@ package Gade.Audio.Channels.Pulse.Square is
    procedure Reset (Channel : out Square_Channel);
 
    overriding
-   procedure Turn_Off (Channel : in out Square_Channel);
-
-   overriding
    function Name (Channel : Square_Channel) return String;
 
 private
@@ -43,12 +40,18 @@ private
    package Frequency_Mixin is new Channels.Frequency_Mixin (Pulse_Channel);
    use Frequency_Mixin;
 
-   type Square_Channel is new Channel_With_Frequency with record
+   subtype Parent is Channel_With_Frequency;
+   type Square_Channel is new Parent with record
       Pulse_Cycles : Pulse_Cycles_Type;
       Pulse_State  : Pulse_State_Type;
       Duty         : Duty_Type;
       NRx1         : Byte;
    end record;
+
+   overriding
+   procedure Disable
+     (Channel : in out Square_Channel;
+      Mode    : Disable_Mode);
 
    overriding
    procedure Next_Sample_Level

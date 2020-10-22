@@ -3,7 +3,7 @@ package body Gade.Audio.Channels.Pulse.Noise is
    overriding
    procedure Reset (Channel : out Noise_Channel) is
    begin
-      Pulse_Channel (Channel).Reset;
+      Parent (Channel).Reset;
       Channel.Clock_Divisor := 1;
       Channel.Clock_Shift := 0;
       Channel.LFSR := 0;
@@ -11,14 +11,19 @@ package body Gade.Audio.Channels.Pulse.Noise is
    end Reset;
 
    overriding
-   procedure Turn_Off (Channel : in out Noise_Channel) is
+   procedure Disable
+     (Channel : in out Noise_Channel;
+      Mode    : Disable_Mode)
+   is
    begin
-      Pulse_Channel (Channel).Turn_Off;
-      Channel.Clock_Divisor := 1;
-      Channel.Clock_Shift := 0;
-      Channel.LFSR := 0;
-      Channel.NRx3 := 16#00#;
-   end Turn_Off;
+      Parent (Channel).Disable (Mode);
+      if Mode = APU_Power_Off then
+         Channel.Clock_Divisor := 1;
+         Channel.Clock_Shift := 0;
+         Channel.LFSR := 0;
+         Channel.NRx3 := 16#00#;
+      end if;
+   end Disable;
 
    overriding
    procedure Trigger (Channel : in out Noise_Channel) is

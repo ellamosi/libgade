@@ -5,13 +5,7 @@ package Gade.Audio.Channels.Pulse.Square.Sweeping is
    overriding
    procedure Reset (Channel : out Sweeping_Square_Channel);
 
-   overriding
-   procedure Turn_Off (Channel : in out Sweeping_Square_Channel);
-
    procedure Tick_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
-
-   overriding
-   procedure Disable (Channel : in out Sweeping_Square_Channel);
 
    overriding
    function Name (Channel : Sweeping_Square_Channel) return String;
@@ -39,7 +33,8 @@ private
      (Source => Byte,
       Target => NRx0_Frequency_Sweep_IO);
 
-   type Sweeping_Square_Channel is new Square_Channel with record
+   subtype Parent is Square_Channel;
+   type Sweeping_Square_Channel is new Parent with record
       --  TODO: Revise names, sweep_ suffixing
       --  TODO: Remove unused fields
       NRx0             : Byte;
@@ -51,6 +46,11 @@ private
       Sweep_Negated    : Boolean;
       Sweep_Period     : Sweep_Period_Type;
    end record;
+
+   overriding
+   procedure Disable
+     (Channel : in out Sweeping_Square_Channel;
+      Mode    : Disable_Mode);
 
    overriding
    procedure Trigger (Channel : in out Sweeping_Square_Channel);
