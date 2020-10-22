@@ -14,7 +14,7 @@ package Gade.Audio.Channels is
      (Channel : out Audio_Channel;
       Audio   : Audio_Type);
 
-   procedure Reset (Channel : out Audio_Channel);
+   procedure Reset (Channel : in out Audio_Channel);
 
    function Read
      (Channel  : Audio_Channel'Class;
@@ -88,9 +88,6 @@ private
       procedure Create
         (Channel : out Base_Audio_Channel;
          Audio   : Audio_Type);
-
-      overriding
-      procedure Reset (Channel : out Base_Audio_Channel);
 
       overriding
       procedure Turn_On (Channel : in out Base_Audio_Channel);

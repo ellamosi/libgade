@@ -2,9 +2,6 @@ package Gade.Audio.Channels.Pulse is
 
    type Pulse_Channel is abstract new Audio_Channel with private;
 
-   overriding
-   procedure Reset (Channel : out Pulse_Channel);
-
    procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel);
 
 private

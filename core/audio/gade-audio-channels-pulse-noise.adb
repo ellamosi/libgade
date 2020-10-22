@@ -1,16 +1,6 @@
 package body Gade.Audio.Channels.Pulse.Noise is
 
    overriding
-   procedure Reset (Channel : out Noise_Channel) is
-   begin
-      Parent (Channel).Reset;
-      Channel.Clock_Divisor := 1;
-      Channel.Clock_Shift := 0;
-      Channel.LFSR := 0;
-      Channel.NRx3 := 16#00#;
-   end Reset;
-
-   overriding
    procedure Disable
      (Channel : in out Noise_Channel;
       Mode    : Disable_Mode)

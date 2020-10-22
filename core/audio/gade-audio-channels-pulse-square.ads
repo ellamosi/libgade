@@ -3,9 +3,6 @@ package Gade.Audio.Channels.Pulse.Square is
    type Square_Channel is new Pulse_Channel with private;
 
    overriding
-   procedure Reset (Channel : out Square_Channel);
-
-   overriding
    function Name (Channel : Square_Channel) return String;
 
 private

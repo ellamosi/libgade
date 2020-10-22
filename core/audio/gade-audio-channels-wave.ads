@@ -2,9 +2,32 @@ with System;
 
 package Gade.Audio.Channels.Wave is
 
-   type Wave_Table is private;
-
    subtype Wave_Table_IO_Address is Audio_IO_Address range 16#FF30# .. 16#FF3F#;
+
+   type Wave_Channel is new Audio_Channel with private;
+
+   overriding
+   function Name (Channel : Wave_Channel) return String;
+
+   function Read_Table
+     (Channel : Wave_Channel;
+      Address : Wave_Table_IO_Address) return Byte;
+
+   procedure Write_Table
+     (Channel : in out Wave_Channel;
+      Address : Wave_Table_IO_Address;
+      Value   : Byte);
+
+private
+
+   type Wave_Sample is mod 2 ** 4;
+   type Wave_Sample_Index is mod 2 ** 5;
+
+   type Wave_Table is array (Wave_Sample_Index) of Wave_Sample;
+   pragma Pack (Wave_Table);
+   for Wave_Table'Scalar_Storage_Order use System.High_Order_First;
+   --  Bytes contain the first sample in the higher bits, last sample in the
+   --  low bits
 
    type Wave_Table_Bytes is array (Wave_Table_IO_Address) of Byte;
 
@@ -19,40 +42,12 @@ package Gade.Audio.Channels.Wave is
             Space : Wave_Table_Bytes;
       end case;
    end record with Unchecked_Union;
-
-   type Wave_Table_IO_Access is access all Wave_Table_IO;
-
-
-   type Wave_Channel is new Audio_Channel with private;
-
-   --  TODO: Find a better way to assign the table
-   procedure Set_Table
-     (Channel : in out Wave_Channel;
-      Table   : not null Wave_Table_IO_Access);
-
-   overriding
-   procedure Reset (Channel : out Wave_Channel);
-
-   overriding
-   function Name (Channel : Wave_Channel) return String;
-
-private
-
-   type Wave_Sample is mod 2 ** 4;
-
-   type Wave_Sample_Index is mod 2 ** 5;
-
-   type Wave_Table is array (Wave_Sample_Index) of Wave_Sample;
-   pragma Pack (Wave_Table);
-   for Wave_Table'Scalar_Storage_Order use System.High_Order_First;
-   --  Bytes contain the first sample in the higher bits, last sample in the
-   --  low bits
-
    for Wave_Table_IO use record
       Table at 0 range 0 .. 16 * Byte'Size - 1;
       Space at 0 range 0 .. 16 * Byte'Size - 1;
    end record;
    for Wave_Table_IO'Size use 16 * Byte'Size;
+
 
    Length_Bit_Size : constant := 8;
 
@@ -111,7 +106,7 @@ private
       NRx0, NRx2   : Byte;
       Powered      : Boolean;
       Volume_Shift : Natural;
-      Table        : Wave_Table_IO_Access;
+      Table_IO     : Wave_Table_IO;
       Sample_Time  : Positive;
       Sample_Index : Wave_Sample_Index;
    end record;

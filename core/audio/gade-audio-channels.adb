@@ -10,9 +10,10 @@ package body Gade.Audio.Channels is
       Channel.Audio := Audio;
    end Create;
 
-   procedure Reset (Channel : out Audio_Channel) is
+   procedure Reset (Channel : in out Audio_Channel) is
    begin
-      Channel.Powered := True;
+      --  TODO: Handle wave table initial value
+      Audio_Channel'Class (Channel).Disable (APU_Power_Off);
    end Reset;
 
    procedure Turn_On (Channel : in out Audio_Channel) is
@@ -80,16 +81,6 @@ package body Gade.Audio.Channels is
          Audio_Channel (Channel).Create (Audio);
          Setup (Channel.Length_Timer);
       end Create;
-
-      overriding
-      procedure Reset (Channel : out Base_Audio_Channel) is
-      begin
-         Audio_Channel (Channel).Reset;
-         Channel.Enabled := False;
-         Channel.Length_Enabled := False;
-         Channel.Level := 0;
-         Setup (Channel.Sample_Timer);
-      end Reset;
 
       overriding
       procedure Disable

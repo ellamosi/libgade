@@ -3,21 +3,6 @@ with Ada.Text_IO; use Ada.Text_IO;
 package body Gade.Audio.Channels.Pulse is
 
    overriding
-   procedure Reset (Channel : out Pulse_Channel) is
-      Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
-   begin
-      Parent (Channel).Reset;
-      Channel.NRx2 := 16#00#;
-      Channel.Set_Volume (0);
-      Setup (Envelope.Timer);
-      Envelope.Step := 0;
-      Envelope.Period := 0;
-      Envelope.Current_Volume := 0;
-      Envelope.Initial_Volume := 0;
-      Envelope.Direction := Down;
-   end Reset;
-
-   overriding
    procedure Disable
      (Channel : in out Pulse_Channel;
       Mode    : Disable_Mode)

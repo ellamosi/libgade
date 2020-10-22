@@ -2,18 +2,6 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Audio.Channels.Pulse.Square.Sweeping is
 
-   overriding procedure Reset (Channel : out Sweeping_Square_Channel) is
-   begin
-      Parent (Channel).Reset;
-      Channel.Sweep_Enabled := False;
-      Channel.NRx0 := NRx0_Sweep_Mask;
-      Channel.Sweep_Negate := False;
-      Channel.Sweep_Negated := False;
-      Setup (Channel.Sweep_Timer);
-      Channel.Sweep_Period := 0;
-      Channel.Sweep_Shift := 0;
-   end Reset;
-
    overriding
    procedure Disable
      (Channel : in out Sweeping_Square_Channel;

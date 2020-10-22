@@ -26,8 +26,6 @@ package body Gade.Audio is
       Volume_Control : Output_Volume_Control;
       Power_Control  : Power_Control_Status;
 
-      Wave_Table : aliased Wave_Table_IO;
-
       Elapsed_Cycles   : Natural;
       Frame_Seq_Step_Idx : Frame_Sequencer_Step_Index;
       Rem_Frame_Seq_Ticks : Natural;
@@ -42,8 +40,6 @@ package body Gade.Audio is
       Create (Audio.Square_2, Audio);
       Create (Audio.Wave, Audio);
       Create (Audio.Noise, Audio);
-      --  TODO: This should be part of the channel's Create method
-      Audio.Wave.Set_Table (Audio.Wave_Table'Access);
    end Create;
 
    procedure Reset (Audio : in out Audio_Type) is
@@ -63,8 +59,6 @@ package body Gade.Audio is
       Audio.Powered := True;
 
       Audio.Power_Control.Space := Power_Control_Status_Write_Mask;
-
-      --  TODO: Initialize wave table pattern somehow
    end Reset;
 
    function To_Channel_Register
@@ -101,7 +95,7 @@ package body Gade.Audio is
             when Power_Control_Status_IO_Address =>
               Read_Power_Control_Status (Audio),
             when Wave_Table_IO_Address => -- TODO consistent range names
-              Audio.Wave_Table.Space (Address),
+              Audio.Wave.Read_Table (Address),
             when others =>
               Blank_Value);
       Put ("Read @");
@@ -144,8 +138,8 @@ package body Gade.Audio is
             Audio.Output_Control.Space := Value;
          when Power_Control_Status_IO_Address =>
             Write_Power_Control_Status (Audio, Value);
-         when Wave_Table_IO_Address =>
-            Audio.Wave_Table.Space (Address) := Value; -- TODO consistent range names
+         when Wave_Table_IO_Address => -- TODO consistent range names
+            Audio.Wave.Write_Table (Address, Value);
          when others => null;
       end case;
    end Write;
@@ -246,11 +240,6 @@ package body Gade.Audio is
          Audio.Noise.Turn_Off;
          Audio.Volume_Control.Space := 0;
          Audio.Output_Control.Space := 0;
-         --  Turn off and disable?! SHOULD NOT
---           Disable (Audio.Square_1);
---           Disable (Audio.Square_2);
---           Disable (Audio.Wave);
---           Disable (Audio.Noise);
 
          Audio.Frame_Seq_Step := 0;
       elsif not Audio.Powered and New_Power_State then
