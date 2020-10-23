@@ -161,19 +161,15 @@ package body Length_Trigger is
          end if;
       end if;
 
-      declare
-         CE : constant Boolean := Length_Trigger_Channel'Class (Channel).Can_Enable;
-      begin
-         Put_Line ("T: " & Trigger'Img & " CE: " & CE'Img);
-      end;
-
       if Trigger and Length_Trigger_Channel'Class (Channel).Can_Enable then
          Channel.Enabled := True;
          --  We don't know how long the next sample will be yet, fetch next
          --  sample in the following tick:
          Start (Channel.Sample_Timer, 1);
-         Put_Line (Channel.Name & " - LE: " &
-                     Channel.Length_Enabled'Img & ' ' & Length_Timer.Enabled'Img);
+--           Put_Line (Channel.Name & " - LE: " &
+--                       Channel.Length_Enabled'Img &
+--                     ' ' & Length_Timer.Enabled'Img &
+--                     ' ' & Length_Timer.Ticks_Remaining'Img);
          Length_Trigger_Channel'Class (Channel).Trigger;
       end if;
    end Write_NRx4;
@@ -225,7 +221,7 @@ package body Length_Trigger is
          Finished      => Length_Triggered_Disable);
    begin
       --           if Base_Audio_Channel'Class (Channel).Name = "Square 1" then
-      --              Put_Line ("Tick_Length " & Channel.Length_Timer.Ticks_Remaining'Img);
+      --  Put_Line ("Tick_Length " & Channel.Length_Timer.Ticks_Remaining'Img);
       --           end if;
       Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
       --  Put_Line ("Length tick" & Ticks_Remaining (Channel.Length_Timer)'Img);

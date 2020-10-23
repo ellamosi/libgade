@@ -143,7 +143,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       --  if Channel.Sweep_Period > 0 then
 
       Channel.Sweep_Timer.Start (Actual_Effect_Periods (Channel.Sweep_Period));
-      Put_Line ("Setting up timer, rem:" & Channel.Sweep_Timer.Ticks_Remaining'Img);
+      Put_Line ("Setting up sweep timer, rem:" & Channel.Sweep_Timer.Ticks_Remaining'Img);
       --  end if;
 
       if Channel.Sweep_Shift > 0 then

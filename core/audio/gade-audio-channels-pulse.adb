@@ -42,6 +42,12 @@ package body Gade.Audio.Channels.Pulse is
          Direction => NRx2_In.Direction,
          Period    => NRx2_In.Period);
 
+      Put_Line ("Set up Vol Env (Vol" & NRx2_In.Volume'Img &
+                  ", Dir " & NRx2_In.Direction'Img &
+                  ", Per" & NRx2_In.Period'Img & ")");
+
+      Channel.Set_Volume (Natural (NRx2_In.Volume));
+
       --  TODO: Reuse this expression
       if Channel.Volume_Envelope.Initial_Volume = Volume_Min_Level and
         Channel.Volume_Envelope.Direction = Down
@@ -97,6 +103,7 @@ package body Gade.Audio.Channels.Pulse is
          --  without re-triggering the channel. Deal with that later.
          --- Pulse_Channel'Class (Channel).Disable;
          --  OR NOT!
+         --  TODO: Revise this
          null;
       else
          Set_Volume (Channel, Envelope.Current_Volume);
@@ -108,6 +115,7 @@ package body Gade.Audio.Channels.Pulse is
         (Observer_Type => Pulse_Channel,
          Finished      => Step_Volume_Envelope);
    begin
+      --  Put_Line ("Tick_Volume_Envelope, Rem:" & Channel.Volume_Envelope.Timer.Ticks_Remaining'Img);
       Tick_Notify_Volume_Envelope_Step (Channel.Volume_Envelope.Timer, Channel);
    end Tick_Volume_Envelope;
 
