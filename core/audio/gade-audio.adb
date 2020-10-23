@@ -98,11 +98,15 @@ package body Gade.Audio is
               Audio.Wave.Read_Table (Address),
             when others =>
               Blank_Value);
-      Put ("Read @");
-      Put (Integer (Address), Base => 16, Width => 0);
-      Put (' ');
-      Put (Integer (Value), Base => 16, Width => 0);
-      New_Line;
+--        if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
+--          Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
+--        then
+--           Put ("Read @");
+--           Put (Integer (Address), Base => 16, Width => 0);
+--           Put (' ');
+--           Put (Integer (Value), Base => 16, Width => 0);
+--           New_Line;
+--        end if;
    end Read;
 
    procedure Write
@@ -111,15 +115,22 @@ package body Gade.Audio is
       Value   : Byte)
    is
    begin
-      Put ("Write @");
-      Put (Integer (Address), Base => 16, Width => 0);
-      Put (' ');
-      Put (Integer (Value), Base => 16, Width => 0);
-      New_Line;
+--        if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
+--          Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
+--        then
+--           Put ("Write @");
+--           Put (Integer (Address), Base => 16, Width => 0);
+--           Put (' ');
+--           Put (Integer (Value), Base => 16, Width => 0);
+--           New_Line;
+--        end if;
+      --  TODO: Improve this
       if not Audio.Powered and
         (Address in Output_Volume_Control_IO_Address or
         Address in Channel_Output_Control_IO_Address)
-      then return; end if;
+      then
+         return;
+      end if;
       case Address is
          when NR1_IO_Address =>
             --  null;
@@ -134,6 +145,8 @@ package body Gade.Audio is
             Audio.Noise.Write (To_Channel_Register (Address), Value);
          when Output_Volume_Control_IO_Address =>
             Audio.Volume_Control.Space := Value;
+--              Put_Line ("VC L" & Audio.Volume_Control.Left_Volume'Img &
+--                        " R" & Audio.Volume_Control.Right_Volume'Img);
          when Channel_Output_Control_IO_Address =>
             Audio.Output_Control.Space := Value;
          when Power_Control_Status_IO_Address =>
@@ -202,7 +215,16 @@ package body Gade.Audio is
             R_Out := R_Out + Enabled_Disabled_Values (Output_Control.Right (Ch));
          end loop;
 
-         Audio_Buffer (Audio.Elapsed_Cycles) := (L_Out * 16, R_Out * 16);
+         --  TODO: Verify math, optimize recalculations
+         --  These multiply the signal by (volume+1). The volume step relative
+         --  to the channel DAC is such that a single channel enabled via NR51
+         --  playing at volume of 2 with a master volume of 7 is about as loud
+         --  as that channel playing at volume 15 with a master volume of 0.
+
+         Audio_Buffer (Audio.Elapsed_Cycles) :=
+           (L_Out * (Sample (Audio.Volume_Control.Left_Volume) + 1),
+            R_Out * (Sample (Audio.Volume_Control.Right_Volume) + 1));
+
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;
       end loop;
    exception
