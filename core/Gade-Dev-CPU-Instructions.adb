@@ -7,7 +7,6 @@ with Gade.GB.Memory_Map;      use Gade.GB.Memory_Map;
 with Gade.Dev.CPU.Arithmetic; use Gade.Dev.CPU.Arithmetic;
 with Gade.Dev.CPU.Logic;      use Gade.Dev.CPU.Logic;
 with Gade.Dev.CPU.Bitwise;    use Gade.Dev.CPU.Bitwise;
-with Ada.Text_IO; use Ada.Text_IO;
 
 package body Gade.Dev.CPU.Instructions is
 
@@ -1151,7 +1150,6 @@ package body Gade.Dev.CPU.Instructions is
    procedure LD_DE_nn (GB : in out Gade.GB.GB_Type) is
    begin
       GB.CPU.Regs.DE := Read_Word (GB, GB.CPU.PC);
-      Put_Line ("DE:" & GB.CPU.Regs.DE'Img);
       GB.CPU.PC := GB.CPU.PC + 2;
    end LD_DE_nn;
 

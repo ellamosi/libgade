@@ -183,7 +183,7 @@ package body Gade.Audio is
       Enabled_Disabled_Values : array (Boolean) of Sample;
 
       L_Out, R_Out : Sample;
-      Samples : Channel_Samples;
+      Samples : Channel_Samples := (others => 0); --  TODO: Skip init
    begin
       Enabled_Disabled_Values (False) := 0;
       while Audio.Elapsed_Cycles < Target_Cycles loop

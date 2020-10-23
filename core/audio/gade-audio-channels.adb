@@ -7,13 +7,15 @@ package body Gade.Audio.Channels is
       Audio   : Audio_Type)
    is
    begin
+      --  TODO: Ensure some sort of initialization happens with all timers either
+      --  here or in reset. Can crash otherwise.
       Channel.Audio := Audio;
    end Create;
 
    procedure Reset (Channel : in out Audio_Channel) is
    begin
-      --  TODO: Handle wave table initial value
-      Audio_Channel'Class (Channel).Disable (APU_Power_Off);
+      Audio_Channel'Class (Channel).Turn_Off;
+      Audio_Channel'Class (Channel).Turn_On;
    end Reset;
 
    procedure Turn_On (Channel : in out Audio_Channel) is
