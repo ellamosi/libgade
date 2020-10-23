@@ -9,7 +9,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
    is
    begin
       Parent (Channel).Disable (Mode);
-      Channel.Sweep_Timer.Pause;
+      Channel.Sweep_Timer.Setup;
       Channel.Sweep_Enabled := False;
       if Mode = APU_Power_Off then
          Channel.NRx0 := NRx0_Sweep_Mask;

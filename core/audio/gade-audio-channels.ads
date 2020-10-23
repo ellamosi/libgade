@@ -86,11 +86,6 @@ private
       type Length_Trigger_Channel is abstract new Audio_Channel with private;
 
       overriding
-      procedure Create
-        (Channel : out Length_Trigger_Channel;
-         Audio   : Audio_Type);
-
-      overriding
       procedure Turn_On (Channel : in out Length_Trigger_Channel);
 
       overriding

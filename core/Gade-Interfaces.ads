@@ -18,10 +18,6 @@ package Gade.Interfaces is
      (G      : Gade_Type;
       Reader : Gade.Input_Reader.Input_Reader_Access);
 
-   procedure Next_Frame
-     (G     : Gade_Type;
-      Video : Gade.Video_Buffer.RGB32_Display_Buffer_Access);
-
    procedure Run_For
      (G                 : Gade_Type;
       Requested_Samples : Positive;

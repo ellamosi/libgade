@@ -2,16 +2,6 @@ separate (Gade.Audio.Channels)
 package body Length_Trigger is
 
    overriding
-   procedure Create
-     (Channel : out Length_Trigger_Channel;
-      Audio   : Audio_Type)
-   is
-   begin
-      Parent (Channel).Create (Audio);
-      Setup (Channel.Length_Timer);
-   end Create;
-
-   overriding
    procedure Disable
      (Channel : in out Length_Trigger_Channel;
       Mode    : Disable_Mode)
@@ -24,7 +14,7 @@ package body Length_Trigger is
       Channel.Enabled := False;
       if Mode = APU_Power_Off then
          Channel.Length_Enabled := False;
-         Channel.Length_Timer.Pause;
+         Channel.Length_Timer.Setup;
       end if;
    end Disable;
 
@@ -66,6 +56,7 @@ package body Length_Trigger is
    begin
       S := Channel.Level;
       --  TODO: Can probably avoid this IF by just disabling the sample timer
+      --  Put_Line ("NS:" & Channel.Enabled'Img);
       if Channel.Enabled then
          --  Put_Line ("Tick_Notify_Sample_Step");
          Tick_Notify_Sample_Step (Channel.Sample_Timer, Channel);
@@ -169,6 +160,12 @@ package body Length_Trigger is
             Length_Timer.Start (Length_Max);
          end if;
       end if;
+
+      declare
+         CE : constant Boolean := Length_Trigger_Channel'Class (Channel).Can_Enable;
+      begin
+         Put_Line ("T: " & Trigger'Img & " CE: " & CE'Img);
+      end;
 
       if Trigger and Length_Trigger_Channel'Class (Channel).Can_Enable then
          Channel.Enabled := True;

@@ -84,5 +84,4 @@ private
    end record;
    for CPU_Flags'Size use Byte'Size;
 
-
 end Gade.Dev.CPU;

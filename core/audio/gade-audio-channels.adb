@@ -7,8 +7,6 @@ package body Gade.Audio.Channels is
       Audio   : Audio_Type)
    is
    begin
-      --  TODO: Ensure some sort of initialization happens with all timers either
-      --  here or in reset. Can crash otherwise.
       Channel.Audio := Audio;
    end Create;
 
