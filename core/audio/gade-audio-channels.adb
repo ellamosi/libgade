@@ -19,6 +19,10 @@ package body Gade.Audio.Channels is
    procedure Turn_On (Channel : in out Audio_Channel) is
    begin
       Channel.Powered := True;
+      --  Might not be needed, already unset during turn off
+      Channel.Level := 0;
+      Channel.Sample_Timer.Setup;
+      Channel.Enabled := False;
    end Turn_On;
 
    procedure Turn_Off (Channel : in out Audio_Channel) is
@@ -26,12 +30,62 @@ package body Gade.Audio.Channels is
       Audio_Channel'Class (Channel).Disable (APU_Power_Off);
    end Turn_Off;
 
+   procedure Trigger (Channel : in out Audio_Channel) is
+   begin
+      Channel.Enabled := True;
+      --  We don't know how long the next sample will be yet, fetch next
+      --  sample in the following tick: (UGLY)
+      Channel.Sample_Timer.Start (1);
+   end Trigger;
+
+   procedure Enable (Channel : in out Audio_Channel) is
+   begin
+      Channel.Enabled := True;
+   end Enable;
+
    procedure Disable
      (Channel : in out Audio_Channel;
       Mode    : Disable_Mode) is
    begin
       Channel.Powered := Mode /= APU_Power_Off;
+      Channel.Level := 0;
+      Channel.Sample_Timer.Pause;
+      Channel.Enabled := False;
    end Disable;
+
+   function Enabled (Channel : Audio_Channel) return Boolean is
+   begin
+      return Channel.Enabled;
+   end Enabled;
+
+   procedure Next_Sample
+     (Channel : in out Audio_Channel;
+      S       : out Sample)
+   is
+      procedure Tick_Notify_Sample_Step is new Tick_Notify
+        (Observer_Type => Audio_Channel,
+         Finished      => Step_Sample);
+   begin
+      S := Channel.Level;
+      --  TODO: Can probably avoid this IF by just disabling the sample timer
+      --  Put_Line ("NS:" & Channel.Enabled'Img);
+      if Channel.Enabled then
+         --  Put_Line ("Tick_Notify_Sample_Step");
+         Tick_Notify_Sample_Step (Channel.Sample_Timer, Channel);
+      end if;
+   end Next_Sample;
+
+   procedure Step_Sample (Channel : in out Audio_Channel) is
+      New_Sample_Level : Sample;
+      New_Level_Time   : Positive;
+   begin
+      --  Could maybe find a way to avoid a dynamic dispatch here for
+      --  performance. Inlinable generic function?
+      Audio_Channel'Class (Channel).Next_Sample_Level
+        (New_Sample_Level, New_Level_Time);
+      Channel.Level := New_Sample_Level;
+      Channel.Sample_Timer.Start (New_Level_Time);
+   end Step_Sample;
 
    function Read
      (Channel  : Audio_Channel'Class;

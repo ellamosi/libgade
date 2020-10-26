@@ -28,32 +28,38 @@ private package Gade.Audio.Channels is
 
    procedure Next_Sample
      (Channel : in out Audio_Channel;
-      S       : out Sample) is abstract;
+      S       : out Sample);
 
    procedure Turn_Off (Channel : in out Audio_Channel);
 
    procedure Turn_On (Channel : in out Audio_Channel);
 
-   function Enabled (Ch : Audio_Channel) return Boolean is abstract;
+   function Enabled (Channel : Audio_Channel) return Boolean;
 
    procedure Tick_Length (Channel : in out Audio_Channel) is abstract;
 
-   function Id (Ch : Audio_Channel) return Channel_Id is abstract;
+   function Id (Channel : Audio_Channel) return Channel_Id is abstract;
 
    function Name (Channel : Audio_Channel'Class) return String;
 
 private
 
    type Audio_Channel is abstract tagged record
-      Audio   : Audio_Type;
-      Powered : Boolean;
+      Audio        : Audio_Type;
+      Powered      : Boolean;
+      --  TODO: Not sure if really needed?
+      --  Probably yes, as it can be enabled without using the length timer.
+      --  Could use the Sample timer to derive it, though
+      Enabled      : Boolean;
+      Level        : Sample;
+      Sample_Timer : Timer;
    end record;
 
    Blank_Value : constant Byte := 16#FF#;
 
    type Disable_Mode is (APU_Power_Off, DAC_Power_Off, Self_Disable);
 
-   procedure Trigger (Channel : in out Audio_Channel) is null;
+   procedure Trigger (Channel : in out Audio_Channel);
 
    function Read_Blank (Channel : Audio_Channel) return Byte;
 
@@ -69,9 +75,18 @@ private
    procedure Write_NRx3 (Channel : in out Audio_Channel; Value : Byte) is null;
    procedure Write_NRx4 (Channel : in out Audio_Channel; Value : Byte) is null;
 
+   procedure Enable (Channel : in out Audio_Channel);
+
    procedure Disable
      (Channel : in out Audio_Channel;
       Mode    : Disable_Mode);
+
+   procedure Step_Sample (Channel : in out Audio_Channel);
+
+   procedure Next_Sample_Level
+     (Channel      : in out Audio_Channel;
+      Sample_Level : out Sample;
+      Level_Cycles : out Positive) is null;
 
 
    type Effect_Period_IO is mod 2 ** 3;
@@ -93,15 +108,6 @@ private
         (Channel : in out Length_Trigger_Channel;
          Mode    : Disable_Mode);
 
-      overriding
-      procedure Next_Sample
-        (Channel : in out Length_Trigger_Channel;
-         S       : out Sample);
-
-      overriding
-      procedure Trigger
-        (Channel : in out Length_Trigger_Channel) is null;
-
       function Can_Enable (Channel : Length_Trigger_Channel)
                            return Boolean is abstract;
 
@@ -117,14 +123,6 @@ private
       procedure Write_NRx4
         (Channel : in out Length_Trigger_Channel;
          Value   : Byte);
-
-      overriding
-      function Enabled (Channel : Length_Trigger_Channel) return Boolean;
-
-      procedure Next_Sample_Level
-        (Channel      : in out Length_Trigger_Channel;
-         Sample_Level : out Sample;
-         Level_Cycles : out Positive) is abstract;
 
       overriding
       procedure Tick_Length (Channel : in out Length_Trigger_Channel);
@@ -160,16 +158,9 @@ private
 
       subtype Parent is Audio_Channel;
       type Length_Trigger_Channel is abstract new Parent with record
-         --  TODO: Not sure if really needed?
-         --  Probably yes, as it can be enabled without using the length timer.
-         --  Could use the Sample timer to derive it, though
-         Enabled        : Boolean;
-
          Length_Timer   : Timer;
          Length_Enabled : Boolean;
          Length         : Natural;
-         Sample_Timer   : Timer; --  TODO: Move sample timer to base
-         Level          : Sample;
       end record;
 
       procedure Reload_Length
@@ -178,8 +169,6 @@ private
 
       procedure Length_Triggered_Disable
         (Channel : in out Length_Trigger_Channel);
-
-      procedure Step_Sample (Channel : in out Length_Trigger_Channel);
 
    end Length_Trigger;
 

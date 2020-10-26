@@ -9,9 +9,6 @@ package body Length_Trigger is
    begin
       Parent (Channel).Disable (Mode);
       Put_Line (Channel.Name & " - Disabled");
-      Channel.Level := 0;
-      Channel.Sample_Timer.Pause;
-      Channel.Enabled := False;
       if Mode = APU_Power_Off then
          Channel.Length_Enabled := False;
          Channel.Length_Timer.Setup;
@@ -28,40 +25,7 @@ package body Length_Trigger is
          Put_Line (Channel.Name & " - Resume LT");
          Channel.Length_Timer.Resume;
       end if;
-      Channel.Enabled := False;
-      Channel.Level := 0;
-      Setup (Channel.Sample_Timer);
    end Turn_On;
-
-   procedure Step_Sample (Channel : in out Length_Trigger_Channel) is
-      New_Sample_Level : Sample;
-      New_Level_Time   : Positive;
-   begin
-      --  Could maybe find a way to avoid a dynamic dispatch here for
-      --  performance. Inlinable generic function?
-      Length_Trigger_Channel'Class (Channel).Next_Sample_Level
-        (New_Sample_Level, New_Level_Time);
-      Channel.Level := New_Sample_Level;
-      Start (Channel.Sample_Timer, New_Level_Time);
-   end Step_Sample;
-
-   overriding
-   procedure Next_Sample
-     (Channel : in out Length_Trigger_Channel;
-      S       : out Sample)
-   is
-      procedure Tick_Notify_Sample_Step is new Tick_Notify
-        (Observer_Type => Length_Trigger_Channel,
-         Finished      => Step_Sample);
-   begin
-      S := Channel.Level;
-      --  TODO: Can probably avoid this IF by just disabling the sample timer
-      --  Put_Line ("NS:" & Channel.Enabled'Img);
-      if Channel.Enabled then
-         --  Put_Line ("Tick_Notify_Sample_Step");
-         Tick_Notify_Sample_Step (Channel.Sample_Timer, Channel);
-      end if;
-   end Next_Sample;
 
    overriding
    function Read_NRx4 (Channel : Length_Trigger_Channel) return Byte is
@@ -162,10 +126,6 @@ package body Length_Trigger is
       end if;
 
       if Trigger and Length_Trigger_Channel'Class (Channel).Can_Enable then
-         Channel.Enabled := True;
-         --  We don't know how long the next sample will be yet, fetch next
-         --  sample in the following tick:
-         Start (Channel.Sample_Timer, 1);
          Length_Trigger_Channel'Class (Channel).Trigger;
       end if;
    end Write_NRx4;
@@ -181,12 +141,6 @@ package body Length_Trigger is
          Setup (Channel.Length_Timer, Channel.Length);
       end if;
    end Reload_Length;
-
-   overriding
-   function Enabled (Channel : Length_Trigger_Channel) return Boolean is
-   begin
-      return Channel.Enabled;
-   end Enabled;
 
    procedure Length_Triggered_Disable
      (Channel : in out Length_Trigger_Channel)

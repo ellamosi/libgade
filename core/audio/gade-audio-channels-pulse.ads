@@ -115,12 +115,6 @@ private
      (Channel : in out Pulse_Channel;
       Volume  : Natural);
 
-   overriding
-   procedure Next_Sample_Level
-     (Channel      : in out Pulse_Channel;
-      Sample_Level : out Sample;
-      Level_Cycles : out Positive) is abstract;
-
    procedure Step_Volume_Envelope (Channel : in out Pulse_Channel);
 
 end Gade.Audio.Channels.Pulse;
