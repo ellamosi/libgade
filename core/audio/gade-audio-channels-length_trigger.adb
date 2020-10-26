@@ -1,3 +1,5 @@
+with Ada.Text_IO; use Ada.Text_IO;
+
 separate (Gade.Audio.Channels)
 package body Length_Trigger is
 
@@ -67,8 +69,6 @@ package body Length_Trigger is
       --  TODO: Remove
       B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Steps;
    begin
-      if not Channel.Powered then return; end if;
-
       CE := Length_Trigger_Channel'Class (Channel).Can_Enable;
       Put_Line (Channel.Name & " - Write_NRx4" & Value'Img &
                   " Timer Rem:" & Length_Timer.Ticks_Remaining'Img &

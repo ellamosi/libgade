@@ -1,5 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
 package body Gade.Audio.Channels is
 
    procedure Create
@@ -19,10 +17,6 @@ package body Gade.Audio.Channels is
    procedure Turn_On (Channel : in out Audio_Channel) is
    begin
       Channel.Powered := True;
-      --  Might not be needed, already unset during turn off
-      Channel.Level := 0;
-      Channel.Sample_Timer.Setup;
-      Channel.Enabled := False;
    end Turn_On;
 
    procedure Turn_Off (Channel : in out Audio_Channel) is
@@ -32,16 +26,10 @@ package body Gade.Audio.Channels is
 
    procedure Trigger (Channel : in out Audio_Channel) is
    begin
-      Channel.Enabled := True;
       --  We don't know how long the next sample will be yet, fetch next
       --  sample in the following tick: (UGLY)
       Channel.Sample_Timer.Start (1);
    end Trigger;
-
-   procedure Enable (Channel : in out Audio_Channel) is
-   begin
-      Channel.Enabled := True;
-   end Enable;
 
    procedure Disable
      (Channel : in out Audio_Channel;
@@ -49,13 +37,12 @@ package body Gade.Audio.Channels is
    begin
       Channel.Powered := Mode /= APU_Power_Off;
       Channel.Level := 0;
-      Channel.Sample_Timer.Pause;
-      Channel.Enabled := False;
+      Channel.Sample_Timer.Setup;
    end Disable;
 
    function Enabled (Channel : Audio_Channel) return Boolean is
    begin
-      return Channel.Enabled;
+      return Channel.Sample_Timer.Enabled;
    end Enabled;
 
    procedure Next_Sample

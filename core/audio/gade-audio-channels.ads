@@ -47,10 +47,6 @@ private
    type Audio_Channel is abstract tagged record
       Audio        : Audio_Type;
       Powered      : Boolean;
-      --  TODO: Not sure if really needed?
-      --  Probably yes, as it can be enabled without using the length timer.
-      --  Could use the Sample timer to derive it, though
-      Enabled      : Boolean;
       Level        : Sample;
       Sample_Timer : Timer;
    end record;
@@ -58,8 +54,6 @@ private
    Blank_Value : constant Byte := 16#FF#;
 
    type Disable_Mode is (APU_Power_Off, DAC_Power_Off, Self_Disable);
-
-   procedure Trigger (Channel : in out Audio_Channel);
 
    function Read_Blank (Channel : Audio_Channel) return Byte;
 
@@ -75,7 +69,7 @@ private
    procedure Write_NRx3 (Channel : in out Audio_Channel; Value : Byte) is null;
    procedure Write_NRx4 (Channel : in out Audio_Channel; Value : Byte) is null;
 
-   procedure Enable (Channel : in out Audio_Channel);
+   procedure Trigger (Channel : in out Audio_Channel);
 
    procedure Disable
      (Channel : in out Audio_Channel;

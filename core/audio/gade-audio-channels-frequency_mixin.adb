@@ -32,7 +32,6 @@ package body Frequency_Mixin is
       Mode    : Disable_Mode)
    is
    begin
-      Put_Line ("Freq Mixin Disable");
       Parent (Channel).Disable (Mode);
       --  TODO: Could use non branching mask for this
       if Mode = APU_Power_Off then Channel.Frequency_In.NRx3 := 0; end if;
