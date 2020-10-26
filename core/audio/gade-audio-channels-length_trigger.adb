@@ -166,10 +166,6 @@ package body Length_Trigger is
          --  We don't know how long the next sample will be yet, fetch next
          --  sample in the following tick:
          Start (Channel.Sample_Timer, 1);
---           Put_Line (Channel.Name & " - LE: " &
---                       Channel.Length_Enabled'Img &
---                     ' ' & Length_Timer.Enabled'Img &
---                     ' ' & Length_Timer.Ticks_Remaining'Img);
          Length_Trigger_Channel'Class (Channel).Trigger;
       end if;
    end Write_NRx4;
@@ -178,12 +174,10 @@ package body Length_Trigger is
      (Channel : in out Length_Trigger_Channel;
       Length  : Natural) is
    begin
-      Channel.Length := Length_Max - Length; --(if Length = 0 then Length_Max else Length_Max - Length);
+      Channel.Length := Length_Max - Length;
       if Channel.Length_Enabled then
-         Put_Line (Channel.Name & " - Reload_Length (running)" & Channel.Length'Img);
          Start (Channel.Length_Timer, Channel.Length);
       else
-         Put_Line (Channel.Name & " - Reload_Length (paused)" & Channel.Length'Img);
          Setup (Channel.Length_Timer, Channel.Length);
       end if;
    end Reload_Length;
@@ -191,9 +185,6 @@ package body Length_Trigger is
    overriding
    function Enabled (Channel : Length_Trigger_Channel) return Boolean is
    begin
-      --           Put_Line (Base_Audio_Channel'Class (Channel).Name &
-      --                       "Enabled? " & Channel.Enabled'Img &
-      --                       " - LT:" & Channel.Length_Timer.Ticks_Remaining'Img);
       return Channel.Enabled;
    end Enabled;
 
@@ -201,17 +192,11 @@ package body Length_Trigger is
      (Channel : in out Length_Trigger_Channel)
    is
    begin
-      --  Put_Line (Base_Audio_Channel'Class (Channel).Name & " - Length Timer Stopped");
-      --  Pause (Channel.Length_Timer); --  TODO: Do this as part of the timer
-      --  Put_Line ("Notify_Length_Step");
       if Channel.Length_Enabled then -- TODO: Unsure if needed
          --  Disabled channel should still clock length
-         --  Length counter reaching 0 does NOT disable the length enable flag?
-         --  Channel.Length_Enabled := False;
          Put_Line (Channel.Name & " - Length triggered disable");
          Length_Trigger_Channel'Class (Channel).Disable (Self_Disable);
       end if;
-      --  end if;
    end Length_Triggered_Disable;
 
    overriding
@@ -220,11 +205,7 @@ package body Length_Trigger is
         (Observer_Type => Length_Trigger_Channel,
          Finished      => Length_Triggered_Disable);
    begin
-      --           if Base_Audio_Channel'Class (Channel).Name = "Square 1" then
-      --  Put_Line ("Tick_Length " & Channel.Length_Timer.Ticks_Remaining'Img);
-      --           end if;
       Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
-      --  Put_Line ("Length tick" & Ticks_Remaining (Channel.Length_Timer)'Img);
    end Tick_Length;
 
 end Length_Trigger;

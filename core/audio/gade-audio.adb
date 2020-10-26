@@ -22,8 +22,11 @@ package body Gade.Audio is
       Wave     : Wave_Channel;
       Noise    : Noise_Channel;
 
+      --  TODO: Encapsulate in mixer
       Output_Control : Channel_Output_Control;
       Volume_Control : Output_Volume_Control;
+      Volume : Stereo_Sample;
+
       Power_Control  : Power_Control_Status;
 
       Elapsed_Cycles   : Natural;
@@ -59,6 +62,7 @@ package body Gade.Audio is
       Audio.Powered := True;
 
       Audio.Power_Control.Space := Power_Control_Status_Write_Mask;
+      Audio.Volume := (1, 1);
    end Reset;
 
    function To_Channel_Register
@@ -114,6 +118,8 @@ package body Gade.Audio is
       Address : Audio_IO_Address;
       Value   : Byte)
    is
+      --  32767 / (16 * 4 * 8) = 32767 / 512 = 63.998 (Could just shift?)
+      Sample_Mult : constant Sample := Sample'Last / (16 * Channel_Count * Sample (Output_Volume'Last) + 1);
    begin
 --        if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
 --          Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
@@ -133,18 +139,18 @@ package body Gade.Audio is
       end if;
       case Address is
          when NR1_IO_Address =>
-            --  null;
             Audio.Square_1.Write (To_Channel_Register (Address), Value);
          when NR2_IO_Address =>
-            --  null; --
             Audio.Square_2.Write (To_Channel_Register (Address), Value);
          when NR3_IO_Address =>
             Audio.Wave.Write (To_Channel_Register (Address), Value);
          when NR4_IO_Address =>
-            --  null; --
             Audio.Noise.Write (To_Channel_Register (Address), Value);
          when Output_Volume_Control_IO_Address =>
             Audio.Volume_Control.Space := Value;
+            Audio.Volume :=
+              ((Sample (Audio.Volume_Control.Left_Volume) + 1) * Sample_Mult,
+               (Sample (Audio.Volume_Control.Right_Volume) + 1) * Sample_Mult);
 --              Put_Line ("VC L" & Audio.Volume_Control.Left_Volume'Img &
 --                        " R" & Audio.Volume_Control.Right_Volume'Img);
          when Channel_Output_Control_IO_Address =>
@@ -196,7 +202,7 @@ package body Gade.Audio is
       Enabled_Disabled_Values : array (Boolean) of Sample;
 
       L_Out, R_Out : Sample;
-      Samples : Channel_Samples := (others => 0); --  TODO: Skip init
+      Samples : Channel_Samples;
    begin
       Enabled_Disabled_Values (False) := 0;
       while Audio.Elapsed_Cycles < Target_Cycles loop
@@ -215,15 +221,15 @@ package body Gade.Audio is
             R_Out := R_Out + Enabled_Disabled_Values (Output_Control.Right (Ch));
          end loop;
 
-         --  TODO: Verify math, optimize recalculations
+         --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Mixer
+         --
          --  These multiply the signal by (volume+1). The volume step relative
          --  to the channel DAC is such that a single channel enabled via NR51
          --  playing at volume of 2 with a master volume of 7 is about as loud
          --  as that channel playing at volume 15 with a master volume of 0.
-
          Audio_Buffer (Audio.Elapsed_Cycles) :=
-           (L_Out * (Sample (Audio.Volume_Control.Left_Volume) + 1),
-            R_Out * (Sample (Audio.Volume_Control.Right_Volume) + 1));
+           (L_Out * Audio.Volume.Left,
+            R_Out * Audio.Volume.Right);
 
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;
       end loop;
@@ -290,9 +296,6 @@ package body Gade.Audio is
    is
       pragma Unreferenced (Cycles, Audio_Buffer);
    begin
-      null;
-      --  Report_Cycles (Audio, GB, Audio_Buffer, Cycles);
-      --  Put_Line (Audio.Elapsed_Cycles'Img & " fs");
       Audio.Elapsed_Cycles := 0;
    end Flush_Frame;
 

@@ -22,6 +22,7 @@ package body Gade.Audio.Channels.Wave is
          Channel.NRx0 := NRx0_Power_Mask;
          Channel.NRx2 := NRx2_Volume_Mask;
          Channel.Volume_Shift := Volume_Shifts (None);
+         Channel.Sample_Diff := 16 / 2 ** Channel.Volume_Shift;
       end if;
    end Disable;
 
@@ -35,10 +36,9 @@ package body Gade.Audio.Channels.Wave is
    begin
       Table_Sample := Channel.Table_IO.Table (Channel.Sample_Index);
       Sample_Level := Sample (Table_Sample) / 2 ** Channel.Volume_Shift;
-      Sample_Level := Sample_Level * 2; -- TODO: Should not need this
+      Sample_Level := Sample_Level * 2 - Channel.Sample_Diff;
       Level_Cycles := Channel.Sample_Time;
       Channel.Sample_Index := Channel.Sample_Index + 1;
-      --  Put (Sample_Level'Img);
    end Next_Sample_Level;
 
    overriding
@@ -54,15 +54,8 @@ package body Gade.Audio.Channels.Wave is
    overriding
    procedure Trigger (Channel : in out Wave_Channel) is
    begin
-      Put_Line ("Wave Trigger (Power: " & Channel.Powered'Img & ")");
       Parent (Channel).Trigger;
       Channel.Sample_Index := 0;
---        if Channel.Powered then
---
---        else
---           Put_Line ("Trigger Unpowered Wave Channel");
---        end if;
-      --  TODO: Handle 0 length (also on pulse channels)
    end Trigger;
 
    overriding
@@ -84,15 +77,7 @@ package body Gade.Audio.Channels.Wave is
       Channel.NRx0 := Value or NRx0_Power_Mask;
       Channel.Powered := NRx0_In.Powered;
       if not Channel.Powered then
-         Put_Line ("Powering OFF Wave Channel");
          Wave_Channel'Class (Channel).Disable (DAC_Power_Off);
-         --  Registers get cleared when powering off?
-         --  Channel.Volume_Shift := Volume_Shifts (None);
---           Channel.NRx0 := 0; --  TODO: Mask
---           Channel.NRx2 := 0; --  TODO: Mask
---           Channel.Set_Frequency (0);
-      else
-         Put_Line ("Powering ON Wave Channel");
       end if;
    end Write_NRx0;
 
@@ -108,6 +93,7 @@ package body Gade.Audio.Channels.Wave is
    begin
       Channel.NRx2 := Value or NRx2_Volume_Mask;
       Channel.Volume_Shift := Volume_Shifts (NRx2_In.Volume);
+      Channel.Sample_Diff := 16 / 2 ** Channel.Volume_Shift;
    end Write_NRx2;
 
    function Read_Table

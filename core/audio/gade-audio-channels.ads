@@ -168,7 +168,7 @@ private
          Length_Timer   : Timer;
          Length_Enabled : Boolean;
          Length         : Natural;
-         Sample_Timer   : Timer;
+         Sample_Timer   : Timer; --  TODO: Move sample timer to base
          Level          : Sample;
       end record;
 
@@ -190,7 +190,6 @@ private
       Max_Period : constant := 2 ** 11;
       type Frequency_Type is mod Max_Period;
 
-      --  TODO: Refactor sweep and make this private?
       type Frequency_IO (Access_Type : Audio_Access_Type := Named) is record
          case Access_Type is
          when Named =>

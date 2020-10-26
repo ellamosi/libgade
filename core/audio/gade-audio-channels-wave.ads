@@ -115,6 +115,7 @@ private
       Table_IO     : Wave_Table_IO;
       Sample_Time  : Positive;
       Sample_Index : Wave_Sample_Index;
+      Sample_Diff  : Sample;
    end record;
 
    overriding
