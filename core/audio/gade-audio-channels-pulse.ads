@@ -49,7 +49,7 @@ private
       Step           : Integer;
       Direction      : Envelope_Direction;
       Period         : Envelope_Period;
-      Timer          : Repeatable_Timer;
+      Timer          : Timer_Type;
    end record;
 
    procedure Setup

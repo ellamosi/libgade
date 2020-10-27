@@ -99,11 +99,10 @@ package body Gade.Audio.Channels.Pulse is
    end Step_Volume_Envelope;
 
    procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel) is
-      procedure Tick_Notify_Volume_Envelope_Step is new Tick_Notify_Repeatable
+      procedure Tick_Notify_Volume_Envelope_Step is new Tick_Notify
         (Observer_Type => Pulse_Channel,
          Finished      => Step_Volume_Envelope);
    begin
-      --  Put_Line ("Tick_Volume_Envelope, Rem:" & Channel.Volume_Envelope.Timer.Ticks_Remaining'Img);
       Tick_Notify_Volume_Envelope_Step (Channel.Volume_Envelope.Timer, Channel);
    end Tick_Volume_Envelope;
 

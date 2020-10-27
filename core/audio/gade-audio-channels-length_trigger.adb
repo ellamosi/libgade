@@ -60,7 +60,7 @@ package body Length_Trigger is
       Trigger       : constant Boolean := NRx4_In.Trigger;
       Length_Enable : constant Boolean := NRx4_In.Length_Enable;
 
-      Length_Timer : Timer renames Channel.Length_Timer;
+      Length_Timer : Timer_Type renames Channel.Length_Timer;
 
       Extra_Tick : Boolean;
 

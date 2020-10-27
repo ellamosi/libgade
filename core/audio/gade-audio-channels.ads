@@ -48,7 +48,7 @@ private
       Audio        : Audio_Type;
       Powered      : Boolean;
       Level        : Sample;
-      Sample_Timer : Timer;
+      Sample_Timer : Timer_Type;
    end record;
 
    Blank_Value : constant Byte := 16#FF#;
@@ -152,7 +152,7 @@ private
 
       subtype Parent is Audio_Channel;
       type Length_Trigger_Channel is abstract new Parent with record
-         Length_Timer   : Timer;
+         Length_Timer   : Timer_Type;
          Length_Enabled : Boolean;
          Length         : Natural;
       end record;
