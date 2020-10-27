@@ -30,16 +30,19 @@ private
      (Source => Byte,
       Target => NRx0_Frequency_Sweep_IO);
 
+   type Frequency_Sweep_Details is record
+      Enabled          : Boolean;
+      Shadow_Frequency : Frequency_Type;
+      Sweep_Timer      : Timer; -- TODO: Rename type, component
+      Shift            : Sweep_Shift_Type;
+      Negate, Negated  : Boolean;
+      Period           : Sweep_Period_Type;
+   end record;
+
    subtype Parent is Square_Channel;
    type Sweeping_Square_Channel is new Parent with record
-      NRx0             : Byte;
-      Sweep_Enabled    : Boolean;
-      Shadow_Frequency : Frequency_Type;
-      Sweep_Timer      : Timer;
-      Sweep_Shift      : Sweep_Shift_Type;
-      Sweep_Negate     : Boolean;
-      Sweep_Negated    : Boolean;
-      Sweep_Period     : Sweep_Period_Type;
+      NRx0  : Byte;
+      Sweep : Frequency_Sweep_Details;
    end record;
 
    overriding
