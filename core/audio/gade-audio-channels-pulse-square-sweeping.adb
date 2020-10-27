@@ -67,7 +67,8 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
                   " New f:" & New_Frequency'Img &
                   " Negated: " & Channel.Sweep_Negate'Img);
 
-      if New_Frequency > Natural (Frequency_Type'Last) then
+      if New_Frequency > Natural (Frequency_Type'Last) then -- TODO: Declare Max_Frequency
+         Put_Line ("Frequency based disable");
          Channel.Disable (Self_Disable);
          Channel.Sweep_Enabled := False;
       end if;
@@ -104,7 +105,6 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
    begin
       Put_Line ("Step_Frequency_Sweep (SE: " & Channel.Sweep_Enabled'Img &
                 " Sweep_Period: " & Channel.Sweep_Period'Img & ")");
-      --  Experiment
       if Channel.Sweep_Enabled and Channel.Sweep_Period > 0 then
          Calculate_New_Frequency (Channel);
       end if;
@@ -181,6 +181,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
 
       Put_Line ("Period " & Channel.Sweep_Period'Img & " " &
                 "Negate " & Channel.Sweep_Negate'Img & " " &
+                "Negated " & Channel.Sweep_Negated'Img & " " &
                   "Shift" & Channel.Sweep_Shift'Img  & " " &
                     "SE " & Channel.Sweep_Enabled'Img);
 

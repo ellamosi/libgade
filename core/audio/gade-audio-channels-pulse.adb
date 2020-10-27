@@ -95,19 +95,7 @@ package body Gade.Audio.Channels.Pulse is
       Envelope : Volume_Envelope_Type renames Channel.Volume_Envelope;
    begin
       Step (Envelope);
-
-      if Envelope.Current_Volume = Volume_Min_Level then
-         Put_Line ("Envelope ended at MIN: Disabling Channel");
-         --  Disable the channel altogether for better performance, which is
-         --  probably incorrect as writing the volume can have side effects
-         --  without re-triggering the channel. Deal with that later.
-         --- Pulse_Channel'Class (Channel).Disable;
-         --  OR NOT!
-         --  TODO: Revise this
-         null;
-      else
-         Set_Volume (Channel, Envelope.Current_Volume);
-      end if;
+      Set_Volume (Channel, Envelope.Current_Volume);
    end Step_Volume_Envelope;
 
    procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel) is
@@ -167,6 +155,7 @@ package body Gade.Audio.Channels.Pulse is
    procedure Step (Envelope : in out Volume_Envelope_Type) is
    begin
       Envelope.Current_Volume := Envelope.Current_Volume + Envelope.Step;
+      Put_Line ("Vol Env Step:" & Envelope.Current_Volume'Img);
       if Edge_Volume (Envelope.Current_Volume) then
          Disable (Envelope);
       else

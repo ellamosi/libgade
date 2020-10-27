@@ -125,7 +125,7 @@ package body Length_Trigger is
          end if;
       end if;
 
-      if Trigger and Length_Trigger_Channel'Class (Channel).Can_Enable then
+      if Trigger and CE then
          Length_Trigger_Channel'Class (Channel).Trigger;
       end if;
    end Write_NRx4;
@@ -135,6 +135,7 @@ package body Length_Trigger is
       Length  : Natural) is
    begin
       Channel.Length := Length_Max - Length;
+      Put_Line ("Length Reload:" & Channel.Length'Img & " (LE: " & Channel.Length_Enabled'Img & ")");
       if Channel.Length_Enabled then
          Start (Channel.Length_Timer, Channel.Length);
       else

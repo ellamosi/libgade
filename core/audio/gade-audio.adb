@@ -1,5 +1,5 @@
 with Ada.Text_IO; use Ada.Text_IO;
---  with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Ada.Exceptions; use Ada.Exceptions;
 with Gade.Audio.Channels; use Gade.Audio.Channels;
 with Gade.Audio.Channels.Pulse; use Gade.Audio.Channels.Pulse;
@@ -121,15 +121,15 @@ package body Gade.Audio is
       --  32767 / (16 * 4 * 8) = 32767 / 512 = 63.998 (Could just shift?)
       Sample_Mult : constant Sample := Sample'Last / (16 * Channel_Count * Sample (Output_Volume'Last) + 1);
    begin
---        if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
---          Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
---        then
---           Put ("Write @");
---           Put (Integer (Address), Base => 16, Width => 0);
---           Put (' ');
---           Put (Integer (Value), Base => 16, Width => 0);
---           New_Line;
---        end if;
+      if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
+        Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
+      then
+         Put ("Write @");
+         Put (Integer (Address), Base => 16, Width => 0);
+         Put (' ');
+         Put (Integer (Value), Base => 16, Width => 0);
+         New_Line;
+      end if;
       --  TODO: Improve this
       if not Audio.Powered and
         (Address in Output_Volume_Control_IO_Address or
