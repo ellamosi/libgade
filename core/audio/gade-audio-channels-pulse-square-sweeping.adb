@@ -8,7 +8,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       Sweep : Frequency_Sweep_Details renames Channel.Sweep;
    begin
       Parent (Channel).Disable (Mode);
-      Sweep.Sweep_Timer.Setup;
+      Sweep.Timer.Setup;
       Sweep.Enabled := False;
       if Mode = APU_Power_Off then
          Channel.NRx0 := NRx0_Sweep_Mask;
@@ -73,7 +73,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
          end if;
       end if;
       if Sweep.Enabled then
-         Sweep.Sweep_Timer.Start (Actual_Effect_Periods (Sweep.Period));
+         Sweep.Timer.Start (Actual_Effect_Periods (Sweep.Period));
       end if;
    end Step_Frequency_Sweep;
 
@@ -82,7 +82,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
         (Observer_Type => Sweeping_Square_Channel,
          Finished      => Step_Frequency_Sweep);
    begin
-      Tick_Notify_Frequency_Sweep_Step (Channel.Sweep.Sweep_Timer, Channel);
+      Tick_Notify_Frequency_Sweep_Step (Channel.Sweep.Timer, Channel);
    end Tick_Frequency_Sweep;
 
    overriding
@@ -100,7 +100,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       --  - Square 1's frequency is copied to the shadow register.
       Sweep.Shadow_Frequency := Channel.Frequency_In.Frequency;
       --  - The sweep timer is reloaded.
-      Sweep.Sweep_Timer.Start (Actual_Effect_Periods (Sweep.Period));
+      Sweep.Timer.Start (Actual_Effect_Periods (Sweep.Period));
       --  - The internal enabled flag is set if either the sweep period or shift
       --  are non-zero, cleared otherwise.
       Sweep.Enabled := Sweep.Period /= 0 or Sweep.Shift /= 0;

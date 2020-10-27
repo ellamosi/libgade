@@ -33,7 +33,7 @@ private
    type Frequency_Sweep_Details is record
       Enabled          : Boolean;
       Shadow_Frequency : Frequency_Type;
-      Sweep_Timer      : Timer_Type; -- TODO: Rename type, component
+      Timer            : Timer_Type;
       Shift            : Sweep_Shift_Type;
       Negate, Negated  : Boolean;
       Period           : Sweep_Period_Type;
