@@ -172,6 +172,7 @@ private
 
       Max_Period : constant := 2 ** 11;
       type Frequency_Type is mod Max_Period;
+      Max_Frequency : constant := Frequency_Type'Last;
 
       type Frequency_IO (Access_Type : Audio_Access_Type := Named) is record
          case Access_Type is

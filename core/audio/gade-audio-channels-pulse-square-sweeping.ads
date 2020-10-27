@@ -32,12 +32,10 @@ private
 
    subtype Parent is Square_Channel;
    type Sweeping_Square_Channel is new Parent with record
-      --  TODO: Revise names, sweep_ suffixing
-      --  TODO: Remove unused fields
       NRx0             : Byte;
       Sweep_Enabled    : Boolean;
       Shadow_Frequency : Frequency_Type;
-      Sweep_Timer      : Repeatable_Timer;
+      Sweep_Timer      : Timer;
       Sweep_Shift      : Sweep_Shift_Type;
       Sweep_Negate     : Boolean;
       Sweep_Negated    : Boolean;
@@ -51,6 +49,10 @@ private
 
    overriding
    procedure Trigger (Channel : in out Sweeping_Square_Channel);
+
+   procedure Calculate_New_Frequency
+     (Channel       : in out Sweeping_Square_Channel;
+      New_Frequency : out Integer);
 
    procedure Step_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
 

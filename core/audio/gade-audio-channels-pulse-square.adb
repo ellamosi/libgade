@@ -20,14 +20,12 @@ package body Gade.Audio.Channels.Pulse.Square is
      (Channel : in out Square_Channel;
       Freq    : Frequency_Type)
    is
-      Period  : constant Natural := Max_Period - Natural (Freq);
+      Period : constant Natural := Max_Period - Natural (Freq);
    begin
+      Channel.Frequency_In.Frequency := Freq;
       Channel.Pulse_Cycles :=
         (Pulse_Low  => Period * Lo_Duty_Sample_Multiplier (Channel.Duty),
          Pulse_High => Period * Hi_Duty_Sample_Multiplier (Channel.Duty));
---        Put_Line ("Set_Frequency" &
---                  Freq'Img & Channel.Pulse_Cycles (Pulse_Low)'Img &
---                    Freq'Img & Channel.Pulse_Cycles (Pulse_High)'Img);
    end Set_Frequency;
 
    overriding
