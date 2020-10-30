@@ -11,6 +11,11 @@ package body Gade.Audio.Timers is
       Stop (T);
    end Setup;
 
+   procedure Reload (T : in out Timer_Type; Ticks : Positive) is
+   begin
+      T.Remaining := Ticks;
+   end Reload;
+
    procedure Start (T : in out Timer_Type'Class; Ticks : Positive) is
    begin
       T.Remaining := Ticks;

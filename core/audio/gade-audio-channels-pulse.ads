@@ -43,7 +43,7 @@ private
       Target => NRx2_Volume_Envelope_IO);
 
 
-   type Volume_Envelope_Type is record
+   type Volume_Envelope_Details is record
       Current_Volume : Natural; --  Keep track of volume for stepping
       Initial_Volume : Natural;
       Step           : Integer;
@@ -52,34 +52,13 @@ private
       Timer          : Timer_Type;
    end record;
 
-   procedure Setup
-     (Envelope  : in out Volume_Envelope_Type;
-      Volume    : Envelope_Volume;
-      Direction : Envelope_Direction;
-      Period    : Envelope_Period);
-
-   procedure Trigger (Envelope : in out Volume_Envelope_Type);
-
-   function Enabled (Envelope : Volume_Envelope_Type) return Boolean;
-
-   procedure Disable (Envelope : in out Volume_Envelope_Type);
-
-   function Silent (Envelope : Volume_Envelope_Type) return Boolean;
-
-   procedure Step (Envelope : in out Volume_Envelope_Type);
-
    function Edge_Volume (Volume : Natural) return Boolean;
 
-   function Final_Edge_Volume
-     (Volume    : Natural;
-      Direction : Envelope_Direction)
-      return Boolean;
-
-   function Current_Volume (Envelope : Volume_Envelope_Type) return Natural;
+   function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean;
 
 
-   --  All the Pulse based channels have a maximum length of 64, only the wave
-   --  channel differs with a maximum length of 256.
+   --  All the Pulse based channels have a maximum length of 64 (6 bit), only
+   --  the wave channel differs with a maximum length of 256 (8 bit).
    Length_Bit_Size : constant := 6;
 
    package Pulse_Length_Trigger is new Length_Trigger (Length_Bit_Size);
@@ -89,7 +68,7 @@ private
    type Pulse_Channel is abstract new Parent with record
       Pulse_Levels    : Pulse_Levels_Type;
       NRx2            : Byte;
-      Volume_Envelope : Volume_Envelope_Type;
+      Volume_Envelope : Volume_Envelope_Details;
    end record;
 
    overriding

@@ -8,6 +8,8 @@ package Gade.Audio.Timers is
 
    procedure Setup (T : out Timer_Type; Ticks : Positive);
 
+   procedure Reload (T : in out Timer_Type; Ticks : Positive);
+
    procedure Start (T : in out Timer_Type'Class; Ticks : Positive);
 
    procedure Stop (T : in out Timer_Type);
