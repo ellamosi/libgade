@@ -10,6 +10,7 @@ private
    type Clock_Shift_Type is mod 2 ** 4;
    type Divisor_Code_Type is mod 2 ** 3;
 
+   --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Noise_Channel
    Divisor : constant array (Divisor_Code_Type'Range) of Natural :=
      (0 => 8,
       1 => 16,
@@ -19,6 +20,16 @@ private
       5 => 80,
       6 => 96,
       7 => 112);
+
+   Half_Divisor : constant array (Divisor_Code_Type'Range) of Natural :=
+     (0 => Divisor (0) / 2,
+      1 => Divisor (1) / 2,
+      2 => Divisor (2) / 2,
+      3 => Divisor (3) / 2,
+      4 => Divisor (4) / 2,
+      5 => Divisor (5) / 2,
+      6 => Divisor (6) / 2,
+      7 => Divisor (7) / 2);
 
    type Shift_Register is mod 2**15;
 

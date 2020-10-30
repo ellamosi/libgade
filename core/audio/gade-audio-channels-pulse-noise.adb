@@ -19,6 +19,10 @@ package body Gade.Audio.Channels.Pulse.Noise is
    procedure Trigger (Channel : in out Noise_Channel) is
    begin
       Pulse_Channel (Channel).Trigger;
+
+      --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Trigger_Event
+      --
+      --  Noise channel's LFSR bits are all set to 1.
       Channel.LFSR := 16#7FFF#;
    end Trigger;
 
@@ -35,6 +39,13 @@ package body Gade.Audio.Channels.Pulse.Noise is
    begin
       Level_Cycles := Channel.Clock_Divisor * 2 ** Channel.Clock_Shift;
 
+      --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Noise_Channel
+      --
+      --  When clocked by the frequency timer, the low two bits (0 and 1) are
+      --  XORed, all bits are shifted right by one, and the result of the XOR is
+      --  put into the now-empty high bit. If width mode is 1 (NR43), the XOR
+      --  result is ALSO put into bit 6 AFTER the shift, resulting in a 7-bit
+      --  LFSR.
       Low_0 := LFSR and 16#0001#;
       LFSR := LFSR / 2;
       Low_1 := LFSR and 16#0001#;
@@ -43,6 +54,8 @@ package body Gade.Audio.Channels.Pulse.Noise is
       if Channel.LFSR_Width = Half then
          LFSR := (LFSR and 16#7FBF#) or (XORed * 2 ** 6);
       end if;
+
+      --  The waveform output is bit 0 of the LFSR, INVERTED.
       New_Pulse_State := Output_Pulse_State (LFSR and 16#0001#);
       Sample_Level := Channel.Pulse_Levels (New_Pulse_State);
    end Next_Sample_Level;
@@ -59,7 +72,7 @@ package body Gade.Audio.Channels.Pulse.Noise is
    begin
       Channel.NRx3 := Value;
       --  Clock the sample level timer to half the period:
-      Channel.Clock_Divisor := Divisor (NRx3_In.Divisor_Code) / 2;
+      Channel.Clock_Divisor := Half_Divisor (NRx3_In.Divisor_Code);
       Channel.Clock_Shift := Natural (NRx3_In.Clock_Shift);
       Channel.LFSR_Width := NRx3_In.LFSR_Width;
    end Write_NRx3;
