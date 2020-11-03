@@ -33,12 +33,27 @@ package body Gade.Audio.Channels is
 
    procedure Disable
      (Channel : in out Audio_Channel;
-      Mode    : Disable_Mode) is
+      Mode    : Disable_Mode)
+   is
+      DAC_Off_Mode : constant Boolean := Mode in DAC_Off_Modes;
    begin
       Channel.Powered := Mode /= APU_Power_Off;
+      Channel.DAC_Powered := Channel.DAC_Powered and not DAC_Off_Mode;
       Channel.Level := 0;
       Channel.Sample_Timer.Setup;
    end Disable;
+
+   procedure Update_DAC_Power_State
+     (Channel : in out Audio_Channel'Class;
+      Powered : Boolean)
+   is
+   begin
+      if Powered then
+         Channel.DAC_Powered := True;
+      elsif Channel.DAC_Powered then
+         Channel.Disable (DAC_Power_Off);
+      end if;
+   end Update_DAC_Power_State;
 
    function Enabled (Channel : Audio_Channel) return Boolean is
    begin

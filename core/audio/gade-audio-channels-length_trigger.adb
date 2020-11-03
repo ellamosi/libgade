@@ -64,12 +64,11 @@ package body Length_Trigger is
 
       Extra_Tick : Boolean;
 
-      CE : Boolean;
+      CE : constant Boolean := Channel.DAC_Powered;
 
       --  TODO: Remove
       B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Steps;
    begin
-      CE := Length_Trigger_Channel'Class (Channel).Can_Enable;
       Put_Line (Channel.Name & " - Write_NRx4" & Value'Img &
                   " Timer Rem:" & Length_Timer.Ticks_Remaining'Img &
                   " Length was enabled:" & Channel.Length_Enabled'Img &

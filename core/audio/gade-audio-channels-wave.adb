@@ -60,12 +60,6 @@ package body Gade.Audio.Channels.Wave is
    end Trigger;
 
    overriding
-   function Can_Enable (Channel : Wave_Channel) return Boolean is
-   begin
-      return Channel.Powered;
-   end Can_Enable;
-
-   overriding
    function Read_NRx0 (Channel : Wave_Channel) return Byte is
    begin
       return Channel.NRx0;
@@ -76,10 +70,7 @@ package body Gade.Audio.Channels.Wave is
       NRx0_In : constant NRx0_Power_IO := To_NRx0_Power_IO (Value);
    begin
       Channel.NRx0 := Value or NRx0_Power_Mask;
-      Channel.Powered := NRx0_In.Powered;
-      if not Channel.Powered then
-         Wave_Channel'Class (Channel).Disable (DAC_Power_Off);
-      end if;
+      Channel.Update_DAC_Power_State (NRx0_In.Powered);
    end Write_NRx0;
 
    overriding

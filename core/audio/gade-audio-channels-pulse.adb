@@ -38,13 +38,6 @@ package body Gade.Audio.Channels.Pulse is
       Set_Volume (Channel, Envelope.Current_Volume);
    end Trigger;
 
-   overriding
-   function Can_Enable (Channel : Pulse_Channel) return Boolean is
-   begin
-      return Channel.Volume_Envelope.Initial_Volume /= Volume_Min_Level or
-        Channel.Volume_Envelope.Direction = Up;
-   end Can_Enable;
-
    procedure Set_Volume (Channel : in out Pulse_Channel; Volume : Natural) is
       Volume_Sample : constant Sample := Sample (Volume);
    begin
@@ -67,7 +60,7 @@ package body Gade.Audio.Channels.Pulse is
       --  otherwise it is left unchanged and no further automatic increments/
       --  decrements are made to the volume until the channel is triggered
       --  again.
-      if Edge_Volume (Envelope.Current_Volume) then
+      if Is_Edge_Volume (Envelope.Current_Volume) then
          Stop (Envelope.Timer);
       else
          Start (Envelope.Timer, Actual_Effect_Periods (Envelope.Period));
@@ -115,24 +108,23 @@ package body Gade.Audio.Channels.Pulse is
       --  otherwise it's off and outputs 0 volts. Also, any time the DAC is off
       --  the channel is kept disabled (but turning the DAC back on does NOT
       --  enable the channel).
-      if not Powers_DAC (NRx2_In) then
-         Pulse_Channel'Class (Channel).Disable (DAC_Power_Off);
-      end if;
+      Channel.Update_DAC_Power_State (Powers_DAC (NRx2_In));
 
       --  TODO: Investigate how/if volume should be set here. It's a bit wonky
       --  and probably complex. Prehistorik Man's intro audio probably relies
-      --  on this being accurately implemented.
+      --  on this being accurately implemented. Zombie mode maybe?
       Channel.Set_Volume (Natural (NRx2_In.Volume));
    end Write_NRx2;
 
-   function Edge_Volume (Volume : Natural) return Boolean is
+   function Is_Edge_Volume (Volume : Natural) return Boolean is
    begin
       return Volume = Volume_Max_Level or Volume = Volume_Min_Level;
-   end Edge_Volume;
+   end Is_Edge_Volume;
 
    function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean is
    begin
-      return NRx2_In.Volume /= 0 or NRx2_In.Direction /= Down;
+      return
+        NRx2_In.Volume /= 0 or NRx2_In.Direction /= Envelope_Direction'Val (0);
    end Powers_DAC;
 
 end Gade.Audio.Channels.Pulse;

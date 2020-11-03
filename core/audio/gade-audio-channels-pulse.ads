@@ -52,7 +52,7 @@ private
       Timer          : Timer_Type;
    end record;
 
-   function Edge_Volume (Volume : Natural) return Boolean;
+   function Is_Edge_Volume (Volume : Natural) return Boolean;
 
    function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean;
 
@@ -86,9 +86,6 @@ private
 
    overriding
    procedure Trigger (Channel : in out Pulse_Channel);
-
-   overriding
-   function Can_Enable (Channel : Pulse_Channel) return Boolean;
 
    procedure Set_Volume
      (Channel : in out Pulse_Channel;

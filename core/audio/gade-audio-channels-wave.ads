@@ -132,9 +132,6 @@ private
    procedure Trigger (Channel : in out Wave_Channel);
 
    overriding
-   function Can_Enable (Channel : Wave_Channel) return Boolean;
-
-   overriding
    procedure Set_Frequency
      (Channel : in out Wave_Channel;
       Freq    : Frequency_Type);

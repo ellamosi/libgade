@@ -47,6 +47,7 @@ private
    type Audio_Channel is abstract tagged record
       Audio        : Audio_Type;
       Powered      : Boolean;
+      DAC_Powered  : Boolean;
       Level        : Sample;
       Sample_Timer : Timer_Type;
    end record;
@@ -54,6 +55,8 @@ private
    Blank_Value : constant Byte := 16#FF#;
 
    type Disable_Mode is (APU_Power_Off, DAC_Power_Off, Self_Disable);
+
+   subtype DAC_Off_Modes is Disable_Mode range APU_Power_Off .. DAC_Power_Off;
 
    function Read_Blank (Channel : Audio_Channel) return Byte;
 
@@ -74,6 +77,10 @@ private
    procedure Disable
      (Channel : in out Audio_Channel;
       Mode    : Disable_Mode);
+
+   procedure Update_DAC_Power_State
+     (Channel : in out Audio_Channel'Class;
+      Powered : Boolean);
 
    procedure Step_Sample (Channel : in out Audio_Channel);
 
@@ -101,9 +108,6 @@ private
       procedure Disable
         (Channel : in out Length_Trigger_Channel;
          Mode    : Disable_Mode);
-
-      function Can_Enable (Channel : Length_Trigger_Channel)
-                           return Boolean is abstract;
 
       overriding
       function Read_NRx4 (Channel : Length_Trigger_Channel) return Byte;
