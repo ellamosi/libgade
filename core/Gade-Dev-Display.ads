@@ -222,8 +222,6 @@ private
       DMA_Copy_Ongoing : Boolean;
       Map : LCD_Map_Type;
       Display_Handler : Display_Handler_Access;
-
-      Cycles : Natural;
    end record;
 
    type Display_Access is access all Display_Type;

@@ -6,8 +6,7 @@ package body Gade.GB is
    begin
       Display.Create (GB.Display);
       GB.Cart := Cart_Access (Gade.Carts.Blank.Singleton);
-      --  TODO: Re-evaluate how Audio device is created
-      Create (GB.Audio);
+      Audio.Create (GB.Audio);
       Reset (GB);
    end Create;
 
@@ -32,7 +31,7 @@ package body Gade.GB is
       Audio  : Audio_Buffer_Access;
       Cycles : Positive) is
    begin
-      --  Report_Cycles (GB.Joypad, GB, Cycles);
+      Report_Cycles (GB.Joypad, GB, Cycles);
       Report_Cycles (GB.Display, GB, Video, Cycles);
       Report_Cycles (GB.Audio, Audio, Cycles);
       Report_Cycles (GB.Timer, GB, Cycles);
