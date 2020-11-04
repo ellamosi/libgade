@@ -1,5 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
 package body Gade.Audio.Channels.Pulse is
 
    overriding
@@ -31,11 +29,11 @@ package body Gade.Audio.Channels.Pulse is
 
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Trigger_Event
       --
-      --  Volume envelope timer is reloaded with period.
-      Reload (Envelope.Timer, Actual_Effect_Periods (Envelope.Period));
       --  Channel volume is reloaded from NRx2.
       Envelope.Current_Volume := Envelope.Initial_Volume;
       Set_Volume (Channel, Envelope.Current_Volume);
+      --  Volume envelope timer is reloaded with period.
+      Reload_Timer (Envelope, Stop => Envelope.Period = 0);
    end Trigger;
 
    procedure Set_Volume (Channel : in out Pulse_Channel; Volume : Natural) is
@@ -48,25 +46,23 @@ package body Gade.Audio.Channels.Pulse is
    procedure Step_Volume_Envelope (Channel : in out Pulse_Channel) is
       Envelope : Volume_Envelope_Details renames Channel.Volume_Envelope;
    begin
-      Put_Line ("Vol Env Step:" & Envelope.Current_Volume'Img);
-
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Volume_Envelope
       --
       --  When the timer generates a clock and the envelope period is not zero,
       --  a new volume is calculated by adding or subtracting (as set by NRx2)
       --  one from the current volume.
-      Envelope.Current_Volume := Envelope.Current_Volume + Envelope.Step;
+      --
       --  If this new volume within the 0 to 15 range, the volume is updated,
       --  otherwise it is left unchanged and no further automatic increments/
       --  decrements are made to the volume until the channel is triggered
       --  again.
-      if Is_Edge_Volume (Envelope.Current_Volume) then
-         Stop (Envelope.Timer);
+      if Final_Volumes (Envelope.Direction) = Envelope.Current_Volume then
+         Envelope.Timer.Stop;
       else
-         Start (Envelope.Timer, Actual_Effect_Periods (Envelope.Period));
+         Envelope.Current_Volume := Envelope.Current_Volume + Envelope.Step;
+         Set_Volume (Channel, Envelope.Current_Volume);
+         Envelope.Timer.Start (Actual_Effect_Periods (Envelope.Period));
       end if;
-
-      Set_Volume (Channel, Envelope.Current_Volume);
    end Step_Volume_Envelope;
 
    procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel) is
@@ -96,11 +92,6 @@ package body Gade.Audio.Channels.Pulse is
       Envelope.Step           := Steps (Envelope.Direction);
       Envelope.Period         := NRx2_In.Period;
 
-      Put_Line (Channel.Name &
-                "Set up Vol Env (Vol" & NRx2_In.Volume'Img &
-                  ", Dir " & NRx2_In.Direction'Img &
-                  ", Per" & NRx2_In.Period'Img & ")");
-
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Channel_DAC
       --
       --  DAC power is controlled by the upper 5 bits of NRx2 (top bit of NR30
@@ -113,18 +104,27 @@ package body Gade.Audio.Channels.Pulse is
       --  TODO: Investigate how/if volume should be set here. It's a bit wonky
       --  and probably complex. Prehistorik Man's intro audio probably relies
       --  on this being accurately implemented. Zombie mode maybe?
-      Channel.Set_Volume (Natural (NRx2_In.Volume));
+      --
+      --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior
    end Write_NRx2;
-
-   function Is_Edge_Volume (Volume : Natural) return Boolean is
-   begin
-      return Volume = Volume_Max_Level or Volume = Volume_Min_Level;
-   end Is_Edge_Volume;
 
    function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean is
    begin
       return
         NRx2_In.Volume /= 0 or NRx2_In.Direction /= Envelope_Direction'Val (0);
    end Powers_DAC;
+
+   procedure Reload_Timer
+     (Envelope : in out Volume_Envelope_Details;
+      Stop     : Boolean := False)
+   is
+      Final_Volume : constant Natural := Final_Volumes (Envelope.Direction);
+   begin
+      if Final_Volume = Envelope.Current_Volume or Stop then
+         Envelope.Timer.Stop;
+      else
+         Envelope.Timer.Start (Actual_Effect_Periods (Envelope.Period));
+      end if;
+   end Reload_Timer;
 
 end Gade.Audio.Channels.Pulse;

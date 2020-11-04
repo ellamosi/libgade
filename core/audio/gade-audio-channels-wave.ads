@@ -71,6 +71,14 @@ private
       Half    => 1,
       Quarter => 2);
 
+   --  Sample level compensation relative to volume so resulting sample values
+   --  will oscillate around 0.
+   Sample_Diffs : constant array (Volume_Type) of Sample :=
+     (None    => 16 / 2 ** Volume_Shifts (None) - 1,     -- 16 / 2**4 - 1 = 0
+      Full    => 16 / 2 ** Volume_Shifts (Full) - 1,     -- 16 / 2**0 - 1 = 15
+      Half    => 16 / 2 ** Volume_Shifts (Half) - 1,     -- 16 / 2**1 - 1 = 7
+      Quarter => 16 / 2 ** Volume_Shifts (Quarter) - 1); -- 16 / 2**2 - 1 = 3
+
    type NRx2_Volume_IO is record
       Volume : Volume_Type;
    end record;

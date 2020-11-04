@@ -118,8 +118,8 @@ package body Gade.Audio is
       Address : Audio_IO_Address;
       Value   : Byte)
    is
-      --  32767 / (16 * 4 * 8) = 32767 / 512 = 63.998 (Could just shift?)
-      Sample_Mult : constant Sample := Sample'Last / (16 * Channel_Count * Sample (Output_Volume'Last) + 1);
+      --  32767 / (15 * 4 * 8) = 32767 / 480 = 68.26
+      Sample_Mult : constant Sample := Sample'Last / (15 * Channel_Count * (7 + 1));
    begin
       if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
         Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
@@ -234,7 +234,21 @@ package body Gade.Audio is
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;
       end loop;
    exception
-      when E : others => Put_Line (Exception_Information (E));
+      when E : others =>
+         --  60 * 576 = 34560 > 32767
+         --  15 * 4 = 60
+         --  15 * 4 * (7+1) = 480 (Max unmultiplied level)
+         --  32767 / 480 = 68.27;
+         --  60 * 8 * 68 = 60 * 544 = 32640
+
+         Put_Line ("L_Out" & L_Out'Img &
+                     " Mult" & Audio.Volume.Left'Img &
+                     " LV" & Audio.Volume_Control.Left_Volume'Img);
+         for Ch in Channel_Id loop
+            Put (Ch'Img & Samples (Ch)'Img);
+         end loop;
+         New_Line;
+         Put_Line (Exception_Information (E));
    end Report_Cycles;
 
    function Read_Power_Control_Status (Audio : Audio_Type) return Byte is

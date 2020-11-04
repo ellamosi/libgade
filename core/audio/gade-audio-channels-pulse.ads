@@ -14,7 +14,7 @@ private
    Volume_Max_Level : constant := Envelope_Volume'Last;
    Volume_Min_Level : constant := Envelope_Volume'First;
 
-   Final_Edge_Volumes : constant array (Envelope_Direction) of Natural :=
+   Final_Volumes : constant array (Envelope_Direction) of Natural :=
      (Down => Volume_Min_Level, Up => Volume_Max_Level);
 
    Steps : constant array (Envelope_Direction) of Integer := (-1, 1);
@@ -52,9 +52,10 @@ private
       Timer          : Timer_Type;
    end record;
 
-   function Is_Edge_Volume (Volume : Natural) return Boolean;
-
    function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean;
+
+   procedure Reload_Timer (Envelope : in out Volume_Envelope_Details;
+                           Stop     : Boolean := False);
 
 
    --  All the Pulse based channels have a maximum length of 64 (6 bit), only

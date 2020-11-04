@@ -1,5 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
 package body Gade.Audio.Channels.Wave is
 
    overriding
@@ -48,7 +46,6 @@ package body Gade.Audio.Channels.Wave is
    is
       Period : constant Natural := Max_Period - Natural (Freq);
    begin
-      Put_Line ("Wave.Set_Frequency" & Freq'Img);
       Channel.Sample_Time := Natural'Max (Period / 2, 1);
    end Set_Frequency;
 
@@ -85,7 +82,7 @@ package body Gade.Audio.Channels.Wave is
    begin
       Channel.NRx2 := Value or NRx2_Volume_Mask;
       Channel.Volume_Shift := Volume_Shifts (NRx2_In.Volume);
-      Channel.Sample_Diff := 16 / 2 ** Channel.Volume_Shift;
+      Channel.Sample_Diff := Sample_Diffs (NRx2_In.Volume);
    end Write_NRx2;
 
    function Read_Table
