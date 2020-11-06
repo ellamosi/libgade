@@ -2,6 +2,8 @@ package Gade.Audio.Channels.Pulse.Square is
 
    type Square_Channel is new Pulse_Channel with private;
 
+   type Square_Channel_Access is access all Square_Channel;
+
    overriding
    function Id (Channel : Square_Channel) return Channel_Id;
 

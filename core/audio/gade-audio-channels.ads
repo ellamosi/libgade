@@ -12,7 +12,7 @@ private package Gade.Audio.Channels is
 
    procedure Create
      (Channel : out Audio_Channel;
-      Audio   : Audio_Type);
+      Audio   : not null Audio_Type);
 
    procedure Reset (Channel : in out Audio_Channel);
 

@@ -2,9 +2,9 @@ with System;
 
 package Gade.Audio.Channels.Wave is
 
-   subtype Wave_Table_IO_Address is Audio_IO_Address range 16#FF30# .. 16#FF3F#;
-
    type Wave_Channel is new Audio_Channel with private;
+
+   type Wave_Channel_Access is access all Wave_Channel;
 
    overriding
    procedure Reset (Channel : in out Wave_Channel);

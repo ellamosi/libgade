@@ -2,7 +2,7 @@ package body Gade.Audio.Channels is
 
    procedure Create
      (Channel : out Audio_Channel;
-      Audio   : Audio_Type)
+      Audio   : not null Audio_Type)
    is
    begin
       Channel.Audio := Audio;

@@ -2,6 +2,8 @@ package Gade.Audio.Channels.Pulse.Square.Sweeping is
 
    type Sweeping_Square_Channel is new Square_Channel with private;
 
+   type Sweeping_Square_Channel_Access is access all Sweeping_Square_Channel;
+
    procedure Tick_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
 
    overriding

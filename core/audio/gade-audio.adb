@@ -1,6 +1,4 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Ada.Exceptions; use Ada.Exceptions;
 with Gade.Audio.Channels; use Gade.Audio.Channels;
 with Gade.Audio.Channels.Pulse; use Gade.Audio.Channels.Pulse;
 with Gade.Audio.Channels.Pulse.Noise; use Gade.Audio.Channels.Pulse.Noise;
@@ -18,17 +16,14 @@ package body Gade.Audio is
       return Channel_Register;
 
    type Opaque_Audio_Type is record
-      Square_1 : Sweeping_Square_Channel;
-      Square_2 : Square_Channel;
-      Wave     : Wave_Channel;
-      Noise    : Noise_Channel;
-
-      --  TODO: Encapsulate in mixer
-      Output_Control : Channel_Output_Control;
-      Volume_Control : Output_Volume_Control;
-      Volume : Stereo_Sample;
+      Square_1 : aliased Sweeping_Square_Channel;
+      Square_2 : aliased Square_Channel;
+      Wave     : aliased Wave_Channel;
+      Noise    : aliased Noise_Channel;
 
       Power_Control  : Power_Control_Status;
+
+      Mixer : Audio_Mixer;
 
       Elapsed_Cycles   : Natural;
       Frame_Seq_Step_Idx : Frame_Sequencer_Step_Index;
@@ -40,10 +35,18 @@ package body Gade.Audio is
    procedure Create (Audio : aliased out Audio_Type) is
    begin
       Audio := new Opaque_Audio_Type;
+
       Create (Audio.Square_1, Audio);
       Create (Audio.Square_2, Audio);
       Create (Audio.Wave, Audio);
       Create (Audio.Noise, Audio);
+
+      Create
+        (Audio.Mixer,
+         Audio.Square_1'Access,
+         Audio.Square_2'Access,
+         Audio.Wave'Access,
+         Audio.Noise'Access);
    end Create;
 
    procedure Reset (Audio : in out Audio_Type) is
@@ -60,10 +63,10 @@ package body Gade.Audio is
       Reset (Audio.Wave);
       Reset (Audio.Noise);
 
-      Audio.Powered := True;
+      Reset (Audio.Mixer);
 
+      Audio.Powered := True;
       Audio.Power_Control.Space := Power_Control_Status_Write_Mask;
-      Audio.Volume := (1, 1);
    end Reset;
 
    function To_Channel_Register
@@ -85,21 +88,21 @@ package body Gade.Audio is
    begin
       Value :=
         (case Address is
-            when NR1_IO_Address =>
+            when NR1x_IO_Address =>
               Audio.Square_1.Read (To_Channel_Register (Address)),
-            when NR2_IO_Address =>
+            when NR2x_IO_Address =>
               Audio.Square_2.Read (To_Channel_Register (Address)),
-            when NR3_IO_Address =>
+            when NR3x_IO_Address =>
               Audio.Wave.Read (To_Channel_Register (Address)),
-            when NR4_IO_Address =>
+            when NR4x_IO_Address =>
               Audio.Noise.Read (To_Channel_Register (Address)),
-            when Output_Volume_Control_IO_Address =>
-              Audio.Volume_Control.Space,
-            when Channel_Output_Control_IO_Address =>
-              Audio.Output_Control.Space,
-            when Power_Control_Status_IO_Address =>
+            when NR50_IO_Address =>
+              Audio.Mixer.Read_NR50,
+            when NR51_IO_Address =>
+              Audio.Mixer.Read_NR51,
+            when NR52_IO_Address =>
               Read_Power_Control_Status (Audio),
-            when Wave_Table_IO_Address => -- TODO consistent range names
+            when Wave_Table_IO_Address =>
               Audio.Wave.Read_Table (Address),
             when others =>
               Blank_Value);
@@ -119,46 +122,32 @@ package body Gade.Audio is
       Address : Audio_IO_Address;
       Value   : Byte)
    is
-      --  32767 / (15 * 4 * 8) = 32767 / 480 = 68.26
-      Sample_Mult : constant Sample := Sample'Last / (15 * Channel_Count * (7 + 1));
    begin
-      if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
-        Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
-      then
-         Put ("Write @");
-         Put (Integer (Address), Base => 16, Width => 0);
-         Put (' ');
-         Put (Integer (Value), Base => 16, Width => 0);
-         New_Line;
-      end if;
-      --  TODO: Improve this
-      if not Audio.Powered and
-        (Address in Output_Volume_Control_IO_Address or
-        Address in Channel_Output_Control_IO_Address)
-      then
-         return;
-      end if;
+--        if Address not in NR2x_IO_Address and Address not in NR3x_IO_Address and
+--          Address not in NR4x_IO_Address and Address not in Wave_Table_IO_Address
+--        then
+--           Put ("Write @");
+--           Put (Integer (Address), Base => 16, Width => 0);
+--           Put (' ');
+--           Put (Integer (Value), Base => 16, Width => 0);
+--           New_Line;
+--        end if;
       case Address is
-         when NR1_IO_Address =>
+         when NR1x_IO_Address =>
             Audio.Square_1.Write (To_Channel_Register (Address), Value);
-         when NR2_IO_Address =>
+         when NR2x_IO_Address =>
             Audio.Square_2.Write (To_Channel_Register (Address), Value);
-         when NR3_IO_Address =>
+         when NR3x_IO_Address =>
             Audio.Wave.Write (To_Channel_Register (Address), Value);
-         when NR4_IO_Address =>
+         when NR4x_IO_Address =>
             Audio.Noise.Write (To_Channel_Register (Address), Value);
-         when Output_Volume_Control_IO_Address =>
-            Audio.Volume_Control.Space := Value;
-            Audio.Volume :=
-              ((Sample (Audio.Volume_Control.Left_Volume) + 1) * Sample_Mult,
-               (Sample (Audio.Volume_Control.Right_Volume) + 1) * Sample_Mult);
---              Put_Line ("VC L" & Audio.Volume_Control.Left_Volume'Img &
---                        " R" & Audio.Volume_Control.Right_Volume'Img);
-         when Channel_Output_Control_IO_Address =>
-            Audio.Output_Control.Space := Value;
-         when Power_Control_Status_IO_Address =>
+         when NR50_IO_Address =>
+            Audio.Mixer.Write_NR50 (Value);
+         when NR51_IO_Address =>
+            Audio.Mixer.Write_NR51 (Value);
+         when NR52_IO_Address =>
             Write_Power_Control_Status (Audio, Value);
-         when Wave_Table_IO_Address => -- TODO consistent range names
+         when Wave_Table_IO_Address =>
             Audio.Wave.Write_Table (Address, Value);
          when others => null;
       end case;
@@ -196,74 +185,25 @@ package body Gade.Audio is
       Audio_Buffer : Audio_Buffer_Access;
       Cycles       : Positive)
    is
-      Output_Control : Channel_Output_Control renames Audio.Output_Control;
-
       Target_Cycles : constant Natural := Audio.Elapsed_Cycles + Cycles / 4;
-
-      Enabled_Disabled_Values : array (Boolean) of Sample;
-
-      L_Out, R_Out : Sample;
-      Samples : Channel_Samples;
    begin
-      Enabled_Disabled_Values (False) := 0;
       while Audio.Elapsed_Cycles < Target_Cycles loop
-         Next_Sample (Audio.Square_1, Samples (NR1));
-         Next_Sample (Audio.Square_2, Samples (NR2));
-         Next_Sample (Audio.Wave, Samples (NR3));
-         Next_Sample (Audio.Noise, Samples (NR4));
+         Audio_Buffer (Audio.Elapsed_Cycles) := Audio.Mixer.Next_Sample;
 
          Tick_Frame_Sequencer (Audio);
 
-         L_Out := 0;
-         R_Out := 0;
-         for Ch in Channel_Id loop
-            Enabled_Disabled_Values (True) := Samples (Ch);
-            L_Out := L_Out + Enabled_Disabled_Values (Output_Control.Left (Ch));
-            R_Out := R_Out + Enabled_Disabled_Values (Output_Control.Right (Ch));
-         end loop;
-
-         --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Mixer
-         --
-         --  These multiply the signal by (volume+1). The volume step relative
-         --  to the channel DAC is such that a single channel enabled via NR51
-         --  playing at volume of 2 with a master volume of 7 is about as loud
-         --  as that channel playing at volume 15 with a master volume of 0.
-         Audio_Buffer (Audio.Elapsed_Cycles) :=
-           (L_Out * Audio.Volume.Left,
-            R_Out * Audio.Volume.Right);
-
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;
       end loop;
-   exception
-      when E : others =>
-         --  60 * 576 = 34560 > 32767
-         --  15 * 4 = 60
-         --  15 * 4 * (7+1) = 480 (Max unmultiplied level)
-         --  32767 / 480 = 68.27;
-         --  60 * 8 * 68 = 60 * 544 = 32640
-
-         Put_Line ("L_Out" & L_Out'Img &
-                     " Mult" & Audio.Volume.Left'Img &
-                     " LV" & Audio.Volume_Control.Left_Volume'Img);
-         for Ch in Channel_Id loop
-            Put (Ch'Img & Samples (Ch)'Img);
-         end loop;
-         New_Line;
-         Put_Line (Exception_Information (E));
    end Report_Cycles;
 
    function Read_Power_Control_Status (Audio : Audio_Type) return Byte is
-      Power_Control : Power_Control_Status renames Audio.Power_Control;
-      B : Boolean;
    begin
-      B := Audio.Square_1.Enabled;
-      Power_Control.Length_Status (NR1) := B;
-      B := Audio.Square_2.Enabled;
-      Power_Control.Length_Status (NR2) := B;
-      Power_Control.Length_Status (NR3) := Enabled (Audio.Wave);
-      Power_Control.Length_Status (NR4) := Enabled (Audio.Noise);
+      Audio.Power_Control.Length_Status (NR1) := Audio.Square_1.Enabled;
+      Audio.Power_Control.Length_Status (NR2) := Audio.Square_2.Enabled;
+      Audio.Power_Control.Length_Status (NR3) := Audio.Wave.Enabled;
+      Audio.Power_Control.Length_Status (NR4) := Audio.Noise.Enabled;
 
-      return Power_Control.Space;
+      return Audio.Power_Control.Space;
    end Read_Power_Control_Status;
 
    procedure Write_Power_Control_Status
@@ -276,13 +216,11 @@ package body Gade.Audio is
       New_Power_State := Audio.Power_Control.Power;
       if Audio.Powered and not New_Power_State then
          Put_Line ("===================== APU Power OFF =====================");
-         --  TODO: Powering down should clear and prevent accessing most registers
          Audio.Square_1.Turn_Off;
          Audio.Square_2.Turn_Off;
          Audio.Wave.Turn_Off;
          Audio.Noise.Turn_Off;
-         Audio.Volume_Control.Space := 0;
-         Audio.Output_Control.Space := 0;
+         Audio.Mixer.Turn_Off;
 
          Audio.Frame_Seq_Step := 0;
       elsif not Audio.Powered and New_Power_State then
@@ -291,6 +229,7 @@ package body Gade.Audio is
          Audio.Square_2.Turn_On;
          Audio.Wave.Turn_On;
          Audio.Noise.Turn_On;
+         Audio.Mixer.Turn_On;
          --  Unusre about this
          --  Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
          --   Audio.Frame_Seq_Step_Idx := 0;

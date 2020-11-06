@@ -39,16 +39,18 @@ private
    type Channel_Id is (NR1, NR2, NR3, NR4);
    Channel_Count : constant := Channel_Id'Range_Length;
 
-   subtype NR1_IO_Address is Audio_IO_Address range 16#FF10# .. 16#FF14#;
-   subtype NR2_IO_Address is Audio_IO_Address range 16#FF15# .. 16#FF19#;
-   subtype NR3_IO_Address is Audio_IO_Address range 16#FF1A# .. 16#FF1E#;
-   subtype NR4_IO_Address is Audio_IO_Address range 16#FF1F# .. 16#FF23#;
+   subtype NR1x_IO_Address is Audio_IO_Address range 16#FF10# .. 16#FF14#;
+   subtype NR2x_IO_Address is Audio_IO_Address range 16#FF15# .. 16#FF19#;
+   subtype NR3x_IO_Address is Audio_IO_Address range 16#FF1A# .. 16#FF1E#;
+   subtype NR4x_IO_Address is Audio_IO_Address range 16#FF1F# .. 16#FF23#;
+
+   subtype NR50_IO_Address is Audio_IO_Address range 16#FF24# .. 16#FF24#;
+   subtype NR51_IO_Address is Audio_IO_Address range 16#FF25# .. 16#FF25#;
+   subtype NR52_IO_Address is Audio_IO_Address range 16#FF26# .. 16#FF26#;
+
+   subtype Wave_Table_IO_Address is Audio_IO_Address range 16#FF30# .. 16#FF3F#;
 
    type Audio_Access_Type is (Named, Address);
-
-   subtype Power_Control_Status_IO_Address is Audio_IO_Address
-   range 16#FF26# .. 16#FF26#;
-
 
    type Channel_Flags is array (Channel_Id) of Boolean;
    pragma Pack (Channel_Flags);
@@ -82,9 +84,6 @@ private
    --  cycle at that rate.
    Frame_Sequencer_Freq : constant := 512; -- Hz
    Samples_Frame_Sequencer_Tick : constant := Samples_Second / Frame_Sequencer_Freq;
-
---     type Frame_Sequencer_Trigger is
---       (Length_Counter, Frequency_Sweep, Volume_Envelope);
 
    type Frame_Sequencer_Step is
      (None, Volume_Envelope, Length_Counter, Length_Counter_Frequency_Sweep);
