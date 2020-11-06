@@ -66,7 +66,7 @@ package body Gade.Audio.Channels is
    is
       procedure Tick_Notify_Sample_Step is new Tick_Notify
         (Observer_Type => Audio_Channel,
-         Finished      => Step_Sample);
+         Notify      => Step_Sample);
    begin
       S := Channel.Level;
       --  TODO: Can probably avoid this IF by just disabling the sample timer

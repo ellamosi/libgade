@@ -51,7 +51,7 @@ package body Gade.Audio.Timers is
       Tick (T);
       if Has_Finished (T) and Enabled (T) then
          Pause (T);
-         Finished (Observer);
+         Notify (Observer);
       end if;
    end Tick_Notify;
 

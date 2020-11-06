@@ -157,7 +157,7 @@ package body Length_Trigger is
    procedure Tick_Length (Channel : in out Length_Trigger_Channel) is
       procedure Tick_Notify_Length_Step is new Tick_Notify
         (Observer_Type => Length_Trigger_Channel,
-         Finished      => Length_Triggered_Disable);
+         Notify        => Length_Triggered_Disable);
    begin
       Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
    end Tick_Length;

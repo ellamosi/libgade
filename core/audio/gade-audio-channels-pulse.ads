@@ -54,9 +54,6 @@ private
 
    function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean;
 
-   procedure Reload_Timer (Envelope : in out Volume_Envelope_Details;
-                           Stop     : Boolean := False);
-
 
    --  All the Pulse based channels have a maximum length of 64 (6 bit), only
    --  the wave channel differs with a maximum length of 256 (8 bit).

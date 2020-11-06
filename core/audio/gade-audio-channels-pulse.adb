@@ -33,7 +33,7 @@ package body Gade.Audio.Channels.Pulse is
       Envelope.Current_Volume := Envelope.Initial_Volume;
       Set_Volume (Channel, Envelope.Current_Volume);
       --  Volume envelope timer is reloaded with period.
-      Reload_Timer (Envelope, Stop => Envelope.Period = 0);
+      Envelope.Timer.Start (Actual_Effect_Periods (Envelope.Period));
    end Trigger;
 
    procedure Set_Volume (Channel : in out Pulse_Channel; Volume : Natural) is
@@ -45,6 +45,7 @@ package body Gade.Audio.Channels.Pulse is
 
    procedure Step_Volume_Envelope (Channel : in out Pulse_Channel) is
       Envelope : Volume_Envelope_Details renames Channel.Volume_Envelope;
+      Final_Volume : constant Natural := Final_Volumes (Envelope.Direction);
    begin
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Volume_Envelope
       --
@@ -56,19 +57,17 @@ package body Gade.Audio.Channels.Pulse is
       --  otherwise it is left unchanged and no further automatic increments/
       --  decrements are made to the volume until the channel is triggered
       --  again.
-      if Final_Volumes (Envelope.Direction) = Envelope.Current_Volume then
-         Envelope.Timer.Stop;
-      else
+      if Final_Volume /= Envelope.Current_Volume and Envelope.Period /= 0 then
          Envelope.Current_Volume := Envelope.Current_Volume + Envelope.Step;
          Set_Volume (Channel, Envelope.Current_Volume);
-         Envelope.Timer.Start (Actual_Effect_Periods (Envelope.Period));
+         Envelope.Timer.Start (Positive (Envelope.Period));
       end if;
    end Step_Volume_Envelope;
 
    procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel) is
       procedure Tick_Notify_Volume_Envelope_Step is new Tick_Notify
         (Observer_Type => Pulse_Channel,
-         Finished      => Step_Volume_Envelope);
+         Notify        => Step_Volume_Envelope);
    begin
       Tick_Notify_Volume_Envelope_Step (Channel.Volume_Envelope.Timer, Channel);
    end Tick_Volume_Envelope;
@@ -113,18 +112,5 @@ package body Gade.Audio.Channels.Pulse is
       return
         NRx2_In.Volume /= 0 or NRx2_In.Direction /= Envelope_Direction'Val (0);
    end Powers_DAC;
-
-   procedure Reload_Timer
-     (Envelope : in out Volume_Envelope_Details;
-      Stop     : Boolean := False)
-   is
-      Final_Volume : constant Natural := Final_Volumes (Envelope.Direction);
-   begin
-      if Final_Volume = Envelope.Current_Volume or Stop then
-         Envelope.Timer.Stop;
-      else
-         Envelope.Timer.Start (Actual_Effect_Periods (Envelope.Period));
-      end if;
-   end Reload_Timer;
 
 end Gade.Audio.Channels.Pulse;
