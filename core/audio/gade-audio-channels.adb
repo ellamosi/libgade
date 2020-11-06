@@ -14,11 +14,6 @@ package body Gade.Audio.Channels is
       Audio_Channel'Class (Channel).Turn_On;
    end Reset;
 
-   procedure Turn_On (Channel : in out Audio_Channel) is
-   begin
-      Channel.Powered := True;
-   end Turn_On;
-
    procedure Turn_Off (Channel : in out Audio_Channel) is
    begin
       Audio_Channel'Class (Channel).Disable (APU_Power_Off);
@@ -37,7 +32,6 @@ package body Gade.Audio.Channels is
    is
       DAC_Off_Mode : constant Boolean := Mode in DAC_Off_Modes;
    begin
-      Channel.Powered := Mode /= APU_Power_Off;
       Channel.DAC_Powered := Channel.DAC_Powered and not DAC_Off_Mode;
       Channel.Level := 0;
       Channel.Sample_Timer.Setup;
@@ -110,7 +104,7 @@ package body Gade.Audio.Channels is
       Value    : Byte)
    is
    begin
-      if Channel.Powered or Register = NRx1 then
+      if Is_Powered (Channel.Audio) or Register = NRx1 then
          case Register is
          when NRx0 => Channel.Write_NRx0 (Value);
          when NRx1 => Channel.Write_NRx1 (Value);

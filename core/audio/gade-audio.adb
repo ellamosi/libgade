@@ -321,4 +321,9 @@ package body Gade.Audio is
       return Frame_Sequencer_Steps (Audio.Frame_Seq_Step_Idx);
    end Current_Frame_Sequencer_Step;
 
+   function Is_Powered (Audio : Audio_Type) return Boolean is
+   begin
+      return Audio.Powered;
+   end Is_Powered;
+
 end Gade.Audio;

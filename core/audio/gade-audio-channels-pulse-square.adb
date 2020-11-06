@@ -50,7 +50,7 @@ package body Gade.Audio.Channels.Pulse.Square is
    procedure Write_NRx1 (Channel : in out Square_Channel; Value : Byte) is
       Duty : constant Duty_Type := Duty_Type'Val (Value / NRx1_Duty_Div);
    begin
-      if Channel.Powered then
+      if Is_Powered (Channel.Audio) then
          Channel.Duty := Duty;
          Channel.NRx1 := Value or NRx1_Duty_Mask;
       end if;

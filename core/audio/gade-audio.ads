@@ -155,6 +155,8 @@ private
      (Audio : Audio_Type)
       return Frame_Sequencer_Step;
 
+   function Is_Powered (Audio : Audio_Type) return Boolean;
+
    procedure Tick_Frame_Sequencer (Audio : in out Audio_Type);
 
    type Opaque_Audio_Type;

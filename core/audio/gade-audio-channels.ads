@@ -32,7 +32,7 @@ private package Gade.Audio.Channels is
 
    procedure Turn_Off (Channel : in out Audio_Channel);
 
-   procedure Turn_On (Channel : in out Audio_Channel);
+   procedure Turn_On (Channel : in out Audio_Channel) is null;
 
    function Enabled (Channel : Audio_Channel) return Boolean;
 
@@ -46,7 +46,6 @@ private
 
    type Audio_Channel is abstract tagged record
       Audio        : Audio_Type;
-      Powered      : Boolean;
       DAC_Powered  : Boolean;
       Level        : Sample;
       Sample_Timer : Timer_Type;
