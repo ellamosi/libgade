@@ -128,9 +128,6 @@ private
 
       Length_Max : constant Natural := 2 ** Length_Bits;
 
-      subtype Lengh_Steps is Frame_Sequencer_Step range
-        Length_Counter .. Length_Counter_Frequency_Sweep;
-
       NRx1_Length_Mask : constant Byte := Byte (Length_Max - 1);
 
       NRx4_Length_Enable_Mask : constant Byte := 16#BF#;
@@ -163,9 +160,6 @@ private
 
       subtype Parent is Audio_Channel;
       type Length_Trigger_Channel is abstract new Parent with record
---           Length_Timer   : Timer_Type;
---           Length_Enabled : Boolean;
---           Length         : Natural;
          Length : Length_Details;
       end record;
 

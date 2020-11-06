@@ -1,5 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 
+with Gade.Audio.Frame_Sequencer; use Gade.Audio.Frame_Sequencer;
+
 separate (Gade.Audio.Channels)
 package body Length_Trigger is
 
@@ -73,7 +75,7 @@ package body Length_Trigger is
       CE : constant Boolean := Channel.DAC_Powered;
 
       --  TODO: Remove
-      B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Steps;
+      B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Step;
    begin
       Put_Line (Channel.Name & " - Write_NRx4" & Value'Img &
                   " Timer Rem:" & Length.Timer.Ticks_Remaining'Img &
@@ -86,7 +88,7 @@ package body Length_Trigger is
       --  flag state.
       Extra_Tick := not Length.Timer.Enabled and
         Length_Enable and
-        Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Steps;
+        Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Step;
 
       Length.Enabled := Length_Enable;
 

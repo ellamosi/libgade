@@ -47,6 +47,8 @@ package Gade.Video_Buffer is
 
    type RGB32_Display_Buffer_Access is access all RGB32_Display_Buffer with
      Convention => C;
+   --  TODO: Figure out why the pragma is needed (release mode only)
+   pragma No_Strict_Aliasing (RGB32_Display_Buffer_Access);
 
    Background_Width  : constant := 256;
    Background_Height : constant := 256;

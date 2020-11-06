@@ -5,6 +5,7 @@ with Gade.Audio.Channels.Pulse.Noise; use Gade.Audio.Channels.Pulse.Noise;
 with Gade.Audio.Channels.Pulse.Square; use Gade.Audio.Channels.Pulse.Square;
 with Gade.Audio.Channels.Wave; use Gade.Audio.Channels.Wave;
 with Gade.Audio.Mixer; use Gade.Audio.Mixer;
+with Gade.Audio.Frame_Sequencer; use Gade.Audio.Frame_Sequencer;
 
 with Gade.Audio.Channels.Pulse.Square.Sweeping;
 use Gade.Audio.Channels.Pulse.Square.Sweeping;
@@ -21,15 +22,13 @@ package body Gade.Audio is
       Wave     : aliased Wave_Channel;
       Noise    : aliased Noise_Channel;
 
-      Power_Control  : Power_Control_Status;
+      Mixer     : Audio_Mixer;
+      Frame_Seq : Frame_Sequencer.Frame_Sequencer;
 
-      Mixer : Audio_Mixer;
+      Powered       : Boolean;
+      Power_Control : Power_Control_Status;
 
-      Elapsed_Cycles   : Natural;
-      Frame_Seq_Step_Idx : Frame_Sequencer_Step_Index;
-      Rem_Frame_Seq_Ticks : Natural;
-      Powered : Boolean;
-      Frame_Seq_Step : Natural;
+      Elapsed_Cycles : Natural;
    end record;
 
    procedure Create (Audio : aliased out Audio_Type) is
@@ -47,16 +46,17 @@ package body Gade.Audio is
          Audio.Square_2'Access,
          Audio.Wave'Access,
          Audio.Noise'Access);
+      Create
+        (Audio.Frame_Seq,
+         Audio.Square_1'Access,
+         Audio.Square_2'Access,
+         Audio.Wave'Access,
+         Audio.Noise'Access);
    end Create;
 
    procedure Reset (Audio : in out Audio_Type) is
    begin
       Put_Line ("Audio Reset");
-
-      Audio.Elapsed_Cycles := 0;
-      Audio.Frame_Seq_Step_Idx := 0;
-      Audio.Frame_Seq_Step := 1;
-      Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
 
       Reset (Audio.Square_1);
       Reset (Audio.Square_2);
@@ -64,9 +64,12 @@ package body Gade.Audio is
       Reset (Audio.Noise);
 
       Reset (Audio.Mixer);
+      Reset (Audio.Frame_Seq);
 
       Audio.Powered := True;
       Audio.Power_Control.Space := Power_Control_Status_Write_Mask;
+
+      Audio.Elapsed_Cycles := 0;
    end Reset;
 
    function To_Channel_Register
@@ -153,33 +156,6 @@ package body Gade.Audio is
       end case;
    end Write;
 
-   procedure Tick_Frame_Sequencer (Audio : in out Audio_Type) is
-   begin
-      Audio.Rem_Frame_Seq_Ticks := Audio.Rem_Frame_Seq_Ticks - Audio.Frame_Seq_Step;
-      if Audio.Rem_Frame_Seq_Ticks = 0 then
-         Audio.Frame_Seq_Step_Idx := Audio.Frame_Seq_Step_Idx + 1;
-         case Frame_Sequencer_Steps (Audio.Frame_Seq_Step_Idx) is
-            when Length_Counter =>
-               Tick_Length (Audio.Square_1);
-               Tick_Length (Audio.Square_2);
-               Tick_Length (Audio.Wave);
-               Tick_Length (Audio.Noise);
-            when Length_Counter_Frequency_Sweep =>
-               Tick_Length (Audio.Square_1);
-               Tick_Length (Audio.Square_2);
-               Tick_Length (Audio.Wave);
-               Tick_Length (Audio.Noise);
-               Tick_Frequency_Sweep (Audio.Square_1);
-            when Volume_Envelope => null;
-               Tick_Volume_Envelope (Audio.Square_1);
-               Tick_Volume_Envelope (Audio.Square_2);
-               Tick_Volume_Envelope (Audio.Noise);
-            when None => null;
-         end case;
-         Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
-      end if;
-   end Tick_Frame_Sequencer;
-
    procedure Report_Cycles
      (Audio        : in out Audio_Type;
       Audio_Buffer : Audio_Buffer_Access;
@@ -190,7 +166,7 @@ package body Gade.Audio is
       while Audio.Elapsed_Cycles < Target_Cycles loop
          Audio_Buffer (Audio.Elapsed_Cycles) := Audio.Mixer.Next_Sample;
 
-         Tick_Frame_Sequencer (Audio);
+         Audio.Frame_Seq.Tick;
 
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;
       end loop;
@@ -215,30 +191,19 @@ package body Gade.Audio is
       Audio.Power_Control.Space := Value or Power_Control_Status_Write_Mask;
       New_Power_State := Audio.Power_Control.Power;
       if Audio.Powered and not New_Power_State then
-         Put_Line ("===================== APU Power OFF =====================");
          Audio.Square_1.Turn_Off;
          Audio.Square_2.Turn_Off;
          Audio.Wave.Turn_Off;
          Audio.Noise.Turn_Off;
          Audio.Mixer.Turn_Off;
-
-         Audio.Frame_Seq_Step := 0;
+         Audio.Frame_Seq.Turn_Off;
       elsif not Audio.Powered and New_Power_State then
-         Put_Line ("===================== APU Power ON =====================");
          Audio.Square_1.Turn_On;
          Audio.Square_2.Turn_On;
          Audio.Wave.Turn_On;
          Audio.Noise.Turn_On;
          Audio.Mixer.Turn_On;
-         --  Unusre about this
-         --  Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
-         --   Audio.Frame_Seq_Step_Idx := 0;
-         --  When powered on, the frame sequencer is reset so that the next step
-         --  will be 0
-         Audio.Frame_Seq_Step_Idx := 7;
-         Audio.Rem_Frame_Seq_Ticks := Samples_Frame_Sequencer_Tick;
-         Audio.Frame_Seq_Step := 1;
-         Tick_Frame_Sequencer (Audio);
+         Audio.Frame_Seq.Turn_On;
       end if;
       Audio.Powered := New_Power_State;
    end Write_Power_Control_Status;
@@ -258,7 +223,7 @@ package body Gade.Audio is
       return Frame_Sequencer_Step
    is
    begin
-      return Frame_Sequencer_Steps (Audio.Frame_Seq_Step_Idx);
+      return Audio.Frame_Seq.Step;
    end Current_Frame_Sequencer_Step;
 
    function Is_Powered (Audio : Audio_Type) return Boolean is
