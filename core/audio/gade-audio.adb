@@ -6,6 +6,7 @@ with Gade.Audio.Channels.Pulse; use Gade.Audio.Channels.Pulse;
 with Gade.Audio.Channels.Pulse.Noise; use Gade.Audio.Channels.Pulse.Noise;
 with Gade.Audio.Channels.Pulse.Square; use Gade.Audio.Channels.Pulse.Square;
 with Gade.Audio.Channels.Wave; use Gade.Audio.Channels.Wave;
+with Gade.Audio.Mixer; use Gade.Audio.Mixer;
 
 with Gade.Audio.Channels.Pulse.Square.Sweeping;
 use Gade.Audio.Channels.Pulse.Square.Sweeping;

@@ -44,63 +44,14 @@ private
    subtype NR3_IO_Address is Audio_IO_Address range 16#FF1A# .. 16#FF1E#;
    subtype NR4_IO_Address is Audio_IO_Address range 16#FF1F# .. 16#FF23#;
 
-   subtype Output_Volume_Control_IO_Address is Audio_IO_Address
-   range 16#FF24# .. 16#FF24#;
-
-   subtype Channel_Output_Control_IO_Address is Audio_IO_Address
-   range 16#FF25# .. 16#FF25#;
+   type Audio_Access_Type is (Named, Address);
 
    subtype Power_Control_Status_IO_Address is Audio_IO_Address
    range 16#FF26# .. 16#FF26#;
 
---     subtype Control_Address is Audio_IO_Address range 16#FF24# .. 16#FF26#;
-
-   type Audio_Access_Type is (Named, Address);
-
-
-   type Output_Volume is mod 2 ** 3;
-
-   type Output_Volume_Control (S : Audio_Access_Type := Named) is record
-      case S is
-         when Named =>
-            Right_Volume     : Output_Volume;
-            Vin_Right_Enable : Boolean;
-            Left_Volume      : Output_Volume;
-            Vin_Left_Enable  : Boolean;
-         when Address =>
-            Space            : Byte;
-      end case;
-   end record with Unchecked_Union;
-   for Output_Volume_Control use record
-      Right_Volume     at 0 range 0 .. 2;
-      Vin_Right_Enable at 0 range 3 .. 3;
-      Left_Volume      at 0 range 4 .. 6;
-      Vin_Left_Enable  at 0 range 7 .. 7;
-      Space            at 0 range 0 .. 7;
-   end record;
-   for Output_Volume_Control'Size use Byte'Size;
-
-
-   type Channel_Samples is array (Channel_Id) of Sample;
 
    type Channel_Flags is array (Channel_Id) of Boolean;
    pragma Pack (Channel_Flags);
-
-   type Channel_Output_Control (S : Audio_Access_Type := Named) is record
-      case S is
-         when Named =>
-            Right, Left : Channel_Flags;
-         when Address =>
-            Space       : Byte;
-      end case;
-   end record with Unchecked_Union;
-   for Channel_Output_Control use record
-      Right at 0 range 0 .. 3;
-      Left  at 0 range 4 .. 7;
-      Space at 0 range 0 .. 7;
-   end record;
-   for Channel_Output_Control'Size use Byte'Size;
-
 
    type Power_Control_Status (S : Audio_Access_Type := Named) is record
       case S is
