@@ -12,20 +12,20 @@ package body Length_Trigger is
       Parent (Channel).Disable (Mode);
       Put_Line (Channel.Name & " - Disabled");
       if Mode = APU_Power_Off then
-         Channel.Length_Enabled := False;
-         Channel.Length_Timer.Setup;
+         Channel.Length.Enabled := False;
+         Channel.Length.Timer.Setup;
       end if;
    end Disable;
 
    overriding
    procedure Turn_On (Channel : in out Length_Trigger_Channel) is
    begin
-      Put_Line (Channel.Name & " - Turn On (LE: " & Channel.Length_Enabled'Img &
-                  " Rem:" & Channel.Length_Timer.Ticks_Remaining'Img & ")");
+      Put_Line (Channel.Name & " - Turn On (LE: " & Channel.Length.Enabled'Img &
+                  " Rem:" & Channel.Length.Timer.Ticks_Remaining'Img & ")");
       Parent (Channel).Turn_On;
-      if Channel.Length_Enabled then
+      if Channel.Length.Enabled then
          Put_Line (Channel.Name & " - Resume LT");
-         Channel.Length_Timer.Resume;
+         Channel.Length.Timer.Resume;
       end if;
    end Turn_On;
 
@@ -34,7 +34,7 @@ package body Length_Trigger is
       NRx4_Out : NRx4_Common_IO;
    begin
       --  TODO: Just save IO byte and keep it updated?
-      NRx4_Out.Length_Enable := Channel.Length_Enabled;
+      NRx4_Out.Length_Enable := Channel.Length.Enabled;
       return To_Byte (NRx4_Out) or NRx4_Length_Enable_Mask;
    end Read_NRx4;
 
@@ -43,11 +43,17 @@ package body Length_Trigger is
      (Channel : in out Length_Trigger_Channel;
       Value   : Byte)
    is
-      --           Length : constant Natural :=
-      --             Length_Max - Natural (Value and NRx1_Length_Mask);
-      Length : constant Natural := Natural (Value and NRx1_Length_Mask);
+      Length : Length_Details renames Channel.Length;
+
+      Length_Value : constant Natural := Natural (Value and NRx1_Length_Mask);
    begin
-      Channel.Reload_Length (Length);
+      Length.Value := Length_Max - Length_Value;
+      Put_Line ("Length Reload:" & Length.Value'Img & " (LE: " & Length.Enabled'Img & ")");
+      if Length.Enabled then
+         Length.Timer.Start (Length.Value);
+      else
+         Length.Timer.Setup (Length.Value);
+      end if;
    end Write_NRx1;
 
    overriding
@@ -55,12 +61,12 @@ package body Length_Trigger is
      (Channel : in out Length_Trigger_Channel;
       Value   : Byte)
    is
+      Length : Length_Details renames Channel.Length;
+
       NRx4_In : constant NRx4_Common_IO := To_NRx4_Common_IO (Value);
 
       Trigger       : constant Boolean := NRx4_In.Trigger;
       Length_Enable : constant Boolean := NRx4_In.Length_Enable;
-
-      Length_Timer : Timer_Type renames Channel.Length_Timer;
 
       Extra_Tick : Boolean;
 
@@ -70,57 +76,57 @@ package body Length_Trigger is
       B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Steps;
    begin
       Put_Line (Channel.Name & " - Write_NRx4" & Value'Img &
-                  " Timer Rem:" & Length_Timer.Ticks_Remaining'Img &
-                  " Length was enabled:" & Channel.Length_Enabled'Img &
-                  " Length timer was enabled:" & Channel.Length_Timer.Enabled'Img &
+                  " Timer Rem:" & Length.Timer.Ticks_Remaining'Img &
+                  " Length was enabled:" & Length.Enabled'Img &
+                  " Length timer was enabled:" & Length.Timer.Enabled'Img &
                   " Extra clock FSeq state:" & B'Img & " CE " & CE'Img);
 
       --  The timer will stop ticking once it reaches 0, but the length
       --  enable flag will remain on. Need to check timer state and not previous
       --  flag state.
-      Extra_Tick := not Length_Timer.Enabled and
+      Extra_Tick := not Length.Timer.Enabled and
         Length_Enable and
         Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Steps;
 
-      Channel.Length_Enabled := Length_Enable;
+      Length.Enabled := Length_Enable;
 
-      if Length_Enable and not Length_Timer.Has_Finished then
-         Length_Timer.Resume;
+      if Length_Enable and not Length.Timer.Has_Finished then
+         Length.Timer.Resume;
 
          if Extra_Tick then
             Put_Line ("ENABLING LENGTH IN FIRST HALF OF PERIOD! EXTRA LE TICK! (Rem:" &
-                        Length_Timer.Ticks_Remaining'Img & ")");
-            Length_Timer.Tick;
+                        Length.Timer.Ticks_Remaining'Img & ")");
+            Length.Timer.Tick;
          end if;
 
-         if Length_Timer.Has_Finished and Channel.Enabled and not Trigger
+         if Length.Timer.Has_Finished and Channel.Enabled and not Trigger
          then
             Length_Triggered_Disable (Channel); --  Disables channel
          end if;
       end if;
 
-      if Length_Timer.Has_Finished or not Length_Enable then
-         Length_Timer.Pause;
+      if Length.Timer.Has_Finished or not Length_Enable then
+         Length.Timer.Pause;
       end if;
 
       --  TODO: Try to make this cleaner
-      if Trigger and Length_Timer.Has_Finished then
+      if Trigger and Length.Timer.Has_Finished then
          Put_Line (Channel.Name & " - 0 length reset to max (1)");
-         Length_Timer.Setup (Length_Max);
+         Length.Timer.Setup (Length_Max);
       end if;
 
       if Trigger and Length_Enable then
-         Length_Timer.Resume;
+         Length.Timer.Resume;
 
          if Extra_Tick then
             Put_Line ("ENABLING LENGTH IN FIRST HALF OF PERIOD! EXTRA TR TICK! (Rem:" &
-                        Length_Timer.Ticks_Remaining'Img & ")");
-            Length_Timer.Tick; --  TODO: Handle underflow?
+                        Length.Timer.Ticks_Remaining'Img & ")");
+            Length.Timer.Tick; --  TODO: Handle underflow?
          end if;
 
-         if Channel.Length_Timer.Has_Finished then
+         if Length.Timer.Has_Finished then
             Put_Line (Channel.Name & " - 0 length reset to max (2)");
-            Length_Timer.Start (Length_Max);
+            Length.Timer.Start (Length_Max);
          end if;
       end if;
 
@@ -129,24 +135,11 @@ package body Length_Trigger is
       end if;
    end Write_NRx4;
 
-   procedure Reload_Length
-     (Channel : in out Length_Trigger_Channel;
-      Length  : Natural) is
-   begin
-      Channel.Length := Length_Max - Length;
-      Put_Line ("Length Reload:" & Channel.Length'Img & " (LE: " & Channel.Length_Enabled'Img & ")");
-      if Channel.Length_Enabled then
-         Start (Channel.Length_Timer, Channel.Length);
-      else
-         Setup (Channel.Length_Timer, Channel.Length);
-      end if;
-   end Reload_Length;
-
    procedure Length_Triggered_Disable
      (Channel : in out Length_Trigger_Channel)
    is
    begin
-      if Channel.Length_Enabled then -- TODO: Unsure if needed
+      if Channel.Length.Enabled then -- TODO: Unsure if needed
          --  Disabled channel should still clock length
          Put_Line (Channel.Name & " - Length triggered disable");
          Length_Trigger_Channel'Class (Channel).Disable (Self_Disable);
@@ -159,7 +152,7 @@ package body Length_Trigger is
         (Observer_Type => Length_Trigger_Channel,
          Notify        => Length_Triggered_Disable);
    begin
-      Tick_Notify_Length_Step (Channel.Length_Timer, Channel);
+      Tick_Notify_Length_Step (Channel.Length.Timer, Channel);
    end Tick_Length;
 
 end Length_Trigger;

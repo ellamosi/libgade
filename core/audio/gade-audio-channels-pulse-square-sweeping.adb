@@ -80,7 +80,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
    procedure Tick_Frequency_Sweep (Channel : in out Sweeping_Square_Channel) is
       procedure Tick_Notify_Frequency_Sweep_Step is new Tick_Notify
         (Observer_Type => Sweeping_Square_Channel,
-         Notify      => Step_Frequency_Sweep);
+         Notify        => Step_Frequency_Sweep);
    begin
       Tick_Notify_Frequency_Sweep_Step (Channel.Sweep.Timer, Channel);
    end Tick_Frequency_Sweep;

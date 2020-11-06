@@ -153,16 +153,21 @@ private
         (Source => NRx4_Common_IO,
          Target => Byte);
 
-      subtype Parent is Audio_Channel;
-      type Length_Trigger_Channel is abstract new Parent with record
-         Length_Timer   : Timer_Type;
-         Length_Enabled : Boolean;
-         Length         : Natural;
+
+      type Length_Details is record
+         Timer   : Timer_Type;
+         Enabled : Boolean;
+         Value   : Natural;
       end record;
 
-      procedure Reload_Length
-        (Channel : in out Length_Trigger_Channel;
-         Length  : Natural);
+
+      subtype Parent is Audio_Channel;
+      type Length_Trigger_Channel is abstract new Parent with record
+--           Length_Timer   : Timer_Type;
+--           Length_Enabled : Boolean;
+--           Length         : Natural;
+         Length : Length_Details;
+      end record;
 
       procedure Length_Triggered_Disable
         (Channel : in out Length_Trigger_Channel);
