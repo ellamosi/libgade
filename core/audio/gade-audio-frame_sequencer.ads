@@ -1,12 +1,14 @@
 with Gade.Audio.Channels.Pulse.Noise,
      Gade.Audio.Channels.Pulse.Square,
      Gade.Audio.Channels.Pulse.Square.Sweeping,
-     Gade.Audio.Channels.Wave;
+     Gade.Audio.Channels.Wave,
+     Gade.Audio.Timers;
 
 use Gade.Audio.Channels.Pulse.Noise,
     Gade.Audio.Channels.Pulse.Square,
     Gade.Audio.Channels.Pulse.Square.Sweeping,
-    Gade.Audio.Channels.Wave;
+    Gade.Audio.Channels.Wave,
+    Gade.Audio.Timers;
 
 --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Frame_Sequencer
 --
@@ -55,11 +57,8 @@ private package Gade.Audio.Frame_Sequencer is
 
 private
 
-   --  The Frame sequencer triggers the volume envelope tick at 64 Hz
-   --  So we need to clock it a t 8 times that so it can complete its state
-   --  cycle at that rate.
-   Frame_Sequencer_Freq : constant := 512; -- Hz
-   Samples_Frame_Sequencer_Tick : constant := Samples_Second / Frame_Sequencer_Freq; --
+   Frequency : constant := 512; -- Hz
+   Samples_Tick : constant := Samples_Second / Frequency;
 
    type Frame_Sequencer_Step_Index is mod 8;
 
@@ -80,9 +79,10 @@ private
       Wave     : Wave_Channel_Access;
       Noise    : Noise_Channel_Access;
 
-      Step_Idx  : Frame_Sequencer_Step_Index;
-      Rem_Ticks : Natural;
-      Step      : Natural;
+      Step_Idx : Frame_Sequencer_Step_Index;
+      Timer    : Timer_Type;
    end record;
+
+   procedure Step_Frame_Sequencer (FS : in out Frame_Sequencer);
 
 end Gade.Audio.Frame_Sequencer;

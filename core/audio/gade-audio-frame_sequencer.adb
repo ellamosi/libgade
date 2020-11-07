@@ -16,55 +16,55 @@ package body Gade.Audio.Frame_Sequencer is
 
    procedure Reset (FS : in out Frame_Sequencer) is
    begin
-      --  Revise values being set equivalent
---        Turn_Off (FS);
---        Turn_On (FS);
-      FS.Step_Idx := 0;
-      FS.Step := 1;
-      FS.Rem_Ticks := Samples_Frame_Sequencer_Tick;
+      Turn_Off (FS);
+      Turn_On (FS);
    end Reset;
 
    procedure Turn_Off (FS : in out Frame_Sequencer) is
    begin
-      FS.Step := 0;
+      FS.Timer.Stop;
    end Turn_Off;
 
    procedure Turn_On (FS : in out Frame_Sequencer) is
    begin
       --  Unsure about this:
       --  When powered on, the frame sequencer is reset so that the next step
-      --  will be 0
+      --  will be 0. Re-evaluate once mid instruction timings are implemented.
       FS.Step_Idx := 7;
-      FS.Rem_Ticks := Samples_Frame_Sequencer_Tick;
-      FS.Step := 1;
+      FS.Timer.Start (Samples_Tick);
       FS.Tick;
    end Turn_On;
 
-   procedure Tick (FS : in out Frame_Sequencer) is
+   procedure Step_Frame_Sequencer (FS : in out Frame_Sequencer) is
    begin
-      FS.Rem_Ticks := FS.Rem_Ticks - FS.Step;
-      if FS.Rem_Ticks = 0 then
-         FS.Step_Idx := FS.Step_Idx + 1;
-         case Frame_Sequencer_Steps (FS.Step_Idx) is
-            when Length_Counter =>
-               FS.Square_1.Tick_Length;
-               FS.Square_2.Tick_Length;
-               FS.Wave.Tick_Length;
-               FS.Noise.Tick_Length;
-            when Length_Counter_Frequency_Sweep =>
-               FS.Square_1.Tick_Length;
-               FS.Square_2.Tick_Length;
-               FS.Wave.Tick_Length;
-               FS.Noise.Tick_Length;
-               FS.Square_1.Tick_Frequency_Sweep;
-            when Volume_Envelope => null;
-               FS.Square_1.Tick_Volume_Envelope;
-               FS.Square_2.Tick_Volume_Envelope;
-               FS.Noise.Tick_Volume_Envelope;
-            when None => null;
-         end case;
-         FS.Rem_Ticks := Samples_Frame_Sequencer_Tick;
-      end if;
+      FS.Step_Idx := FS.Step_Idx + 1;
+      case Frame_Sequencer_Steps (FS.Step_Idx) is
+         when Length_Counter =>
+            FS.Square_1.Tick_Length;
+            FS.Square_2.Tick_Length;
+            FS.Wave.Tick_Length;
+            FS.Noise.Tick_Length;
+         when Length_Counter_Frequency_Sweep =>
+            FS.Square_1.Tick_Length;
+            FS.Square_2.Tick_Length;
+            FS.Wave.Tick_Length;
+            FS.Noise.Tick_Length;
+            FS.Square_1.Tick_Frequency_Sweep;
+         when Volume_Envelope => null;
+            FS.Square_1.Tick_Volume_Envelope;
+            FS.Square_2.Tick_Volume_Envelope;
+            FS.Noise.Tick_Volume_Envelope;
+         when None => null;
+      end case;
+      FS.Timer.Start (Samples_Tick);
+   end Step_Frame_Sequencer;
+
+   procedure Tick (FS : in out Frame_Sequencer) is
+      procedure Tick_Notify_Sample_Step is new Tick_Notify
+        (Observer_Type => Frame_Sequencer,
+         Notify        => Step_Frame_Sequencer);
+   begin
+      Tick_Notify_Sample_Step (FS.Timer, FS);
    end Tick;
 
    function Step (FS : Frame_Sequencer) return Frame_Sequencer_Step is
