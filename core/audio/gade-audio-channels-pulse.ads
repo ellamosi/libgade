@@ -21,7 +21,7 @@ private
 
    type Pulse_State_Type is (Pulse_Low, Pulse_High);
 
-   type Pulse_Levels_Type is array (Pulse_State_Type) of Sample;
+   type Pulse_Levels_Type is array (Pulse_State_Type) of Channel_Sample;
 
 
    NRx2_Volume_Envelope_Mask : constant Byte := 16#00#;

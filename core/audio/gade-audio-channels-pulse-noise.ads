@@ -71,7 +71,7 @@ private
    overriding
    procedure Next_Sample_Level
      (Channel      : in out Noise_Channel;
-      Sample_Level : out Sample;
+      Sample_Level : out Channel_Sample;
       Level_Cycles : out Positive);
 
    overriding

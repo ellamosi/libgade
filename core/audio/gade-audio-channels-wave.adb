@@ -27,13 +27,13 @@ package body Gade.Audio.Channels.Wave is
    overriding
    procedure Next_Sample_Level
      (Channel      : in out Wave_Channel;
-      Sample_Level : out Sample;
+      Sample_Level : out Channel_Sample;
       Level_Cycles : out Positive)
    is
       Table_Sample  : Wave_Sample;
    begin
       Table_Sample := Channel.Table_IO.Table (Channel.Sample_Index);
-      Sample_Level := Sample (Table_Sample) / 2 ** Channel.Volume_Shift;
+      Sample_Level := Channel_Sample (Table_Sample) / 2 ** Channel.Volume_Shift;
       Sample_Level := Sample_Level * 2 - Channel.Sample_Diff;
       Level_Cycles := Channel.Sample_Time;
       Channel.Sample_Index := Channel.Sample_Index + 1;

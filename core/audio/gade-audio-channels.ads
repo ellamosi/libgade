@@ -26,9 +26,11 @@ private package Gade.Audio.Channels is
       Register : Channel_Register;
       Value    : Byte);
 
+   subtype Channel_Sample is Sample range -15 .. 15;
+
    procedure Next_Sample
      (Channel : in out Audio_Channel;
-      S       : out Sample);
+      S       : out Channel_Sample);
 
    procedure Turn_Off (Channel : in out Audio_Channel);
 
@@ -47,7 +49,7 @@ private
    type Audio_Channel is abstract tagged record
       Audio        : Audio_Type;
       DAC_Powered  : Boolean;
-      Level        : Sample;
+      Level        : Channel_Sample;
       Sample_Timer : Timer_Type;
    end record;
 
@@ -85,7 +87,7 @@ private
 
    procedure Next_Sample_Level
      (Channel      : in out Audio_Channel;
-      Sample_Level : out Sample;
+      Sample_Level : out Channel_Sample;
       Level_Cycles : out Positive) is null;
 
 

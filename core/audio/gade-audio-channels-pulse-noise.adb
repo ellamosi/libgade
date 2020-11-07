@@ -29,7 +29,7 @@ package body Gade.Audio.Channels.Pulse.Noise is
    overriding
    procedure Next_Sample_Level
      (Channel      : in out Noise_Channel;
-      Sample_Level : out Sample;
+      Sample_Level : out Channel_Sample;
       Level_Cycles : out Positive)
    is
       LFSR : Shift_Register renames Channel.LFSR;

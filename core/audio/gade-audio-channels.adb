@@ -56,7 +56,7 @@ package body Gade.Audio.Channels is
 
    procedure Next_Sample
      (Channel : in out Audio_Channel;
-      S       : out Sample)
+      S       : out Channel_Sample)
    is
       procedure Tick_Notify_Sample_Step is new Tick_Notify
         (Observer_Type => Audio_Channel,
@@ -73,7 +73,7 @@ package body Gade.Audio.Channels is
    end Next_Sample;
 
    procedure Step_Sample (Channel : in out Audio_Channel) is
-      New_Sample_Level : Sample;
+      New_Sample_Level : Channel_Sample;
       New_Level_Time   : Positive;
    begin
       --  Could maybe find a way to avoid a dynamic dispatch here for
