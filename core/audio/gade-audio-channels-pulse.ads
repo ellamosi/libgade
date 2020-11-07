@@ -44,7 +44,7 @@ private
 
 
    type Volume_Envelope_Details is record
-      Current_Volume : Natural; --  Keep track of volume for stepping
+      Current_Volume : Natural;
       Initial_Volume : Natural;
       Step           : Integer;
       Direction      : Envelope_Direction;

@@ -1,9 +1,11 @@
-with Gade.Audio.Channels.Pulse.Noise,
+with Gade.Audio.Channels,
+     Gade.Audio.Channels.Pulse.Noise,
      Gade.Audio.Channels.Pulse.Square,
      Gade.Audio.Channels.Pulse.Square.Sweeping,
      Gade.Audio.Channels.Wave;
 
-use Gade.Audio.Channels.Pulse.Noise,
+use Gade.Audio.Channels,
+    Gade.Audio.Channels.Pulse.Noise,
     Gade.Audio.Channels.Pulse.Square,
     Gade.Audio.Channels.Pulse.Square.Sweeping,
     Gade.Audio.Channels.Wave;
@@ -52,8 +54,19 @@ private
 
    type Channel_Samples is array (Channel_Id) of Sample;
 
-
    type Output_Volume is mod 2 ** 3;
+
+   Max_Unmultipled_Output : constant Sample :=
+     Channel_Sample'Last * Channel_Count * Output_Volume'Range_Length;
+   --  32767 / (15 * 4 * 8) = 32767 / 480 = ~68.26
+   Sample_Multiplier : constant Sample := Sample'Last / Max_Unmultipled_Output;
+
+   function "+" (Left, Right : Stereo_Sample) return Stereo_Sample;
+   pragma Inline ("+");
+
+   function "*" (Left, Right : Stereo_Sample) return Stereo_Sample;
+   pragma Inline ("*");
+
 
    type Output_Volume_Control (S : Audio_Access_Type := Named) is record
       case S is

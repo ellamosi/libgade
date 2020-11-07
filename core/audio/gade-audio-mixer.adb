@@ -1,4 +1,4 @@
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO;    use Ada.Text_IO;
 with Ada.Exceptions; use Ada.Exceptions;
 
 package body Gade.Audio.Mixer is
@@ -27,7 +27,7 @@ package body Gade.Audio.Mixer is
    begin
       Mixer.Volume_Control.Space := 0;
       Mixer.Output_Control.Space := 0;
-      Mixer.Volume := (1, 1); -- TODO: use Sample_Mult
+      Mixer.Volume := (Sample_Multiplier, Sample_Multiplier);
       Mixer.Power_Mask := Off_Power_Mask;
    end Turn_Off;
 
@@ -36,26 +36,32 @@ package body Gade.Audio.Mixer is
       Mixer.Power_Mask := On_Power_Mask;
    end Turn_On;
 
-   function Next_Sample (Mixer : Audio_Mixer) return Stereo_Sample is
-      Enabled_Disabled_Values : array (Boolean) of Sample;
+   function "+" (Left, Right : Stereo_Sample) return Stereo_Sample is
+   begin
+      return (Left.Left + Right.Left, Right.Left + Right.Right);
+   end "+";
 
-      L_Out, R_Out : Sample;
+   function "*" (Left, Right : Stereo_Sample) return Stereo_Sample is
+   begin
+      return (Left.Left * Right.Left, Right.Left * Right.Right);
+   end "*";
+
+   function Next_Sample (Mixer : Audio_Mixer) return Stereo_Sample is
+      Output_Control : Channel_Output_Control renames Mixer.Output_Control;
+
+      Output  : Stereo_Sample;
       Samples : Channel_Samples;
    begin
-      Enabled_Disabled_Values (False) := 0; -- TODO: Should not happen per sample
-
       Mixer.Square_1.Next_Sample (Samples (NR1));
       Mixer.Square_2.Next_Sample (Samples (NR2));
       Mixer.Wave.Next_Sample (Samples (NR3));
       Mixer.Noise.Next_Sample (Samples (NR4));
 
-      L_Out := 0;
-      R_Out := 0;
+      Output := (0, 0);
       for Ch in Channel_Id loop
-         --  TODO: Simplify this
-         Enabled_Disabled_Values (True) := Samples (Ch);
-         L_Out := L_Out + Enabled_Disabled_Values (Mixer.Output_Control.Left (Ch));
-         R_Out := R_Out + Enabled_Disabled_Values (Mixer.Output_Control.Right (Ch));
+         Output := Output +
+           (Samples (Ch) * (if Output_Control.Left (Ch) then 1 else 0),
+            Samples (Ch) * (if Output_Control.Right (Ch) then 1 else 0));
       end loop;
 
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Mixer
@@ -64,36 +70,19 @@ package body Gade.Audio.Mixer is
       --  to the channel DAC is such that a single channel enabled via NR51
       --  playing at volume of 2 with a master volume of 7 is about as loud
       --  as that channel playing at volume 15 with a master volume of 0.
-      return (L_Out * Mixer.Volume.Left, R_Out * Mixer.Volume.Right);
+      return Output * (Mixer.Volume.Left, Mixer.Volume.Right);
    exception
       when E : others =>
-         --  TODO: Clean this up
-         --  60 * 576 = 34560 > 32767
-         --  15 * 4 = 60
-         --  15 * 4 * (7+1) = 480 (Max unmultiplied level)
-         --  32767 / 480 = 68.27;
-         --  60 * 8 * 68 = 60 * 544 = 32640
-
-         Put_Line ("L_Out" & L_Out'Img &
-                     " Mult" & Mixer.Volume.Left'Img &
-                     " LV" & Mixer.Volume_Control.Left_Volume'Img);
-         for Ch in Channel_Id loop
-            Put (Ch'Img & Samples (Ch)'Img);
-         end loop;
-         New_Line;
          Put_Line (Exception_Information (E));
          return (0, 0);
    end Next_Sample;
 
    procedure Write_NR50 (Mixer : in out Audio_Mixer; Value : Byte) is
-      --  TODO: Change channel sample type and move formula to spec
-      --  32767 / (15 * 4 * 8) = 32767 / 480 = 68.26
-      Sample_Mult : constant Sample := Sample'Last / (15 * Channel_Count * (7 + 1));
    begin
       Mixer.Volume_Control.Space := Value and Mixer.Power_Mask;
       Mixer.Volume :=
-        ((Sample (Mixer.Volume_Control.Left_Volume) + 1) * Sample_Mult,
-         (Sample (Mixer.Volume_Control.Right_Volume) + 1) * Sample_Mult);
+        ((Sample (Mixer.Volume_Control.Left_Volume) + 1) * Sample_Multiplier,
+         (Sample (Mixer.Volume_Control.Right_Volume) + 1) * Sample_Multiplier);
    end Write_NR50;
 
    procedure Write_NR51 (Mixer : in out Audio_Mixer; Value : Byte) is
