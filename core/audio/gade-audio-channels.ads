@@ -165,6 +165,8 @@ private
       procedure Length_Triggered_Disable
         (Channel : in out Length_Trigger_Channel);
 
+      function In_Length_Step (Audio : Audio_Type) return Boolean;
+
    end Length_Trigger;
 
    generic

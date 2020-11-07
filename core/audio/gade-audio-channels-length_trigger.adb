@@ -39,9 +39,9 @@ package body Length_Trigger is
    is
       Length : Length_Details renames Channel.Length;
 
-      Length_Value : constant Natural := Natural (Value and NRx1_Length_Mask);
+      Input_Value : constant Natural := Natural (Value and NRx1_Length_Mask);
    begin
-      Length.Value := Length_Max - Length_Value;
+      Length.Value := Length_Max - Input_Value;
       Put_Line ("Length Reload:" & Length.Value'Img & " (LE: " & Length.Enabled'Img & ")");
       if Length.Enabled then
          Length.Timer.Start (Length.Value);
@@ -62,27 +62,22 @@ package body Length_Trigger is
       Trigger       : constant Boolean := NRx4_In.Trigger;
       Length_Enable : constant Boolean := NRx4_In.Length_Enable;
 
-      Extra_Tick : Boolean;
+      Timer_Was_Enabled : constant Boolean := Length.Timer.Enabled;
+      Is_Length_Step    : constant Boolean := In_Length_Step (Channel.Audio);
 
-      CE : constant Boolean := Channel.DAC_Powered;
-
-      --  TODO: Remove
-      B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Step;
+      --  The timer will stop ticking once it reaches 0, but the length
+      --  enable flag will remain on. Need to check timer state and not previous
+      --  flag state.
+      Extra_Tick : constant Boolean :=
+        not Timer_Was_Enabled and Length_Enable and Is_Length_Step;
    begin
       Channel.NRx4 := Value or NRx4_Length_Enable_Mask;
 
       Put_Line (Channel.Name & " - Write_NRx4" & Value'Img &
                   " Timer Rem:" & Length.Timer.Ticks_Remaining'Img &
                   " Length was enabled:" & Length.Enabled'Img &
-                  " Length timer was enabled:" & Length.Timer.Enabled'Img &
-                  " Extra clock FSeq state:" & B'Img & " CE " & CE'Img);
-
-      --  The timer will stop ticking once it reaches 0, but the length
-      --  enable flag will remain on. Need to check timer state and not previous
-      --  flag state.
-      Extra_Tick := not Length.Timer.Enabled and
-        Length_Enable and
-        Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Step;
+                  " Length timer was enabled:" & Timer_Was_Enabled'Img &
+                  " Extra clock FSeq state:" & Is_Length_Step'Img & " CE " & Channel.DAC_Powered'Img);
 
       Length.Enabled := Length_Enable;
 
@@ -126,7 +121,7 @@ package body Length_Trigger is
          end if;
       end if;
 
-      if Trigger and CE then
+      if Trigger and Channel.DAC_Powered then
          Length_Trigger_Channel'Class (Channel).Trigger;
       end if;
    end Write_NRx4;
@@ -135,7 +130,6 @@ package body Length_Trigger is
      (Channel : in out Length_Trigger_Channel)
    is
    begin
-      --  Reminder: Disabled channel should still clock length
       Length_Trigger_Channel'Class (Channel).Disable (Self_Disable);
    end Length_Triggered_Disable;
 
@@ -147,5 +141,10 @@ package body Length_Trigger is
    begin
       Tick_Notify_Length_Step (Channel.Length.Timer, Channel);
    end Tick_Length;
+
+   function In_Length_Step (Audio : Audio_Type) return Boolean is
+   begin
+      return Current_Frame_Sequencer_Step (Audio) in Lengh_Step;
+   end In_Length_Step;
 
 end Length_Trigger;
