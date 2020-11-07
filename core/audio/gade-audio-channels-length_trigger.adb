@@ -144,7 +144,7 @@ package body Length_Trigger is
 
    function In_Length_Step (Audio : Audio_Type) return Boolean is
    begin
-      return Current_Frame_Sequencer_Step (Audio) in Lengh_Step;
+      return Frame_Sequencer_State (Audio) in Lengh_Step;
    end In_Length_Step;
 
 end Length_Trigger;

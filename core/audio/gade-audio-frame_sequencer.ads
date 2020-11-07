@@ -30,30 +30,34 @@ use Gade.Audio.Channels.Pulse.Noise,
 
 private package Gade.Audio.Frame_Sequencer is
 
-   type Frame_Sequencer is tagged private;
+   type Audio_Frame_Sequencer is tagged private;
 
    procedure Create
-     (FS       : out Frame_Sequencer;
-      Square_1 : not null Sweeping_Square_Channel_Access;
-      Square_2 : not null Square_Channel_Access;
-      Wave     : not null Wave_Channel_Access;
-      Noise    : not null Noise_Channel_Access);
+     (Frame_Sequencer : out Audio_Frame_Sequencer;
+      Square_1        : not null Sweeping_Square_Channel_Access;
+      Square_2        : not null Square_Channel_Access;
+      Wave            : not null Wave_Channel_Access;
+      Noise           : not null Noise_Channel_Access);
 
-   procedure Reset (FS : in out Frame_Sequencer);
+   procedure Reset (Frame_Sequencer : in out Audio_Frame_Sequencer);
 
-   procedure Turn_Off (FS : in out Frame_Sequencer);
+   procedure Turn_Off (Frame_Sequencer : in out Audio_Frame_Sequencer);
 
-   procedure Turn_On (FS : in out Frame_Sequencer);
+   procedure Turn_On (Frame_Sequencer : in out Audio_Frame_Sequencer);
 
-   procedure Tick (FS : in out Frame_Sequencer);
+   procedure Tick (Frame_Sequencer : in out Audio_Frame_Sequencer);
 
-   type Frame_Sequencer_Step is --  TODO: Rename to State, externally at least
-     (None, Volume_Envelope, Length_Counter, Length_Counter_Frequency_Sweep);
+   type State is
+     (None,
+      Volume_Envelope,
+      Length_Counter,
+      Length_Counter_Frequency_Sweep);
 
-   subtype Lengh_Step is Frame_Sequencer_Step range
+   subtype Lengh_Step is State range
         Length_Counter .. Length_Counter_Frequency_Sweep;
 
-   function Step (FS : Frame_Sequencer) return Frame_Sequencer_Step;
+   function Current_State (Frame_Sequencer : Audio_Frame_Sequencer)
+                           return State;
 
 private
 
@@ -63,7 +67,7 @@ private
    type Frame_Sequencer_Step_Index is mod 8;
 
    Frame_Sequencer_Steps : constant array (Frame_Sequencer_Step_Index) of
-     Frame_Sequencer_Step :=
+     State :=
        (Length_Counter,
         None,
         Length_Counter_Frequency_Sweep,
@@ -73,7 +77,7 @@ private
         Length_Counter_Frequency_Sweep,
         Volume_Envelope);
 
-   type Frame_Sequencer is tagged record
+   type Audio_Frame_Sequencer is tagged record
       Square_1 : Sweeping_Square_Channel_Access;
       Square_2 : Square_Channel_Access;
       Wave     : Wave_Channel_Access;
@@ -83,6 +87,7 @@ private
       Timer    : Timer_Type;
    end record;
 
-   procedure Step_Frame_Sequencer (FS : in out Frame_Sequencer);
+   procedure Step_Frame_Sequencer
+     (Frame_Sequencer : in out Audio_Frame_Sequencer);
 
 end Gade.Audio.Frame_Sequencer;

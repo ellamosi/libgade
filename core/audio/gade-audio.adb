@@ -29,7 +29,7 @@ package body Gade.Audio is
       Noise    : aliased Noise_Channel;
 
       Mixer     : Audio_Mixer;
-      Frame_Seq : Frame_Sequencer.Frame_Sequencer;
+      Frame_Seq : Frame_Sequencer.Audio_Frame_Sequencer;
 
       Powered       : Boolean;
       Power_Control : Power_Control_Status;
@@ -224,13 +224,12 @@ package body Gade.Audio is
       Audio.Elapsed_Cycles := 0;
    end Flush_Frame;
 
-   function Current_Frame_Sequencer_Step
-     (Audio : Audio_Type)
-      return Frame_Sequencer_Step
+   function Frame_Sequencer_State (Audio : Audio_Type)
+                                   return Frame_Sequencer.State
    is
    begin
-      return Audio.Frame_Seq.Step;
-   end Current_Frame_Sequencer_Step;
+      return Audio.Frame_Seq.Current_State;
+   end Frame_Sequencer_State;
 
    function Is_Powered (Audio : Audio_Type) return Boolean is
    begin

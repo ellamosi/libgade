@@ -82,9 +82,8 @@ private
    procedure Write_Power_Control_Status (Audio : in out Audio_Type;
                                          Value : Byte);
 
-   function Current_Frame_Sequencer_Step
-     (Audio : Audio_Type)
-      return Gade.Audio.Frame_Sequencer.Frame_Sequencer_Step;
+   function Frame_Sequencer_State (Audio : Audio_Type)
+                                   return Frame_Sequencer.State;
 
    function Is_Powered (Audio : Audio_Type) return Boolean;
 
