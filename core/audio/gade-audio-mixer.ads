@@ -8,6 +8,16 @@ use Gade.Audio.Channels.Pulse.Noise,
     Gade.Audio.Channels.Pulse.Square.Sweeping,
     Gade.Audio.Channels.Wave;
 
+--  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Mixer
+--
+--  Each channel's DAC output goes to a pair of on/off switches for the left and
+--  right channels before they are sent to the left/right mixers. A mixer simply
+--  adds the voltages from each channel together. These left/right switches are
+--  controlled by NR51. When a switch is off, the mixer receives 0 volts.
+--
+--  The Vin bits of NR50 control mixing of the Vin signal from the cartridge,
+--  allowing extra sound hardware.
+
 private package Gade.Audio.Mixer is
 
    type Audio_Mixer is tagged private;

@@ -8,6 +8,24 @@ use Gade.Audio.Channels.Pulse.Noise,
     Gade.Audio.Channels.Pulse.Square.Sweeping,
     Gade.Audio.Channels.Wave;
 
+--  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Frame_Sequencer
+--
+--  The frame sequencer generates low frequency clocks for the modulation units.
+--  It is clocked by a 512 Hz timer.
+--
+--  Step   Length Ctr  Vol Env     Sweep
+--  ---------------------------------------
+--  0      Clock       -           -
+--  1      -           -           -
+--  2      Clock       -           Clock
+--  3      -           -           -
+--  4      Clock       -           -
+--  5      -           -           -
+--  6      Clock       -           Clock
+--  7      -           Clock       -
+--  ---------------------------------------
+--  Rate   256 Hz      64 Hz       128 Hz
+
 private package Gade.Audio.Frame_Sequencer is
 
    type Frame_Sequencer is tagged private;

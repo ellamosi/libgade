@@ -1,14 +1,20 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Gade.Audio.Channels; use Gade.Audio.Channels;
-with Gade.Audio.Channels.Pulse; use Gade.Audio.Channels.Pulse;
-with Gade.Audio.Channels.Pulse.Noise; use Gade.Audio.Channels.Pulse.Noise;
-with Gade.Audio.Channels.Pulse.Square; use Gade.Audio.Channels.Pulse.Square;
-with Gade.Audio.Channels.Wave; use Gade.Audio.Channels.Wave;
-with Gade.Audio.Mixer; use Gade.Audio.Mixer;
-with Gade.Audio.Frame_Sequencer; use Gade.Audio.Frame_Sequencer;
 
-with Gade.Audio.Channels.Pulse.Square.Sweeping;
-use Gade.Audio.Channels.Pulse.Square.Sweeping;
+with Gade.Audio.Channels,
+     Gade.Audio.Channels.Pulse.Noise,
+     Gade.Audio.Channels.Pulse.Square,
+     Gade.Audio.Channels.Pulse.Square.Sweeping,
+     Gade.Audio.Channels.Wave,
+     Gade.Audio.Frame_Sequencer,
+     Gade.Audio.Mixer;
+
+use Gade.Audio.Channels,
+    Gade.Audio.Channels.Pulse.Noise,
+    Gade.Audio.Channels.Pulse.Square,
+    Gade.Audio.Channels.Pulse.Square.Sweeping,
+    Gade.Audio.Channels.Wave,
+    Gade.Audio.Frame_Sequencer,
+    Gade.Audio.Mixer;
 
 package body Gade.Audio is
 

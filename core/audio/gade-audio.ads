@@ -1,4 +1,5 @@
 with Gade.Audio_Buffer; use Gade.Audio_Buffer;
+
 limited with Gade.Audio.Frame_Sequencer;
 
 private package Gade.Audio is
@@ -51,7 +52,9 @@ private
 
    subtype Wave_Table_IO_Address is Audio_IO_Address range 16#FF30# .. 16#FF3F#;
 
+
    type Audio_Access_Type is (Named, Address);
+
 
    type Channel_Flags is array (Channel_Id) of Boolean;
    pragma Pack (Channel_Flags);
