@@ -67,8 +67,8 @@ package body Gade.Interfaces is
          Generated_Samples := Generated_Samples + Instruction_Cycles + Interrupt_Cycles;
          Gade.Dev.Display.Check_Frame_Finished (G.GB.Display, Frame_Finished);
       end loop;
-      Report_Frame (G.GB, Audio, Generated_Samples); -- Should really decide when to flush things...
-      --  Put_Line ("R:" & Requested_Samples'Image & " G:" & Generated_Samples'Image & " F:" & Frame_Finished'Image);
+      --  Should really figure out when/how to flush things...
+      Report_Frame (G.GB, Audio, Generated_Samples);
    end Run_For;
 
    procedure Finalize (G : in out Gade_Type) is

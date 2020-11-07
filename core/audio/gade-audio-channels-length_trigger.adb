@@ -12,32 +12,24 @@ package body Length_Trigger is
    is
    begin
       Parent (Channel).Disable (Mode);
-      Put_Line (Channel.Name & " - Disabled");
       if Mode = APU_Power_Off then
          Channel.Length.Enabled := False;
          Channel.Length.Timer.Setup;
+         Channel.NRx4 := NRx4_Length_Enable_Mask;
       end if;
    end Disable;
 
    overriding
    procedure Turn_On (Channel : in out Length_Trigger_Channel) is
    begin
-      Put_Line (Channel.Name & " - Turn On (LE: " & Channel.Length.Enabled'Img &
-                  " Rem:" & Channel.Length.Timer.Ticks_Remaining'Img & ")");
       Parent (Channel).Turn_On;
-      if Channel.Length.Enabled then
-         Put_Line (Channel.Name & " - Resume LT");
-         Channel.Length.Timer.Resume;
-      end if;
+      if Channel.Length.Enabled then Channel.Length.Timer.Resume; end if;
    end Turn_On;
 
    overriding
    function Read_NRx4 (Channel : Length_Trigger_Channel) return Byte is
-      NRx4_Out : NRx4_Common_IO;
    begin
-      --  TODO: Just save IO byte and keep it updated?
-      NRx4_Out.Length_Enable := Channel.Length.Enabled;
-      return To_Byte (NRx4_Out) or NRx4_Length_Enable_Mask;
+      return Channel.NRx4;
    end Read_NRx4;
 
    overriding
@@ -77,6 +69,8 @@ package body Length_Trigger is
       --  TODO: Remove
       B : constant Boolean := Current_Frame_Sequencer_Step (Channel.Audio) in Lengh_Step;
    begin
+      Channel.NRx4 := Value or NRx4_Length_Enable_Mask;
+
       Put_Line (Channel.Name & " - Write_NRx4" & Value'Img &
                   " Timer Rem:" & Length.Timer.Ticks_Remaining'Img &
                   " Length was enabled:" & Length.Enabled'Img &
@@ -141,11 +135,8 @@ package body Length_Trigger is
      (Channel : in out Length_Trigger_Channel)
    is
    begin
-      if Channel.Length.Enabled then -- TODO: Unsure if needed
-         --  Disabled channel should still clock length
-         Put_Line (Channel.Name & " - Length triggered disable");
-         Length_Trigger_Channel'Class (Channel).Disable (Self_Disable);
-      end if;
+      --  Reminder: Disabled channel should still clock length
+      Length_Trigger_Channel'Class (Channel).Disable (Self_Disable);
    end Length_Triggered_Disable;
 
    overriding

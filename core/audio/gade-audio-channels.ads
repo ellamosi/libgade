@@ -148,10 +148,6 @@ private
         (Source => Byte,
          Target => NRx4_Common_IO);
 
-      function To_Byte is new Ada.Unchecked_Conversion
-        (Source => NRx4_Common_IO,
-         Target => Byte);
-
 
       type Length_Details is record
          Timer   : Timer_Type;
@@ -163,6 +159,7 @@ private
       subtype Parent is Audio_Channel;
       type Length_Trigger_Channel is abstract new Parent with record
          Length : Length_Details;
+         NRx4   : Byte;
       end record;
 
       procedure Length_Triggered_Disable

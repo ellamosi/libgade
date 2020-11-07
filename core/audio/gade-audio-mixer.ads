@@ -61,10 +61,10 @@ private
    --  32767 / (15 * 4 * 8) = 32767 / 480 = ~68.26
    Sample_Multiplier : constant Sample := Sample'Last / Max_Unmultipled_Output;
 
-   function "+" (Left, Right : Stereo_Sample) return Stereo_Sample;
+   function "+" (S1, S2 : Stereo_Sample) return Stereo_Sample;
    pragma Inline ("+");
 
-   function "*" (Left, Right : Stereo_Sample) return Stereo_Sample;
+   function "*" (S1, S2 : Stereo_Sample) return Stereo_Sample;
    pragma Inline ("*");
 
 

@@ -36,14 +36,14 @@ package body Gade.Audio.Mixer is
       Mixer.Power_Mask := On_Power_Mask;
    end Turn_On;
 
-   function "+" (Left, Right : Stereo_Sample) return Stereo_Sample is
+   function "+" (S1, S2 : Stereo_Sample) return Stereo_Sample is
    begin
-      return (Left.Left + Right.Left, Right.Left + Right.Right);
+      return (S1.Left + S2.Left, S1.Left + S2.Right);
    end "+";
 
-   function "*" (Left, Right : Stereo_Sample) return Stereo_Sample is
+   function "*" (S1, S2 : Stereo_Sample) return Stereo_Sample is
    begin
-      return (Left.Left * Right.Left, Right.Left * Right.Right);
+      return (S1.Left * S2.Left, S1.Right * S2.Right);
    end "*";
 
    function Next_Sample (Mixer : Audio_Mixer) return Stereo_Sample is
