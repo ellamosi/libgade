@@ -22,7 +22,7 @@ package body Gade.Audio.Channels is
    procedure Trigger (Channel : in out Audio_Channel) is
    begin
       --  We don't know how long the next sample will be yet, fetch next
-      --  sample in the following tick: (UGLY)
+      --  sample in the following tick: (UGLY - TODO: Redo)
       Channel.Sample_Timer.Start (1);
    end Trigger;
 
@@ -51,7 +51,7 @@ package body Gade.Audio.Channels is
 
    function Enabled (Channel : Audio_Channel) return Boolean is
    begin
-      return Channel.Sample_Timer.Enabled;
+      return Channel.Sample_Timer.Is_Enabled;
    end Enabled;
 
    procedure Next_Sample

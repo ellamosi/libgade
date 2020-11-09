@@ -149,10 +149,9 @@ private
          Target => NRx4_Common_IO);
 
 
-      type Length_Details is record
+      type Length_Details is tagged record
          Timer   : Timer_Type;
          Enabled : Boolean;
-         Value   : Natural;
       end record;
 
 
@@ -161,11 +160,6 @@ private
          Length : Length_Details;
          NRx4   : Byte;
       end record;
-
-      procedure Length_Triggered_Disable
-        (Channel : in out Length_Trigger_Channel);
-
-      function In_Length_Step (Audio : Audio_Type) return Boolean;
 
    end Length_Trigger;
 

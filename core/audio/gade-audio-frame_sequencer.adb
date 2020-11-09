@@ -22,7 +22,7 @@ package body Gade.Audio.Frame_Sequencer is
 
    procedure Turn_Off (Frame_Sequencer : in out Audio_Frame_Sequencer) is
    begin
-      Frame_Sequencer.Timer.Stop;
+      Frame_Sequencer.Timer.Disable;
    end Turn_Off;
 
    procedure Turn_On (Frame_Sequencer : in out Audio_Frame_Sequencer) is
