@@ -12,7 +12,7 @@ package body Gade.Audio.Channels.Pulse is
       Envelope.Timer.Disable;
       if Mode = APU_Power_Off then
          Channel.NRx2 := 16#00#;
-         Setup (Envelope.Timer);
+         Envelope.Timer.Disable;
          Envelope.Step := 0;
          Envelope.Period := 0;
          Envelope.Current_Volume := 0;

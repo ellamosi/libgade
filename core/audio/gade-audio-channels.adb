@@ -34,7 +34,7 @@ package body Gade.Audio.Channels is
    begin
       Channel.DAC_Powered := Channel.DAC_Powered and not DAC_Off_Mode;
       Channel.Level := 0;
-      Channel.Sample_Timer.Setup;
+      Channel.Sample_Timer.Disable;
    end Disable;
 
    procedure Update_DAC_Power_State

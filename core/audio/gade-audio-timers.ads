@@ -1,8 +1,6 @@
 package Gade.Audio.Timers is
 
-   type Timer_Type is tagged private; -- Audio Timer?
-
-   procedure Setup (T : out Timer_Type); -- Used for initialization, have something clearer?
+   type Timer_Type is tagged private;
 
    procedure Start (T : in out Timer_Type'Class; Ticks : Positive);
 
@@ -19,8 +17,9 @@ package Gade.Audio.Timers is
    generic
       type Observer_Type is abstract tagged limited private;
       with procedure Notify (Observer : in out Observer_Type);
-   procedure Tick_Notify (T        : in out Timer_Type;
-                          Observer : in out Observer_Type);
+   procedure Tick_Notify
+     (T        : in out Timer_Type;
+      Observer : in out Observer_Type);
 
    function Has_Finished (T : Timer_Type) return Boolean;
 
@@ -33,8 +32,8 @@ private
    subtype Tick_Step_Type is Natural range 0 .. 1;
 
    type Timer_Type is tagged record
-      Remaining : Natural;
-      Step      : Tick_Step_Type;
+      Remaining : Natural        := 0;
+      Step      : Tick_Step_Type := 0;
    end record;
 
 end Gade.Audio.Timers;
