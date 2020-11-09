@@ -1,16 +1,14 @@
 package body Gade.Audio.Timers is
 
-   procedure Setup (T : out Timer_Type) is
-   begin
-      T.Reload (1, False);
-   end Setup;
-
    procedure Reload (T : in out Timer_Type; Ticks : Positive) is
    begin
       T.Remaining := Ticks;
    end Reload;
 
-   procedure Reload (T : in out Timer_Type; Ticks : Positive; Enable : Boolean) is
+   procedure Reload
+     (T      : in out Timer_Type;
+      Ticks  : Positive;
+      Enable : Boolean) is
    begin
       T.Reload (Ticks);
       T.Enable (Enable);

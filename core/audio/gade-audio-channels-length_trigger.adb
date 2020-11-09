@@ -23,7 +23,7 @@ package body Length_Trigger is
       Parent (Channel).Disable (Mode);
       if Mode = APU_Power_Off then
          Channel.Length.Enabled := False;
-         Channel.Length.Timer.Setup;
+         Channel.Length.Timer.Disable;
          Channel.NRx4 := NRx4_Length_Enable_Mask;
       end if;
    end Disable;
