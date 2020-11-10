@@ -2,6 +2,7 @@ package Gade.Audio.Timers is
 
    type Timer_Type is tagged private;
 
+   --  Start timer for a number of ticks.
    procedure Start (T : in out Timer_Type'Class; Ticks : Positive);
 
    --  If Enable = True => Continue ticking the timer from where it was left.
@@ -18,6 +19,9 @@ package Gade.Audio.Timers is
    --  Reload the timer, while setting enabled state.
    procedure Reload (T : in out Timer_Type; Ticks : Positive; Enable : Boolean);
 
+   --  Ticks the timer, triggering Notify if the last tick is carried out and
+   --  disabling the timer. No ticings will be carried out nor Notify will be
+   --  triggered if the timer was disabled.
    generic
       type Observer_Type is abstract tagged limited private;
       with procedure Notify (Observer : in out Observer_Type);

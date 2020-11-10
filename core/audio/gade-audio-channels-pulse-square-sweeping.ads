@@ -59,8 +59,7 @@ private
    function Read_NRx0 (Channel : Sweeping_Square_Channel) return Byte;
 
    overriding
-   procedure Write_NRx0
-     (Channel : in out Sweeping_Square_Channel;
-      Value : Byte);
+   procedure Write_NRx0 (Channel : in out Sweeping_Square_Channel;
+                         Value   : Byte);
 
 end Gade.Audio.Channels.Pulse.Square.Sweeping;

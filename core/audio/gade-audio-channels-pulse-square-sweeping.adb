@@ -11,9 +11,8 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       Notify        => Step_Frequency_Sweep);
 
    overriding
-   procedure Disable
-     (Channel : in out Sweeping_Square_Channel;
-      Mode    : Disable_Mode)
+   procedure Disable (Channel : in out Sweeping_Square_Channel;
+                      Mode    : Disable_Mode)
    is
       Sweep : Frequency_Sweep_Details renames Channel.Sweep;
    begin
@@ -120,16 +119,14 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
 
    overriding
    function Read_NRx0
-     (Channel : Sweeping_Square_Channel) return Byte
-   is
+     (Channel : Sweeping_Square_Channel) return Byte is
    begin
       return Channel.NRx0;
    end Read_NRx0;
 
    overriding
-   procedure Write_NRx0
-     (Channel : in out Sweeping_Square_Channel;
-      Value   : Byte)
+   procedure Write_NRx0 (Channel : in out Sweeping_Square_Channel;
+                         Value   : Byte)
    is
       Sweep : Frequency_Sweep_Details renames Channel.Sweep;
 

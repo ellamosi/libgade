@@ -32,12 +32,11 @@ private package Gade.Audio.Frame_Sequencer is
 
    type Audio_Frame_Sequencer is tagged private;
 
-   procedure Create
-     (Frame_Sequencer : out Audio_Frame_Sequencer;
-      Square_1        : not null Sweeping_Square_Channel_Access;
-      Square_2        : not null Square_Channel_Access;
-      Wave            : not null Wave_Channel_Access;
-      Noise           : not null Noise_Channel_Access);
+   procedure Create (Frame_Sequencer : out Audio_Frame_Sequencer;
+                     Square_1        : not null Sweeping_Square_Channel_Access;
+                     Square_2        : not null Square_Channel_Access;
+                     Wave            : not null Wave_Channel_Access;
+                     Noise           : not null Noise_Channel_Access);
 
    procedure Reset (Frame_Sequencer : in out Audio_Frame_Sequencer);
 

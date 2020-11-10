@@ -19,8 +19,7 @@ package body Gade.Audio.Channels.Pulse.Noise is
    overriding
    procedure Disable
      (Channel : in out Noise_Channel;
-      Mode    : Disable_Mode)
-   is
+      Mode    : Disable_Mode) is
    begin
       Parent (Channel).Disable (Mode);
       if Mode = APU_Power_Off then

@@ -24,12 +24,11 @@ private package Gade.Audio.Mixer is
 
    type Audio_Mixer is tagged private;
 
-   procedure Create
-     (Mixer    : out Audio_Mixer;
-      Square_1 : not null Sweeping_Square_Channel_Access;
-      Square_2 : not null Square_Channel_Access;
-      Wave     : not null Wave_Channel_Access;
-      Noise    : not null Noise_Channel_Access);
+   procedure Create (Mixer    : out Audio_Mixer;
+                     Square_1 : not null Sweeping_Square_Channel_Access;
+                     Square_2 : not null Square_Channel_Access;
+                     Wave     : not null Wave_Channel_Access;
+                     Noise    : not null Noise_Channel_Access);
 
    procedure Reset (Mixer : in out Audio_Mixer);
 

@@ -9,14 +9,12 @@ package Gade.Audio.Channels.Wave is
    overriding
    procedure Reset (Channel : in out Wave_Channel);
 
-   function Read_Table
-     (Channel : Wave_Channel;
-      Address : Wave_Table_IO_Address) return Byte;
+   function Read_Table (Channel : Wave_Channel;
+                        Address : Wave_Table_IO_Address) return Byte;
 
-   procedure Write_Table
-     (Channel : in out Wave_Channel;
-      Address : Wave_Table_IO_Address;
-      Value   : Byte);
+   procedure Write_Table (Channel : in out Wave_Channel;
+                          Address : Wave_Table_IO_Address;
+                          Value   : Byte);
 
    overriding
    function Id (Channel : Wave_Channel) return Channel_Id;
@@ -56,8 +54,6 @@ private
       16#60#, 16#59#, 16#59#, 16#B0#, 16#34#, 16#B8#, 16#2E#, 16#DA#);
 
 
-   NRx2_Volume_Mask : constant Byte := 16#9F#;
-
    type Volume_Type is (None, Full, Half, Quarter);
    for Volume_Type use
      (None    => 2#00#,
@@ -78,33 +74,6 @@ private
       Full    => 16 / 2 ** Volume_Shifts (Full) - 1,     -- 16 / 2**0 - 1 = 15
       Half    => 16 / 2 ** Volume_Shifts (Half) - 1,     -- 16 / 2**1 - 1 = 7
       Quarter => 16 / 2 ** Volume_Shifts (Quarter) - 1); -- 16 / 2**2 - 1 = 3
-
-   type NRx2_Volume_IO is record
-      Volume : Volume_Type;
-   end record;
-   for NRx2_Volume_IO use record
-      Volume at 0 range 5 .. 6;
-   end record;
-   for NRx2_Volume_IO'Size use Byte'Size;
-
-   function To_NRx2_Volume_IO is new Ada.Unchecked_Conversion
-     (Source => Byte,
-      Target => NRx2_Volume_IO);
-
-
-   NRx0_Power_Mask : constant Byte := 16#7F#;
-
-   type NRx0_Power_IO is record
-      Powered : Boolean;
-   end record;
-   for NRx0_Power_IO use record
-      Powered at 0 range 7 .. 7;
-   end record;
-   for NRx0_Power_IO'Size use Byte'Size;
-
-   function To_NRx0_Power_IO is new Ada.Unchecked_Conversion
-     (Source => Byte,
-      Target => NRx0_Power_IO);
 
 
    Length_Bit_Size : constant := 8;
@@ -127,10 +96,9 @@ private
    end record;
 
    overriding
-   procedure Next_Sample_Level
-     (Channel      : in out Wave_Channel;
-      Sample_Level : out Channel_Sample;
-      Level_Cycles : out Positive);
+   procedure Next_Sample_Level (Channel      : in out Wave_Channel;
+                                Sample_Level : out Channel_Sample;
+                                Level_Cycles : out Positive);
 
    overriding
    procedure Disable (Channel : in out Wave_Channel; Mode : Disable_Mode);

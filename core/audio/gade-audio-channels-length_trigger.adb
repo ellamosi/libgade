@@ -3,6 +3,8 @@ with Gade.Audio.Frame_Sequencer; use Gade.Audio.Frame_Sequencer;
 separate (Gade.Audio.Channels)
 package body Length_Trigger is
 
+   Max_Length : constant Natural := 2 ** Length_Bits;
+
    NRx1_Length_Mask : constant Byte := Byte (Max_Length - 1);
 
    NRx4_Length_Enable_Mask : constant Byte := 16#BF#;
@@ -23,10 +25,7 @@ package body Length_Trigger is
 
    procedure Length_Triggered_Disable (Channel : in out Length_Trigger_Channel);
 
-   --  TODO: Rename: The frame sequencer doesn't have a "current" step
-   --  (externally at least) it's a sequence of "instant" events, so might
-   --  as well use a name that reflects that.
-   function In_Length_Step (Audio : Audio_Type) return Boolean;
+   function Last_Step_Triggered_Length (Audio : Audio_Type) return Boolean;
 
    procedure Tick_Notify_Length_Step is new Tick_Notify
      (Observer_Type => Length_Trigger_Channel,
@@ -35,8 +34,7 @@ package body Length_Trigger is
    overriding
    procedure Disable
      (Channel : in out Length_Trigger_Channel;
-      Mode    : Disable_Mode)
-   is
+      Mode    : Disable_Mode) is
    begin
       Parent (Channel).Disable (Mode);
       if Mode = APU_Power_Off then
@@ -83,7 +81,8 @@ package body Length_Trigger is
       Length_Enable : constant Boolean := NRx4_In.Length_Enable;
 
       Timer_Was_Enabled : constant Boolean := Length.Timer.Is_Enabled;
-      Is_Length_Step    : constant Boolean := In_Length_Step (Channel.Audio);
+      Is_Length_Step    : constant Boolean :=
+        Last_Step_Triggered_Length (Channel.Audio);
 
       --  The timer will stop ticking once it reaches 0, but the length
       --  enable flag will remain on. Need to check timer state and not previous
@@ -94,7 +93,6 @@ package body Length_Trigger is
       Channel.NRx4 := Value or NRx4_Length_Enable_Mask;
 
       Length.Enabled := Length_Enable;
-
       Length.Timer.Enable (Length_Enable);
 
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior
@@ -123,7 +121,8 @@ package body Length_Trigger is
       --  it was previously zero, it is set to 63 instead (255 for wave
       --  channel).
       --
-      --  @ellamosi: In practice it just seems to be the effect of extra clocking.
+      --  @ellamosi: In practice it just seems to be the effect of extra
+      --  clocking 1 cycle upon trigger.
       if Trigger and Length_Enable and Extra_Tick then
          Tick_Length (Channel);
       end if;
@@ -134,8 +133,7 @@ package body Length_Trigger is
    end Write_NRx4;
 
    procedure Length_Triggered_Disable
-     (Channel : in out Length_Trigger_Channel)
-   is
+     (Channel : in out Length_Trigger_Channel) is
    begin
       Length_Trigger_Channel'Class (Channel).Disable (Self_Disable);
    end Length_Triggered_Disable;
@@ -146,9 +144,9 @@ package body Length_Trigger is
       Tick_Notify_Length_Step (Channel.Length.Timer, Channel);
    end Tick_Length;
 
-   function In_Length_Step (Audio : Audio_Type) return Boolean is
+   function Last_Step_Triggered_Length (Audio : Audio_Type) return Boolean is
    begin
       return Frame_Sequencer_State (Audio) in Lengh_Step;
-   end In_Length_Step;
+   end Last_Step_Triggered_Length;
 
 end Length_Trigger;

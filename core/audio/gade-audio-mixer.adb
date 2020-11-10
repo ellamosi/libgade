@@ -3,13 +3,11 @@ with Ada.Exceptions; use Ada.Exceptions;
 
 package body Gade.Audio.Mixer is
 
-   procedure Create
-     (Mixer    : out Audio_Mixer;
-      Square_1 : not null Sweeping_Square_Channel_Access;
-      Square_2 : not null Square_Channel_Access;
-      Wave     : not null Wave_Channel_Access;
-      Noise    : not null Noise_Channel_Access)
-   is
+   procedure Create (Mixer    : out Audio_Mixer;
+                     Square_1 : not null Sweeping_Square_Channel_Access;
+                     Square_2 : not null Square_Channel_Access;
+                     Wave     : not null Wave_Channel_Access;
+                     Noise    : not null Noise_Channel_Access) is
    begin
       Mixer.Square_1 := Square_1;
       Mixer.Square_2 := Square_2;

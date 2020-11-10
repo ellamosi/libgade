@@ -23,10 +23,14 @@ package body Gade.Audio.Channels.Pulse is
 
    function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean;
 
+   procedure Tick_Notify_Volume_Envelope_Step is new Tick_Notify
+     (Observer_Type => Pulse_Channel,
+      Notify        => Step_Volume_Envelope);
+
+
    overriding
-   procedure Disable
-     (Channel : in out Pulse_Channel;
-      Mode    : Disable_Mode)
+   procedure Disable (Channel : in out Pulse_Channel;
+                      Mode    : Disable_Mode)
    is
       Envelope : Volume_Envelope_Details renames Channel.Volume_Envelope;
    begin
@@ -88,9 +92,6 @@ package body Gade.Audio.Channels.Pulse is
    end Step_Volume_Envelope;
 
    procedure Tick_Volume_Envelope (Channel : in out Pulse_Channel) is
-      procedure Tick_Notify_Volume_Envelope_Step is new Tick_Notify
-        (Observer_Type => Pulse_Channel,
-         Notify        => Step_Volume_Envelope);
    begin
       Tick_Notify_Volume_Envelope_Step (Channel.Volume_Envelope.Timer, Channel);
    end Tick_Volume_Envelope;

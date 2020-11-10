@@ -1,10 +1,8 @@
 package body Gade.Audio.Channels.Pulse.Square is
 
    overriding
-   procedure Disable
-     (Channel : in out Square_Channel;
-      Mode    : Disable_Mode)
-   is
+   procedure Disable (Channel : in out Square_Channel;
+                      Mode    : Disable_Mode) is
    begin
       Parent (Channel).Disable (Mode);
       if Mode = APU_Power_Off then
@@ -16,9 +14,8 @@ package body Gade.Audio.Channels.Pulse.Square is
    end Disable;
 
    overriding
-   procedure Set_Frequency
-     (Channel : in out Square_Channel;
-      Freq    : Frequency_Type)
+   procedure Set_Frequency (Channel : in out Square_Channel;
+                            Freq    : Frequency_Type)
    is
       Period : constant Natural := Max_Period - Natural (Freq);
    begin
@@ -29,11 +26,9 @@ package body Gade.Audio.Channels.Pulse.Square is
    end Set_Frequency;
 
    overriding
-   procedure Next_Sample_Level
-     (Channel      : in out Square_Channel;
-      Sample_Level : out Channel_Sample;
-      Level_Cycles : out Positive)
-   is
+   procedure Next_Sample_Level (Channel      : in out Square_Channel;
+                                Sample_Level : out Channel_Sample;
+                                Level_Cycles : out Positive) is
    begin
       Channel.Pulse_State := Next_Pulse_State (Channel.Pulse_State);
       Sample_Level := Channel.Pulse_Levels (Channel.Pulse_State);

@@ -1,5 +1,9 @@
 package body Gade.Audio.Channels is
 
+   procedure Tick_Notify_Sample_Step is new Tick_Notify
+     (Observer_Type => Audio_Channel,
+      Notify        => Step_Sample);
+
    procedure Create
      (Channel : out Audio_Channel;
       Audio   : not null Audio_Type)
@@ -26,9 +30,8 @@ package body Gade.Audio.Channels is
       Channel.Sample_Timer.Start (1);
    end Trigger;
 
-   procedure Disable
-     (Channel : in out Audio_Channel;
-      Mode    : Disable_Mode)
+   procedure Disable (Channel : in out Audio_Channel;
+                      Mode    : Disable_Mode)
    is
       DAC_Off_Mode : constant Boolean := Mode in DAC_Off_Modes;
    begin
@@ -37,10 +40,8 @@ package body Gade.Audio.Channels is
       Channel.Sample_Timer.Disable;
    end Disable;
 
-   procedure Update_DAC_Power_State
-     (Channel : in out Audio_Channel'Class;
-      Powered : Boolean)
-   is
+   procedure Update_DAC_Power_State (Channel : in out Audio_Channel'Class;
+                                     Powered : Boolean) is
    begin
       if Powered then
          Channel.DAC_Powered := True;
@@ -54,15 +55,10 @@ package body Gade.Audio.Channels is
       return Channel.Sample_Timer.Is_Enabled;
    end Enabled;
 
-   procedure Next_Sample
-     (Channel : in out Audio_Channel;
-      S       : out Channel_Sample)
-   is
-      procedure Tick_Notify_Sample_Step is new Tick_Notify
-        (Observer_Type => Audio_Channel,
-         Notify        => Step_Sample);
+   procedure Next_Sample (Channel : in out Audio_Channel;
+                          Sample  : out Channel_Sample) is
    begin
-      S := Channel.Level;
+      Sample := Channel.Level;
       Tick_Notify_Sample_Step (Channel.Sample_Timer, Channel);
    end Next_Sample;
 
@@ -78,11 +74,8 @@ package body Gade.Audio.Channels is
       Channel.Sample_Timer.Start (New_Level_Time);
    end Step_Sample;
 
-   function Read
-     (Channel  : Audio_Channel'Class;
-      Register : Channel_Register)
-      return Byte
-   is
+   function Read (Channel  : Audio_Channel'Class;
+                  Register : Channel_Register) return Byte is
    begin
       return
         (case Register is
@@ -93,11 +86,9 @@ package body Gade.Audio.Channels is
             when NRx4 => Channel.Read_NRx4);
    end Read;
 
-   procedure Write
-     (Channel  : in out Audio_Channel'Class;
-      Register : Channel_Register;
-      Value    : Byte)
-   is
+   procedure Write (Channel  : in out Audio_Channel'Class;
+                    Register : Channel_Register;
+                    Value    : Byte) is
    begin
       if Is_Powered (Channel.Audio) or Register = NRx1 then
          case Register is

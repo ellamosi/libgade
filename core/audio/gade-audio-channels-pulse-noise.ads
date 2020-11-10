@@ -53,10 +53,9 @@ private
    procedure Trigger (Channel : in out Noise_Channel);
 
    overriding
-   procedure Next_Sample_Level
-     (Channel      : in out Noise_Channel;
-      Sample_Level : out Channel_Sample;
-      Level_Cycles : out Positive);
+   procedure Next_Sample_Level (Channel      : in out Noise_Channel;
+                                Sample_Level : out Channel_Sample;
+                                Level_Cycles : out Positive);
 
    overriding
    function Read_NRx3 (Channel : Noise_Channel) return Byte;

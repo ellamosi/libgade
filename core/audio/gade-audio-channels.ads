@@ -10,27 +10,22 @@ private package Gade.Audio.Channels is
 
    type Audio_Channel is abstract tagged private;
 
-   procedure Create
-     (Channel : out Audio_Channel;
-      Audio   : not null Audio_Type);
+   procedure Create (Channel : out Audio_Channel;
+                     Audio   : not null Audio_Type);
 
    procedure Reset (Channel : in out Audio_Channel);
 
-   function Read
-     (Channel  : Audio_Channel'Class;
-      Register : Channel_Register)
-      return Byte;
+   function Read (Channel  : Audio_Channel'Class;
+                  Register : Channel_Register) return Byte;
 
-   procedure Write
-     (Channel  : in out Audio_Channel'Class;
-      Register : Channel_Register;
-      Value    : Byte);
+   procedure Write (Channel  : in out Audio_Channel'Class;
+                    Register : Channel_Register;
+                    Value    : Byte);
 
    subtype Channel_Sample is Sample range -15 .. 15;
 
-   procedure Next_Sample
-     (Channel : in out Audio_Channel;
-      S       : out Channel_Sample);
+   procedure Next_Sample (Channel : in out Audio_Channel;
+                          Sample  : out Channel_Sample);
 
    procedure Turn_Off (Channel : in out Audio_Channel);
 
@@ -75,20 +70,17 @@ private
 
    procedure Trigger (Channel : in out Audio_Channel);
 
-   procedure Disable
-     (Channel : in out Audio_Channel;
-      Mode    : Disable_Mode);
+   procedure Disable (Channel : in out Audio_Channel;
+                      Mode    : Disable_Mode);
 
-   procedure Update_DAC_Power_State
-     (Channel : in out Audio_Channel'Class;
-      Powered : Boolean);
+   procedure Update_DAC_Power_State (Channel : in out Audio_Channel'Class;
+                                     Powered : Boolean);
 
    procedure Step_Sample (Channel : in out Audio_Channel);
 
-   procedure Next_Sample_Level
-     (Channel      : in out Audio_Channel;
-      Sample_Level : out Channel_Sample;
-      Level_Cycles : out Positive) is null;
+   procedure Next_Sample_Level (Channel      : in out Audio_Channel;
+                                Sample_Level : out Channel_Sample;
+                                Level_Cycles : out Positive) is null;
 
 
    type Effect_Period_IO is mod 2 ** 3;
@@ -114,21 +106,17 @@ private
       function Read_NRx4 (Channel : Length_Trigger_Channel) return Byte;
 
       overriding
-      procedure Write_NRx1
-        (Channel : in out Length_Trigger_Channel;
-         Value   : Byte);
+      procedure Write_NRx1 (Channel : in out Length_Trigger_Channel;
+                            Value   : Byte);
 
       overriding
-      procedure Write_NRx4
-        (Channel : in out Length_Trigger_Channel;
-         Value   : Byte);
+      procedure Write_NRx4 (Channel : in out Length_Trigger_Channel;
+                            Value   : Byte);
 
       overriding
       procedure Tick_Length (Channel : in out Length_Trigger_Channel);
 
    private
-
-      Max_Length : constant Natural := 2 ** Length_Bits;
 
       type Length_Details is tagged record
          Timer   : Timer_Type;
@@ -172,24 +160,20 @@ private
          Frequency_In : Frequency_IO;
       end record;
 
-      procedure Set_Frequency
-        (Channel : in out Channel_With_Frequency;
-         Freq    : Frequency_Type) is abstract;
+      procedure Set_Frequency (Channel : in out Channel_With_Frequency;
+                               Freq    : Frequency_Type) is abstract;
 
       overriding
-      procedure Write_NRx3
-        (Channel : in out Channel_With_Frequency;
-         Value   : Byte);
+      procedure Write_NRx3 (Channel : in out Channel_With_Frequency;
+                            Value   : Byte);
 
       overriding
-      procedure Write_NRx4
-        (Channel : in out Channel_With_Frequency;
-         Value   : Byte);
+      procedure Write_NRx4 (Channel : in out Channel_With_Frequency;
+                            Value   : Byte);
 
       overriding
-      procedure Disable
-        (Channel : in out Channel_With_Frequency;
-         Mode    : Disable_Mode);
+      procedure Disable (Channel : in out Channel_With_Frequency;
+                         Mode    : Disable_Mode);
 
    end Frequency_Mixin;
 

@@ -1,12 +1,10 @@
 package body Gade.Audio.Frame_Sequencer is
 
-   procedure Create
-     (Frame_Sequencer : out Audio_Frame_Sequencer;
-      Square_1        : not null Sweeping_Square_Channel_Access;
-      Square_2        : not null Square_Channel_Access;
-      Wave            : not null Wave_Channel_Access;
-      Noise           : not null Noise_Channel_Access)
-   is
+   procedure Create (Frame_Sequencer : out Audio_Frame_Sequencer;
+                     Square_1        : not null Sweeping_Square_Channel_Access;
+                     Square_2        : not null Square_Channel_Access;
+                     Wave            : not null Wave_Channel_Access;
+                     Noise           : not null Noise_Channel_Access) is
    begin
       Frame_Sequencer.Square_1 := Square_1;
       Frame_Sequencer.Square_2 := Square_2;

@@ -18,9 +18,8 @@ use Gade.Audio.Channels,
 
 package body Gade.Audio is
 
-   function To_Channel_Register
-     (Address : Audio_IO_Address)
-      return Channel_Register;
+   function To_Channel_Register (Address : Audio_IO_Address)
+                                 return Channel_Register;
 
    type Opaque_Audio_Type is record
       Square_1 : aliased Sweeping_Square_Channel;
@@ -78,9 +77,8 @@ package body Gade.Audio is
       Audio.Elapsed_Cycles := 0;
    end Reset;
 
-   function To_Channel_Register
-     (Address : Audio_IO_Address)
-      return Channel_Register
+   function To_Channel_Register (Address : Audio_IO_Address)
+                                 return Channel_Register
    is
       Rebased_Address : constant Word := Address - Audio_IO_Address'First;
       Register_Index : Word;
@@ -89,11 +87,9 @@ package body Gade.Audio is
       return Channel_Register'Val (Register_Index);
    end To_Channel_Register;
 
-   procedure Read
-     (Audio   : in out Audio_Type;
-      Address : Audio_IO_Address;
-      Value   : out Byte)
-   is
+   procedure Read (Audio   : in out Audio_Type;
+                   Address : Audio_IO_Address;
+                   Value   : out Byte) is
    begin
       Value :=
         (case Address is
@@ -126,11 +122,9 @@ package body Gade.Audio is
 --        end if;
    end Read;
 
-   procedure Write
-     (Audio   : in out Audio_Type;
-      Address : Audio_IO_Address;
-      Value   : Byte)
-   is
+   procedure Write (Audio   : in out Audio_Type;
+                    Address : Audio_IO_Address;
+                    Value   : Byte) is
    begin
 --        if Address not in NR2x_IO_Address and Address not in NR3x_IO_Address and
 --          Address not in NR4x_IO_Address and Address not in Wave_Table_IO_Address
@@ -162,10 +156,9 @@ package body Gade.Audio is
       end case;
    end Write;
 
-   procedure Report_Cycles
-     (Audio        : in out Audio_Type;
-      Audio_Buffer : Audio_Buffer_Access;
-      Cycles       : Positive)
+   procedure Report_Cycles (Audio        : in out Audio_Type;
+                            Audio_Buffer : Audio_Buffer_Access;
+                            Cycles       : Positive)
    is
       Target_Cycles : constant Natural := Audio.Elapsed_Cycles + Cycles / 4;
    begin
@@ -188,9 +181,8 @@ package body Gade.Audio is
       return Audio.Power_Control.Space;
    end Read_Power_Control_Status;
 
-   procedure Write_Power_Control_Status
-     (Audio : in out Audio_Type;
-      Value : Byte)
+   procedure Write_Power_Control_Status (Audio : in out Audio_Type;
+                                         Value : Byte)
    is
       New_Power_State : Boolean;
    begin
@@ -214,10 +206,9 @@ package body Gade.Audio is
       Audio.Powered := New_Power_State;
    end Write_Power_Control_Status;
 
-   procedure Flush_Frame
-     (Audio        : in out Audio_Type;
-      Audio_Buffer : Audio_Buffer_Access;
-      Cycles       : Positive)
+   procedure Flush_Frame (Audio        : in out Audio_Type;
+                          Audio_Buffer : Audio_Buffer_Access;
+                          Cycles       : Positive)
    is
       pragma Unreferenced (Cycles, Audio_Buffer);
    begin
