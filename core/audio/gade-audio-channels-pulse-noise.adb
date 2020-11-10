@@ -1,5 +1,21 @@
 package body Gade.Audio.Channels.Pulse.Noise is
 
+   type NRx3_Noise_IO is record
+      Clock_Shift  : Clock_Shift_Type;
+      LFSR_Width   : LFSR_Width_Mode;
+      Divisor_Code : Divisor_Code_Type;
+   end record;
+   for NRx3_Noise_IO use record
+      Clock_Shift  at 0 range 4 .. 7;
+      LFSR_Width   at 0 range 3 .. 3;
+      Divisor_Code at 0 range 0 .. 2;
+   end record;
+   for NRx3_Noise_IO'Size use Byte'Size;
+
+   function To_NRx3_Noise_IO is new Ada.Unchecked_Conversion
+     (Source => Byte,
+      Target => NRx3_Noise_IO);
+
    overriding
    procedure Disable
      (Channel : in out Noise_Channel;

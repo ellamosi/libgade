@@ -23,26 +23,6 @@ private
 
    type Pulse_Levels_Type is array (Pulse_State_Type) of Channel_Sample;
 
-
-   NRx2_Volume_Envelope_Mask : constant Byte := 16#00#;
-
-   type NRx2_Volume_Envelope_IO is record
-      Volume    : Envelope_Volume;
-      Direction : Envelope_Direction;
-      Period    : Envelope_Period;
-   end record;
-   for NRx2_Volume_Envelope_IO use record
-      Volume    at 0 range 4 .. 7;
-      Direction at 0 range 3 .. 3;
-      Period    at 0 range 0 .. 2;
-   end record;
-   for NRx2_Volume_Envelope_IO'Size use Byte'Size;
-
-   function To_NRx2_Volume_Envelope_IO is new Ada.Unchecked_Conversion
-     (Source => Byte,
-      Target => NRx2_Volume_Envelope_IO);
-
-
    type Volume_Envelope_Details is record
       Current_Volume : Natural;
       Initial_Volume : Natural;
@@ -51,9 +31,6 @@ private
       Period         : Envelope_Period;
       Timer          : Timer_Type;
    end record;
-
-   function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean;
-
 
    --  All the Pulse based channels have a maximum length of 64 (6 bit), only
    --  the wave channel differs with a maximum length of 256 (8 bit).
@@ -88,7 +65,5 @@ private
    procedure Set_Volume
      (Channel : in out Pulse_Channel;
       Volume  : Natural);
-
-   procedure Step_Volume_Envelope (Channel : in out Pulse_Channel);
 
 end Gade.Audio.Channels.Pulse;

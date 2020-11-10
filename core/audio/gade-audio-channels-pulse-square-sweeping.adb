@@ -1,5 +1,11 @@
 package body Gade.Audio.Channels.Pulse.Square.Sweeping is
 
+   procedure Calculate_New_Frequency
+     (Channel       : in out Sweeping_Square_Channel;
+      New_Frequency : out Integer);
+
+   procedure Step_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
+
    procedure Tick_Notify_Frequency_Sweep_Step is new Tick_Notify
      (Observer_Type => Sweeping_Square_Channel,
       Notify        => Step_Frequency_Sweep);

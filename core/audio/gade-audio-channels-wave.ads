@@ -133,16 +133,14 @@ private
       Level_Cycles : out Positive);
 
    overriding
-   procedure Disable (Channel : in out Wave_Channel;
-                      Mode    : Disable_Mode);
+   procedure Disable (Channel : in out Wave_Channel; Mode : Disable_Mode);
 
    overriding
    procedure Trigger (Channel : in out Wave_Channel);
 
    overriding
-   procedure Set_Frequency
-     (Channel : in out Wave_Channel;
-      Freq    : Frequency_Type);
+   procedure Set_Frequency (Channel : in out Wave_Channel;
+                            Freq    : Frequency_Type);
 
    overriding
    function Read_NRx0 (Channel : Wave_Channel) return Byte;

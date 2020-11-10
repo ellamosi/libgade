@@ -130,30 +130,10 @@ private
 
       Max_Length : constant Natural := 2 ** Length_Bits;
 
-      NRx1_Length_Mask : constant Byte := Byte (Max_Length - 1);
-
-      NRx4_Length_Enable_Mask : constant Byte := 16#BF#;
-
-      type NRx4_Common_IO is record
-         Trigger       : Boolean;
-         Length_Enable : Boolean;
-      end record;
-      for NRx4_Common_IO use record
-         Trigger       at 0 range 7 .. 7;
-         Length_Enable at 0 range 6 .. 6;
-      end record;
-      for NRx4_Common_IO'Size use 8;
-
-      function To_NRx4_Common_IO is new Ada.Unchecked_Conversion
-        (Source => Byte,
-         Target => NRx4_Common_IO);
-
-
       type Length_Details is tagged record
          Timer   : Timer_Type;
          Enabled : Boolean;
       end record;
-
 
       subtype Parent is Audio_Channel;
       type Length_Trigger_Channel is abstract new Parent with record

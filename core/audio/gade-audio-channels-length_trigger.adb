@@ -3,6 +3,24 @@ with Gade.Audio.Frame_Sequencer; use Gade.Audio.Frame_Sequencer;
 separate (Gade.Audio.Channels)
 package body Length_Trigger is
 
+   NRx1_Length_Mask : constant Byte := Byte (Max_Length - 1);
+
+   NRx4_Length_Enable_Mask : constant Byte := 16#BF#;
+
+   type NRx4_Common_IO is record
+      Trigger       : Boolean;
+      Length_Enable : Boolean;
+   end record;
+   for NRx4_Common_IO use record
+      Trigger       at 0 range 7 .. 7;
+      Length_Enable at 0 range 6 .. 6;
+   end record;
+   for NRx4_Common_IO'Size use 8;
+
+   function To_NRx4_Common_IO is new Ada.Unchecked_Conversion
+     (Source => Byte,
+      Target => NRx4_Common_IO);
+
    procedure Length_Triggered_Disable (Channel : in out Length_Trigger_Channel);
 
    --  TODO: Rename: The frame sequencer doesn't have a "current" step

@@ -1,5 +1,28 @@
 package body Gade.Audio.Channels.Pulse is
 
+   NRx2_Volume_Envelope_Mask : constant Byte := 16#00#;
+
+   type NRx2_Volume_Envelope_IO is record
+      Volume    : Envelope_Volume;
+      Direction : Envelope_Direction;
+      Period    : Envelope_Period;
+   end record;
+   for NRx2_Volume_Envelope_IO use record
+      Volume    at 0 range 4 .. 7;
+      Direction at 0 range 3 .. 3;
+      Period    at 0 range 0 .. 2;
+   end record;
+   for NRx2_Volume_Envelope_IO'Size use Byte'Size;
+
+   function To_NRx2_Volume_Envelope_IO is new Ada.Unchecked_Conversion
+     (Source => Byte,
+      Target => NRx2_Volume_Envelope_IO);
+
+
+   procedure Step_Volume_Envelope (Channel : in out Pulse_Channel);
+
+   function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean;
+
    overriding
    procedure Disable
      (Channel : in out Pulse_Channel;

@@ -55,12 +55,6 @@ private
    overriding
    procedure Trigger (Channel : in out Sweeping_Square_Channel);
 
-   procedure Calculate_New_Frequency
-     (Channel       : in out Sweeping_Square_Channel;
-      New_Frequency : out Integer);
-
-   procedure Step_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
-
    overriding
    function Read_NRx0 (Channel : Sweeping_Square_Channel) return Byte;
 
