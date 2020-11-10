@@ -128,9 +128,9 @@ private
 
    private
 
-      Length_Max : constant Natural := 2 ** Length_Bits;
+      Max_Length : constant Natural := 2 ** Length_Bits;
 
-      NRx1_Length_Mask : constant Byte := Byte (Length_Max - 1);
+      NRx1_Length_Mask : constant Byte := Byte (Max_Length - 1);
 
       NRx4_Length_Enable_Mask : constant Byte := 16#BF#;
 

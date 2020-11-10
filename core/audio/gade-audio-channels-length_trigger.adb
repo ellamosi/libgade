@@ -23,7 +23,7 @@ package body Length_Trigger is
       Parent (Channel).Disable (Mode);
       if Mode = APU_Power_Off then
          Channel.Length.Enabled := False;
-         Channel.Length.Timer.Disable;
+         Channel.Length.Timer.Reload (Max_Length, False);
          Channel.NRx4 := NRx4_Length_Enable_Mask;
       end if;
    end Disable;
@@ -32,7 +32,7 @@ package body Length_Trigger is
    procedure Turn_On (Channel : in out Length_Trigger_Channel) is
    begin
       Parent (Channel).Turn_On;
-      if Channel.Length.Enabled then Channel.Length.Timer.Enable; end if;
+      Channel.Length.Timer.Enable (Channel.Length.Enabled);
    end Turn_On;
 
    overriding
@@ -47,7 +47,7 @@ package body Length_Trigger is
       Value   : Byte)
    is
       Input_Value  : constant Natural := Natural (Value and NRx1_Length_Mask);
-      Length_Value : constant Positive := Length_Max - Input_Value;
+      Length_Value : constant Positive := Max_Length - Input_Value;
    begin
       Channel.Length.Timer.Reload (Length_Value, Channel.Length.Enabled);
    end Write_NRx1;
@@ -94,7 +94,7 @@ package body Length_Trigger is
       --
       --  If length counter is zero, it is set to 64 (256 for wave channel).
       if Trigger and Length.Timer.Has_Finished then
-         Length.Timer.Reload (Length_Max, Length_Enable);
+         Length.Timer.Reload (Max_Length, Length_Enable);
       end if;
 
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior
