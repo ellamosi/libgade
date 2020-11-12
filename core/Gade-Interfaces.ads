@@ -5,7 +5,7 @@ limited with Gade.Audio_Buffer;
 package Gade.Interfaces is
 
    CPU_Clock_Frequency : constant := 4_194_304; -- Hz (T-Cycles)
-   CPU_M_Frequency     : constant := CPU_Clock_Frequency / 4;  -- Hz (M-Cycles)
+   CPU_M_Frequency     : constant := CPU_Clock_Frequency / 4; -- Hz (M-Cycles)
 
    type Gade_Type is private;
 

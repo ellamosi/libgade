@@ -37,6 +37,5 @@ package Gade.Video_Buffer is
 
    type RGB32_Display_Buffer_Access is access all RGB32_Display_Buffer with
      Convention => C;
-   pragma No_Strict_Aliasing (RGB32_Display_Buffer_Access);
 
 end Gade.Video_Buffer;

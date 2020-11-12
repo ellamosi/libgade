@@ -128,9 +128,8 @@ private package Gade.Carts is
       Complement_Check   : Byte;
       Checksum           : Word;
    end record;
+
    type Cart_Header_Access is access constant Cart_Header;
-   --  TODO: Investigate need of pragma
-   pragma No_Strict_Aliasing (Cart_Header_Access);
 
    subtype External_ROM_IO_Address is Word range 16#0000# .. 16#7FFF#;
    subtype External_RAM_IO_Address is Word range 16#A000# .. 16#BFFF#;
