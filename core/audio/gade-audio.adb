@@ -34,6 +34,8 @@ package body Gade.Audio is
       Power_Control : Power_Control_Status;
 
       Elapsed_Cycles : Natural;
+
+      Clean : Boolean;
    end record;
 
    procedure Create (Audio : aliased out Audio_Type) is
@@ -75,6 +77,8 @@ package body Gade.Audio is
       Audio.Power_Control.Space := Power_Control_Status_Write_Mask;
 
       Audio.Elapsed_Cycles := 0;
+
+      Audio.Clean := True;
    end Reset;
 
    function To_Channel_Register (Address : Audio_IO_Address)
@@ -135,6 +139,7 @@ package body Gade.Audio is
 --           Put (Integer (Value), Base => 16, Width => 0);
 --           New_Line;
 --        end if;
+
       case Address is
          when NR1x_IO_Address =>
             Audio.Square_1.Write (To_Channel_Register (Address), Value);
@@ -154,6 +159,8 @@ package body Gade.Audio is
             Audio.Wave.Write_Table (Address, Value);
          when others => null;
       end case;
+
+      Audio.Clean := False;
    end Write;
 
    procedure Report_Cycles (Audio        : in out Audio_Type;
@@ -213,11 +220,12 @@ package body Gade.Audio is
       pragma Unreferenced (Cycles, Audio_Buffer);
    begin
       Audio.Elapsed_Cycles := 0;
+      --  Put_Line ("APU Clean:" & Audio.Clean'Img);
+      Audio.Clean := True;
    end Flush_Frame;
 
    function Frame_Sequencer_State (Audio : Audio_Type)
-                                   return Frame_Sequencer.State
-   is
+                                   return Frame_Sequencer.State is
    begin
       return Audio.Frame_Seq.Current_State;
    end Frame_Sequencer_State;

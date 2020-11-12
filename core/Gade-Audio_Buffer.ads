@@ -1,12 +1,13 @@
+with Gade.Interfaces;   use Gade.Interfaces;
+with Gade.Video_Buffer; use Gade.Video_Buffer;
+
 package Gade.Audio_Buffer is
 
-   --  Gambatte:
-   --  There are 35112 audio (stereo) samples in a video frame.
-   --  An audio sample consists of two native endian 2s complement 16-bit PCM samples
-   --  May run for up to 2064 audio samples too long.
+   Samples_Second  : constant := CPU_M_Frequency; -- Hz (1 sample per M-Cycle)
+   Samples_Frame   : constant := (Samples_Second * 100) / Frame_Frequency; -- Hz
 
-   --  Own draft:
-   --  35112 samples/frame at ~59.7 fps => 2096186.4 samples/sec (~2096kHz)
+   Extra_Samples   : constant := 2_064; -- May run for some samples too long
+   Maximum_Samples : constant := Samples_Frame + Extra_Samples;
 
    Sample_Bit_Size : constant := 16;
    Sample_Minimum  : constant := -(2 ** (Sample_Bit_Size - 1));
@@ -19,15 +20,7 @@ package Gade.Audio_Buffer is
       Left, Right : Sample;
    end record;
 
-   type Audio_Buffer is array (Natural range <>) of Stereo_Sample;
-
-   Samples_Frame   : constant := 35_112; -- / 2;
-   --  Samples_Second  : constant := Samples_Frame * 60; -- 59.727500569606
-   Samples_Second  : constant := 2_097_152 / 2;
-   Extra_Samples   : constant := 2_064; -- May run for some samples too long
-   Maximum_Samples : constant := Samples_Frame + Extra_Samples;
-
-   type Audio_Buffer_Type is new Audio_Buffer (0 .. Maximum_Samples - 1)
+   type Audio_Buffer_Type is array (0 .. Maximum_Samples - 1) of Stereo_Sample
      with Convention => C;
 
    type Audio_Buffer_Access is access all Audio_Buffer_Type

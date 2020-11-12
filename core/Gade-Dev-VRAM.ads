@@ -1,4 +1,3 @@
-with Gade.Video_Buffer;          use Gade.Video_Buffer;
 with Gade.Dev.Video.Tile_Buffer; use Gade.Dev.Video.Tile_Buffer;
 with Gade.Dev.Video; use Gade.Dev.Video;
 with Gade.Dev.Video.Tile_Map; use Gade.Dev.Video.Tile_Map;
