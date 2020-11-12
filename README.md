@@ -21,9 +21,9 @@ Why Ada? I learned to program in Ada, and I always felt that it was a more relia
 - Window Layer
 - Sprites
 - Mid scanline rendering
+- Audio
 
 #### What does not work
-- Sound
 - Other cartridge controller types
 - Accurate timings
 
