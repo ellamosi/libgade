@@ -27,8 +27,8 @@ package body Gade.Audio is
       Wave     : aliased Wave_Channel;
       Noise    : aliased Noise_Channel;
 
-      Mixer     : Audio_Mixer;
-      Frame_Seq : Frame_Sequencer.Audio_Frame_Sequencer;
+      Mixer           : Audio_Mixer;
+      Frame_Sequencer : Audio_Frame_Sequencer;
 
       Powered       : Boolean;
       Power_Control : Power_Control_Status;
@@ -54,7 +54,7 @@ package body Gade.Audio is
          Audio.Wave'Access,
          Audio.Noise'Access);
       Create
-        (Audio.Frame_Seq,
+        (Audio.Frame_Sequencer,
          Audio.Square_1'Access,
          Audio.Square_2'Access,
          Audio.Wave'Access,
@@ -71,7 +71,7 @@ package body Gade.Audio is
       Reset (Audio.Noise);
 
       Reset (Audio.Mixer);
-      Reset (Audio.Frame_Seq);
+      Reset (Audio.Frame_Sequencer);
 
       Audio.Powered := True;
       Audio.Power_Control.Space := Power_Control_Status_Write_Mask;
@@ -172,7 +172,7 @@ package body Gade.Audio is
       while Audio.Elapsed_Cycles < Target_Cycles loop
          Audio_Buffer (Audio.Elapsed_Cycles) := Audio.Mixer.Next_Sample;
 
-         Audio.Frame_Seq.Tick;
+         Audio.Frame_Sequencer.Tick;
 
          Audio.Elapsed_Cycles := Audio.Elapsed_Cycles + 1;
       end loop;
@@ -201,14 +201,14 @@ package body Gade.Audio is
          Audio.Wave.Turn_Off;
          Audio.Noise.Turn_Off;
          Audio.Mixer.Turn_Off;
-         Audio.Frame_Seq.Turn_Off;
+         Audio.Frame_Sequencer.Turn_Off;
       elsif not Audio.Powered and New_Power_State then
          Audio.Square_1.Turn_On;
          Audio.Square_2.Turn_On;
          Audio.Wave.Turn_On;
          Audio.Noise.Turn_On;
          Audio.Mixer.Turn_On;
-         Audio.Frame_Seq.Turn_On;
+         Audio.Frame_Sequencer.Turn_On;
       end if;
       Audio.Powered := New_Power_State;
    end Write_Power_Control_Status;
@@ -227,7 +227,7 @@ package body Gade.Audio is
    function Frame_Sequencer_State (Audio : Audio_Type)
                                    return Frame_Sequencer.State is
    begin
-      return Audio.Frame_Seq.Current_State;
+      return Audio.Frame_Sequencer.Current_State;
    end Frame_Sequencer_State;
 
    function Is_Powered (Audio : Audio_Type) return Boolean is

@@ -43,8 +43,8 @@ private
 
    subtype Parent is Square_Channel;
    type Sweeping_Square_Channel is new Parent with record
-      NRx0  : Byte;
       Sweep : Frequency_Sweep_Details;
+      NRx0  : Byte;
    end record;
 
    overriding

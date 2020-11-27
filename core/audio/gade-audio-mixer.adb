@@ -24,8 +24,8 @@ package body Gade.Audio.Mixer is
    procedure Turn_Off (Mixer : in out Audio_Mixer) is
    begin
       Mixer.Volume_Control.Space := 0;
-      Mixer.Output_Control.Space := 0;
-      Mixer.Volume := (Sample_Multiplier, Sample_Multiplier);
+      Mixer.Channel_Control.Space := 0;
+      Mixer.Volume_Multiplier := (Sample_Multiplier, Sample_Multiplier);
       Mixer.Power_Mask := Off_Power_Mask;
    end Turn_Off;
 
@@ -45,7 +45,7 @@ package body Gade.Audio.Mixer is
    end "*";
 
    function Next_Sample (Mixer : Audio_Mixer) return Stereo_Sample is
-      Output_Control : Channel_Output_Control renames Mixer.Output_Control;
+      Output_Control : Channel_Output_Control renames Mixer.Channel_Control;
 
       Output  : Stereo_Sample;
       Samples : Channel_Samples;
@@ -68,7 +68,7 @@ package body Gade.Audio.Mixer is
       --  to the channel DAC is such that a single channel enabled via NR51
       --  playing at volume of 2 with a master volume of 7 is about as loud
       --  as that channel playing at volume 15 with a master volume of 0.
-      return Output * (Mixer.Volume.Left, Mixer.Volume.Right);
+      return Output * Mixer.Volume_Multiplier;
    exception
       when E : others =>
          Put_Line (Exception_Information (E));
@@ -78,14 +78,14 @@ package body Gade.Audio.Mixer is
    procedure Write_NR50 (Mixer : in out Audio_Mixer; Value : Byte) is
    begin
       Mixer.Volume_Control.Space := Value and Mixer.Power_Mask;
-      Mixer.Volume :=
+      Mixer.Volume_Multiplier :=
         ((Sample (Mixer.Volume_Control.Left_Volume) + 1) * Sample_Multiplier,
          (Sample (Mixer.Volume_Control.Right_Volume) + 1) * Sample_Multiplier);
    end Write_NR50;
 
    procedure Write_NR51 (Mixer : in out Audio_Mixer; Value : Byte) is
    begin
-      Mixer.Output_Control.Space := Value and Mixer.Power_Mask;
+      Mixer.Channel_Control.Space := Value and Mixer.Power_Mask;
    end Write_NR51;
 
    function Read_NR50 (Mixer : Audio_Mixer) return Byte is
@@ -95,7 +95,7 @@ package body Gade.Audio.Mixer is
 
    function Read_NR51 (Mixer : Audio_Mixer) return Byte is
    begin
-      return Mixer.Output_Control.Space;
+      return Mixer.Channel_Control.Space;
    end Read_NR51;
 
 end Gade.Audio.Mixer;

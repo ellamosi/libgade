@@ -41,9 +41,9 @@ private
 
    subtype Parent is Length_Trigger_Channel;
    type Pulse_Channel is abstract new Parent with record
+      Volume_Envelope : Volume_Envelope_Details;
       Pulse_Levels    : Pulse_Levels_Type;
       NRx2            : Byte;
-      Volume_Envelope : Volume_Envelope_Details;
    end record;
 
    overriding
@@ -62,6 +62,7 @@ private
    overriding
    procedure Trigger (Channel : in out Pulse_Channel);
 
+   --  TODO: Representative Volume Type
    procedure Set_Volume
      (Channel : in out Pulse_Channel;
       Volume  : Natural);

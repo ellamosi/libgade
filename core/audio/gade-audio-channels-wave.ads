@@ -86,13 +86,12 @@ private
 
    subtype Parent is Channel_With_Frequency;
    type Wave_Channel is new Parent with record
-      NRx0, NRx2   : Byte;
-      Powered      : Boolean;
       Volume_Shift : Natural;
       Table_IO     : Wave_Table_IO;
       Sample_Time  : Positive;
       Sample_Index : Wave_Sample_Index;
       Sample_Diff  : Sample;
+      NRx0, NRx2   : Byte;
    end record;
 
    overriding
