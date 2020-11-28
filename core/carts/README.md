@@ -10,7 +10,7 @@ The goals of this design are the following:
 
 To achieve these, we make extensive use of [Ada generics](https://en.wikibooks.org/wiki/Ada_Programming/Generics), composition and multiple inheritance (via mixins). A simplified overview of the design's structure follows, some components have been ommitted to simplify the overall diagram. The components involved are further described below.
 
-![Alt text](./doc/Gade-Carts-UML.svg)
+![Gade Carts UML Diagram](./doc/Gade-Carts-UML.svg)
 
 ## Cartridge Types
 This is public interface for the rest of the emulator to use cartridges.

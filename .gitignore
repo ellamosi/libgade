@@ -7,7 +7,6 @@
 *.ali
 *.o
 *.a
-*.xml
 *.cgpr
 *.bexch
 *.lexch

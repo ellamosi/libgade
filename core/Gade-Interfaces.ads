@@ -1,7 +1,11 @@
 limited with Gade.Input_Reader;
 limited with Gade.Video_Buffer;
+limited with Gade.Audio_Buffer;
 
 package Gade.Interfaces is
+
+   CPU_Clock_Frequency : constant := 4_194_304; -- Hz (T-Cycles)
+   CPU_M_Frequency     : constant := CPU_Clock_Frequency / 4; -- Hz (M-Cycles)
 
    type Gade_Type is private;
 
@@ -17,9 +21,13 @@ package Gade.Interfaces is
      (G      : Gade_Type;
       Reader : Gade.Input_Reader.Input_Reader_Access);
 
-   procedure Next_Frame
-     (G     : Gade_Type;
-      Video : Gade.Video_Buffer.RGB32_Display_Buffer_Access);
+   procedure Run_For
+     (G                 : Gade_Type;
+      Requested_Samples : Positive;
+      Generated_Samples : out Natural;
+      Video             : Gade.Video_Buffer.RGB32_Display_Buffer_Access;
+      Audio             : Gade.Audio_Buffer.Audio_Buffer_Access;
+      Frame_Finished    : out Boolean);
 
    procedure Finalize (G : in out Gade_Type);
 
