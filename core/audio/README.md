@@ -1,97 +1,78 @@
-# Cartridges
-GB cartridges can contain different hardware that needs to be emulated in order to make the game playable. The most visible example of this would be the GB camera, but less visibly, most of the GB games also include what's called a Memory Bank Controller. These are used to be able to map larger ROM or RAM chips into the relatively small external ROM and external RAM address spaces (32kB and 16kB respectively). Many GB games rely on a battery backed RAM to save their progress. So while it's possible to emulate a small game like Tetris (32kB) without supporting additional hardware, supporting more complex games requires implementing their specific hardware.
+# Audio
+The GB hardware relies on 4 different simple waveform generators, each of them with their own 4-bit DAC, the output of which are mixed together into an stereo signal through an analog circuit.
 
-Fortunately, many of the games share the same MBC chips. And some of the behaviors for these is similar.
+Documentation about the audio hardware's behavior was mostly found on [this article](https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware) in the GB Dev wiki. It's a highly recommended read to understand the details of the actual hardware. This README focuses on describing how the described features are implemented and the rationale behind their implementation, but expects the reader to be already somewhat familiar with some of the referenced concepts.
 
-Cart support is probably the most over engineered component of the emulator.
-The goals of this design are the following:
-- Minimize code duplication between cartridge implementations
-- Enforce static checks on address ranges and bank indexes
+This implementation relies on these four basic components:
+- Audio type encapsulating the entirety the Audio Processing Unit logic, its IO, forwarding accesses as necessary to any of its su components and APU power states.
+- Frame Sequencer
+- Mixer
+- Channel Implementations
 
-To achieve these, we make extensive use of [Ada generics](https://en.wikibooks.org/wiki/Ada_Programming/Generics), composition and multiple inheritance (via mixins). A simplified overview of the design's structure follows, some components have been ommitted to simplify the overall diagram. The components involved are further described below.
+See the following UML diagram to get a sense of how it all fits together. Note that that is not exhaustive and is just meant to give an overview of the general design. Most notably constructors and power state related methods were purposedly ommitted, among others.
 
-![Alt text](./doc/Gade-Carts-UML.svg)
+![Gade Audio UML Diagram](./doc/Gade-Audio-UML.svg)
 
-## Cartridge Types
-This is public interface for the rest of the emulator to use cartridges.
+## Frame Sequencer
+The Frame Sequencer clocks each of the channel's modulation units at 512 Hz (which ones varies on its state machine). Currently relies on a timer that gets ticked on every CPU M-Cycle, but that should happen as part of a Scheduled event once the emulator implements an event scheduler.
 
-#### Cart (Abstract)
-Defines the interface for all of the cart types to follow. Mainly the methods to handle IO through the external ROM/RAM address spaces, but in addition it also defines utily method for cartridge save handling and to CPU clock synchronization.
+## Mixer
+The Mixer component fetches the outputs from each of the channels, mixes them together based on per channel Left/Right enable flags and generates stereo samples from it.
 
-#### Blank
-Emulates behavior with no cartridge inserted. It's the cartridge type that the emulator instantiates upon initialization and ould be used to test the bootrom.
+In the real hardware, each of the channels feeds a 4-bit value into their DAC. The analog mixing circuitry applies a high-pass filter which will gradually even out the reference silence level. To simplify the implementation of the emulator, each of the channel implementations will output a value in the range -15 to 15 which can then be mixed together without the need for a high pass filter. This should work correctly for the majority of the games, but some special uses of the sound hardware will likely require proper emulation of the low pass filter, such as [Smooth Player](https://eldred.fr/projects/smooth-player).
 
-### Supported
+## Channels
+All 4 channels share some behavior, but each of them has some disctinct features or a variation of the common ones. The design attempts to fully re-use the implementations of each of these. The audio channels use 5 IO registers each (NRx0..NRx4), so a common IO interface is defined for them on their root type and the APU handler figures out which register within which channel to access given an address.
 
-#### Plain (Max 32kB ROM / 16kB RAM)
-Cartridges without controller are supported, including up to 16kB RAM saves even though there is no known game that uses RAM without relying on a bank controller.
+Let's take a look into the features supported by each channel and then explain how each of them is implemented on each concrete or abstract channel type:
 
-#### MBC1 (Max 2MB ROM / 32kB RAM)
-Fully supported including RAM saves.
+| Channels/Features      | Square 1    | Square 2    | Wave         | Noise       |
+|------------------------|-------------|-------------|--------------|-------------|
+| Length Counter         | 6-bit       | 6-bit       | 8-bit        | 6-bit       |
+| Volume Envelope        | Yes         | Yes         | No           | Yes         |
+| Volume Precision       | 4-bit       | 4-bit       | 2-bit        | 4-bit       |
+| Configurable Frequency | Yes         | Yes         | Yes          | No          |
+| Frequency Sweep        | Yes         | No          | No           | No          |
+| Kind                   | Pulse-based | Pulse-based | Sample-based | Pulse-based |
 
-#### MBC2 (Max 256kB ROM / 512x4 bit RAM)
-Ues [BGB's 512 Byte file format spec](http://bgb.bircd.org/mbc2save.html) for file save support to prevent ambiguity in regards to endianess type.
+### Abstract Channel Implementations
 
-#### MBC3 (Max 2MB ROM / 64kB RAM or 128kB RAM for MBC30 / RTC)
-Fully supported including its MBC30 (up to 8 RAM banks instead of 4) variant and the RTC (Real Time Clock). It uses [BGB's file format spec](http://bgb.bircd.org/rtcsave.html) to save RAM and RTC data. It's able to read both 32 and 64 bit RTC file formats, although saves will always be performed in 64 bit. The state is synchronized with the CPU clock once per frame, so if emulation does not happen in realtime that's accurately reflected in the RTC behavior.
+#### Audio Channel
+Serves as root channel type. Implements little more than the necessary logic to maintain an output level for a given time, as well as the ability to keep track of its DAC power state. Even though all channels implement a Length Counter, that would require making the root type generic, which would make the type instantiations incompatible. Therefore, that is implemented one level further up in the chain. Additionally, it defines per channel register read/write methods so each register access can have a default implementation that can be overriden as necessary.
 
-### Unsupported
-The following cartridge types are currently unsupported: MBC5, MBC6, GB Camera, HuC1, HuC3, MM01, MBC1 based multicarts. Aside from MBC5, all of these are very rare and not a priority to implement. MBC5 is used by most GB Color carts and should be trivial to add support for with the current architecture.
+#### Length Trigger Channel
+Adds the Length Counter and Trigger event functionalities. The length counter is based on a generic bit-length, so Square 1/2 and Noise channels can use a 6-bit length counter and the Wave channel can use an 8-bit length counter and the generic implementation takes care of handling the IO accordingly. The Trigger event logic implementation is defined at this level as it's tightly coupled to the behavior of the length counter.
 
-## Mixins
-Mixins allow the concrete cartrige implementations to pick and choose which components to support without having to re-define the implementation of the Cart's interface methods.
+#### Pulse Channel
+Represents all the pulse based channels (Square 1/2 and Noise) and implements the Volume Envelope functionality that they all use.
 
-### Banked Memory
-Implements the concept of a memory that can be banked.
+#### Frequency Mixin
+Used in all the channels that allow explicit frequency adjustment (Square 1/2 and Wave), handles the IO of the channel's frequency. Implemented as a mixin as it's less of a defining trait than the Pulse/Sample based nature of the channels and had to be used in both branches of the hierarchy tree.
 
-The number of accessible banks can be defined through generics (their size will also be statically adjusted accordingly). Generally most cart controllers rely on 2x16kB accessible ROM banks and 1x16kB accessible RAM banks, but this is not always the case. MBC6 uses 4x8kB accessible ROM banks.
+### Concrete Channel Implementations
 
-#### Banked ROM
-The ROM implementation of banked memory limits the banks that can be selected to only ROM type banks. This done because:
-- Conceptually it makes sense, no bank types other than ROM need to be accessible in the ROM space
-- It prevents dynamic dispatching for bank type in one of the most frequently ocurring operations: ROM read accesses. There's still a dynamic dispatch remaining (for the cart type), but preventing that would break the encapsulation of the cartridge implementation and is currently not a bottleneck.
+#### Sweeping Square Channel (Square 1)
+Extends the basic Square Channel implementation and relies on `Set_Frequency` to dynamically adjust the channel's frequency.
 
-#### Banked RAM
-Adds the RAM enable/disable capability to the banked memory implementation.
+#### Square Channel (Square 2)
+Basic square channel implementation, adds support for Duty Cycle handling and defines the method `Set_Frequency` for its extensions to use.
 
-The RAM implementation can select any kind of bank. This is used for features such as the RTC support, or to handle the specific behavior of the MBC2 RAM. As RAM is accessed far less frequently than the ROM, incurring a dynamic dispatch is not really a concern.
+#### Wave Channel
+This is the only sample based channel. It uses its own volume implementation (by shifting right the 4-bit samples). Defines the wave table to play the samples from and handles its IO.
 
-### ROM_RAM
-This is just a shortcut to instantiate ROM/RAM in a single declaration, as the majority of cartridge implementations support
-
-### MBC
-Implements common behavior shared by MBC style carts. Namely, identifying bank controller commands based on the ROM address being written to, as well as decoding RAM enabling/disabling commands.
-
-## Banks
-Bank types help implement the bank switching behaviour of the bank controllers. For example, selecting a bank with a specific index will make the bank instance with the right offset for that index to be accessible, while a different index can expose the bank that provides access to RTC values.
-
-### ROM
-Handles ROM access to a specific memory offset.
-
-### RAM
-Handles RAM access to a specific memory offset.
-
-### MBC2 RAM
-Handles the 4-bit MBC2 RAM, the upper half of the content bytes cannot be read/written to and will always be ones.
-
-### RTC
-Handles the RTC registers for the MBC3 clock.
-
-### Blank
-Handles an absent RAM chip, it's also used to implement the disabled RAM state.
-
-## Common Components
-
-### ROM
-Representation of the actual plain ROM contents, without banking concerns. Provides means to load a ROM file into memory.
-
-### RAM
-Representation of the actual plain RAM contents, without banking concerns. Provides means to read and write RAM data files to/from memory.
-
-### RTC
-Representation of the actual RTC, without banking concerns. Provides means to save/load its state into a file.
+#### Noise Channel
+Uses the pseudo random pulse generation by implementation the Linear-feedback shift register and its necessary IO.
 
 ## Testsuite
-The following sets of test ROMs are used to validate cartridge behavior:
-- [MBC1 Mooneye Test suite](https://github.com/Gekkio/mooneye-gb/tree/master/tests/emulator-only/mbc1) (except multicarts)
-- [MBC2 Mooneye Test suite](https://github.com/Gekkio/mooneye-gb/tree/master/tests/emulator-only/mbc2)
+The following sets of test ROMs are used to validate the audio behavior:
+- [MBC1 Mooneye Test suite](https://github.com/retrio/gb-test-roms/tree/master/dmg_sound) except the ones requiring accurate mid instruction timings:
+  - 09-wave read while on.gb
+  - 10-wave trigger while on.gb
+  - 12-wave write while on.gb
+
+## Unsupported Features
+- [Zombie mode](https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior): Apparently required for Prehistorik Man to sound right
+- Analog High-pass filter
+- [Wave Channel sample buffer quirks](https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior)
+- Accurate mid instruction behavior: Constrained by the CPU implementation not yet supporting it
+= [Smooth Player](https://eldred.fr/projects/smooth-player): Probably will require emulating the analog high-pass filter and a few other efforts
