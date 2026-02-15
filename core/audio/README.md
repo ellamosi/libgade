@@ -4,7 +4,7 @@ The GB hardware relies on 4 different simple waveform generators, each of them w
 Documentation about the audio hardware's behavior was mostly found on [this article](https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware) in the GB Dev wiki. It's a highly recommended read to understand the details of the actual hardware. This README focuses on describing how the described features are implemented and the rationale behind their implementation, but expects the reader to be already somewhat familiar with some of the referenced concepts.
 
 This implementation relies on these four basic components:
-- Audio type encapsulating the entirety the Audio Processing Unit logic, its IO, forwarding accesses as necessary to any of its su components and APU power states.
+- Audio type encapsulating the entirety the Audio Processing Unit logic, its IO, forwarding accesses as necessary to any of its sub-components and APU power states.
 - Frame Sequencer
 - Mixer
 - Channel Implementations
