@@ -9,7 +9,7 @@ This implementation relies on these four basic components:
 - Mixer
 - Channel Implementations
 
-See the following UML diagram to get a sense of how it all fits together. Note that that is not exhaustive and is just meant to give an overview of the general design. Most notably constructors and power state related methods were purposedly ommitted, among others.
+See the following UML diagram to get a sense of how it all fits together. Note that it is not exhaustive and is just meant to give an overview of the general design. Most notably constructors and power state related methods were purposedly omitted, among others.
 
 ![Gade Audio UML Diagram](./doc/Gade-Audio-UML.svg)
 
