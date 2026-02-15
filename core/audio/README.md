@@ -75,4 +75,4 @@ The following sets of test ROMs are used to validate the audio behavior:
 - Analog High-pass filter
 - [Wave Channel sample buffer quirks](https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior)
 - Accurate mid instruction behavior: Constrained by the CPU implementation not yet supporting it
-= [Smooth Player](https://eldred.fr/projects/smooth-player): Probably will require emulating the analog high-pass filter and a few other efforts
+- [Smooth Player](https://eldred.fr/projects/smooth-player): Probably will require emulating the analog high-pass filter and a few other efforts
