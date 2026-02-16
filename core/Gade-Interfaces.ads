@@ -27,6 +27,7 @@ package Gade.Interfaces is
       --  Number of audio samples requested at the APU rate (1 sample/M-cycle).
       Requested_Samples : Positive;
       --  Number of generated audio samples at the APU rate.
+      --  Can overshoot up to 4 samples from Requested_Samples.
       Generated_Samples : out Natural;
       Video             : Gade.Video_Buffer.RGB32_Display_Buffer_Access;
       Audio             : Gade.Audio_Buffer.Audio_Buffer_Access;
