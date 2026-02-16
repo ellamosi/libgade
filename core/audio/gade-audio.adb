@@ -1,5 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
 with Gade.Audio.Channels,
      Gade.Audio.Channels.Pulse.Noise,
      Gade.Audio.Channels.Pulse.Square,
@@ -63,8 +61,6 @@ package body Gade.Audio is
 
    procedure Reset (Audio : in out Audio_Type) is
    begin
-      Put_Line ("Audio Reset");
-
       Reset (Audio.Square_1);
       Reset (Audio.Square_2);
       Reset (Audio.Wave);
