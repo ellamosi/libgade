@@ -50,7 +50,7 @@ package body Gade.Audio.Frame_Sequencer is
             Frame_Sequencer.Wave.Tick_Length;
             Frame_Sequencer.Noise.Tick_Length;
             Frame_Sequencer.Square_1.Tick_Frequency_Sweep;
-         when Volume_Envelope => null;
+         when Volume_Envelope =>
             Frame_Sequencer.Square_1.Tick_Volume_Envelope;
             Frame_Sequencer.Square_2.Tick_Volume_Envelope;
             Frame_Sequencer.Noise.Tick_Volume_Envelope;

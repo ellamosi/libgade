@@ -119,8 +119,8 @@ class Testcase:
 
         stdout = stdout.splitlines()
 
-        # TODO: Output comparison is an impairment than anything until
-        # a more mature logging system is adopted. Rely just on exit
+        # TODO: Output comparison is more of an impairment than anything 
+        # until a more mature logging system is adopted. Rely just on exit
         # codes for now.
         # Compare the actual output and the expected one
         # if expected_output != stdout:

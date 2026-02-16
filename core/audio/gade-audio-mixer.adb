@@ -36,7 +36,7 @@ package body Gade.Audio.Mixer is
 
    function "+" (S1, S2 : Stereo_Sample) return Stereo_Sample is
    begin
-      return (S1.Left + S2.Left, S1.Left + S2.Right);
+      return (S1.Left + S2.Left, S1.Right + S2.Right);
    end "+";
 
    function "*" (S1, S2 : Stereo_Sample) return Stereo_Sample is
