@@ -6,6 +6,7 @@ package Gade.Interfaces is
 
    CPU_Clock_Frequency : constant := 4_194_304; -- Hz (T-Cycles)
    CPU_M_Frequency     : constant := CPU_Clock_Frequency / 4; -- Hz (M-Cycles)
+   CPU_Cycles_Per_Audio_Sample : constant := CPU_Clock_Frequency / CPU_M_Frequency;
 
    type Gade_Type is private;
 
@@ -23,7 +24,9 @@ package Gade.Interfaces is
 
    procedure Run_For
      (G                 : Gade_Type;
+      --  Number of audio samples requested at the APU rate (1 sample/M-cycle).
       Requested_Samples : Positive;
+      --  Number of generated audio samples at the APU rate.
       Generated_Samples : out Natural;
       Video             : Gade.Video_Buffer.RGB32_Display_Buffer_Access;
       Audio             : Gade.Audio_Buffer.Audio_Buffer_Access;
