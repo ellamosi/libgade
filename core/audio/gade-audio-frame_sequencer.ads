@@ -61,8 +61,7 @@ private package Gade.Audio.Frame_Sequencer is
 private
 
    Frequency : constant := 512; -- Hz
-   --  TODO: Remove M Cycle multiplier
-   Samples_Tick : constant := Samples_Second / (Frequency * 4);
+   Samples_Tick : constant := Samples_Second / Frequency;
 
    type Frame_Sequencer_Step_Index is mod 8;
 

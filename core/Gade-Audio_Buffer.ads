@@ -3,8 +3,7 @@ with Gade.Video_Buffer; use Gade.Video_Buffer;
 
 package Gade.Audio_Buffer is
 
-   --  TODO: Should use M cycles
-   Samples_Second  : constant := CPU_Clock_Frequency; -- Hz (TO BE 1 sample per M-Cycle)
+   Samples_Second  : constant := CPU_M_Frequency; -- Hz (1 sample per M-Cycle)
    Samples_Frame   : constant := (Samples_Second * 100) / Frame_Frequency; -- Hz
 
    Extra_Samples   : constant := 2_064; -- May run for some samples too long
