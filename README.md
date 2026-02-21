@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ellamosi/libgade.svg?branch=master)](https://travis-ci.org/ellamosi/libgade)
+[![CI](https://github.com/ellamosi/libgade/actions/workflows/ci.yml/badge.svg)](https://github.com/ellamosi/libgade/actions/workflows/ci.yml)
 
 # libgade
 A GameBoy emulation library in Ada

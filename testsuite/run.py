@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python3
 
 import argparse
 import difflib
@@ -94,7 +94,7 @@ class Testcase:
         Helper for run, execute a single test driver.
         """
         # Get the expected output
-        with open(expected_output_fn, 'r') as f:
+        with open(expected_output_fn, 'rb') as f:
             expected_output = f.read()
             try:
                 expected_output = expected_output.decode('ascii')
@@ -115,7 +115,7 @@ class Testcase:
         if returncode or stderr:
             return program_returned_msg
         elif args.verbose:
-            print program_returned_msg
+            print(program_returned_msg)
 
         stdout = stdout.splitlines()
 
