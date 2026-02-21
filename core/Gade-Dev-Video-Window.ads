@@ -1,5 +1,4 @@
 limited with Gade.Dev.VRAM;
-with Gade.Video_Buffer; use Gade.Video_Buffer;
 
 package Gade.Dev.Video.Window is
 

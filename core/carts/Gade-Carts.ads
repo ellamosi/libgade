@@ -128,6 +128,7 @@ private package Gade.Carts is
       Complement_Check   : Byte;
       Checksum           : Word;
    end record;
+
    type Cart_Header_Access is access constant Cart_Header;
 
    subtype External_ROM_IO_Address is Word range 16#0000# .. 16#7FFF#;

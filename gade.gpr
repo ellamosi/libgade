@@ -5,6 +5,7 @@ project Gade is
    for Source_Dirs use
      ("core",
       "core/public",
+      "core/audio",
       "core/carts",
       "core/carts/banks",
       "core/carts/mixins",

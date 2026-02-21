@@ -9,6 +9,7 @@ package body Gade.Dev.CPU is
       ctxt.Regs.SP  := 16#FFFE#;
       ctxt.PC       := 16#0100#;
       ctxt.Regs.F.Z := True;
+      ctxt.Halted   := False;
    end Reset;
 
    procedure Set (Flag : in out CPU_Flag) is

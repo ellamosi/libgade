@@ -119,9 +119,15 @@ package body Gade.Carts is
    is
       type Byte_Access is access all Byte;
 
+      pragma Warnings
+        (Off, "possible aliasing problem for type ""Cart_Header_Access""");
+      --  Allow strict aliasing analysis optimizations as type conversion is for
+      --  a read only use.
       function Convert is new Ada.Unchecked_Conversion
         (Source => Byte_Access,
          Target => Cart_Header_Access);
+      pragma Warnings
+        (On, "possible aliasing problem for type ""Cart_Header_Access""");
    begin
       return Convert (Content (0)'Access);
    end Get_Header;
