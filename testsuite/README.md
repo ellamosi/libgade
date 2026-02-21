@@ -10,9 +10,9 @@ frames and compare the display output to the expected one.
 - Instruction Timing (instr_timing.gb)
 
 ## How to run the testsuite
-First, make sure you have a Python 2.7+ interpreter available, and then run:
+First, make sure you have a Python 3 interpreter available, and then run:
 
-    `python run.py`
+    `python3 run.py`
 
 The standard output report should be obvious to read. In order to restrict the
 set of executed tests, run instead:
@@ -33,7 +33,7 @@ the test to pass.
 ## Licenses
 The structure of this testsuite is based on the tests for AdaCore's
 [Ada_Drivers_Library project](https://github.com/AdaCore/Ada_Drivers_Library).
-The [TravisCI configuration](../.travis.yml), the
+The [CI configuration](../.github/workflows/ci.yml), the
 [Python test runner](run.py) and those
 [test utils modules](utils/src/) that include AdaCore's licensing in the source
 are reproduced or derived from that project and are 3-Clause BSD
