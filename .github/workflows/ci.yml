@@ -12,7 +12,9 @@ env:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    # GNAT Community 2019 ships binutils/gcc that cannot link against
+    # newer glibc artifacts (e.g. .relr.dyn on ubuntu-latest).
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
