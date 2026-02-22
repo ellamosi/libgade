@@ -97,7 +97,7 @@ package body Gade.Carts.RTC.File_IO is
       Clk_Data : out Clock_Data)
    is
    begin
-      Clk_Data.Content_64 := (others => 0);
+      Clk_Data.Content_64 := [others => 0];
       To_Counter_Data (Clk.Elapsed, Clk_Data.Time);
       To_Counter_Data (Clk.Latched, Clk_Data.Latched);
       Clk_Data.Saved_At := Time_To_Unix_Seconds (Saved_At);

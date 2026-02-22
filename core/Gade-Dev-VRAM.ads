@@ -27,7 +27,7 @@ package Gade.Dev.VRAM is
    type Raster_Tile_Type_16 is array (0 .. 15, 0 .. 7) of Color_Value;
 
    Half_Color_Lookup_Table : constant
-     array (Byte range 0 .. 1, Byte range 0 .. 1) of Color_Value := ((0, 2), (1, 3));
+     array (Byte range 0 .. 1, Byte range 0 .. 1) of Color_Value := [[0, 2], [1, 3]];
 
    type VRAM_Address_Space is array (VRAM_IO_Address) of Byte;
 

@@ -17,14 +17,14 @@ private
    --
    --  As they represent full periods, half them to actually get pulse times.
    Half_Divisor : constant array (Divisor_Code_Type'Range) of Natural :=
-     (0 => 8 / 2,
+     [0 => 8 / 2,
       1 => 16 / 2,
       2 => 32 / 2,
       3 => 48 / 2,
       4 => 64 / 2,
       5 => 80 / 2,
       6 => 96 / 2,
-      7 => 112 / 2);
+      7 => 112 / 2];
 
    type Shift_Register is mod 2**15;
 
@@ -33,7 +33,7 @@ private
 
    --  Array to take care of LFSR output negation and type conversion
    Output_Pulse_State : constant array (Shift_Register range 0 .. 1)
-     of Pulse_State_Type := (Pulse_High, Pulse_Low);
+     of Pulse_State_Type := [Pulse_High, Pulse_Low];
 
    subtype Parent is Pulse_Channel;
    type Noise_Channel is new Parent with record

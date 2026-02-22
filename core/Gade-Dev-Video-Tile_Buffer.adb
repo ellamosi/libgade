@@ -4,7 +4,7 @@ package body Gade.Dev.Video.Tile_Buffer is
 
    procedure Reset (Buffer : out Tile_Buffer_Type) is
    begin
-      Buffer := (others => (others => (others => 0)));
+      Buffer := [others => [others => [others => 0]]];
    end Reset;
 
    procedure Rasterize_Line

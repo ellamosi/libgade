@@ -4,7 +4,7 @@ package body Gade.Dev.OAM is
    procedure Reset
      (OAM : in out OAM_Type) is
    begin
-      OAM.Map.Space := (others => 0);
+      OAM.Map.Space := [others => 0];
    end Reset;
 
    overriding

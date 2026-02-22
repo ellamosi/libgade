@@ -245,7 +245,7 @@ private
 --
 
    Color_Lookup : constant array (Color_Value'Range) of RGB32_Color :=
-     ((255, 255, 255), (171, 171, 171), (85, 85, 85), (0, 0, 0));
+     [(255, 255, 255), (171, 171, 171), (85, 85, 85), (0, 0, 0)];
 
    procedure Do_DMA
      (Display : in out Display_Type;
@@ -262,4 +262,3 @@ private
       Mode    : LCD_Controller_Mode_Type);
 
 end Gade.Dev.Display;
-

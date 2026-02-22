@@ -67,7 +67,7 @@ package body Gade.Audio.Channels.Pulse is
       Volume_Sample : constant Sample := Sample (Volume);
    begin
       Channel.Volume_Envelope.Current_Volume := Volume;
-      Channel.Pulse_Levels := (-Volume_Sample, Volume_Sample);
+      Channel.Pulse_Levels := [-Volume_Sample, Volume_Sample];
    end Set_Volume;
 
    procedure Step_Volume_Envelope (Channel : in out Pulse_Channel) is

@@ -25,7 +25,7 @@ package body Gade.Dev.Video.Tile_Map is
    procedure Reset (Tile_Map : out Consolidated_Tile_Map_Type) is
    begin
       for Map of Tile_Map loop
-         Map.Addressed := (others => 0);
+         Map.Addressed := [others => 0];
       end loop;
    end Reset;
 

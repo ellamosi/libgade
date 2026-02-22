@@ -36,7 +36,7 @@ private
    Max_Line_Sprites : constant := 10;
 
    Sprite_Height : constant array (Sprite_Size_Type'Range) of Positive :=
-     (Single_Sprite_Height, Double_Sprite_Height);
+     [Single_Sprite_Height, Double_Sprite_Height];
 
    Sprite_Width : constant := 8;
 
@@ -45,26 +45,26 @@ private
 
    X_Flip_Lookup : constant array (Boolean'Range, Sprite_Horizontal_Range)
      of Natural :=
-       (False => (0, 1, 2, 3, 4, 5, 6, 7),
-        True  => (7, 6, 5, 4, 3, 2, 1, 0));
+       [False => [0, 1, 2, 3, 4, 5, 6, 7],
+        True  => [7, 6, 5, 4, 3, 2, 1, 0]];
 
    Y_Flip_Lookup : constant array
      (Sprite_Size_Type'Range, Boolean'Range, Sprite_Vertical_Range)
      of Natural :=
-       (Single =>
-          (False => (0, 1, 2, 3, 4, 5, 6, 7, others => 0),
-           True  => (7, 6, 5, 4, 3, 2, 1, 0, others => 0)),
+       [Single =>
+          [False => [0, 1, 2, 3, 4, 5, 6, 7, others => 0],
+           True  => [7, 6, 5, 4, 3, 2, 1, 0, others => 0]],
         Double =>
-          (False => (0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7),
-           True  => (7, 6, 5, 4, 3, 2, 1, 0, 7, 6, 5, 4, 3, 2, 1, 0)));
+          [False => [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7],
+           True  => [7, 6, 5, 4, 3, 2, 1, 0, 7, 6, 5, 4, 3, 2, 1, 0]]];
 
    Sprite_Index_Add_Lookup : constant array
      (Sprite_Size_Type'Range, Boolean'Range, Sprite_Vertical_Range)
      of Tile_Index_Type :=
-       (Single => (others => (others => 0)),
+       [Single => [others => [others => 0]],
         Double =>
-          (False => (0 .. 7 => 0, 8 .. 15 => 1),
-           True  => (0 .. 7 => 1, 8 .. 15 => 0)));
+          [False => [0 .. 7 => 0, 8 .. 15 => 1],
+           True  => [0 .. 7 => 1, 8 .. 15 => 0]]];
 
    type Sprite_Index_Array is array (Positive range <>) of Sprite_Index_Type;
 

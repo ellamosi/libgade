@@ -23,8 +23,8 @@ private
 
    Address_Mask_For_RAM_Size : constant array (Plain_RAM_Size_Type)
      of Word :=
-       (None        => 16#0000#, -- Unused
+       [None        => 16#0000#, -- Unused
         RAM_16kbit  => 16#07FF#,
-        RAM_64kbit  => 16#1FFF#);
+        RAM_64kbit  => 16#1FFF#];
 
 end Gade.Carts.Plain.Constructors;

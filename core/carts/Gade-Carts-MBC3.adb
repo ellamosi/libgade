@@ -39,7 +39,7 @@ package body Gade.Carts.MBC3 is
       Value   : Byte)
    is
       Latch_Sequence_Completed : constant Boolean :=
-        (C.Last_Latch_Value, Value) = Latch_Sequence;
+        [C.Last_Latch_Value, Value] = Latch_Sequence;
    begin
       if C.RTC /= null and Latch_Sequence_Completed then
          Latch (C.RTC.all);

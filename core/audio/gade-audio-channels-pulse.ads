@@ -15,9 +15,9 @@ private
    Volume_Min_Level : constant := Envelope_Volume'First;
 
    Final_Volumes : constant array (Envelope_Direction) of Natural :=
-     (Down => Volume_Min_Level, Up => Volume_Max_Level);
+     [Down => Volume_Min_Level, Up => Volume_Max_Level];
 
-   Steps : constant array (Envelope_Direction) of Integer := (-1, 1);
+   Steps : constant array (Envelope_Direction) of Integer := [-1, 1];
 
    type Pulse_State_Type is (Pulse_Low, Pulse_High);
 

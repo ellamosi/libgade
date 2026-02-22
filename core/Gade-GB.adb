@@ -22,7 +22,7 @@ package body Gade.GB is
       Reset (GB.Timer);
       Reset (GB.Interrupt_Flag);
       Reset (GB.Interrupt_Enable);
-      GB.Content := (others => 0);
+      GB.Content := [others => 0];
    end Reset;
 
    procedure Report_Cycles

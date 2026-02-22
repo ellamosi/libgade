@@ -67,14 +67,14 @@ private
 
    Frame_Sequencer_Steps : constant array (Frame_Sequencer_Step_Index) of
      State :=
-       (Length_Counter,
+       [Length_Counter,
         None,
         Length_Counter_Frequency_Sweep,
         None,
         Length_Counter,
         None,
         Length_Counter_Frequency_Sweep,
-        Volume_Envelope);
+        Volume_Envelope];
 
    type Audio_Frame_Sequencer is tagged record
       Square_1 : Sweeping_Square_Channel_Access;
