@@ -4,6 +4,7 @@ import argparse
 import difflib
 import os
 import os.path
+import shutil
 import subprocess
 import sys
 
@@ -31,6 +32,33 @@ def run_program(*argv):
         return 'stderr is not ASCII'
 
     return (p.returncode, stdout, stderr)
+
+
+def macos_linker_args():
+    if sys.platform != 'darwin':
+        return []
+
+    sdk_root = os.environ.get('SDKROOT')
+    if not sdk_root:
+        try:
+            sdk_root = subprocess.check_output(
+                ['xcrun', '--show-sdk-path']
+            ).decode('ascii').strip()
+        except Exception:
+            return []
+
+    return [
+        '-largs', '-Wl,-syslibroot,{}'.format(sdk_root),
+        '-largs', '-L{}/usr/lib'.format(sdk_root),
+    ]
+
+
+def gprbuild_argv(project_file):
+    base_argv = ['gprbuild', '-j0', '-p', '-q', '-P', project_file]
+    base_argv.extend(macos_linker_args())
+    if shutil.which('alr'):
+        return ['alr', 'exec', '--'] + base_argv
+    return base_argv
 
 
 class Testcase:
@@ -67,7 +95,7 @@ class Testcase:
 
         # Build test drivers
         returncode, stdout, stderr = run_program(
-            'gprbuild', '-j0', '-p', '-q', '-P', self.project_file,
+            *gprbuild_argv(self.project_file),
         )
         if returncode:
             return 'Build error (gprbuild returned {}):\n{}'.format(
