@@ -58,7 +58,7 @@ package Gade.Dev.Interrupts is
 private
 
    Interrupt_Handlers : constant array (Interrupt_Type) of Word :=
-     (16#0040#, 16#0048#, 16#0050#, 16#0058#, 16#0060#);
+     [16#0040#, 16#0048#, 16#0050#, 16#0058#, 16#0060#];
 
    type Interrupt_Flag_Access_Type is (Named, Address, Indexed);
    type Indexed_Flag_Array is array (Interrupt_Type) of Boolean;

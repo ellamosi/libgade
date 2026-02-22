@@ -45,10 +45,10 @@ private
 
    --  1024 Clocks, 16 Clocks, 64 Clocks, 256 Clocks
    TIMA_Clocks : constant array (Input_Clock_Type) of Natural :=
-     (f_4_096   => 1024,
+     [f_4_096   => 1024,
       f_262_144 => 16,
       f_65_536  => 64,
-      f_16_384  => 256);
+      f_16_384  => 256];
 
    DIV_Increment_Freq : constant Input_Clock_Type := f_16_384;
    DIV_Increment_TIMA_Clocks : constant Natural :=

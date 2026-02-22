@@ -263,7 +263,7 @@ private
 
    Controller_Type_For_Cart : constant array (Cart_Type)
      of Controller_Type :=
-       (ROM_ONLY                  => None,
+       [ROM_ONLY                  => None,
         ROM_MBC1                  => MBC1,
         ROM_MBC1_RAM              => MBC1,
         ROM_MBC1_RAM_BATT         => MBC1,
@@ -288,7 +288,7 @@ private
         Pocket_Camera             => Pocket_Camera,
         Bandai_TAMA5              => Bandai_TAMA5,
         Huds_on_Huc_3             => Huds_on_Huc_3,
-        Huds_on_Huc_1             => Huds_on_Huc_1);
+        Huds_on_Huc_1             => Huds_on_Huc_1];
 
    type Cart_Type_Info is record
       Controller : Controller_Type;
@@ -299,7 +299,7 @@ private
    end record;
 
    Cart_Type_Info_For_Cart : constant array (Cart_Type) of Cart_Type_Info :=
-     (ROM_ONLY                  => (None, False, False, False, False),
+     [ROM_ONLY                  => (None, False, False, False, False),
       ROM_MBC1                  => (MBC1, False, False, False, False),
       ROM_MBC1_RAM              => (MBC1, True, False, False, False),
       ROM_MBC1_RAM_BATT         => (MBC1, True, True, False, False),
@@ -324,6 +324,6 @@ private
       Pocket_Camera             => (Pocket_Camera, True, True, False, False),
       Bandai_TAMA5              => (Bandai_TAMA5, True, True, False, False),
       Huds_on_Huc_3             => (Huds_on_Huc_3, True, True, False, False),
-      Huds_on_Huc_1             => (Huds_on_Huc_1, True, True, False, False));
+      Huds_on_Huc_1             => (Huds_on_Huc_1, True, True, False, False)];
 
 end Gade.Carts;

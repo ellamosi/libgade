@@ -36,11 +36,11 @@ private
 
    Content_Size_For_RAM_Size : constant array (RAM_Size_Type)
      of RAM_Content_Size :=
-       (None        =>          0, -- Unused
+       [None        =>          0, -- Unused
         RAM_16kbit  =>   2 * 1024,
         RAM_64kbit  =>   8 * 1024,
         RAM_256kbit =>  32 * 1024,
         RAM_512kbit =>  64 * 1024,
-        RAM_1Mbit   => 128 * 1024);
+        RAM_1Mbit   => 128 * 1024];
 
 end Gade.Carts.Mem.RAM;

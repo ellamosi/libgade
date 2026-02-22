@@ -104,10 +104,10 @@ package body Gade.Dev.Display.Handlers is
       VRAM_Access_Handler.Setup (Handler, Dev);
 
       Handler.Mode_Handlers :=
-        (Display_Modes.HBlank      => Mode_Handler_Access (HBlank_Handler),
+        [Display_Modes.HBlank      => Mode_Handler_Access (HBlank_Handler),
          Display_Modes.VBlank      => Mode_Handler_Access (VBlank_Handler),
          Display_Modes.OAM_Access  => Mode_Handler_Access (OAM_Access_Handler),
-         Display_Modes.VRAM_Access => Mode_Handler_Access (VRAM_Access_Handler));
+         Display_Modes.VRAM_Access => Mode_Handler_Access (VRAM_Access_Handler)];
 
       return Handler;
    end Create;

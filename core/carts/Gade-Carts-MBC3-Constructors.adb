@@ -47,7 +47,7 @@ package body Gade.Carts.MBC3.Constructors is
    begin
       Default_Bank_Factory (Bank_Factory).Initialize (Content);
       Bank_Factory.RTC := RTC;
-      Bank_Factory.Banks := (others => null);
+      Bank_Factory.Banks := [others => null];
    end Initialize;
 
    overriding

@@ -36,7 +36,7 @@ package Gade.Dev.CPU.Instructions.Table is
 private
 
    Opcodes_CB : aliased constant Instruction_Table_Type :=
-     (0, (
+     (0, [
       (RLC_B'Access, OP_None, RLC_B_Name'Access, null, 8, 0),
       (RLC_C'Access, OP_None, RLC_C_Name'Access, null, 8, 0),
       (RLC_D'Access, OP_None, RLC_D_Name'Access, null, 8, 0),
@@ -293,10 +293,10 @@ private
       (SET_7_L'Access, OP_None, SET_7_L_Name'Access, null, 8, 0),
       (SET_7_off_HL'Access, OP_None, SET_7_off_HL_Name'Access, null, 16, 0),
       (SET_7_A'Access, OP_None, SET_7_A_Name'Access, null, 8, 0)
-     ));
+     ]);
 
    Opcodes_Main : aliased constant Instruction_Table_Type :=
-     (0, (
+     (0, [
       (NOP'Access, OP_None, NOP_Name'Access, null, 4, 0),
       (LD_BC_nn'Access, OP_Word, LD_BC_nn_Name'Access, null, 12, 0),
       (LD_off_BC_A'Access, OP_None, LD_off_BC_A_Name'Access, null, 8, 0),
@@ -553,6 +553,6 @@ private
       (null, OP_None, null, null, 0, 0),
       (CP_n'Access, OP_Byte, CP_n_Name'Access, null, 8, 0),
       (RST_38H'Access, OP_None, RST_38H_Name'Access, null, 16, 0)
-     ));
+     ]);
 
 end Gade.Dev.CPU.Instructions.Table;

@@ -36,7 +36,9 @@ package body Length_Trigger is
      (Channel : in out Length_Trigger_Channel;
       Mode    : Disable_Mode) is
    begin
-      Parent (Channel).Disable (Mode);
+      --  GNAT 15.2 ICE workaround: prefixed call
+      --  "Parent (Channel).Disable (Mode)" crashes the compiler here.
+      Gade.Audio.Channels.Disable (Audio_Channel (Channel), Mode);
       if Mode = APU_Power_Off then
          Channel.Length.Enabled := False;
          Channel.Length.Timer.Reload (Max_Length, False);

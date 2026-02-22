@@ -21,7 +21,7 @@ package body Gade.Carts.Mem.RAM is
    function Create (Size : RAM_Content_Size) return RAM_Content_NN_Access is
       Mem : constant RAM_Content_NN_Access := Allocate (Size);
    begin
-      Mem.all := (others => Blank_Value);
+      Mem.all := [others => Blank_Value];
       return Mem;
    end Create;
 

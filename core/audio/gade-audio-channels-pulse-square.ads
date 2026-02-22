@@ -10,7 +10,7 @@ package Gade.Audio.Channels.Pulse.Square is
 private
 
    Next_Pulse_State : constant array (Pulse_State_Type) of Pulse_State_Type :=
-     (Pulse_High, Pulse_Low);
+     [Pulse_High, Pulse_Low];
 
    type Duty_Type is (Eighth, Quarter, Half, Three_Quarters);
    for Duty_Type use
@@ -22,15 +22,15 @@ private
    type Pulse_Cycles_Type is array (Pulse_State_Type) of Positive;
 
    Hi_Duty_Sample_Multiplier : constant array (Duty_Type) of Natural :=
-     (Eighth         => 1,
+     [Eighth         => 1,
       Quarter        => 2,
       Half           => 4,
-      Three_Quarters => 6);
+      Three_Quarters => 6];
    Lo_Duty_Sample_Multiplier : constant array (Duty_Type) of Natural :=
-     (Eighth         => 7,
+     [Eighth         => 7,
       Quarter        => 6,
       Half           => 4,
-      Three_Quarters => 2);
+      Three_Quarters => 2];
 
    NRx1_Duty_Mask : constant Byte := 16#3F#;
    NRx1_Duty_Div : constant Byte := 2 ** 6;

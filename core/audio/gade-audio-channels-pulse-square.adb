@@ -7,7 +7,7 @@ package body Gade.Audio.Channels.Pulse.Square is
       Parent (Channel).Disable (Mode);
       if Mode = APU_Power_Off then
          Channel.Pulse_State := Pulse_Low;
-         Channel.Pulse_Cycles := (1, 1);
+         Channel.Pulse_Cycles := [1, 1];
          Channel.Duty := Duty_Type'Val (0);
          Channel.NRx1 := NRx1_Duty_Mask;
       end if;
@@ -21,8 +21,8 @@ package body Gade.Audio.Channels.Pulse.Square is
    begin
       Channel.Frequency_In.Frequency := Freq;
       Channel.Pulse_Cycles :=
-        (Pulse_Low  => Period * Lo_Duty_Sample_Multiplier (Channel.Duty),
-         Pulse_High => Period * Hi_Duty_Sample_Multiplier (Channel.Duty));
+        [Pulse_Low  => Period * Lo_Duty_Sample_Multiplier (Channel.Duty),
+         Pulse_High => Period * Hi_Duty_Sample_Multiplier (Channel.Duty)];
    end Set_Frequency;
 
    overriding

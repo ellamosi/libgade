@@ -192,7 +192,7 @@ package body Gade.Dev.Video.Sprites is
    is
       Sprite_Left : Integer;
    begin
-      Timings := (others => 0);
+      Timings := [others => 0];
       for Sprite_Index of Buffer.Indexes (1 .. Buffer.N_Sprites) loop
          Sprite_Left := Integer (Sprites (Sprite_Index).X) - Sprite_Width + 1;
          Timings (Sprite_Left) := Timings (Sprite_Left) + 1;

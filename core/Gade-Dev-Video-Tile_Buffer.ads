@@ -35,7 +35,7 @@ private
 
    Half_Color_Lookup_Table : constant
      array (Byte range 0 .. 1, Byte range 0 .. 1) of Color_Value :=
-     ((0, 2), (1, 3));
+     [[0, 2], [1, 3]];
 
    procedure Rasterize_Line
      (Raster : in out Raster_Tile_Line;

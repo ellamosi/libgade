@@ -38,7 +38,7 @@ private
    ROM_Index_Mask : constant Byte := 16#7F#;
    RAM_Index_Mask : constant Byte := 16#0F#;
 
-   Latch_Sequence : constant array (0 .. 1) of Byte := (16#00#, 16#01#);
+   Latch_Sequence : constant array (0 .. 1) of Byte := [16#00#, 16#01#];
 
    Initial_Latch_Value : constant Byte := 16#01#;
 

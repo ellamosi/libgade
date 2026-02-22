@@ -50,8 +50,8 @@ private
    for Wave_Table_IO'Size use 16 * Byte'Size;
 
    Initial_DMG_Table : Wave_Table_Bytes :=
-     (16#84#, 16#40#, 16#43#, 16#AA#, 16#2D#, 16#78#, 16#92#, 16#3C#,
-      16#60#, 16#59#, 16#59#, 16#B0#, 16#34#, 16#B8#, 16#2E#, 16#DA#);
+     [16#84#, 16#40#, 16#43#, 16#AA#, 16#2D#, 16#78#, 16#92#, 16#3C#,
+      16#60#, 16#59#, 16#59#, 16#B0#, 16#34#, 16#B8#, 16#2E#, 16#DA#];
 
 
    type Volume_Type is (None, Full, Half, Quarter);
@@ -62,18 +62,18 @@ private
       Quarter => 2#11#);
 
    Volume_Shifts : constant array (Volume_Type) of Natural :=
-     (None    => 4,
+     [None    => 4,
       Full    => 0,
       Half    => 1,
-      Quarter => 2);
+      Quarter => 2];
 
    --  Sample level compensation relative to volume so resulting sample values
    --  will oscillate around 0.
    Sample_Diffs : constant array (Volume_Type) of Sample :=
-     (None    => 16 / 2 ** Volume_Shifts (None) - 1,     -- 16 / 2**4 - 1 = 0
+     [None    => 16 / 2 ** Volume_Shifts (None) - 1,     -- 16 / 2**4 - 1 = 0
       Full    => 16 / 2 ** Volume_Shifts (Full) - 1,     -- 16 / 2**0 - 1 = 15
       Half    => 16 / 2 ** Volume_Shifts (Half) - 1,     -- 16 / 2**1 - 1 = 7
-      Quarter => 16 / 2 ** Volume_Shifts (Quarter) - 1); -- 16 / 2**2 - 1 = 3
+      Quarter => 16 / 2 ** Volume_Shifts (Quarter) - 1]; -- 16 / 2**2 - 1 = 3
 
 
    Length_Bit_Size : constant := 8;

@@ -6,7 +6,7 @@ package body Gade.Dev.Timer is
    overriding
    procedure Reset (Timer : in out Timer_Type) is
    begin
-      Timer.Map.Space := (others => 0);
+      Timer.Map.Space := [others => 0];
       Timer.Ticks := 0;
       Timer.Modulo_Ticks :=
         TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);

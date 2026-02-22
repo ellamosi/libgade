@@ -1,11 +1,23 @@
-with Ada.Calendar.Conversions;   use Ada.Calendar.Conversions;
 with Ada.Exceptions;             use Ada.Exceptions;
 with Ada.Text_IO;
-with Interfaces.C;
 
 with Gade.Carts.RTC.Text_IO; use Gade.Carts.RTC.Text_IO;
 
 package body Gade.Carts.RTC.File_IO is
+   Unix_Epoch : constant Time := Time_Of (1970, 1, 1, 0.0);
+
+   function Unix_Seconds_To_Time (Value : Integer_64) return Time;
+   function Time_To_Unix_Seconds (Value : Time) return Integer_64;
+
+   function Unix_Seconds_To_Time (Value : Integer_64) return Time is
+   begin
+      return Unix_Epoch + Duration (Value);
+   end Unix_Seconds_To_Time;
+
+   function Time_To_Unix_Seconds (Value : Time) return Integer_64 is
+   begin
+      return Integer_64 (Long_Long_Integer (Value - Unix_Epoch));
+   end Time_To_Unix_Seconds;
 
    procedure To_Counter_Registers
      (C_Data    : Counter_Data;
@@ -72,7 +84,7 @@ package body Gade.Carts.RTC.File_IO is
       To_Counter (Clk_Data.Time, Clk.Elapsed);
       To_Counter (Clk_Data.Latched, Clk.Latched);
       if not Clk.Elapsed.Halted then
-         Saved_At := To_Ada_Time (Interfaces.C.long (Clk_Data.Saved_At));
+         Saved_At := Unix_Seconds_To_Time (Clk_Data.Saved_At);
          --  Ignore timestamps in the future by only allowing positive spans
          Elapsed := Duration'Max (Loaded_At - Saved_At, 0.0);
          Increase_Counter (Clk.Elapsed, Elapsed);
@@ -85,10 +97,10 @@ package body Gade.Carts.RTC.File_IO is
       Clk_Data : out Clock_Data)
    is
    begin
-      Clk_Data.Content_64 := (others => 0);
+      Clk_Data.Content_64 := [others => 0];
       To_Counter_Data (Clk.Elapsed, Clk_Data.Time);
       To_Counter_Data (Clk.Latched, Clk_Data.Latched);
-      Clk_Data.Saved_At := Integer_64 (To_Unix_Time (Saved_At));
+      Clk_Data.Saved_At := Time_To_Unix_Seconds (Saved_At);
    end To_Clock_Data;
 
    procedure Read (File : File_Type; Clk_Data : out Clock_Data) is

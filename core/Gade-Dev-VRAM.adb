@@ -3,8 +3,8 @@ package body Gade.Dev.VRAM is
    overriding
    procedure Reset (VRAM : in out VRAM_Type) is
    begin
-      VRAM.Map.Space := (others => 0);
-      VRAM.Raster.All_Tile_Data := (others => (others => (others => 0)));
+      VRAM.Map.Space := [others => 0];
+      VRAM.Raster.All_Tile_Data := [others => [others => [others => 0]]];
       Reset (VRAM.Tile_Buffer);
       Reset (VRAM.Consolidated_Maps);
    end Reset;

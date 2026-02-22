@@ -18,7 +18,7 @@ package body Gade.Carts.Banks.Pools.Constructors is
       is
       begin
          Bank_Factory.Content := Content;
-         Bank_Factory.Banks := (others => null);
+         Bank_Factory.Banks := [others => null];
          if Content = null then
             --  Set the first bank to blank and let it be mirrored to the rest
             Bank_Factory.N_Banks := 1;

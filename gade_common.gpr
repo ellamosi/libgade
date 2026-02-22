@@ -20,13 +20,13 @@ abstract project Gade_Common is
       case Mode is
          when "release" =>
             for Default_Switches ("Ada") use
-              ("-gnat12", -- Ada 2012 mode
+              ("-gnat2022", -- Ada 2022 mode
                "-gnatp",  -- Suppress all checks
                "-O3");    -- Optimization level
                --"-fprofile-use"); -- Profile Guided Optimization (-fprofile-generate -fprofile-use)
          when others =>
             for Default_Switches ("Ada") use
-              ("-gnat2012",     -- Ada 2012 mode
+              ("-gnat2022",     -- Ada 2022 mode
                "-fstack-check", -- Stack Overflow Checks
                "-gnato",        -- Overflow Checks
                "-g",            -- Generate debugging information

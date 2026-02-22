@@ -1,3 +1,5 @@
+with Ada.Unchecked_Conversion;
+
 package body Gade.Audio.Channels is
 
    procedure Tick_Notify_Sample_Step is new Tick_Notify

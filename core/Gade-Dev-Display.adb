@@ -102,7 +102,7 @@ package body Gade.Dev.Display is
       elsif not Display.Map.LCDC.LCD_Operation and Display.Frame_Finished then
          --  Blank LCD when disabled, this might need to be revisited
          --  It could likely be implemented in a Disabled handler
-         Video.all := (others => (others => (255, 255, 255)));
+         Video.all := [others => [others => (255, 255, 255)]];
       end if;
       Do_DMA (Display, GB);
    end Report_Cycles;

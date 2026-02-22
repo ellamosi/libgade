@@ -1,5 +1,3 @@
-with Ada.Unchecked_Conversion;
-
 with Gade.Audio.Timers; use Gade.Audio.Timers;
 with System;
 
@@ -86,7 +84,7 @@ private
    type Effect_Period_IO is mod 2 ** 3;
 
    Actual_Effect_Periods : constant array (Effect_Period_IO'Range)
-     of Positive := (8, 1, 2, 3, 4, 5, 6, 7);
+     of Positive := [8, 1, 2, 3, 4, 5, 6, 7];
 
    generic
       Length_Bits : Positive;

@@ -1,0 +1,18 @@
+name = "libgade"
+description = "A Game Boy emulation library in Ada"
+version = "0.1.0-dev"
+
+authors = ["ellamosi"]
+maintainers = ["ellamosi <ellamosi@users.noreply.github.com>"]
+maintainers-logins = ["ellamosi"]
+licenses = "GPL-3.0-or-later"
+website = "https://github.com/ellamosi/libgade"
+tags = ["ada", "gameboy", "emulator", "library"]
+
+project-files = ["gade.gpr"]
+
+[gpr-externals]
+mode = ["debug", "release"]
+
+[gpr-set-externals]
+mode = "debug"

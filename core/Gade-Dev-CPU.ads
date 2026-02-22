@@ -1,6 +1,6 @@
 package Gade.Dev.CPU is
 
-   type CPU_Flag is private;
+   type CPU_Flag is new Boolean;
 
    type CPU_Flags is record
       C : CPU_Flag;
@@ -73,8 +73,6 @@ package Gade.Dev.CPU is
    function Get_Flags_String (CPU : CPU_Context) return String;
 
 private
-
-   type CPU_Flag is new Boolean;
 
    for CPU_Flags use record
       Z at 0 range 7 .. 7;
