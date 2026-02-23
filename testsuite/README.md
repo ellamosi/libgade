@@ -12,14 +12,16 @@ frames and compare the display output to the expected one.
 ## How to run the testsuite
 From the `testsuite/` directory, run:
 
-    `alr exec -- python3 run.py`
+    `python3 run_v2.py`
 
 The standard output report should be obvious to read. In order to restrict the
 set of executed tests, run instead:
 
-    ./run.py foo bar
+    ./run_v2.py foo bar
 
 This will execute all tests that have either ``foo`` or ``bar`` in their name
+
+The `run.py` entrypoint remains as a compatibility wrapper around `run_v2.py`.
 
 ## V2 runner (harness + Python)
 The v2 runner executes testcases through the shared `harness/gade_testd`
@@ -44,13 +46,14 @@ Common v2 utility commands:
     `python3 harness/update_ref.py --dry-run`
 
 ## How to write testcases
-Every subdirectory in ``tests/`` that contains a ``tc.gpr`` file is a testcase.
-Each testcase embeds one or more test drivers (i.e. Ada programs) that run test
-code and write to their standard output to demonstrate that some feature is
-correctly implemented. For each test driver X, the project file must build an
-executable as ``bin/X`` and there must be a ``X.out`` file next to the
-``tc.gpr`` project file that states what the test driver output should be for
-the test to pass.
+Every subdirectory in `tests_v2/` that contains either `tc.json` or `tc.py` is
+a testcase.
+
+- `tc.json` is a manifest interpreted by `run_v2.py`.
+- `tc.py` is a Python testcase module exposing `run(client, testcase_dir, root_dir)`.
+
+Legacy per-test Ada drivers in `tests/` (`tc.gpr` and `src/tc_*.adb`) were
+removed in favor of the shared `harness/gade_testd` binary.
 
 ## Licenses
 The structure of this testsuite is based on the tests for AdaCore's
