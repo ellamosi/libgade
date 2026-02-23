@@ -170,9 +170,8 @@ def find_testcases():
     """
     for dirpath, dirnames, filenames in os.walk(TESTS_DIR):
         dirnames.sort()
-        for dirname in dirnames:
-            if 'tc.gpr' in filenames:
-                yield Testcase(dirpath)
+        if 'tc.gpr' in filenames:
+            yield Testcase(dirpath)
 
 
 parser = argparse.ArgumentParser('Run the testsuite')
