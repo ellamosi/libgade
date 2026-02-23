@@ -24,6 +24,38 @@ jobs:
         working-directory: testsuite
         run: alr build
 
-      - name: Run testsuite
+      - name: Migration parity gate
+        run: |
+          python3 - <<'PY'
+          import os
+          import sys
+
+          root = os.getcwd()
+          tests = os.path.join(root, 'testsuite', 'tests')
+          tests_v2 = os.path.join(root, 'testsuite', 'tests_v2')
+
+          legacy_cases = sorted(
+              d for d in os.listdir(tests)
+              if os.path.isdir(os.path.join(tests, d))
+          )
+          migrated_cases = sorted(
+              d for d in os.listdir(tests_v2)
+              if os.path.isfile(os.path.join(tests_v2, d, 'tc.json'))
+          )
+
+          missing = [d for d in legacy_cases if d not in migrated_cases]
+          extra = [d for d in migrated_cases if d not in legacy_cases]
+
+          print('legacy cases  :', len(legacy_cases))
+          print('migrated cases:', len(migrated_cases))
+          if extra:
+              print('additional v2-only cases:', ', '.join(extra))
+
+          if missing:
+              print('missing migrated cases:', ', '.join(missing))
+              sys.exit(1)
+          PY
+
+      - name: Run testsuite (v2)
         working-directory: testsuite
-        run: alr exec -- python3 run.py
+        run: python3 run_v2.py
