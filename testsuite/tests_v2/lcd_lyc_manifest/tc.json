@@ -1,0 +1,10 @@
+{
+  "format": 1,
+  "name": "lcd_lyc_manifest",
+  "rom": "../../tests/lcd_lyc/lyc.gb",
+  "steps": [
+    {"cmd": "run", "frames": 2},
+    {"cmd": "assert_find_match", "ref": "../../tests/lcd_lyc/ref.bmp", "max_frames": 300},
+    {"cmd": "save_frame", "path": "test.bmp"}
+  ]
+}

@@ -21,6 +21,22 @@ set of executed tests, run instead:
 
 This will execute all tests that have either ``foo`` or ``bar`` in their name
 
+## V2 runner (harness + Python)
+The v2 runner executes testcases through the shared `harness/gade_testd`
+binary and supports both Python and JSON testcase definitions.
+
+From the `testsuite/` directory:
+
+    `python3 run_v2.py`
+
+List discovered v2 tests:
+
+    `python3 run_v2.py --list`
+
+By convention, each v2 testcase directory contains either:
+- `tc.py` with a callable `run(client, testcase_dir, root_dir)` function, or
+- `tc.json` with a manifest interpreted by `run_v2.py`.
+
 ## How to write testcases
 Every subdirectory in ``tests/`` that contains a ``tc.gpr`` file is a testcase.
 Each testcase embeds one or more test drivers (i.e. Ada programs) that run test
