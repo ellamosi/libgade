@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "dmg_sound_06-overflow on trigger",
+  "rom": "../../tests/dmg_sound_06-overflow on trigger/06-overflow on trigger.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 100
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "../../tests/dmg_sound_06-overflow on trigger/ref.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "test.bmp"
+    }
+  ]
+}

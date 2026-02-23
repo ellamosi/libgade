@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "cpu_instrs_01-special",
+  "rom": "../../tests/cpu_instrs_01-special/01-special.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 200
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "../../tests/cpu_instrs_01-special/ref.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "test.bmp"
+    }
+  ]
+}

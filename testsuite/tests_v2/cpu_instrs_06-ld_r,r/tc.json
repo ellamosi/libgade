@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "cpu_instrs_06-ld_r,r",
+  "rom": "../../tests/cpu_instrs_06-ld_r,r/06-ld r,r.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 65
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "../../tests/cpu_instrs_06-ld_r,r/ref.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "test.bmp"
+    }
+  ]
+}

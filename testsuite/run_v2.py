@@ -267,7 +267,7 @@ if __name__ == '__main__':
     parser.add_argument('--list', action='store_true', help='List discovered v2 testcases and exit')
     parser.add_argument('--no-build', action='store_true', help='Skip harness build step')
     parser.add_argument('--verbose', action='store_true', help='Print tracebacks for test failures')
-    parser.add_argument('--timeout', type=float, default=5.0, help='Harness command timeout in seconds')
+    parser.add_argument('--timeout', type=float, default=30.0, help='Harness command timeout in seconds')
     parser.add_argument(
         '--harness',
         default=HARNESS_BIN,

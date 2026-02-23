@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "cpu_instrs_02-interrupts",
+  "rom": "../../tests/cpu_instrs_02-interrupts/02-interrupts.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 65
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "../../tests/cpu_instrs_02-interrupts/ref.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "test.bmp"
+    }
+  ]
+}
