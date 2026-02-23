@@ -1,10 +1,7 @@
 with Ada.Text_IO;           use Ada.Text_IO;
-with Ada.Streams.Stream_IO; use Ada.Streams.Stream_IO;
-with Bitmap;                use Bitmap;
-with Bitmap.Buffer;         use Bitmap.Buffer;
-with Bitmap.Memory_Mapped;  use Bitmap.Memory_Mapped;
-with Bitmap.File_IO;        use Bitmap.File_IO;
-with Compare_Files;         use Compare_Files;
+with Image_IO;              use Image_IO;
+with Image_IO.Holders;
+with Image_IO.Operations;
 with Test_Directories;      use Test_Directories;
 
 with Gade.Interfaces;   use Gade.Interfaces;
@@ -14,105 +11,87 @@ with Ada.Command_Line;
 
 package body Test_LCD_Output is
 
-   function Allocate_Bitmap return not null Any_Bitmap_Buffer;
-   procedure Copy_Buffer
-     (From : RGB32_Display_Buffer;
-      To   : not null Any_Bitmap_Buffer);
-   procedure Run_ROM
-     (ROM_File : String;
+   function To_Image (Buffer : RGB32_Display_Buffer) return Image_Data;
+   function Image_Equal (Left : Image_Data; Right : Image_Data) return Boolean;
+   procedure Run_Frame
+     (G        : in out Gade_Type;
       V_Buffer : RGB32_Display_Buffer_Access;
-      A_Buffer : Audio_Buffer_Access;
-      Frames   : Positive);
-   procedure Write_LCD_Output (Buffer : RGB32_Display_Buffer);
+      A_Buffer : Audio_Buffer_Access);
+   procedure Write_LCD_Output (Image : Image_Data);
 
-   ---------------------
-   -- Allocate_Bitmap --
-   ---------------------
+   --------------
+   -- To_Image --
+   --------------
 
-   function Allocate_Bitmap return not null Any_Bitmap_Buffer is
-      type Pixel_Data is new Bitmap.UInt24_Array
-        (1 .. Display_Width * Display_Height) with Pack;
-      type Pixel_Data_Access is access Pixel_Data;
-      BM : constant Any_Memory_Mapped_Bitmap_Buffer :=
-        new Memory_Mapped_Bitmap_Buffer;
-      Data : constant Pixel_Data_Access := new Pixel_Data;
-   begin
-      BM.Actual_Width := Display_Width;
-      BM.Actual_Height := Display_Height;
-      BM.Actual_Color_Mode := RGB_888;
-      BM.Currently_Swapped := False;
-      BM.Addr := Data.all'Address;
-      return Any_Bitmap_Buffer (BM);
-   end Allocate_Bitmap;
-
-   -----------------
-   -- Copy_Buffer --
-   -----------------
-
-   procedure Copy_Buffer
-     (From : RGB32_Display_Buffer;
-      To   : not null Any_Bitmap_Buffer)
-   is
-      Pix : Bitmap_Color;
+   function To_Image (Buffer : RGB32_Display_Buffer) return Image_Data is
+      Result : Image_Data (0 .. Display_Height - 1, 0 .. Display_Width - 1);
    begin
       for Y in 0 .. Display_Height - 1 loop
          for X in 0 .. Display_Width - 1 loop
-            Pix.Red   := UInt8 (From (Y, X).Red);
-            Pix.Green := UInt8 (From (Y, X).Green);
-            Pix.Blue  := UInt8 (From (Y, X).Blue);
-            To.Set_Pixel ((X, Y), Pix);
+            Result (Y, X) :=
+              (Red   => RGB_Value (Buffer (Y, X).Red),
+               Green => RGB_Value (Buffer (Y, X).Green),
+               Blue  => RGB_Value (Buffer (Y, X).Blue));
          end loop;
       end loop;
-   end Copy_Buffer;
 
-   -------------
-   -- Run_ROM --
-   -------------
+      return Result;
+   end To_Image;
 
-   procedure Run_ROM
-     (ROM_File : String;
+   -----------------
+   -- Image_Equal --
+   -----------------
+
+   function Image_Equal (Left : Image_Data; Right : Image_Data) return Boolean is
+   begin
+      if Left'Length (1) /= Right'Length (1)
+        or else Left'Length (2) /= Right'Length (2)
+      then
+         return False;
+      end if;
+
+      for Y in Left'Range (1) loop
+         for X in Left'Range (2) loop
+            if Left (Y, X) /= Right (Y, X) then
+               return False;
+            end if;
+         end loop;
+      end loop;
+
+      return True;
+   end Image_Equal;
+
+   ---------------
+   -- Run_Frame --
+   ---------------
+
+   procedure Run_Frame
+     (G        : in out Gade_Type;
       V_Buffer : RGB32_Display_Buffer_Access;
-      A_Buffer : Audio_Buffer_Access;
-      Frames   : Positive)
+      A_Buffer : Audio_Buffer_Access)
    is
-      G : Gade_Type;
       Requested_Samples : constant := 1000;
       Generated_Samples : Positive;
       FF : Boolean;
-
-      F      : Ada.Streams.Stream_IO.File_Type;
-      Stream : Ada.Streams.Stream_IO.Stream_Access;
    begin
-      Ada.Streams.Stream_IO.Create (F);
-      Stream := Ada.Streams.Stream_IO.Stream (F);
-      Create (G);
-      Load_ROM (G, Test_Dir & '/' & ROM_File);
-      for i in 1 .. Frames loop
-         FF := False;
-         while not FF loop
-            Run_For (G, Requested_Samples, Generated_Samples, V_Buffer, A_Buffer, FF);
-            for j in 0 .. Generated_Samples - 1 loop
-               Sample'Write (Stream, A_Buffer (j).Left);
-            end loop;
-         end loop;
+      FF := False;
+      while not FF loop
+         Run_For (G, Requested_Samples, Generated_Samples, V_Buffer, A_Buffer, FF);
       end loop;
-   end Run_ROM;
+   end Run_Frame;
 
-   procedure Write_LCD_Output (Buffer : RGB32_Display_Buffer) is
-      Output_File : Ada.Streams.Stream_IO.File_Type;
-      BM          : constant not null Any_Bitmap_Buffer := Allocate_Bitmap;
+   procedure Write_LCD_Output (Image : Image_Data) is
    begin
-      Copy_Buffer (Buffer, BM);
-      Create (Output_File, Out_File, Test_Dir & "/test.bmp");
-      Write_BMP_File (Output_File, BM.all);
-      Close (Output_File);
+      Image_IO.Operations.Write_BMP (Test_Dir & "/test.bmp", Image);
    end Write_LCD_Output;
 
    procedure Run_LCD_Test
      (ROM_File  : String;
       Test_Name : String := "Untitled";
-      Frames    : Positive := 100)
+      Frames    : Positive := 100;
+      Extra_Frames : Natural := 300)
    is
+      G      : Gade_Type;
       V_Buff : aliased RGB32_Display_Buffer;
       A_Buff : aliased Audio_Buffer_Type;
 
@@ -120,10 +99,35 @@ package body Test_LCD_Output is
         V_Buff'Unchecked_Access;
       A_Buff_Ptr : constant Audio_Buffer_Access :=
         A_Buff'Unchecked_Access;
+
+      Ref_Handle   : Image_IO.Holders.Handle;
+      Passed       : Boolean := False;
+      Generated    : Image_Data (0 .. Display_Height - 1, 0 .. Display_Width - 1);
    begin
-      Run_ROM (ROM_File, V_Buff_Ptr, A_Buff_Ptr, Frames);
-      Write_LCD_Output (V_Buff);
-      if Binnary_Equal (Test_Dir & "/test.bmp", Test_Dir & "/ref.bmp") then
+      Image_IO.Operations.Read (Test_Dir & "/ref.bmp", Ref_Handle);
+      if Image_IO.Holders.Is_Empty (Ref_Handle) then
+         Put_Line (Test_Name & " test FAILED");
+         Ada.Command_Line.Set_Exit_Status (1);
+         return;
+      end if;
+
+      Create (G);
+      Load_ROM (G, Test_Dir & '/' & ROM_File);
+
+      for I in 1 .. Frames + Extra_Frames loop
+         Run_Frame (G, V_Buff_Ptr, A_Buff_Ptr);
+         if I >= Frames then
+            Generated := To_Image (V_Buff);
+            if Image_Equal (Generated, Image_IO.Holders.Value (Ref_Handle)) then
+               Passed := True;
+               exit;
+            end if;
+         end if;
+      end loop;
+
+      Write_LCD_Output (Generated);
+
+      if Passed then
          Put_Line (Test_Name & " test OK");
          Ada.Command_Line.Set_Exit_Status (0);
       else

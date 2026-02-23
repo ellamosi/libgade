@@ -16,3 +16,6 @@ mode = ["debug", "release"]
 
 [gpr-set-externals]
 mode = "debug"
+
+[[depends-on]]
+image_io = "^20240725.0.0"
