@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Setup Alire
         uses: alire-project/setup-alire@v5
@@ -22,5 +20,10 @@ jobs:
       - name: Build with Alire
         run: alr build
 
+      - name: Build testsuite with Alire
+        working-directory: testsuite
+        run: alr build
+
       - name: Run testsuite
-        run: alr exec -- python3 testsuite/run.py
+        working-directory: testsuite
+        run: alr exec -- python3 run.py
