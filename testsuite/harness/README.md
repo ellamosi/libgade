@@ -43,3 +43,24 @@ This checks:
 - `RUN 1`
 - `FRAME_INDEX`
 - `SAVE_FRAME`
+
+## Utility scripts
+
+Generate a reference image from a v2 manifest:
+
+```sh
+python3 harness/gen_ref.py --manifest tests_v2/lcd_lyc_manifest/tc.json
+```
+
+Find the minimum matching frame offset:
+
+```sh
+python3 harness/find_frame.py --manifest tests_v2/lcd_lyc_manifest/tc.json
+```
+
+Batch-regenerate references from v2 manifests:
+
+```sh
+python3 harness/update_ref.py --dry-run
+python3 harness/update_ref.py
+```

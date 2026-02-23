@@ -37,6 +37,12 @@ By convention, each v2 testcase directory contains either:
 - `tc.py` with a callable `run(client, testcase_dir, root_dir)` function, or
 - `tc.json` with a manifest interpreted by `run_v2.py`.
 
+Common v2 utility commands:
+
+    `python3 harness/gen_ref.py --manifest tests_v2/<case>/tc.json`
+    `python3 harness/find_frame.py --manifest tests_v2/<case>/tc.json`
+    `python3 harness/update_ref.py --dry-run`
+
 ## How to write testcases
 Every subdirectory in ``tests/`` that contains a ``tc.gpr`` file is a testcase.
 Each testcase embeds one or more test drivers (i.e. Ada programs) that run test
