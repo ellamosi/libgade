@@ -129,9 +129,38 @@ def execute_until_first_assert(client, step_list):
 
         cmd = step.get('cmd')
         if cmd in ASSERT_CMDS:
-            return
+            return step
 
         apply_non_assert_step(client, step)
+
+    return None
+
+
+def execute_and_position_at_first_assert_match(client, manifest_path, step_list):
+    first_assert = execute_until_first_assert(client, step_list)
+    if first_assert is None:
+        return
+
+    cmd = first_assert.get('cmd')
+    if cmd == 'assert_find_match':
+        ref = first_assert.get('ref')
+        if not isinstance(ref, str) or not ref:
+            raise RuntimeError('assert_find_match step is missing "ref"')
+        max_frames = int(first_assert.get('max_frames', 300))
+        found = client.find_match(resolve_path(case_dir(manifest_path), ref), max_frames)
+        if found < 0:
+            raise RuntimeError(
+                'no match found for {} within {} frames'.format(ref, max_frames)
+            )
+        return
+
+    if cmd == 'assert_match':
+        ref = first_assert.get('ref')
+        if not isinstance(ref, str) or not ref:
+            raise RuntimeError('assert_match step is missing "ref"')
+        if not client.match_frame(resolve_path(case_dir(manifest_path), ref)):
+            raise RuntimeError('framebuffer mismatch for {}'.format(ref))
+        return
 
 
 def discover_manifests(roots):

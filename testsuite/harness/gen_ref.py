@@ -5,7 +5,7 @@ import os
 
 from client import GadeTestdClient
 from manifest_tools import (
-    execute_until_first_assert,
+    execute_and_position_at_first_assert_match,
     infer_ref_path,
     load_manifest,
     rom_path,
@@ -38,7 +38,7 @@ def main():
 
     with GadeTestdClient(executable=args.harness, timeout=args.timeout) as client:
         client.load(rom)
-        execute_until_first_assert(client, step_list)
+        execute_and_position_at_first_assert_match(client, manifest_path, step_list)
 
         out_dir = os.path.dirname(out_path)
         if out_dir and not os.path.exists(out_dir):
