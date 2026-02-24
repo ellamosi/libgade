@@ -17,6 +17,17 @@ jobs:
       - name: Setup Alire
         uses: alire-project/setup-alire@v5
 
+      - name: Cache Alire dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/alire
+            ~/.config/alire
+            ~/.local/share/alire
+          key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire.lock', 'testsuite/alire.toml', 'testsuite/alire.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-alire-
+
       - name: Build with Alire
         run: alr build
 
@@ -26,4 +37,4 @@ jobs:
 
       - name: Run testsuite
         working-directory: testsuite
-        run: python3 run.py
+        run: alr exec -- python3 run.py

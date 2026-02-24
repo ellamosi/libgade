@@ -135,6 +135,7 @@ class ManifestTestcase(Testcase):
         elif cmd == 'save_frame':
             client.save_frame(self._resolve_path(step['path']))
         elif cmd == 'assert_match':
+
             matched = client.match_frame(self._resolve_path(step['ref']))
             if not matched:
                 raise AssertionError('framebuffer mismatch for {}'.format(step['ref']))
