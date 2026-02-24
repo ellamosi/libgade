@@ -23,21 +23,21 @@ package body Harness_Input is
       Pressed : Boolean) is
    begin
       case Button is
-         when A =>
+         when Button_A =>
             Reader.State.A := Pressed;
-         when B =>
+         when Button_B =>
             Reader.State.B := Pressed;
-         when SELECT_BTN =>
+         when Button_Select =>
             Reader.State.SEL := Pressed;
-         when START =>
+         when Button_Start =>
             Reader.State.START := Pressed;
-         when RIGHT =>
+         when Button_Right =>
             Reader.State.RIGHT := Pressed;
-         when LEFT =>
+         when Button_Left =>
             Reader.State.LEFT := Pressed;
-         when UP =>
+         when Button_Up =>
             Reader.State.UP := Pressed;
-         when DOWN =>
+         when Button_Down =>
             Reader.State.DOWN := Pressed;
       end case;
    end Set_Button;
@@ -69,27 +69,14 @@ package body Harness_Input is
    is
       Upper : constant String := To_Upper (Name);
    begin
-      if Upper = "A" then
-         Button := A;
-      elsif Upper = "B" then
-         Button := B;
-      elsif Upper = "SELECT" or else Upper = "SEL" then
-         Button := SELECT_BTN;
-      elsif Upper = "START" then
-         Button := START;
-      elsif Upper = "RIGHT" then
-         Button := RIGHT;
-      elsif Upper = "LEFT" then
-         Button := LEFT;
-      elsif Upper = "UP" then
-         Button := UP;
-      elsif Upper = "DOWN" then
-         Button := DOWN;
+      if Upper = "SEL" then -- Alias
+         Button := Button_Select;
       else
-         return False;
+         Button := Button_Name'Value ("Button_" & Upper);
       end if;
-
       return True;
+   exception
+      when Constraint_Error => return False;
    end Parse_Button;
 
 end Harness_Input;

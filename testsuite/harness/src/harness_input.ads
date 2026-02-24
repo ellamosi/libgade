@@ -3,7 +3,15 @@ with Interfaces;
 
 package Harness_Input is
 
-   type Button_Name is (A, B, SELECT_BTN, START, RIGHT, LEFT, UP, DOWN);
+   type Button_Name is
+     (Button_A,
+      Button_B,
+      Button_Select,
+      Button_Start,
+      Button_Right,
+      Button_Left,
+      Button_Up,
+      Button_Down);
 
    type Manual_Input_Reader is
      new Gade.Input_Reader.Input_Reader_Type with private;
