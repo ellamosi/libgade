@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "cart_mbc2_ram",
+  "rom": "../../roms/mooneye/cart_mbc2_ram.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 2
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "../../refs/mooneye/cart_mbc2_ram.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "../../artifacts/cart_mbc2_ram.bmp"
+    }
+  ]
+}

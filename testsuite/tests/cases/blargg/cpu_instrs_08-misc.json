@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "cpu_instrs_08-misc",
+  "rom": "../../roms/blargg/cpu_instrs_08-misc.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 65
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "../../refs/blargg/cpu_instrs_08-misc.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "../../artifacts/cpu_instrs_08-misc.bmp"
+    }
+  ]
+}

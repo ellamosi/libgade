@@ -32,18 +32,18 @@ List discovered tests:
 
     `python3 run.py --list`
 
-By convention, testcases are files under `tests/cases/`:
+By convention, testcases are files under `tests/cases/<source>/`:
 - `<case>.py` with a callable `run(client, testcase_dir, root_dir)` function, or
 - `<case>.json` with a manifest interpreted by `run.py`.
 
 Common utility commands:
 
-    `python3 harness/gen_ref.py --manifest tests/cases/<case>.json`
-    `python3 harness/find_frame.py --manifest tests/cases/<case>.json`
+    `python3 harness/gen_ref.py --manifest tests/cases/<source>/<case>.json`
+    `python3 harness/find_frame.py --manifest tests/cases/<source>/<case>.json`
     `python3 harness/update_ref.py --dry-run`
 
 ## How to write testcases
-Every `*.json` or `*.py` testcase file in `tests/cases/` is a testcase.
+Every `*.json` or `*.py` testcase file under `tests/cases/` is a testcase.
 
 - `<case>.json` is a manifest interpreted by `run.py`.
 - `<case>.py` is a Python testcase module exposing `run(client, testcase_dir, root_dir)`.
