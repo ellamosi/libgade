@@ -21,7 +21,7 @@ set of executed tests, run instead:
 
 This will execute all tests that have either ``foo`` or ``bar`` in their name
 
-The testsuite executes testcases through the shared `harness/gade_testd`
+The testsuite executes testcases through the shared `bin/gade_testd`
 binary and supports both Python and JSON testcase definitions.
 
 From the `testsuite/` directory:
@@ -50,15 +50,3 @@ Every `*.json` or `*.py` testcase file in `tests/cases/` is a testcase.
 
 Legacy per-test Ada drivers in `tests/` (`tc.gpr` and `src/tc_*.adb`) were
 removed in favor of the shared `harness/gade_testd` binary.
-
-## Licenses
-The structure of this testsuite is based on the tests for AdaCore's
-[Ada_Drivers_Library project](https://github.com/AdaCore/Ada_Drivers_Library).
-The [CI configuration](../.github/workflows/ci.yml), the
-[Python test runner](run.py) and those
-[test utils modules](utils/src/) that include AdaCore's licensing in the source
-are reproduced or derived from that project and are 3-Clause BSD
-licensed, which can be found [here](Ada_Drivers_Library_LICENSE).
-
-The rest of the sources within the suite are covered by
-[libgade's license](../LICENSE).

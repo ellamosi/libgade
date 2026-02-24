@@ -9,7 +9,7 @@ licenses = "GPL-3.0-or-later"
 website = "https://github.com/ellamosi/libgade"
 tags = ["ada", "gameboy", "emulator", "testsuite"]
 
-project-files = ["utils/test_utils.gpr"]
+project-files = ["testsuite.gpr"]
 
 [gpr-externals]
 mode = ["debug", "release"]

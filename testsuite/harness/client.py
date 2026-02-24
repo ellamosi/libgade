@@ -30,7 +30,7 @@ class GadeTestdClient:
 
     def _default_executable(self):
         here = os.path.abspath(os.path.dirname(__file__))
-        return os.path.join(here, 'bin', 'gade_testd')
+        return os.path.join(here, '..', 'bin', 'gade_testd')
 
     def start(self):
         if self._proc is not None:

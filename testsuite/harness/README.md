@@ -5,16 +5,11 @@ It speaks a simple line protocol over `stdin/stdout`.
 
 ## Build
 
+The harness is built automatically by the testsuite runner.
 From `testsuite/`:
 
 ```sh
-alr exec -- gprbuild -p -P harness/gade_testd.gpr
-```
-
-If needed on macOS:
-
-```sh
-SDKROOT="$(xcrun --show-sdk-path)" alr exec -- gprbuild -p -P harness/gade_testd.gpr
+python3 run.py
 ```
 
 ## Python client
@@ -32,8 +27,10 @@ with GadeTestdClient() as g:
 
 ## Protocol smoke test
 
+Run the testsuite once first so `bin/gade_testd` exists.
+
 ```sh
-python3 testsuite/harness/protocol_smoke.py
+python3 harness/protocol_smoke.py
 ```
 
 This checks:
@@ -49,13 +46,13 @@ This checks:
 Generate a reference image from a manifest:
 
 ```sh
-python3 harness/gen_ref.py --manifest tests/cases/lcd_lyc_manifest.json
+python3 harness/gen_ref.py --manifest tests/cases/lcd_lyc.json
 ```
 
 Find the minimum matching frame offset:
 
 ```sh
-python3 harness/find_frame.py --manifest tests/cases/lcd_lyc_manifest.json
+python3 harness/find_frame.py --manifest tests/cases/lcd_lyc.json
 ```
 
 Batch-regenerate references from manifests:

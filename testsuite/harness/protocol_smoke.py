@@ -9,7 +9,7 @@ from client import GadeTestdClient, ResponseError
 
 def default_rom():
     here = os.path.abspath(os.path.dirname(__file__))
-    return os.path.join(here, '..', 'tests', 'lcd_lyc', 'lyc.gb')
+    return os.path.join(here, '..', 'tests', 'roms', 'lcd_lyc', 'lyc.gb')
 
 
 def main():

@@ -14,8 +14,8 @@ TESTSUITE_DIR = os.path.join(ROOT_DIR, 'testsuite')
 DEFAULT_TEST_ROOTS = [
     os.path.join(TESTSUITE_DIR, 'tests', 'cases'),
 ]
-HARNESS_PROJECT = os.path.join(TESTSUITE_DIR, 'harness', 'gade_testd.gpr')
-HARNESS_BIN = os.path.join(TESTSUITE_DIR, 'harness', 'bin', 'gade_testd')
+HARNESS_PROJECT = os.path.join(TESTSUITE_DIR, 'testsuite.gpr')
+HARNESS_BIN = os.path.join(TESTSUITE_DIR, 'bin', 'gade_testd')
 HARNESS_PY_DIR = os.path.join(TESTSUITE_DIR, 'harness')
 
 sys.path.insert(0, HARNESS_PY_DIR)
