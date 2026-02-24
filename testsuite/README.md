@@ -10,7 +10,7 @@ frames and compare the display output to the expected one.
 - Instruction Timing (instr_timing.gb)
 
 ## How to run the testsuite
-First, make sure you have a Python 3 interpreter available, and then run:
+From the `testsuite/` directory, run:
 
     `alr exec -- python3 run.py`
 

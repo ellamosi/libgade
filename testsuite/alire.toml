@@ -1,0 +1,27 @@
+name = "libgade_testsuite"
+description = "Integration testsuite for libgade"
+version = "0.1.0-dev"
+
+authors = ["ellamosi"]
+maintainers = ["ellamosi <ellamosi@users.noreply.github.com>"]
+maintainers-logins = ["ellamosi"]
+licenses = "GPL-3.0-or-later"
+website = "https://github.com/ellamosi/libgade"
+tags = ["ada", "gameboy", "emulator", "testsuite"]
+
+project-files = ["utils/test_utils.gpr"]
+
+[gpr-externals]
+mode = ["debug", "release"]
+
+[gpr-set-externals]
+mode = "debug"
+
+[[depends-on]]
+libgade = "*"
+
+[[depends-on]]
+image_io = "^20240725.0.0"
+
+[[pins]]
+libgade = { path = ".." }
