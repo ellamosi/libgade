@@ -47,6 +47,3 @@ Every `*.json` or `*.py` testcase file in `tests/cases/` is a testcase.
 
 - `<case>.json` is a manifest interpreted by `run.py`.
 - `<case>.py` is a Python testcase module exposing `run(client, testcase_dir, root_dir)`.
-
-Legacy per-test Ada drivers in `tests/` (`tc.gpr` and `src/tc_*.adb`) were
-removed in favor of the shared `harness/gade_testd` binary.
