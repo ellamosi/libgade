@@ -12,7 +12,7 @@ import traceback
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 TESTSUITE_DIR = os.path.join(ROOT_DIR, 'testsuite')
 DEFAULT_TEST_ROOTS = [
-    os.path.join(TESTSUITE_DIR, 'tests'),
+    os.path.join(TESTSUITE_DIR, 'tests', 'cases'),
 ]
 HARNESS_PROJECT = os.path.join(TESTSUITE_DIR, 'harness', 'gade_testd.gpr')
 HARNESS_BIN = os.path.join(TESTSUITE_DIR, 'harness', 'bin', 'gade_testd')
@@ -57,7 +57,7 @@ class Testcase:
         self.root_dir = root_dir
         self.case_file = case_file
         self.case_dir = os.path.dirname(case_file)
-        self.name = os.path.relpath(self.case_dir, ROOT_DIR)
+        self.name = os.path.splitext(os.path.basename(case_file))[0]
 
     def run(self, harness_exe, timeout):
         raise NotImplementedError
@@ -178,16 +178,29 @@ def discover_testcases(test_roots):
 
         for dirpath, dirnames, filenames in os.walk(root):
             dirnames.sort()
+            py_cases = []
+            json_cases = []
+            for fn in sorted(filenames):
+                if fn.endswith('.py') and fn != '__init__.py':
+                    py_cases.append(os.path.join(dirpath, fn))
+                elif fn.endswith('.json'):
+                    json_cases.append(os.path.join(dirpath, fn))
 
-            has_py = 'tc.py' in filenames
-            has_json = 'tc.json' in filenames
+            by_stem = {}
+            for path in py_cases:
+                stem = os.path.splitext(os.path.basename(path))[0]
+                by_stem.setdefault(stem, set()).add('py')
+            for path in json_cases:
+                stem = os.path.splitext(os.path.basename(path))[0]
+                by_stem.setdefault(stem, set()).add('json')
+            for stem, kinds in by_stem.items():
+                if kinds == {'py', 'json'}:
+                    raise RuntimeError(
+                        'both {}.py and {}.json found in {}'.format(stem, stem, dirpath)
+                    )
 
-            if has_py and has_json:
-                raise RuntimeError('both tc.py and tc.json found in {}'.format(dirpath))
-            if has_py:
-                discovered.append(PythonTestcase(root, os.path.join(dirpath, 'tc.py')))
-            elif has_json:
-                discovered.append(ManifestTestcase(root, os.path.join(dirpath, 'tc.json')))
+            discovered.extend(PythonTestcase(root, path) for path in py_cases)
+            discovered.extend(ManifestTestcase(root, path) for path in json_cases)
 
     discovered.sort(key=lambda tc: tc.name)
     return discovered

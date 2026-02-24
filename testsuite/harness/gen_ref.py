@@ -15,7 +15,7 @@ from manifest_tools import (
 
 def main():
     parser = argparse.ArgumentParser('Generate reference image from a manifest')
-    parser.add_argument('--manifest', required=True, help='Path to tc.json')
+    parser.add_argument('--manifest', required=True, help='Path to testcase manifest (.json)')
     parser.add_argument('--out', default=None, help='Output reference bmp path')
     parser.add_argument('--harness', default=None, help='Path to gade_testd binary')
     parser.add_argument('--timeout', type=float, default=5.0, help='Harness command timeout in seconds')

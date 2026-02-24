@@ -141,7 +141,8 @@ def discover_manifests(roots):
             continue
         for dirpath, dirnames, filenames in os.walk(root):
             dirnames.sort()
-            if 'tc.json' in filenames:
-                found.append(os.path.join(dirpath, 'tc.json'))
+            for fn in sorted(filenames):
+                if fn.endswith('.json'):
+                    found.append(os.path.join(dirpath, fn))
     found.sort()
     return found

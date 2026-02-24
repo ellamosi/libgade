@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "lcd_scanline_timing",
+  "rom": "../roms/lcd_scanline_timing/dycptest2.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 2
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "../refs/lcd_scanline_timing.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "../artifacts/lcd_scanline_timing.bmp"
+    }
+  ]
+}

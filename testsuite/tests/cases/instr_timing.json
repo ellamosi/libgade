@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "instr_timing",
+  "rom": "../roms/instr_timing/instr_timing.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 65
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "../refs/instr_timing.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "../artifacts/instr_timing.bmp"
+    }
+  ]
+}

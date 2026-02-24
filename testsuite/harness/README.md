@@ -49,13 +49,13 @@ This checks:
 Generate a reference image from a manifest:
 
 ```sh
-python3 harness/gen_ref.py --manifest tests/lcd_lyc_manifest/tc.json
+python3 harness/gen_ref.py --manifest tests/cases/lcd_lyc_manifest.json
 ```
 
 Find the minimum matching frame offset:
 
 ```sh
-python3 harness/find_frame.py --manifest tests/lcd_lyc_manifest/tc.json
+python3 harness/find_frame.py --manifest tests/cases/lcd_lyc_manifest.json
 ```
 
 Batch-regenerate references from manifests:

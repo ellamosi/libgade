@@ -32,22 +32,21 @@ List discovered tests:
 
     `python3 run.py --list`
 
-By convention, each testcase directory contains either:
-- `tc.py` with a callable `run(client, testcase_dir, root_dir)` function, or
-- `tc.json` with a manifest interpreted by `run.py`.
+By convention, testcases are files under `tests/cases/`:
+- `<case>.py` with a callable `run(client, testcase_dir, root_dir)` function, or
+- `<case>.json` with a manifest interpreted by `run.py`.
 
 Common utility commands:
 
-    `python3 harness/gen_ref.py --manifest tests/<case>/tc.json`
-    `python3 harness/find_frame.py --manifest tests/<case>/tc.json`
+    `python3 harness/gen_ref.py --manifest tests/cases/<case>.json`
+    `python3 harness/find_frame.py --manifest tests/cases/<case>.json`
     `python3 harness/update_ref.py --dry-run`
 
 ## How to write testcases
-Every subdirectory in `tests/` that contains either `tc.json` or `tc.py` is
-a testcase.
+Every `*.json` or `*.py` testcase file in `tests/cases/` is a testcase.
 
-- `tc.json` is a manifest interpreted by `run.py`.
-- `tc.py` is a Python testcase module exposing `run(client, testcase_dir, root_dir)`.
+- `<case>.json` is a manifest interpreted by `run.py`.
+- `<case>.py` is a Python testcase module exposing `run(client, testcase_dir, root_dir)`.
 
 Legacy per-test Ada drivers in `tests/` (`tc.gpr` and `src/tc_*.adb`) were
 removed in favor of the shared `harness/gade_testd` binary.
