@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "cart_mbc1_ram_64kb",
+  "rom": "ram_64Kb.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 2
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "ref.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "test.bmp"
+    }
+  ]
+}

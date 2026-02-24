@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "cpu_instrs_07-jr,jp,call,ret,rst",
+  "rom": "07-jr,jp,call,ret,rst.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 100
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "ref.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "test.bmp"
+    }
+  ]
+}

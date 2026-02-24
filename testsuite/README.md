@@ -12,44 +12,41 @@ frames and compare the display output to the expected one.
 ## How to run the testsuite
 From the `testsuite/` directory, run:
 
-    `python3 run_v2.py`
+    `python3 run.py`
 
 The standard output report should be obvious to read. In order to restrict the
 set of executed tests, run instead:
 
-    ./run_v2.py foo bar
+    ./run.py foo bar
 
 This will execute all tests that have either ``foo`` or ``bar`` in their name
 
-The `run.py` entrypoint remains as a compatibility wrapper around `run_v2.py`.
-
-## V2 runner (harness + Python)
-The v2 runner executes testcases through the shared `harness/gade_testd`
+The testsuite executes testcases through the shared `harness/gade_testd`
 binary and supports both Python and JSON testcase definitions.
 
 From the `testsuite/` directory:
 
-    `python3 run_v2.py`
+    `python3 run.py`
 
-List discovered v2 tests:
+List discovered tests:
 
-    `python3 run_v2.py --list`
+    `python3 run.py --list`
 
-By convention, each v2 testcase directory contains either:
+By convention, each testcase directory contains either:
 - `tc.py` with a callable `run(client, testcase_dir, root_dir)` function, or
-- `tc.json` with a manifest interpreted by `run_v2.py`.
+- `tc.json` with a manifest interpreted by `run.py`.
 
-Common v2 utility commands:
+Common utility commands:
 
-    `python3 harness/gen_ref.py --manifest tests_v2/<case>/tc.json`
-    `python3 harness/find_frame.py --manifest tests_v2/<case>/tc.json`
+    `python3 harness/gen_ref.py --manifest tests/<case>/tc.json`
+    `python3 harness/find_frame.py --manifest tests/<case>/tc.json`
     `python3 harness/update_ref.py --dry-run`
 
 ## How to write testcases
-Every subdirectory in `tests_v2/` that contains either `tc.json` or `tc.py` is
+Every subdirectory in `tests/` that contains either `tc.json` or `tc.py` is
 a testcase.
 
-- `tc.json` is a manifest interpreted by `run_v2.py`.
+- `tc.json` is a manifest interpreted by `run.py`.
 - `tc.py` is a Python testcase module exposing `run(client, testcase_dir, root_dir)`.
 
 Legacy per-test Ada drivers in `tests/` (`tc.gpr` and `src/tc_*.adb`) were

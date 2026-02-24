@@ -15,7 +15,7 @@ from manifest_tools import (
 
 
 def main():
-    parser = argparse.ArgumentParser('Find first matching frame offset for a v2 manifest')
+    parser = argparse.ArgumentParser('Find first matching frame offset for a manifest')
     parser.add_argument('--manifest', required=True, help='Path to tc.json')
     parser.add_argument('--ref', default=None, help='Reference bmp path (override)')
     parser.add_argument('--max-frames', type=int, default=None, help='Maximum frames to search (override)')

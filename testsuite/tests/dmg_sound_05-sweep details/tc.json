@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "dmg_sound_05-sweep details",
+  "rom": "05-sweep details.gb",
+  "steps": [
+    {
+      "cmd": "run",
+      "frames": 100
+    },
+    {
+      "cmd": "assert_find_match",
+      "ref": "ref.bmp",
+      "max_frames": 300
+    },
+    {
+      "cmd": "save_frame",
+      "path": "test.bmp"
+    }
+  ]
+}

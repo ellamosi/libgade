@@ -50,7 +50,7 @@ def update_one(manifest_path, harness, timeout, dry_run):
 
 
 def main():
-    parser = argparse.ArgumentParser('Regenerate reference images from v2 manifests')
+    parser = argparse.ArgumentParser('Regenerate reference images from manifests')
     parser.add_argument(
         '--tests-root',
         action='append',
@@ -63,7 +63,7 @@ def main():
     parser.add_argument('pattern', nargs='*', help='Filter manifests by substring')
     args = parser.parse_args()
 
-    roots = args.tests_root or [os.path.join(TESTSUITE_DIR, 'tests_v2')]
+    roots = args.tests_root or [os.path.join(TESTSUITE_DIR, 'tests')]
     roots = [os.path.abspath(p) for p in roots]
     manifests = discover_manifests(roots)
     manifests = [m for m in manifests if should_run(m, args.pattern)]
