@@ -2,6 +2,8 @@ with "../utils/test_utils.gpr";
 
 project Gade_Testd is
 
+   type Platform_Type is ("macos", "other");
+   Platform : Platform_Type := external ("Platform", "other");
    SDK_Root := external
      ("SDKROOT", "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk");
 
@@ -15,9 +17,14 @@ project Gade_Testd is
    package Compiler renames Test_Utils.Compiler;
    package Builder renames Test_Utils.Builder;
    package Linker is
-      for Default_Switches ("Ada") use
-        ("-Wl,-syslibroot," & SDK_Root,
-         "-L" & SDK_Root & "/usr/lib");
+      case Platform is
+         when "macos" =>
+            for Default_Switches ("Ada") use
+              ("-Wl,-syslibroot," & SDK_Root,
+               "-L" & SDK_Root & "/usr/lib");
+         when "other" =>
+            null;
+      end case;
    end Linker;
 
 end Gade_Testd;

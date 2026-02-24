@@ -47,6 +47,8 @@ def run_program(*argv, cwd=None):
 
 def gprbuild_argv(project_file):
     base_argv = ['gprbuild', '-j0', '-p', '-q', '-P', project_file]
+    if sys.platform == 'darwin':
+        base_argv.append('-XPlatform=macos')
     if shutil.which('alr'):
         return ['alr', 'exec', '--'] + base_argv
     return base_argv
