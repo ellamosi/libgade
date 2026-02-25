@@ -9,6 +9,7 @@ The harness is built automatically by the testsuite runner.
 From `testsuite/`:
 
 ```sh
+./bootstrap.sh
 python3 run.py
 ```
 

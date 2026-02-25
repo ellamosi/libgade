@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import os
 import shutil
 import subprocess
 import sys
@@ -67,35 +68,9 @@ def _build_harness(harness_exe, no_build):
     )
 
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--harness",
-        action="store",
-        default=str(HARNESS_BIN),
-        help="Path to gade_testd executable",
-    )
-    parser.addoption(
-        "--no-build",
-        action="store_true",
-        help="Skip harness build step",
-    )
-    parser.addoption(
-        "--harness-timeout",
-        action="store",
-        type=float,
-        default=30.0,
-        help="Harness command timeout in seconds",
-    )
-    parser.addoption(
-        "--case-pattern",
-        action="append",
-        default=[],
-        help="Substring filter for testcase names (repeatable)",
-    )
-
-
 def pytest_collection_modifyitems(config, items):
-    patterns = config.getoption("--case-pattern")
+    patterns_raw = os.environ.get("GADE_CASE_PATTERNS", "")
+    patterns = [p for p in patterns_raw.splitlines() if p]
     if not patterns:
         return
 
@@ -142,17 +117,18 @@ def artifacts_dir(tests_root):
 
 
 @pytest.fixture(scope="session")
-def harness_exe(pytestconfig):
-    path = Path(pytestconfig.getoption("--harness"))
+def harness_exe():
+    path = Path(os.environ.get("GADE_HARNESS", str(HARNESS_BIN)))
     if not path.is_absolute():
         path = (TESTSUITE_DIR / path).resolve()
 
-    _build_harness(path, no_build=pytestconfig.getoption("--no-build"))
+    no_build = os.environ.get("GADE_NO_BUILD", "0") == "1"
+    _build_harness(path, no_build=no_build)
     return str(path)
 
 
 @pytest.fixture()
-def client(harness_exe, pytestconfig):
-    timeout = pytestconfig.getoption("--harness-timeout")
+def client(harness_exe):
+    timeout = float(os.environ.get("GADE_HARNESS_TIMEOUT", "30.0"))
     with GadeTestdClient(executable=harness_exe, timeout=timeout) as gade_client:
         yield gade_client

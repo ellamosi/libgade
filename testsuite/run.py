@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 
 import argparse
+import importlib.util
+import os
 import shutil
 import subprocess
 import sys
@@ -18,17 +20,26 @@ def pytest_argv(args):
     if args.verbose:
         argv.append("-vv")
 
-    argv.extend(["--harness", args.harness])
-    argv.extend(["--harness-timeout", str(args.timeout)])
-
-    if args.no_build:
-        argv.append("--no-build")
-
-    for pattern in args.pattern:
-        argv.extend(["--case-pattern", pattern])
-
     argv.append("tests")
     return argv
+
+
+def pytest_env(args):
+    env = os.environ.copy()
+    env["GADE_HARNESS"] = args.harness
+    env["GADE_HARNESS_TIMEOUT"] = str(args.timeout)
+    env["GADE_NO_BUILD"] = "1" if args.no_build else "0"
+    env["GADE_CASE_PATTERNS"] = "\n".join(args.pattern)
+    return env
+
+
+def ensure_pytest_available():
+    if importlib.util.find_spec("pytest") is not None:
+        return
+    raise SystemExit(
+        "pytest is required. Run setup first:\n"
+        "  ./bootstrap.sh"
+    )
 
 
 def main():
@@ -50,7 +61,8 @@ def main():
     parser.add_argument("pattern", nargs="*", help="Filter testcases by substring")
     args = parser.parse_args()
 
-    proc = subprocess.run(pytest_argv(args), cwd=".", check=False)
+    ensure_pytest_available()
+    proc = subprocess.run(pytest_argv(args), cwd=".", env=pytest_env(args), check=False)
     raise SystemExit(proc.returncode)
 
 

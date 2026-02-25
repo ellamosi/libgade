@@ -19,6 +19,12 @@ binary. Test cases are regular `pytest` tests under `tests/`.
 From `testsuite/`:
 
 ```sh
+./bootstrap.sh
+```
+
+Then:
+
+```sh
 python3 run.py
 ```
 

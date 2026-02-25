@@ -33,7 +33,7 @@ jobs:
 
       - name: Build testsuite with Alire
         working-directory: testsuite
-        run: alr build
+        run: ./bootstrap.sh
 
       - name: Run testsuite
         working-directory: testsuite
