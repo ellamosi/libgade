@@ -1,49 +1,46 @@
 # libgade testsuite
-This testsuite runs a series of integration tests by compiling and running
-several executables that load a test ROM, emulate it for a given number of
-frames and compare the display output to the expected one.
+The testsuite runs integration tests against a shared `gade_testd` harness
+binary. Test cases are regular `pytest` tests under `tests/`.
 
 ## Tested ROMs
 
 ### [Blargg's Test ROMs](http://gbdev.gg8.se/files/roms/blargg-gb-tests/)
-- CPU Instruction Behavior Test (cpu_instrs.gb)
-- Instruction Timing (instr_timing.gb)
+- CPU Instruction Behavior Test (`cpu_instrs`)
+- Instruction Timing (`instr_timing`)
 
-## How to run the testsuite
-From the `testsuite/` directory, run:
+## Layout
+- `tests/<source>/test_*.py`: pytest test modules grouped by source.
+- `tests/roms/<source>/`: test ROMs grouped by source.
+- `tests/refs/<source>/`: reference images grouped by source.
+- `tests/artifacts/`: captured output frames.
+- `harness/client.py`: Python client for the harness protocol.
 
-    `python3 run.py`
+## Run
+From `testsuite/`:
 
-The standard output report should be obvious to read. In order to restrict the
-set of executed tests, run instead:
-
-    ./run.py foo bar
-
-This will execute all tests that have either ``foo`` or ``bar`` in their name
-
-The testsuite executes testcases through the shared `bin/gade_testd`
-binary and supports both Python and JSON testcase definitions.
-
-From the `testsuite/` directory:
-
-    `python3 run.py`
+```sh
+python3 run.py
+```
 
 List discovered tests:
 
-    `python3 run.py --list`
+```sh
+python3 run.py --list
+```
 
-By convention, testcases are files under `tests/cases/<source>/`:
-- `<case>.py` with a callable `run(client, testcase_dir, root_dir)` function, or
-- `<case>.json` with a manifest interpreted by `run.py`.
+Run a subset by substring filter:
 
-Common utility commands:
+```sh
+python3 run.py mbc1 cpu_instrs
+```
 
-    `python3 harness/gen_ref.py --manifest tests/cases/<source>/<case>.json`
-    `python3 harness/find_frame.py --manifest tests/cases/<source>/<case>.json`
-    `python3 harness/update_ref.py --dry-run`
+Run pytest directly (same tests):
 
-## How to write testcases
-Every `*.json` or `*.py` testcase file under `tests/cases/` is a testcase.
+```sh
+python3 -m pytest -q tests
+```
 
-- `<case>.json` is a manifest interpreted by `run.py`.
-- `<case>.py` is a Python testcase module exposing `run(client, testcase_dir, root_dir)`.
+## Writing tests
+Add `test_*.py` modules under `tests/<source>/` and use the shared fixtures/helpers:
+- `tests/conftest.py`: harness/client/path fixtures.
+- `tests/helpers.py`: common operations for load/run/match/save flows.
