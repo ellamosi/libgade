@@ -96,17 +96,17 @@ def project_root():
 
 @pytest.fixture(scope="session")
 def tests_root():
-    return TESTSUITE_DIR / "tests"
+    return TESTSUITE_DIR
 
 
 @pytest.fixture(scope="session")
 def roms_dir(tests_root):
-    return tests_root / "roms"
+    return tests_root / "assets" / "roms"
 
 
 @pytest.fixture(scope="session")
 def refs_dir(tests_root):
-    return tests_root / "refs"
+    return tests_root / "assets" / "refs"
 
 
 @pytest.fixture(scope="session")

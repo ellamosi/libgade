@@ -10,9 +10,9 @@ binary. Test cases are regular `pytest` tests under `tests/`.
 
 ## Layout
 - `tests/<source>/test_*.py`: pytest test modules grouped by source.
-- `tests/roms/<source>/`: test ROMs grouped by source.
-- `tests/refs/<source>/`: reference images grouped by source.
-- `tests/artifacts/`: captured output frames.
+- `assets/roms/<source>/`: test ROMs grouped by source.
+- `assets/refs/<source>/`: reference images grouped by source.
+- `artifacts/`: captured output frames.
 - `harness/client.py`: Python client for the harness protocol.
 
 ## Run

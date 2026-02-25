@@ -14,8 +14,8 @@ class CasePaths:
 def case_paths(tests_root, source, case_name):
     root = Path(tests_root)
     return CasePaths(
-        rom=root / "roms" / source / (case_name + ".gb"),
-        ref=root / "refs" / source / (case_name + ".bmp"),
+        rom=root / "assets" / "roms" / source / (case_name + ".gb"),
+        ref=root / "assets" / "refs" / source / (case_name + ".bmp"),
         artifact=root / "artifacts" / (case_name + ".bmp"),
     )
 
