@@ -1,7 +1,7 @@
 with "image_io";
 with "../gade";
 
-project Gade_Testsuite is
+project Gade_Testd is
 
    type Platform_Type is ("macos", "other");
    Platform : Platform_Type := external ("Platform", "other");
@@ -29,4 +29,4 @@ project Gade_Testsuite is
       end case;
    end Linker;
 
-end Gade_Testsuite;
+end Gade_Testd;

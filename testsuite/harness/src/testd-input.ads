@@ -1,7 +1,7 @@
 with Gade.Input_Reader;
 with Interfaces;
 
-package Harness_Input is
+package Testd.Input is
 
    type Button_Name is
      (Button_A,
@@ -42,4 +42,4 @@ private
       State : Gade.Input_Reader.Input_State := (others => False);
    end record;
 
-end Harness_Input;
+end Testd.Input;

@@ -1,6 +1,6 @@
 with Ada.Strings.Fixed;
 
-package body Testd_Session.Protocol is
+package body Testd.Protocol is
 
    use Ada.Strings;
    use Ada.Strings.Fixed;
@@ -88,4 +88,4 @@ package body Testd_Session.Protocol is
       return True;
    end Parse_Hex_U8;
 
-end Testd_Session.Protocol;
+end Testd.Protocol;

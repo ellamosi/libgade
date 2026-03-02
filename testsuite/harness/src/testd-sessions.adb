@@ -2,10 +2,10 @@ with Ada.Characters.Handling;
 with Ada.Exceptions;
 with Ada.Strings.Fixed;
 
-with Testd_Session.Commands;
-with Testd_Session.Protocol;
+with Testd.Commands.Dispatch;
+with Testd.Protocol;
 
-package body Testd_Session is
+package body Testd.Sessions is
 
    use Ada.Characters.Handling;
    use Ada.Exceptions;
@@ -49,14 +49,14 @@ package body Testd_Session is
       Line    : constant String := Trim (Raw_Line, Both);
       Pos     : Positive := 1;
       Command : constant String :=
-        To_Upper (Testd_Session.Protocol.Next_Token (Line, Pos));
+        To_Upper (Testd.Protocol.Next_Token (Line, Pos));
    begin
       if Command = "" then
          Reply_ERR ("BAD_CMD", "Empty command");
          return False;
       end if;
 
-      return Testd_Session.Commands.Dispatch_Command (S, Command, Line, Pos);
+      return Testd.Commands.Dispatch.Dispatch_Command (S, Command, Line, Pos);
    exception
       when E : others =>
          Reply_ERR ("INTERNAL", Exception_Message (E));
@@ -71,4 +71,4 @@ package body Testd_Session is
          null;
    end Reply_Fatal;
 
-end Testd_Session;
+end Testd.Sessions;

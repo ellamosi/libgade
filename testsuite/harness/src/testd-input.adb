@@ -1,6 +1,6 @@
 with Ada.Characters.Handling;
 
-package body Harness_Input is
+package body Testd.Input is
 
    use Ada.Characters.Handling;
    use type Interfaces.Unsigned_8;
@@ -45,8 +45,6 @@ package body Harness_Input is
    procedure Set_State_From_Mask
      (Reader : in out Manual_Input_Reader;
       Mask   : Interfaces.Unsigned_8) is
-      function Is_Set (Bit : Natural) return Boolean;
-
       function Is_Set (Bit : Natural) return Boolean is
       begin
          return (Mask and Interfaces.Shift_Left (Interfaces.Unsigned_8 (1), Bit))
@@ -79,4 +77,4 @@ package body Harness_Input is
       when Constraint_Error => return False;
    end Parse_Button;
 
-end Harness_Input;
+end Testd.Input;

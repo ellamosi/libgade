@@ -9,7 +9,7 @@ fi
 
 # Build Ada dependencies and testsuite artifacts in the Alire environment.
 if [ "$(uname -s)" = "Darwin" ]; then
-  alr exec -- gprbuild -p -P harness/gade_testsuite.gpr -XPlatform=macos
+  alr exec -- gprbuild -p -P harness/gade_testd.gpr -XPlatform=macos
 else
   alr build
 fi

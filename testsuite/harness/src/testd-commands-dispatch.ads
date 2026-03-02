@@ -1,4 +1,6 @@
-package Testd_Session.Commands is
+with Testd.Sessions; use Testd.Sessions;
+
+package Testd.Commands.Dispatch is
 
    function Dispatch_Command
      (S       : in out Session;
@@ -6,4 +8,4 @@ package Testd_Session.Commands is
       Line    : String;
       Pos     : in out Positive) return Boolean;
 
-end Testd_Session.Commands;
+end Testd.Commands.Dispatch;
