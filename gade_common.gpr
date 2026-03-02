@@ -35,7 +35,7 @@ abstract project Gade_Common is
       for Default_Switches ("ada") use Compiler'Default_Switches ("Ada") &
         ("-gnatwa",             -- Activate most optional warnings
          "-gnatwe",             -- Treat warnings and style checks as errors
-         "-gnaty",              -- Style checking
+         "-gnaty-s",            -- Style checking (except requiring prior specs for bodies)
          "-gnatyO",             -- Check that overriding subprograms are explicitly marked as such
          "-gnatyM120",          -- Set maximum line length
          "-ffunction-sections", -- Eliminate unused code
