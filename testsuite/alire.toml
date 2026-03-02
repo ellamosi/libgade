@@ -5,7 +5,7 @@ version = "0.1.0-dev"
 authors = ["ellamosi"]
 maintainers = ["ellamosi <ellamosi@users.noreply.github.com>"]
 maintainers-logins = ["ellamosi"]
-licenses = "GPL-3.0-or-later"
+licenses = "MIT"
 website = "https://github.com/ellamosi/libgade"
 tags = ["ada", "gameboy", "emulator", "testsuite"]
 
