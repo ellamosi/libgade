@@ -8,6 +8,10 @@ binary. Test cases are regular `pytest` tests under `tests/`.
 - CPU Instruction Behavior Test (`cpu_instrs`)
 - Instruction Timing (`instr_timing`)
 
+### [Mooneye Test ROMs](https://github.com/Gekkio/mooneye-test-suite)
+- Cart Memory Bank Controllers (`mbc1`, `mbc2`)
+- LCD Timings
+
 ## Layout
 - `tests/<source>/test_*.py`: pytest test modules grouped by source.
 - `assets/roms/<source>/`: test ROMs grouped by source.
