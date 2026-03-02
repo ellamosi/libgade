@@ -30,6 +30,5 @@ Why Ada? I learned to program in Ada, and I always felt that it was a more relia
 #### Next steps
 - Performance optimizations (GPU rendering)
 - Performance optimizations (CPU interpretation/Interrupt handling)
-- Streamline test suite with simple test scripts
 - Add a safe way to do integration testing with commercial ROMs
 - Support for more cartridge types
