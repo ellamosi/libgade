@@ -1,43 +1,58 @@
 # libgade testsuite
-This testsuite runs a series of integration tests by compiling and running
-several executables that load a test ROM, emulate it for a given number of
-frames and compare the display output to the expected one.
+The testsuite runs integration tests against a shared `gade_testd` harness
+binary. Test cases are regular `pytest` tests under `tests/`.
 
 ## Tested ROMs
 
 ### [Blargg's Test ROMs](http://gbdev.gg8.se/files/roms/blargg-gb-tests/)
-- CPU Instruction Behavior Test (cpu_instrs.gb)
-- Instruction Timing (instr_timing.gb)
+- CPU Instruction Behavior Test (`cpu_instrs`)
+- Instruction Timing (`instr_timing`)
 
-## How to run the testsuite
-From the `testsuite/` directory, run:
+## Layout
+- `tests/<source>/test_*.py`: pytest test modules grouped by source.
+- `assets/roms/<source>/`: test ROMs grouped by source.
+- `assets/refs/<source>/`: reference images grouped by source.
+- `artifacts/`: captured output frames.
+- `harness/client.py`: Python client for the harness protocol.
 
-    `alr exec -- python3 run.py`
+## Run
+From `testsuite/`:
 
-The standard output report should be obvious to read. In order to restrict the
-set of executed tests, run instead:
+```sh
+./bootstrap.sh
+```
 
-    ./run.py foo bar
+Then:
 
-This will execute all tests that have either ``foo`` or ``bar`` in their name
+```sh
+python3 run.py
+```
 
-## How to write testcases
-Every subdirectory in ``tests/`` that contains a ``tc.gpr`` file is a testcase.
-Each testcase embeds one or more test drivers (i.e. Ada programs) that run test
-code and write to their standard output to demonstrate that some feature is
-correctly implemented. For each test driver X, the project file must build an
-executable as ``bin/X`` and there must be a ``X.out`` file next to the
-``tc.gpr`` project file that states what the test driver output should be for
-the test to pass.
+If you build the harness manually on macOS, include:
 
-## Licenses
-The structure of this testsuite is based on the tests for AdaCore's
-[Ada_Drivers_Library project](https://github.com/AdaCore/Ada_Drivers_Library).
-The [CI configuration](../.github/workflows/ci.yml), the
-[Python test runner](run.py) and those
-[test utils modules](utils/src/) that include AdaCore's licensing in the source
-are reproduced or derived from that project and are 3-Clause BSD
-licensed, which can be found [here](Ada_Drivers_Library_LICENSE).
+```sh
+alr exec -- gprbuild -p -P harness/gade_testd.gpr -XPlatform=macos
+```
 
-The rest of the sources within the suite are covered by
-[libgade's license](../LICENSE).
+List discovered tests:
+
+```sh
+python3 run.py --list
+```
+
+Run a subset by substring filter:
+
+```sh
+python3 run.py mbc1 cpu_instrs
+```
+
+Run pytest directly (same tests):
+
+```sh
+python3 -m pytest -q tests
+```
+
+## Writing tests
+Add `test_*.py` modules under `tests/<source>/` and use the shared fixtures/helpers:
+- `tests/conftest.py`: harness/client/path fixtures.
+- `tests/helpers.py`: common operations for load/run/match/save flows.

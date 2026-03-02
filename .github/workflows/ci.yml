@@ -24,7 +24,7 @@ jobs:
             ~/.cache/alire
             ~/.config/alire
             ~/.local/share/alire
-          key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire.lock', 'testsuite/alire.toml', 'testsuite/alire.lock') }}
+          key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire/alire.lock', 'testsuite/alire.toml', 'testsuite/alire/alire.lock') }}
           restore-keys: |
             ${{ runner.os }}-alire-
 
@@ -33,7 +33,7 @@ jobs:
 
       - name: Build testsuite with Alire
         working-directory: testsuite
-        run: alr build
+        run: ./bootstrap.sh
 
       - name: Run testsuite
         working-directory: testsuite
