@@ -1,11 +1,11 @@
-library project Libgade_CPP extends "Libgade" is
+library project Libgade_CPP extends "gade.gpr" is
 
    for Source_Dirs use ("cpp");
-   for Object_Dir use "../obj/libgade/cpp/" & Libgade.Library_Mode;
+   for Object_Dir use "obj/cpp/" & Gade.Gade_Build_Mode & "/" & Gade.Gade_Library;
    for Languages use ("C++");
-   for Interfaces use Libgade'Interfaces & ("libgade.hpp", "gade-interfaces-c.ads");
-   for Library_Dir use "../lib";
-   for Library_Kind use Libgade'Library_Kind;
+   for Interfaces use Gade'Interfaces & ("libgade.hpp", "gade-interfaces-c.ads");
+   for Library_Dir use "lib";
+   for Library_Kind use Gade'Library_Kind;
    for Create_Missing_Dirs use "True";
 
    package Naming is

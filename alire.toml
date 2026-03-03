@@ -1,4 +1,4 @@
-name = "libgade"
+name = "gade"
 description = "A Game Boy emulation library in Ada"
 version = "0.1.0-dev"
 
@@ -6,13 +6,33 @@ authors = ["ellamosi"]
 maintainers = ["ellamosi <ellamosi@users.noreply.github.com>"]
 maintainers-logins = ["ellamosi"]
 licenses = "MIT"
-website = "https://github.com/ellamosi/libgade"
+website = "https://github.com/ellamosi/gade"
 tags = ["ada", "gameboy", "emulator", "library"]
 
 project-files = ["gade.gpr"]
 
 [gpr-externals]
-mode = ["debug", "release"]
+GADE_BUILD_MODE = ["debug", "release"]
+GADE_LIBRARY_TYPE = ["relocatable", "static", "static-pic"]
+GADE_PLATFORM = ["linux", "windows", "macos", "other"]
 
 [gpr-set-externals]
-mode = "debug"
+GADE_BUILD_MODE = "debug"
+GADE_LIBRARY_TYPE = "relocatable"
+
+[gpr-set-externals.'case(os)']
+linux = { GADE_PLATFORM = "linux" }
+windows = { GADE_PLATFORM = "windows" }
+macos = { GADE_PLATFORM = "macos" }
+
+[environment.'case(os)'.macos.SDKROOT]
+set = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+
+[environment.'case(os)'.macos.LIBRARY_PATH]
+append = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+
+[environment.'case(os)'.macos.CPATH]
+append = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+
+[environment.'case(os)'.macos.C_INCLUDE_PATH]
+append = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"

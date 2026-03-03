@@ -18,10 +18,10 @@ mode = ["debug", "release"]
 mode = "debug"
 
 [[depends-on]]
-libgade = "*"
+gade = "*"
 
 [[depends-on]]
 image_io = "^20240725.0.0"
 
 [[pins]]
-libgade = { path = ".." }
+gade = { path = ".." }
