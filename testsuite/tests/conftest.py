@@ -19,12 +19,16 @@ sys.path.insert(0, str(HARNESS_PY_DIR))
 from client import GadeTestdClient  # noqa: E402
 
 
-def _gprbuild_argv(project_file):
+def _build_argv(project_file):
+    if shutil.which("alr"):
+        argv = ["alr", "-n", "build"]
+        if sys.platform == "darwin":
+            argv.extend(["--", "-XPlatform=macos"])
+        return argv
+
     base_argv = ["gprbuild", "-j0", "-p", "-q", "-P", str(project_file)]
     if sys.platform == "darwin":
         base_argv.append("-XPlatform=macos")
-    if shutil.which("alr"):
-        return ["alr", "exec", "--"] + base_argv
     return base_argv
 
 
@@ -39,7 +43,7 @@ def _build_harness(harness_exe, no_build):
         return
 
     proc = subprocess.run(
-        _gprbuild_argv(HARNESS_PROJECT),
+        _build_argv(HARNESS_PROJECT),
         cwd=str(TESTSUITE_DIR),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -56,13 +60,13 @@ def _build_harness(harness_exe, no_build):
         # In restricted environments alr may fail to refresh indexes even when
         # a previously built harness binary is available.
         print(
-            "WARN harness build failed (gprbuild returned {}), using existing "
+            "WARN harness build failed (command returned {}), using existing "
             "binary:\n{}".format(proc.returncode, proc.stderr.strip())
         )
         return
 
     raise RuntimeError(
-        "harness build failed (gprbuild returned {}):\n{}".format(
+        "harness build failed (command returned {}):\n{}".format(
             proc.returncode, proc.stderr
         )
     )
