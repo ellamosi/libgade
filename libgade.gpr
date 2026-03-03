@@ -1,2 +1,0 @@
-project Libgade extends "gade.gpr" is
-end Libgade;
