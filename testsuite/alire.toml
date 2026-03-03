@@ -13,9 +13,11 @@ project-files = ["harness/gade_testd.gpr"]
 
 [gpr-externals]
 mode = ["debug", "release"]
+GADE_LIBRARY_TYPE = ["relocatable", "static", "static-pic"]
 
 [gpr-set-externals]
 mode = "debug"
+GADE_LIBRARY_TYPE = "static"
 
 [[depends-on]]
 gade = "*"

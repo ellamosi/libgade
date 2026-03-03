@@ -18,7 +18,6 @@ GADE_PLATFORM = ["linux", "windows", "macos", "other"]
 
 [gpr-set-externals]
 GADE_BUILD_MODE = "debug"
-GADE_LIBRARY_TYPE = "relocatable"
 
 [gpr-set-externals.'case(os)']
 linux = { GADE_PLATFORM = "linux" }
