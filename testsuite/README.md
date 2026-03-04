@@ -1,4 +1,4 @@
-# libgade testsuite
+# gade testsuite
 The testsuite runs integration tests against a shared `gade_testd` harness
 binary. Test cases are regular `pytest` tests under `tests/`.
 
