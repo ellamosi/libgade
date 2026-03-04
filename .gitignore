@@ -17,8 +17,10 @@
 *.a
 *.cswi
 *~
-**/obj/*
-**/bin/*
+obj/
+testsuite/obj/
+testsuite/bin/
+lib/
 *.vscode/
 alire/
 config/

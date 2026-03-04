@@ -3,10 +3,9 @@ with "../gade";
 
 project Gade_Testd is
 
-   type Platform_Type is ("macos", "other");
-   Platform : Platform_Type := external ("Platform", "other");
-   SDK_Root := external
-     ("SDKROOT", "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk");
+   type Gade_Library_Type is ("relocatable", "static", "static-pic");
+   Gade_Library : Gade_Library_Type :=
+     external ("GADE_LIBRARY_TYPE", "relocatable");
 
    for Source_Dirs use ("src");
    for Languages use ("Ada");
@@ -17,14 +16,12 @@ project Gade_Testd is
 
    package Compiler renames Gade.Compiler;
    package Builder renames Gade.Builder;
-
    package Linker is
-      case Platform is
-         when "macos" =>
-            for Default_Switches ("Ada") use
-              ("-Wl,-syslibroot," & SDK_Root,
-               "-L" & SDK_Root & "/usr/lib");
-         when "other" =>
+      case Gade_Library is
+         when "static" | "static-pic" =>
+            --  Static gade links require explicit Ada tasking runtime.
+            for Default_Switches ("Ada") use ("-lgnarl");
+         when others =>
             null;
       end case;
    end Linker;

@@ -1,4 +1,4 @@
-name = "libgade"
+name = "gade"
 description = "A Game Boy emulation library in Ada"
 version = "0.1.0-dev"
 
@@ -6,13 +6,14 @@ authors = ["ellamosi"]
 maintainers = ["ellamosi <ellamosi@users.noreply.github.com>"]
 maintainers-logins = ["ellamosi"]
 licenses = "MIT"
-website = "https://github.com/ellamosi/libgade"
+website = "https://github.com/ellamosi/gade"
 tags = ["ada", "gameboy", "emulator", "library"]
 
 project-files = ["gade.gpr"]
 
 [gpr-externals]
-mode = ["debug", "release"]
+GADE_BUILD_MODE = ["debug", "release"]
+GADE_LIBRARY_TYPE = ["relocatable", "static", "static-pic"]
 
 [gpr-set-externals]
-mode = "debug"
+GADE_BUILD_MODE = "debug"

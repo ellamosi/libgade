@@ -1,6 +1,28 @@
-with "gade_common.gpr";
+library project Gade is
 
-project Gade is
+   type Gade_Build_Mode_Type is ("debug", "release");
+   Gade_Build_Mode : Gade_Build_Mode_Type :=
+     external ("GADE_BUILD_MODE", "debug");
+
+   type Gade_Library_Type is ("relocatable", "static", "static-pic");
+   Gade_Library : Gade_Library_Type :=
+     external ("GADE_LIBRARY_TYPE", "relocatable");
+
+   Base_Interfaces :=
+     ("gade.ads",
+      "gade-interfaces.ads",
+      "gade-input_reader.ads",
+      "gade-video_buffer.ads",
+      "gade-audio_buffer.ads");
+
+   for Create_Missing_Dirs use "True";
+
+   for Library_Name use "gade";
+   for Library_Dir use "lib";
+   for Library_Kind use Gade_Library;
+   for Library_Src_Dir use "lib/src/" & Gade_Library;
+   for Library_ALI_Dir use "lib/src/" & Gade_Library;
+   for Interfaces use Base_Interfaces;
 
    for Source_Dirs use
      ("core",
@@ -10,13 +32,66 @@ project Gade is
       "core/carts/banks",
       "core/carts/mixins",
       "core/carts/common");
-   for Object_Dir use Gade_Common'Object_Dir;
-   for Languages use Gade_Common'Languages;
+   for Object_Dir use "obj/" & Gade_Build_Mode & "/" & Gade_Library;
+   for Languages use ("Ada");
 
-   package Builder renames Gade_Common.Builder;
-   package Compiler renames Gade_Common.Compiler;
-   package Linker renames Gade_Common.Linker;
-   package Naming renames Gade_Common.Naming;
-   package Pretty_Printer renames Gade_Common.Pretty_Printer;
+   package Binder is
+      --  Build a pure library without generating a program main.
+      for Default_Switches ("Ada") use ("-n");
+   end Binder;
+
+   package Builder is
+      case Gade_Build_Mode is
+         when "release" =>
+            null;
+         when others =>
+            for Default_Switches ("Ada") use ("-g");
+      end case;
+   end Builder;
+
+   package Compiler is
+      case Gade_Build_Mode is
+         when "release" =>
+            for Default_Switches ("Ada") use
+              --  Language + performance-oriented release profile.
+              ("-gnat2022",
+               "-gnatp", --  disable runtime checks
+               "-O3");   --  max optimization
+         when others =>
+            for Default_Switches ("Ada") use
+              --  Language + safety-oriented debug profile.
+              ("-gnat2022",
+               "-fstack-check", --  stack overflow checks
+               "-gnato",        --  overflow checks
+               "-g",            --  debug symbols
+               "-gnata");       --  enable assertions
+      end case;
+
+      --  Shared diagnostics/style policy for all build modes.
+      for Default_Switches ("ada") use Compiler'Default_Switches ("Ada") &
+        ("-gnatwa",            --  enable most warnings
+         "-gnatwe",            --  treat warnings as errors
+         "-gnaty-s",           --  style checks
+         "-gnatyO",            --  alphabetical declaration ordering style
+         "-gnatyM120",         --  max line width style
+         "-ffunction-sections", --  one section per function for linker GC
+         "-fdata-sections");    --  one section per data item for linker GC
+   end Compiler;
+
+   package Naming is
+      for Casing use "MixedCase";
+   end Naming;
+
+   package Pretty_Printer is
+      for Default_Switches ("Ada") use ("-cl3");
+   end Pretty_Printer;
+
+   case Gade_Library is
+      when "relocatable" =>
+         --  Bundle runtime dependencies in shared builds.
+         for Library_Standalone use "encapsulated";
+      when others =>
+         null;
+   end case;
 
 end Gade;
