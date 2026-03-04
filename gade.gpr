@@ -36,6 +36,7 @@ library project Gade is
    for Languages use ("Ada");
 
    package Binder is
+      --  Build a pure library without generating a program main.
       for Default_Switches ("Ada") use ("-n");
    end Binder;
 
@@ -52,26 +53,29 @@ library project Gade is
       case Gade_Build_Mode is
          when "release" =>
             for Default_Switches ("Ada") use
+              --  Language + performance-oriented release profile.
               ("-gnat2022",
-               "-gnatp",
-               "-O3");
+               "-gnatp", --  disable runtime checks
+               "-O3");   --  max optimization
          when others =>
             for Default_Switches ("Ada") use
+              --  Language + safety-oriented debug profile.
               ("-gnat2022",
-               "-fstack-check",
-               "-gnato",
-               "-g",
-               "-gnata");
+               "-fstack-check", --  stack overflow checks
+               "-gnato",        --  overflow checks
+               "-g",            --  debug symbols
+               "-gnata");       --  enable assertions
       end case;
 
+      --  Shared diagnostics/style policy for all build modes.
       for Default_Switches ("ada") use Compiler'Default_Switches ("Ada") &
-        ("-gnatwa",
-         "-gnatwe",
-         "-gnaty-s",
-         "-gnatyO",
-         "-gnatyM120",
-         "-ffunction-sections",
-         "-fdata-sections");
+        ("-gnatwa",            --  enable most warnings
+         "-gnatwe",            --  treat warnings as errors
+         "-gnaty-s",           --  style checks
+         "-gnatyO",            --  alphabetical declaration ordering style
+         "-gnatyM120",         --  max line width style
+         "-ffunction-sections", --  one section per function for linker GC
+         "-fdata-sections");    --  one section per data item for linker GC
    end Compiler;
 
    package Naming is
@@ -84,6 +88,7 @@ library project Gade is
 
    case Gade_Library is
       when "relocatable" =>
+         --  Bundle runtime dependencies in shared builds.
          for Library_Standalone use "encapsulated";
       when others =>
          null;

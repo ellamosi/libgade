@@ -19,6 +19,7 @@ project Gade_Testd is
    package Linker is
       case Gade_Library is
          when "static" | "static-pic" =>
+            --  Static gade links require explicit Ada tasking runtime.
             for Default_Switches ("Ada") use ("-lgnarl");
          when others =>
             null;
