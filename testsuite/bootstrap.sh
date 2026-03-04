@@ -18,11 +18,7 @@ fi
 
 # Build Ada dependencies and testsuite artifacts via Alire's build wrapper,
 # which generates and wires dependency projects before invoking gprbuild.
-if [ "$(uname -s)" = "Darwin" ]; then
-  alr -n build -- -XPlatform=macos
-else
-  alr -n build
-fi
+alr -n build
 
 # Install Python test dependencies in the same environment used by run.py.
 alr -n exec -- python3 -m pip install -r requirements.txt

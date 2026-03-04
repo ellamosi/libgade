@@ -32,12 +32,6 @@ Then:
 python3 run.py
 ```
 
-If you build the harness manually on macOS, include:
-
-```sh
-alr build -- -XPlatform=macos
-```
-
 List discovered tests:
 
 ```sh

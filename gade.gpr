@@ -8,13 +8,6 @@ library project Gade is
    Gade_Library : Gade_Library_Type :=
      external ("GADE_LIBRARY_TYPE", "relocatable");
 
-   type Gade_Platform_Type is ("linux", "windows", "macos", "other");
-   Gade_Platform : Gade_Platform_Type :=
-     external ("GADE_PLATFORM", "other");
-   SDK_Root :=
-     external ("SDKROOT",
-               "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk");
-
    Base_Interfaces :=
      ("gade.ads",
       "gade-interfaces.ads",

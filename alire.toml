@@ -14,24 +14,6 @@ project-files = ["gade.gpr"]
 [gpr-externals]
 GADE_BUILD_MODE = ["debug", "release"]
 GADE_LIBRARY_TYPE = ["relocatable", "static", "static-pic"]
-GADE_PLATFORM = ["linux", "windows", "macos", "other"]
 
 [gpr-set-externals]
 GADE_BUILD_MODE = "debug"
-
-[gpr-set-externals.'case(os)']
-linux = { GADE_PLATFORM = "linux" }
-windows = { GADE_PLATFORM = "windows" }
-macos = { GADE_PLATFORM = "macos" }
-
-[environment.'case(os)'.macos.SDKROOT]
-set = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
-
-[environment.'case(os)'.macos.LIBRARY_PATH]
-append = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
-
-[environment.'case(os)'.macos.CPATH]
-append = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
-
-[environment.'case(os)'.macos.C_INCLUDE_PATH]
-append = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"

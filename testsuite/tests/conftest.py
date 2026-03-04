@@ -21,14 +21,9 @@ from client import GadeTestdClient  # noqa: E402
 
 def _build_argv(project_file):
     if shutil.which("alr"):
-        argv = ["alr", "-n", "build"]
-        if sys.platform == "darwin":
-            argv.extend(["--", "-XPlatform=macos"])
-        return argv
+        return ["alr", "-n", "build"]
 
     base_argv = ["gprbuild", "-j0", "-p", "-q", "-P", str(project_file)]
-    if sys.platform == "darwin":
-        base_argv.append("-XPlatform=macos")
     return base_argv
 
 
