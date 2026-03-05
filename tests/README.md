@@ -1,6 +1,6 @@
-# libgade testsuite
-The testsuite runs integration tests against a shared `gade_testd` harness
-binary. Test cases are regular `pytest` tests under `tests/`.
+# libgade tests
+The tests run integration tests against a shared `gade_testd` harness
+binary. Test cases are regular `pytest` tests under `integration/`.
 
 ## Tested ROMs
 
@@ -13,14 +13,14 @@ binary. Test cases are regular `pytest` tests under `tests/`.
 - LCD Timings
 
 ## Layout
-- `tests/<source>/test_*.py`: pytest test modules grouped by source.
+- `integration/<source>/test_*.py`: pytest test modules grouped by source.
 - `assets/roms/<source>/`: test ROMs grouped by source.
 - `assets/refs/<source>/`: reference images grouped by source.
 - `artifacts/`: captured output frames.
 - `harness/client.py`: Python client for the harness protocol.
 
 ## Run
-From `testsuite/`:
+From `tests/`:
 
 ```sh
 ./bootstrap.sh
@@ -47,10 +47,11 @@ python3 run.py mbc1 cpu_instrs
 Run pytest directly (same tests):
 
 ```sh
-python3 -m pytest -q tests
+python3 -m pytest -q integration
 ```
 
 ## Writing tests
-Add `test_*.py` modules under `tests/<source>/` and use the shared fixtures/helpers:
-- `tests/conftest.py`: harness/client/path fixtures.
-- `tests/helpers.py`: common operations for load/run/match/save flows.
+Add `test_*.py` modules under `integration/<source>/` and use the shared
+fixtures/helpers:
+- `integration/conftest.py`: harness/client/path fixtures.
+- `integration/helpers.py`: common operations for load/run/match/save flows.

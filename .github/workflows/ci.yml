@@ -24,7 +24,7 @@ jobs:
             ~/.cache/alire
             ~/.config/alire
             ~/.local/share/alire
-          key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire/alire.lock', 'testsuite/alire.toml', 'testsuite/alire/alire.lock') }}
+          key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire/alire.lock', 'tests/alire.toml', 'tests/alire/alire.lock') }}
           restore-keys: |
             ${{ runner.os }}-alire-
 
@@ -32,15 +32,15 @@ jobs:
         run: alr build
 
       - name: Build C++ interface library
-        run: alr exec -- gprbuild -j0 -p -q -P libgade_cpp.gpr
+        run: alr exec -- gprbuild -j0 -p -q -P gade_cpp.gpr
 
       - name: Build C++ smoke test
-        run: alr exec -- gprbuild -j0 -p -q -P cpp/tests/libgade_cpp_smoke.gpr
+        run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_smoke.gpr
 
-      - name: Build testsuite with Alire
-        working-directory: testsuite
+      - name: Build tests with Alire
+        working-directory: tests
         run: ./bootstrap.sh
 
-      - name: Run testsuite
-        working-directory: testsuite
+      - name: Run tests
+        working-directory: tests
         run: alr exec -- python3 run.py

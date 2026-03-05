@@ -1,6 +1,6 @@
 [![CI](https://github.com/ellamosi/libgade/actions/workflows/ci.yml/badge.svg)](https://github.com/ellamosi/libgade/actions/workflows/ci.yml)
 
-# libgade
+# Gade
 A GameBoy emulation library in Ada
 
 This is a proof of concept for an interpreting emulator developed in Ada. It's meant to test the language's suitability for a project of this kind, the performance of generated code and cross language interaction. It's not meant to be the go-to emulator to just play GameBoy games.
@@ -11,7 +11,7 @@ This project started off as an homage to [my university's Computer Architecture 
 Why Ada? I learned to program in Ada, and I always felt that it was a more reliable candidate for native code compilation than the likes of C. The precise and platform independent representation clauses that the language offers that allow precisely defining the representation of memory mapped hardware was also a factor in the decision. Also, while such emulators exists in plenty of other languages I suspect it's the first one written in Ada.
 
 ## Build
-From `libgade/`:
+From `gade/`:
 
 ```sh
 alr build

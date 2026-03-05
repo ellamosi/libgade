@@ -5,8 +5,8 @@ It speaks a simple line protocol over `stdin/stdout`.
 
 ## Build
 
-The harness is built automatically by the testsuite runner.
-From `testsuite/`:
+The harness is built automatically by the test runner.
+From `tests/`:
 
 ```sh
 ./bootstrap.sh
@@ -15,7 +15,7 @@ python3 run.py
 
 ## Python client
 
-Use `testsuite/harness/client.py`:
+Use `tests/harness/client.py`:
 
 ```python
 from client import GadeTestdClient

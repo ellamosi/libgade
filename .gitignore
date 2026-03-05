@@ -18,8 +18,9 @@
 *.cswi
 *~
 obj/
-testsuite/obj/
-testsuite/bin/
+bin/
+tests/obj/
+tests/bin/
 lib/
 *.vscode/
 alire/

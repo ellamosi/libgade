@@ -20,7 +20,7 @@ def pytest_argv(args):
     if args.verbose:
         argv.append("-vv")
 
-    argv.append("tests")
+    argv.append("integration")
     return argv
 
 
@@ -43,7 +43,7 @@ def ensure_pytest_available():
 
 
 def main():
-    parser = argparse.ArgumentParser("Run testsuite via pytest")
+    parser = argparse.ArgumentParser("Run integration tests via pytest")
     parser.add_argument("--list", action="store_true", help="List discovered tests and exit")
     parser.add_argument("--no-build", action="store_true", help="Skip harness build step")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose pytest output")
