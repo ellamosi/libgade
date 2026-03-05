@@ -1,4 +1,4 @@
-[![CI](https://github.com/ellamosi/libgade/actions/workflows/ci.yml/badge.svg)](https://github.com/ellamosi/libgade/actions/workflows/ci.yml)
+[![CI](https://github.com/ellamosi/gade/actions/workflows/ci.yml/badge.svg)](https://github.com/ellamosi/gade/actions/workflows/ci.yml)
 
 # Gade
 A GameBoy emulation library in Ada

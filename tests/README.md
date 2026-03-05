@@ -1,4 +1,4 @@
-# libgade tests
+# Gade tests
 The tests run integration tests against a shared `gade_testd` harness
 binary. Test cases are regular `pytest` tests under `integration/`.
 

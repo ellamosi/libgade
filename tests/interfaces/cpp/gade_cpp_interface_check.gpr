@@ -1,16 +1,16 @@
 with "../../../gade_cpp.gpr";
 
-project Gade_CPP_Smoke is
+project Gade_CPP_Interface_Check is
 
    for Source_Dirs use (".");
    for Object_Dir use "../../../obj/tests/interfaces/cpp";
    for Library_Dir use "../../../lib";
    for Library_Kind use "static";
-   for Library_Name use "gade_cpp_smoke";
+   for Library_Name use "gade_cpp_interface_check";
    for Languages use ("C++");
 
    package Compiler is
       for Default_Switches ("C++") use ("-std=c++17", "-I../../../cpp");
    end Compiler;
 
-end Gade_CPP_Smoke;
+end Gade_CPP_Interface_Check;

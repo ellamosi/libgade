@@ -2,10 +2,13 @@ library project Gade_CPP extends "gade.gpr" is
 
    for Source_Dirs use ("cpp");
    for Object_Dir use "obj/cpp/" & Gade.Gade_Build_Mode & "/" & Gade.Gade_Library;
-   for Languages use ("C++");
+   for Languages use ("Ada", "C++");
    for Interfaces use
      Gade'Interfaces & ("inputreader.hpp", "libgade.hpp", "gade-interfaces-c.ads");
+   for Library_Name use "gade_cpp";
    for Library_Dir use "lib";
+   for Library_Src_Dir use "lib/src/cpp/" & Gade.Gade_Library;
+   for Library_ALI_Dir use "lib/src/cpp/" & Gade.Gade_Library;
    for Library_Kind use Gade'Library_Kind;
    for Create_Missing_Dirs use "True";
 

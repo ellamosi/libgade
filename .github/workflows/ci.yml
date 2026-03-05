@@ -34,8 +34,8 @@ jobs:
       - name: Build C++ interface library
         run: alr exec -- gprbuild -j0 -p -q -P gade_cpp.gpr
 
-      - name: Build C++ smoke test
-        run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_smoke.gpr
+      - name: Build C++ interface check
+        run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
 
       - name: Build tests with Alire
         working-directory: tests
