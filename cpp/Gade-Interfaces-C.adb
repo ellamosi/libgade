@@ -1,4 +1,3 @@
-with Interfaces.C;             use Interfaces.C;
 with Ada.Unchecked_Conversion;
 
 package body Gade.Interfaces.C is
@@ -25,6 +24,35 @@ package body Gade.Interfaces.C is
       Gade.Interfaces.Load_ROM (This.G, Value (ROM_File));
    end Load_ROM;
 
+   procedure Run_For
+     (This              : Gade_Type;
+      Requested_Samples : unsigned;
+      Generated_Samples : out unsigned;
+      Video             : RGB32_Display_Buffer_Access;
+      Audio             : Audio_Buffer_Access;
+      Frame_Finished    : out unsigned_char)
+   is
+      Requested : Positive;
+      Generated : Natural;
+      Finished  : Boolean;
+   begin
+      if Requested_Samples = 0 then
+         Requested := 1;
+      else
+         Requested := Positive (Requested_Samples);
+      end if;
+
+      Gade.Interfaces.Run_For
+        (This.G,
+         Requested,
+         Generated,
+         Video,
+         Audio,
+         Finished);
+      Generated_Samples := unsigned (Generated);
+      Frame_Finished := (if Finished then 1 else 0);
+   end Run_For;
+
    type Input_Reader_Class is null record;
 
    function Read_Input
@@ -43,18 +71,29 @@ package body Gade.Interfaces.C is
    procedure Set_Input_Reader
      (This         : Gade_Type;
       Input_Reader : Input_Reader_Class_Access) is
-      Wrapper : access Input_Reader_Wrapper;
+      Wrapper : Input_Reader_Wrapper_Access;
    begin
       Wrapper := new Input_Reader_Wrapper;
       Wrapper.C_Instance := Input_Reader;
-      Gade.Interfaces.Set_Input_Reader (This.G, Wrapper);
+      Gade.Interfaces.Set_Input_Reader
+        (This.G, Gade.Input_Reader.Input_Reader_Access (Wrapper));
    end Set_Input_Reader;
 
    procedure Next_Frame
      (This  : Gade_Type;
-      Video : RGB32_Display_Buffer_Access) is
+      Video : RGB32_Display_Buffer_Access)
+   is
+      Audio             : aliased Audio_Buffer_Type;
+      Generated_Samples : unsigned;
+      Frame_Finished    : unsigned_char;
    begin
-      Gade.Interfaces.Next_Frame (This.G, Video);
+      Run_For
+        (This,
+         unsigned (Maximum_Samples),
+         Generated_Samples,
+         Video,
+         Audio'Unchecked_Access,
+         Frame_Finished);
    end Next_Frame;
 
 end Gade.Interfaces.C;

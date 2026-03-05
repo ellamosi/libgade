@@ -31,6 +31,12 @@ jobs:
       - name: Build with Alire
         run: alr build
 
+      - name: Build C++ interface library
+        run: alr exec -- gprbuild -j0 -p -q -P libgade_cpp.gpr
+
+      - name: Build C++ smoke test
+        run: alr exec -- gprbuild -j0 -p -q -P cpp/tests/libgade_cpp_smoke.gpr
+
       - name: Build testsuite with Alire
         working-directory: testsuite
         run: ./bootstrap.sh

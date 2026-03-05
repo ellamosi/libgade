@@ -1,6 +1,8 @@
+with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 with Gade.Video_Buffer; use Gade.Video_Buffer;
 
 with System;
+with Interfaces.C; use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
 with Gade.Input_Reader; use Gade.Input_Reader;
 
@@ -21,6 +23,15 @@ package Gade.Interfaces.C is
      (This     : Gade_Type;
       ROM_File : chars_ptr);
    pragma Export (C, Load_ROM, "gadeLoad");
+
+   procedure Run_For
+     (This              : Gade_Type;
+      Requested_Samples : unsigned;
+      Generated_Samples : out unsigned;
+      Video             : RGB32_Display_Buffer_Access;
+      Audio             : Audio_Buffer_Access;
+      Frame_Finished    : out unsigned_char);
+   pragma Export (C, Run_For, "gadeRunFor");
 
    procedure Next_Frame
      (This  : Gade_Type;
@@ -50,6 +61,7 @@ private
    type Input_Reader_Wrapper is new Input_Reader_Type with record
       C_Instance : Input_Reader_Class_Access;
    end record;
+   type Input_Reader_Wrapper_Access is access all Input_Reader_Wrapper;
 
    overriding
    function Read_Input (Wrapper : Input_Reader_Wrapper) return Input_State;
