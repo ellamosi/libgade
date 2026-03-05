@@ -17,3 +17,9 @@ GADE_LIBRARY_TYPE = ["relocatable", "static", "static-pic"]
 
 [gpr-set-externals]
 GADE_BUILD_MODE = "debug"
+GADE_LIBRARY_TYPE = "static"
+
+[environment."case(os)".macos]
+C_INCLUDE_PATH.prepend = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+CPLUS_INCLUDE_PATH.prepend = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+LIBRARY_PATH.prepend = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
