@@ -1,4 +1,4 @@
-with Ada.Text_IO;
+with Gade.Logging;
 
 package body Gade.Carts.Mem.ROM is
 
@@ -24,14 +24,14 @@ package body Gade.Carts.Mem.ROM is
       --  TODO: Update expected output from tests and remove this.
       procedure Print_Banks;
       procedure Print_Banks is
-         use Ada.Text_IO;
          ROM_Bank_Size : constant := 16 * 1024;
          Banks : constant Natural := Natural (Size / ROM_Bank_Size);
       begin
          for i in 0 .. Banks - 1 loop
-            Put_Line ("Loading bank " & i'Img);
+            Gade.Logging.Debug ("Loading bank " & i'Img);
          end loop;
-         Put_Line ("Loader: Successfully loaded" & Banks'Img & " ROM banks.");
+         Gade.Logging.Info
+           ("Loader: Successfully loaded" & Banks'Img & " ROM banks.");
       end Print_Banks;
    begin
       F_Size := Ada.Directories.Size (Path);

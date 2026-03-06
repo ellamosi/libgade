@@ -1,9 +1,9 @@
-with Ada.Text_IO;                     use Ada.Text_IO;
 --  with Ada.Integer_Text_IO;             use Ada.Integer_Text_IO;
 
 with Gade.Dev.CPU.Instructions.Table; use Gade.Dev.CPU.Instructions.Table;
 with Gade.GB;                         use Gade.GB;
 with Gade.GB.Memory_Map;              use Gade.GB.Memory_Map;
+with Gade.Logging;
 
 package body Gade.Dev.CPU.Instructions.Exec is
 
@@ -39,7 +39,7 @@ package body Gade.Dev.CPU.Instructions.Exec is
          elsif Instruction.Extended_Table /= null then
             Current_Table := Instruction.Extended_Table.Entries'Access;
          else
-            Put_Line ("Unrecognized opcode!");
+            Gade.Logging.Error ("Unrecognized opcode!");
             raise Program_Error;
          end if;
       end loop;

@@ -1,5 +1,5 @@
-with Ada.Text_IO;    use Ada.Text_IO;
 with Ada.Exceptions; use Ada.Exceptions;
+with Gade.Logging;
 
 package body Gade.Audio.Mixer is
 
@@ -71,7 +71,7 @@ package body Gade.Audio.Mixer is
       return Output * Mixer.Volume_Multiplier;
    exception
       when E : others =>
-         Put_Line (Exception_Information (E));
+         Gade.Logging.Error (Exception_Information (E));
          return (0, 0);
    end Next_Sample;
 

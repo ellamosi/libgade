@@ -1,11 +1,11 @@
 with Ada.Directories;
-with Ada.Text_IO;
 
 with Gade.Carts.Mem.ROM;            use Gade.Carts.Mem.ROM;
 with Gade.Carts.Plain.Constructors; use Gade.Carts.Plain.Constructors;
 with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
 with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
 with Gade.Carts.MBC3.Constructors;  use Gade.Carts.MBC3.Constructors;
+with Gade.Logging;
 
 package body Gade.Carts is
 
@@ -41,8 +41,6 @@ package body Gade.Carts is
    end Read_RAM;
 
    function Load_ROM (Path : String) return Cart_NN_Access is
-      use Ada.Text_IO;
-
       ROM        : ROM_Content_Access;
       Header     : Cart_Header_Access;
       Controller : Controller_Type;
@@ -56,8 +54,8 @@ package body Gade.Carts is
       Header := Get_Header (ROM);
       Controller := Controller_Type_For_Cart (Header.Cart_Type);
 
-      Put_Line ("Cartridge type: " & Header.Cart_Type'Img);
-      Put_Line ("Controller type: " & Controller'Img);
+      Gade.Logging.Info ("Cartridge type: " & Header.Cart_Type'Img);
+      Gade.Logging.Info ("Controller type: " & Controller'Img);
 
       case Controller is
          when Cartridge_Info.None =>
@@ -89,7 +87,7 @@ package body Gade.Carts is
       end if;
    exception
       when Name_Error =>
-         null; --  TODO: Log "save not found" when having a propper logger
+         Gade.Logging.Debug ("Save not found: " & C.Save_Path.all);
    end Load_RAM;
 
    procedure Save_RAM (C : in out Cart) is

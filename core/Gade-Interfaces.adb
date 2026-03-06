@@ -1,4 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
 
 with Gade.GB;           use Gade.GB;
@@ -40,6 +39,14 @@ package body Gade.Interfaces is
    begin
       G.GB.Joypad.Set_Input_Reader (Reader);
    end Set_Input_Reader;
+
+   procedure Set_Logger
+     (G      : Gade_Type;
+      Logger : Gade.Logging.Logger_Access) is
+      pragma Unreferenced (G);
+   begin
+      Gade.Logging.Set_Logger (Logger);
+   end Set_Logger;
 
    procedure Run_For
      (G                 : Gade_Type;
@@ -87,7 +94,7 @@ package body Gade.Interfaces is
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin
       G.GB.Cart.Save_RAM;
-      Put_Line ("Finalize");
+      Gade.Logging.Debug ("Finalize");
       Free (G);
    end Finalize;
 

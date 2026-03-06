@@ -1,5 +1,6 @@
 with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 with Gade.Video_Buffer; use Gade.Video_Buffer;
+with Gade.Logging;      use Gade.Logging;
 
 with System;
 with Interfaces.C; use Interfaces.C;
@@ -45,11 +46,22 @@ package Gade.Interfaces.C is
       Input_Reader : Input_Reader_Class_Access);
    pragma Export (C, Set_Input_Reader, "gadeSetInputReader");
 
+   type Logger_Class_Access is private;
+
+   procedure Set_Logger
+     (This   : in out Gade_Type;
+      Logger : Logger_Class_Access);
+   pragma Export (C, Set_Logger, "gadeSetLogger");
+
 private
+
+   type Logger_Wrapper;
+   type Logger_Wrapper_Access is access all Logger_Wrapper;
 
    type Gade_Type is record
       Vptr   : System.Address;
       G      : Gade.Interfaces.Gade_Type;
+      Logger : Logger_Wrapper_Access;
    end record;
    pragma Convention (C, Gade_Type);
 
@@ -65,5 +77,20 @@ private
 
    overriding
    function Read_Input (Wrapper : Input_Reader_Wrapper) return Input_State;
+
+   type Logger_Class;
+
+   type Logger_Class_Access is access all Logger_Class;
+   pragma Convention (C, Logger_Class_Access);
+
+   type Logger_Wrapper is new Logger_Interface with record
+      C_Instance : Logger_Class_Access;
+   end record;
+
+   overriding
+   procedure Log
+     (Wrapper : in out Logger_Wrapper;
+      Level   : Log_Level;
+      Message : String);
 
 end Gade.Interfaces.C;

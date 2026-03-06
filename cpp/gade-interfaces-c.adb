@@ -1,14 +1,23 @@
 with Ada.Unchecked_Conversion;
+with Ada.Unchecked_Deallocation;
 
 package body Gade.Interfaces.C is
 
    procedure Initialize (This : out Gade_Type) is
    begin
       Gade.Interfaces.Create (This.G);
+      This.Logger := null;
    end Initialize;
 
    procedure Finalize (This : in out Gade_Type) is
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Object => Logger_Wrapper,
+         Name   => Logger_Wrapper_Access);
    begin
+      Gade.Interfaces.Set_Logger (This.G, null);
+      if This.Logger /= null then
+         Free (This.Logger);
+      end if;
       Gade.Interfaces.Finalize (This.G);
    end Finalize;
 
@@ -78,6 +87,55 @@ package body Gade.Interfaces.C is
       Gade.Interfaces.Set_Input_Reader
         (This.G, Gade.Input_Reader.Input_Reader_Access (Wrapper));
    end Set_Input_Reader;
+
+   type Logger_Class is null record;
+
+   procedure Log
+     (This    : Logger_Class_Access;
+      Level   : unsigned_char;
+      Message : chars_ptr);
+   pragma Import (C, Log, "Logger_log");
+
+   function To_C_Level (Level : Log_Level) return unsigned_char;
+   function To_C_Level (Level : Log_Level) return unsigned_char is
+   begin
+      return unsigned_char (Log_Level'Pos (Level));
+   end To_C_Level;
+
+   overriding
+   procedure Log
+     (Wrapper : in out Logger_Wrapper;
+      Level   : Log_Level;
+      Message : String)
+   is
+      C_Message : chars_ptr := New_String (Message);
+   begin
+      Log (Wrapper.C_Instance, To_C_Level (Level), C_Message);
+      Free (C_Message);
+   end Log;
+
+   procedure Set_Logger
+     (This   : in out Gade_Type;
+      Logger : Logger_Class_Access) is
+      procedure Free is new Ada.Unchecked_Deallocation
+        (Object => Logger_Wrapper,
+         Name   => Logger_Wrapper_Access);
+      Wrapper : Logger_Wrapper_Access;
+   begin
+      Gade.Interfaces.Set_Logger (This.G, null);
+      if This.Logger /= null then
+         Free (This.Logger);
+      end if;
+
+      if Logger = null then
+         return;
+      end if;
+
+      Wrapper := new Logger_Wrapper;
+      Wrapper.C_Instance := Logger;
+      This.Logger := Wrapper;
+      Gade.Interfaces.Set_Logger (This.G, Gade.Logging.Logger_Access (Wrapper));
+   end Set_Logger;
 
    procedure Next_Frame
      (This  : Gade_Type;
