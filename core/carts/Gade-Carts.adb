@@ -7,7 +7,6 @@ with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
 with Gade.Carts.MBC3.Constructors;  use Gade.Carts.MBC3.Constructors;
 
 package body Gade.Carts is
-   use type Gade.Logging.Logger_Access;
 
    package Plain_Carts renames Plain.Constructors;
    package MBC1_Carts renames MBC1.Constructors;
@@ -62,18 +61,16 @@ package body Gade.Carts is
 
       case Controller is
          when Cartridge_Info.None =>
-            C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path));
+            C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path, Logger));
          when Cartridge_Info.MBC1 =>
-            C := Cart_Access (MBC1_Carts.Create (ROM, Header.all, Save_Path));
+            C := Cart_Access (MBC1_Carts.Create (ROM, Header.all, Save_Path, Logger));
          when Cartridge_Info.MBC2 =>
-            C := Cart_Access (MBC2_Carts.Create (ROM, Header.all, Save_Path));
+            C := Cart_Access (MBC2_Carts.Create (ROM, Header.all, Save_Path, Logger));
          when Cartridge_Info.MBC3 =>
-            C := Cart_Access (MBC3_Carts.Create (ROM, Header.all, Save_Path));
+            C := Cart_Access (MBC3_Carts.Create (ROM, Header.all, Save_Path, Logger));
          when others =>
-            C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path));
+            C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path, Logger));
       end case;
-
-      Set_Logger (C.all, Logger);
       C.Load_RAM;
 
       return C;
@@ -105,13 +102,6 @@ package body Gade.Carts is
          Close (File);
       end if;
    end Save_RAM;
-
-   procedure Set_Logger
-     (C      : in out Cart;
-      Logger : Gade.Logging.Logger_Access) is
-   begin
-      C.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
-   end Set_Logger;
 
    function Logger_Of (C : Cart) return Gade.Logging.Logger_Access is
    begin

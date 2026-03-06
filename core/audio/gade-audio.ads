@@ -10,14 +10,11 @@ private package Gade.Audio is
    type Audio_Type is private;
 
    procedure Create
-     (Audio : aliased out Audio_Type);
+     (Audio  : aliased out Audio_Type;
+      Logger : Gade.Logging.Logger_Access);
 
    procedure Reset
      (Audio : in out Audio_Type);
-
-   procedure Set_Logger
-     (Audio  : in out Audio_Type;
-      Logger : Gade.Logging.Logger_Access);
 
    procedure Read
      (Audio   : in out Audio_Type;

@@ -2,14 +2,15 @@ with Gade.Carts.Blank;
 
 package body Gade.GB is
 
-   procedure Create (GB : out GB_Type) is
+   procedure Create
+     (GB     : out GB_Type;
+      Logger : Gade.Logging.Logger_Access) is
+      use type Gade.Logging.Logger_Access;
    begin
-      GB.Logger := Gade.Logging.Default_Logger;
+      GB.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
       Display.Create (GB.Display);
       GB.Cart := Cart_Access (Gade.Carts.Blank.Singleton);
-      GB.Cart.Set_Logger (GB.Logger);
-      Audio.Create (GB.Audio);
-      Audio.Set_Logger (GB.Audio, GB.Logger);
+      Audio.Create (GB.Audio, GB.Logger);
       Reset (GB);
    end Create;
 
@@ -27,18 +28,6 @@ package body Gade.GB is
       Reset (GB.Interrupt_Enable);
       GB.Content := [others => 0];
    end Reset;
-
-   procedure Set_Logger
-     (GB     : in out GB_Type;
-      Logger : Gade.Logging.Logger_Access) is
-      use type Gade.Logging.Logger_Access;
-   begin
-      GB.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
-      if GB.Cart /= null then
-         GB.Cart.Set_Logger (GB.Logger);
-      end if;
-      Audio.Set_Logger (GB.Audio, GB.Logger);
-   end Set_Logger;
 
    procedure Report_Cycles
      (GB     : in out GB_Type;

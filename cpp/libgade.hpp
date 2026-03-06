@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #include "inputreader.hpp"
-#include "logger.hpp"
 
 #define EXPORT __attribute__((visibility("default")))
 
@@ -39,7 +38,6 @@ public:
                 StereoSample *audioBuf,
                 bool &frameFinished);
     void setInputReader(InputReader *inputReader);
-    void setLogger(Logger *logger);
 
 private:
     void *vptr_;

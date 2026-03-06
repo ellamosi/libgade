@@ -13,17 +13,11 @@ void gadeRunFor(GB *gb,
                 StereoSample *audioBuf,
                 uint8_t *frameFinished);
 void gadeSetInputReader(GB *gb, InputReader *inputReaderInstance);
-void gadeSetLogger(GB *gb, Logger *loggerInstance);
 uint8_t InputReader_readInput(InputReader *inputReaderInstance);
-void Logger_log(Logger *loggerInstance, uint8_t level, const char *message);
 }
 
 uint8_t InputReader_readInput(InputReader *inputReaderInstance) {
     return inputReaderInstance->readButtons();
-}
-
-void Logger_log(Logger *loggerInstance, uint8_t level, const char *message) {
-    loggerInstance->log(static_cast<Logger::Level>(level), message);
 }
 
 EXPORT
@@ -81,9 +75,4 @@ void GB::runFor(uint32_t requestedSamples,
 EXPORT
 void GB::setInputReader(InputReader *inputReader) {
     gadeSetInputReader(this, inputReader);
-}
-
-EXPORT
-void GB::setLogger(Logger *logger) {
-    gadeSetLogger(this, logger);
 }

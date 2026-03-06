@@ -20,10 +20,18 @@ package body Gade.Interfaces is
 
    procedure Create (G : out Gade_Type) is
    begin
+      Create (G, null, null);
+   end Create;
+
+   procedure Create
+     (G      : out Gade_Type;
+      Reader : Gade.Input_Reader.Input_Reader_Access;
+      Logger : Gade.Logging.Logger_Access) is
+   begin
       G := new Opaque_Gade_Type;
-      G.Logger := Gade.Logging.Default_Logger;
-      G.GB.Create;
-      G.GB.Set_Logger (G.Logger);
+      G.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
+      G.GB.Create (G.Logger);
+      G.GB.Joypad.Set_Input_Reader (Reader);
    end Create;
 
    procedure Reset (G : Gade_Type) is
@@ -44,14 +52,6 @@ package body Gade.Interfaces is
    begin
       G.GB.Joypad.Set_Input_Reader (Reader);
    end Set_Input_Reader;
-
-   procedure Set_Logger
-     (G      : Gade_Type;
-      Logger : Gade.Logging.Logger_Access) is
-   begin
-      G.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
-      G.GB.Set_Logger (G.Logger);
-   end Set_Logger;
 
    procedure Run_For
      (G                 : Gade_Type;

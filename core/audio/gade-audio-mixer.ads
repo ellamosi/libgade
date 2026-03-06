@@ -29,11 +29,8 @@ private package Gade.Audio.Mixer is
                      Square_1 : not null Sweeping_Square_Channel_Access;
                      Square_2 : not null Square_Channel_Access;
                      Wave     : not null Wave_Channel_Access;
-                     Noise    : not null Noise_Channel_Access);
-
-   procedure Set_Logger
-     (Mixer  : in out Audio_Mixer;
-      Logger : Gade.Logging.Logger_Access);
+                     Noise    : not null Noise_Channel_Access;
+                     Logger   : Gade.Logging.Logger_Access);
 
    procedure Reset (Mixer : in out Audio_Mixer);
 

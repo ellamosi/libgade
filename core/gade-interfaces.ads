@@ -13,6 +13,11 @@ package Gade.Interfaces is
 
    procedure Create (G : out Gade_Type);
 
+   procedure Create
+     (G      : out Gade_Type;
+      Reader : Gade.Input_Reader.Input_Reader_Access;
+      Logger : Gade.Logging.Logger_Access);
+
    procedure Reset (G : Gade_Type);
 
    procedure Load_ROM
@@ -22,10 +27,6 @@ package Gade.Interfaces is
    procedure Set_Input_Reader
      (G      : Gade_Type;
       Reader : Gade.Input_Reader.Input_Reader_Access);
-
-   procedure Set_Logger
-     (G      : Gade_Type;
-      Logger : Gade.Logging.Logger_Access);
 
    procedure Run_For
      (G                 : Gade_Type;

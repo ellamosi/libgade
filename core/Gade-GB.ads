@@ -46,13 +46,11 @@ private package Gade.GB is
 
    type GB_Type is new GB_Public_Type with private;
 
-   procedure Create (GB : out GB_Type);
+   procedure Create
+     (GB     : out GB_Type;
+      Logger : Gade.Logging.Logger_Access);
 
    procedure Reset (GB : in out GB_Type);
-
-   procedure Set_Logger
-     (GB     : in out GB_Type;
-      Logger : Gade.Logging.Logger_Access);
 
    --  TODO: Revisit how sync components for performance/cleanliness
    procedure Report_Cycles

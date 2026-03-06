@@ -7,21 +7,15 @@ package body Gade.Audio.Mixer is
                      Square_1 : not null Sweeping_Square_Channel_Access;
                      Square_2 : not null Square_Channel_Access;
                      Wave     : not null Wave_Channel_Access;
-                     Noise    : not null Noise_Channel_Access) is
+                     Noise    : not null Noise_Channel_Access;
+                     Logger   : Gade.Logging.Logger_Access) is
    begin
       Mixer.Square_1 := Square_1;
       Mixer.Square_2 := Square_2;
       Mixer.Wave := Wave;
       Mixer.Noise := Noise;
-      Mixer.Logger := Gade.Logging.Default_Logger;
-   end Create;
-
-   procedure Set_Logger
-     (Mixer  : in out Audio_Mixer;
-      Logger : Gade.Logging.Logger_Access) is
-   begin
       Mixer.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
-   end Set_Logger;
+   end Create;
 
    procedure Reset (Mixer : in out Audio_Mixer) is
    begin

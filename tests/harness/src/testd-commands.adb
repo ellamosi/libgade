@@ -1,4 +1,5 @@
 with Gade.Interfaces; use Gade.Interfaces;
+with Gade.Logging;
 
 package body Testd.Commands is
 
@@ -42,8 +43,10 @@ package body Testd.Commands is
    procedure Ensure_Engine (S : in out Session) is
    begin
       if not S.G_Created then
-         Create (S.G);
-         Set_Input_Reader (S.G, S.Input_Reader'Unchecked_Access);
+         Create
+           (S.G,
+            S.Input_Reader'Unchecked_Access,
+            Gade.Logging.Default_Logger);
          S.G_Created := True;
          S.ROM_Loaded := False;
          S.Frame_Count := 0;

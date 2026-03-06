@@ -1,5 +1,6 @@
 with Gade.Carts.Mem.ROM; use Gade.Carts.Mem.ROM;
 with Gade.Carts.Mem.RAM; use Gade.Carts.Mem.RAM;
+with Gade.Logging;
 private with Gade.Carts.Mixins.MBC.Constructors;
 private with Gade.Carts.Banks.RTC.Constructors;
 
@@ -8,7 +9,8 @@ package Gade.Carts.MBC3.Constructors is
    function Create
      (ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
-      RAM_Path    : String)
+      RAM_Path    : String;
+      Logger      : Gade.Logging.Logger_Access)
       return MBC3_Cart_NN_Access;
 
 private
@@ -17,7 +19,8 @@ private
      (C           : out MBC3_Cart'Class;
       ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
-      RAM_Path    : String);
+      RAM_Path    : String;
+      Logger      : Gade.Logging.Logger_Access);
 
    package MBC_Constructors is new MBC_Mixin.Constructors;
    use MBC_Constructors, MBC_Constructors.RAM_Constructors;

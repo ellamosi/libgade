@@ -167,14 +167,11 @@ private package Gade.Carts is
 
    procedure Load_RAM (C : in out Cart);
    procedure Save_RAM (C : in out Cart);
-   procedure Set_Logger
-     (C      : in out Cart;
-      Logger : Gade.Logging.Logger_Access);
    function Logger_Of (C : Cart) return Gade.Logging.Logger_Access;
 
    procedure Report_Cycles
      (C      : in out Cart;
-      Cycles : Positive) is null;
+     Cycles : Positive) is null;
 
 private
 
@@ -183,7 +180,7 @@ private
    type Cart is abstract tagged record
       Save_Path  : Path_Access;
       Persistent : Boolean;
-      Logger     : Gade.Logging.Logger_Access;
+      Logger     : Gade.Logging.Logger_Access := Gade.Logging.Default_Logger;
    end record;
 
    procedure Load_RAM_File
