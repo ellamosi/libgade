@@ -1,43 +1,56 @@
-#ifndef libgade_hpp
-#define libgade_hpp
+#ifndef LIBGADE_HPP
+#define LIBGADE_HPP
+
+#include <stdint.h>
+
+#include "inputreader.hpp"
 
 #define EXPORT __attribute__((visibility("default")))
 
-#include <stdint.h>
-#include "inputreader.hpp"
-
-extern "C" {
-    void gadeinit (void);
-    void gadefinal (void);
-}
+static const uint32_t GB_DISPLAY_WIDTH = 160;
+static const uint32_t GB_DISPLAY_HEIGHT = 144;
+static const uint32_t GB_CPU_CLOCK_FREQUENCY = 4194304;
+static const uint32_t GB_CPU_M_FREQUENCY = GB_CPU_CLOCK_FREQUENCY / 4;
+static const uint32_t GB_CPU_CYCLES_PER_AUDIO_SAMPLE =
+    GB_CPU_CLOCK_FREQUENCY / GB_CPU_M_FREQUENCY;
+static const uint32_t GADE_AUDIO_EXTRA_SAMPLES = 2064;
+static const uint32_t GADE_AUDIO_MAXIMUM_SAMPLES = 19619;
 
 typedef struct RGB32Bitmap {
     uint8_t r, g, b, unused;
 } RGB32Bitmap;
 
+typedef struct StereoSample {
+    int16_t left, right;
+} StereoSample;
+
 class EXPORT GB {
-    public:
+public:
     GB();
     ~GB();
 
-    void load (char *romFile);
-    void nextFrame (RGB32Bitmap *videoBuf);
+    void load(const char *romFile);
+    void nextFrame(RGB32Bitmap *videoBuf);
+    void reset();
+    void runFor(uint32_t requestedSamples,
+                uint32_t &generatedSamples,
+                RGB32Bitmap *videoBuf,
+                StereoSample *audioBuf,
+                bool &frameFinished);
     void setInputReader(InputReader *inputReader);
 
-    private:
-    struct Opaque;
-    Opaque *opaque;
+private:
+    void *vptr_;
+    void *gade_;
 
     GB(GB const &);
-    GB & operator=(GB const &);
+    GB &operator=(GB const &);
 };
 
-// Constructor functions and function types.
-extern "C" GB* NewGB(void);
-typedef GB * GB_creator(void);
+extern "C" GB *NewGB(void);
+typedef GB *GB_creator(void);
 
-// Destructor function and function type.
-extern "C" void DeleteGB(GB* gb);
-typedef void GB_disposer(GB*);
+extern "C" void DeleteGB(GB *gb);
+typedef void GB_disposer(GB *);
 
-#endif /* libgade_hpp */
+#endif

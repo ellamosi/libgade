@@ -2,7 +2,7 @@
 
 import pytest
 
-from tests.helpers import case_paths, run_case_with_artifact_on_failure
+from integration.helpers import case_paths, run_case_with_artifact_on_failure
 
 
 LCD_CASES = [

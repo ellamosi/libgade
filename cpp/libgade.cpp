@@ -1,15 +1,22 @@
 #include "libgade.hpp"
 
 extern "C" {
-    void gadeInit (GB *gb);
-    void gadeFinal (GB *gb);
-    void gadeLoad (GB *gb, const char *romFile);
-    void gadeNextFrame (GB *gb, RGB32Bitmap *videoBuf);
-    void gadeSetInputReader (GB *gb, InputReader *inputReaderInstance);
-    uint8_t InputReader_readInput (InputReader *inputReaderInstance);
+void gadeFinal(GB *gb);
+void gadeInit(GB *gb);
+void gadeLoad(GB *gb, const char *romFile);
+void gadeNextFrame(GB *gb, RGB32Bitmap *videoBuf);
+void gadeReset(GB *gb);
+void gadeRunFor(GB *gb,
+                uint32_t requestedSamples,
+                uint32_t *generatedSamples,
+                RGB32Bitmap *videoBuf,
+                StereoSample *audioBuf,
+                uint8_t *frameFinished);
+void gadeSetInputReader(GB *gb, InputReader *inputReaderInstance);
+uint8_t InputReader_readInput(InputReader *inputReaderInstance);
 }
 
-uint8_t InputReader_readInput (InputReader *inputReaderInstance) {
+uint8_t InputReader_readInput(InputReader *inputReaderInstance) {
     return inputReaderInstance->readButtons();
 }
 
@@ -24,29 +31,48 @@ GB::~GB() {
 }
 
 EXPORT
-GB* NewGB(void) {
-  // Remove this method
+GB *NewGB(void) {
     return new GB;
 }
 
 EXPORT
-void DeleteGB(GB* gb) {
-  // Remove this method
+void DeleteGB(GB *gb) {
     delete gb;
 }
 
 EXPORT
-void GB::load (char *romFile) {
+void GB::load(const char *romFile) {
     gadeLoad(this, romFile);
 }
 
 EXPORT
-void GB::nextFrame (RGB32Bitmap *videoBuf) {
+void GB::nextFrame(RGB32Bitmap *videoBuf) {
     gadeNextFrame(this, videoBuf);
+}
+
+EXPORT
+void GB::reset() {
+    gadeReset(this);
+}
+
+EXPORT
+void GB::runFor(uint32_t requestedSamples,
+                uint32_t &generatedSamples,
+                RGB32Bitmap *videoBuf,
+                StereoSample *audioBuf,
+                bool &frameFinished) {
+    uint8_t finished = 0;
+
+    gadeRunFor(this,
+               requestedSamples,
+               &generatedSamples,
+               videoBuf,
+               audioBuf,
+               &finished);
+    frameFinished = finished != 0;
 }
 
 EXPORT
 void GB::setInputReader(InputReader *inputReader) {
     gadeSetInputReader(this, inputReader);
 }
-

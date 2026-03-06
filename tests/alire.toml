@@ -1,13 +1,13 @@
-name = "libgade_testd"
-description = "Integration testsuite for libgade"
+name = "gade_test"
+description = "Integration testsuite for Gade"
 version = "0.1.0-dev"
 
 authors = ["ellamosi"]
 maintainers = ["ellamosi <ellamosi@users.noreply.github.com>"]
 maintainers-logins = ["ellamosi"]
 licenses = "MIT"
-website = "https://github.com/ellamosi/libgade"
-tags = ["ada", "gameboy", "emulator", "testsuite"]
+website = "https://github.com/ellamosi/gade"
+tags = ["ada", "gameboy", "emulator", "test"]
 
 project-files = ["harness/gade_testd.gpr"]
 
