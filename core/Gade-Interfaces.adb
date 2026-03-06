@@ -8,17 +8,22 @@ with Gade.Dev.CPU.Instructions.Exec;        use Gade.Dev.CPU.Instructions.Exec;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
 with Gade.Carts;
+with Gade.Logging;
 
 package body Gade.Interfaces is
+   use type Gade.Logging.Logger_Access;
 
    type Opaque_Gade_Type is record
-      GB : Gade.GB.GB_Type;
+      GB     : Gade.GB.GB_Type;
+      Logger : Gade.Logging.Logger_Access;
    end record;
 
    procedure Create (G : out Gade_Type) is
    begin
       G := new Opaque_Gade_Type;
+      G.Logger := Gade.Logging.Default_Logger;
       G.GB.Create;
+      G.GB.Set_Logger (G.Logger);
    end Create;
 
    procedure Reset (G : Gade_Type) is
@@ -30,7 +35,7 @@ package body Gade.Interfaces is
      (G    : Gade_Type;
       Path : String) is
    begin
-      G.GB.Cart := Gade.Carts.Load_ROM (Path);
+      G.GB.Cart := Gade.Carts.Load_ROM (Path, G.Logger);
    end Load_ROM;
 
    procedure Set_Input_Reader
@@ -43,9 +48,9 @@ package body Gade.Interfaces is
    procedure Set_Logger
      (G      : Gade_Type;
       Logger : Gade.Logging.Logger_Access) is
-      pragma Unreferenced (G);
    begin
-      Gade.Logging.Set_Logger (Logger);
+      G.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
+      G.GB.Set_Logger (G.Logger);
    end Set_Logger;
 
    procedure Run_For
@@ -94,7 +99,7 @@ package body Gade.Interfaces is
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin
       G.GB.Cart.Save_RAM;
-      Gade.Logging.Debug ("Finalize");
+      Gade.Logging.Debug (G.Logger, "Finalize");
       Free (G);
    end Finalize;
 

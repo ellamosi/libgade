@@ -10,6 +10,7 @@ with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Video_Buffer;   use Gade.Video_Buffer;
 with Gade.Audio_Buffer;   use Gade.Audio_Buffer;
 with Gade.Carts;          use Gade.Carts;
+with Gade.Logging;
 
 private package Gade.GB is
 
@@ -30,6 +31,7 @@ private package Gade.GB is
 
    type GB_Public_Type is abstract tagged limited record
       CPU              : aliased CPU_Context;
+      Logger           : Gade.Logging.Logger_Access;
       Cart             : Carts.Cart_Access := null;
       Video_RAM        : aliased VRAM_Type;
       Content          : Memory_Bytes;
@@ -47,6 +49,10 @@ private package Gade.GB is
    procedure Create (GB : out GB_Type);
 
    procedure Reset (GB : in out GB_Type);
+
+   procedure Set_Logger
+     (GB     : in out GB_Type;
+      Logger : Gade.Logging.Logger_Access);
 
    --  TODO: Revisit how sync components for performance/cleanliness
    procedure Report_Cycles

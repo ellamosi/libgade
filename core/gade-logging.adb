@@ -4,7 +4,7 @@ package body Gade.Logging is
 
    overriding
    procedure Log
-     (Logger  : in out Null_Logger;
+     (Logger  : Null_Logger;
       Level   : Log_Level;
       Message : String) is
       pragma Unreferenced (Logger, Level, Message);
@@ -13,46 +13,41 @@ package body Gade.Logging is
    end Log;
 
    Null_Logger_Instance : aliased Null_Logger;
-   Current_Logger       : Logger_Access := Null_Logger_Instance'Access;
+   Default : constant Logger_Access := Null_Logger_Instance'Access;
 
-   procedure Write
-     (Level   : Log_Level;
-      Message : String);
-
-   procedure Set_Logger (Logger : Logger_Access) is
+   function Default_Logger return Logger_Access is
    begin
-      if Logger = null then
-         Current_Logger := Null_Logger_Instance'Access;
-      else
-         Current_Logger := Logger;
-      end if;
-   end Set_Logger;
+      return Default;
+   end Default_Logger;
 
-   procedure Write
-     (Level   : Log_Level;
+   procedure Log
+     (Logger  : Logger_Access;
+      Level   : Log_Level;
       Message : String) is
+      Effective_Logger : constant Logger_Access :=
+        (if Logger = null then Default_Logger else Logger);
    begin
-      Current_Logger.Log (Level, Message);
-   end Write;
+      Effective_Logger.Log (Level, Message);
+   end Log;
 
-   procedure Debug (Message : String) is
+   procedure Debug (Logger : Logger_Access; Message : String) is
    begin
-      Write (Debug, Message);
+      Log (Logger, Debug, Message);
    end Debug;
 
-   procedure Info (Message : String) is
+   procedure Info (Logger : Logger_Access; Message : String) is
    begin
-      Write (Info, Message);
+      Log (Logger, Info, Message);
    end Info;
 
-   procedure Warn (Message : String) is
+   procedure Warn (Logger : Logger_Access; Message : String) is
    begin
-      Write (Warn, Message);
+      Log (Logger, Warn, Message);
    end Warn;
 
-   procedure Error (Message : String) is
+   procedure Error (Logger : Logger_Access; Message : String) is
    begin
-      Write (Error, Message);
+      Log (Logger, Error, Message);
    end Error;
 
 end Gade.Logging;

@@ -1,4 +1,5 @@
 with Gade.Audio_Buffer; use Gade.Audio_Buffer;
+with Gade.Logging;
 
 limited with Gade.Audio.Frame_Sequencer;
 
@@ -13,6 +14,10 @@ private package Gade.Audio is
 
    procedure Reset
      (Audio : in out Audio_Type);
+
+   procedure Set_Logger
+     (Audio  : in out Audio_Type;
+      Logger : Gade.Logging.Logger_Access);
 
    procedure Read
      (Audio   : in out Audio_Type;

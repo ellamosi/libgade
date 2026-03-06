@@ -1,5 +1,3 @@
-with Gade.Logging;
-
 package body Gade.Carts.Mem.ROM is
 
    function Encompassing_Size (S : File_Size) return ROM_Content_Size is

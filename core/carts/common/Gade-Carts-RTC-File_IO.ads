@@ -1,4 +1,5 @@
 with Ada.Streams.Stream_IO;
+with Gade.Logging;
 private with Ada.Calendar;
 private with Interfaces;
 private with System;
@@ -6,12 +7,14 @@ private with System;
 package Gade.Carts.RTC.File_IO is
 
    procedure Load
-     (Clk  : out Clock;
-      File : Ada.Streams.Stream_IO.File_Type);
+     (Logger : Gade.Logging.Logger_Access;
+      Clk    : out Clock;
+      File   : Ada.Streams.Stream_IO.File_Type);
 
    procedure Save
-     (Clk  : Clock;
-      File : Ada.Streams.Stream_IO.File_Type);
+     (Logger : Gade.Logging.Logger_Access;
+      Clk    : Clock;
+      File   : Ada.Streams.Stream_IO.File_Type);
 
 private
    use Ada.Calendar, Interfaces, Ada.Streams.Stream_IO;

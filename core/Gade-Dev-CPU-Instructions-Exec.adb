@@ -39,7 +39,7 @@ package body Gade.Dev.CPU.Instructions.Exec is
          elsif Instruction.Extended_Table /= null then
             Current_Table := Instruction.Extended_Table.Entries'Access;
          else
-            Gade.Logging.Error ("Unrecognized opcode!");
+            Gade.Logging.Error (GB.Logger, "Unrecognized opcode!");
             raise Program_Error;
          end if;
       end loop;

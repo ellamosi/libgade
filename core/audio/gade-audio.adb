@@ -77,6 +77,13 @@ package body Gade.Audio is
       Audio.Clean := True;
    end Reset;
 
+   procedure Set_Logger
+     (Audio  : in out Audio_Type;
+      Logger : Gade.Logging.Logger_Access) is
+   begin
+      Audio.Mixer.Set_Logger (Logger);
+   end Set_Logger;
+
    function To_Channel_Register (Address : Audio_IO_Address)
                                  return Channel_Register
    is

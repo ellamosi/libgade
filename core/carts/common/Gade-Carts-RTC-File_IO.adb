@@ -1,7 +1,6 @@
 with Ada.Exceptions;             use Ada.Exceptions;
 
 with Gade.Carts.RTC.Text_IO; use Gade.Carts.RTC.Text_IO;
-with Gade.Logging;
 
 package body Gade.Carts.RTC.File_IO is
    Unix_Epoch : constant Time := Time_Of (1970, 1, 1, 0.0);
@@ -120,37 +119,39 @@ package body Gade.Carts.RTC.File_IO is
    end Read;
 
    procedure Load
-     (Clk  : out Clock;
-      File : Ada.Streams.Stream_IO.File_Type)
+     (Logger : Gade.Logging.Logger_Access;
+      Clk    : out Clock;
+      File   : Ada.Streams.Stream_IO.File_Type)
    is
       Clk_Data : Clock_Data;
    begin
       Read (File, Clk_Data);
       To_Clock (Clk_Data, Ada.Calendar.Clock, Clk);
-      Gade.Logging.Info ("Loaded RTC:");
-      Print (Clk);
+      Gade.Logging.Info (Logger, "Loaded RTC:");
+      Print (Logger, Clk);
    exception
       when Error : others =>
-         Gade.Logging.Error ("Unable to read RTC file");
-         Gade.Logging.Error (Exception_Information (Error));
+         Gade.Logging.Error (Logger, "Unable to read RTC file");
+         Gade.Logging.Error (Logger, Exception_Information (Error));
    end Load;
 
    procedure Save
-     (Clk  : Clock;
-      File : Ada.Streams.Stream_IO.File_Type)
+     (Logger : Gade.Logging.Logger_Access;
+      Clk    : Clock;
+      File   : Ada.Streams.Stream_IO.File_Type)
    is
       Output_Stream : Stream_Access;
       Clk_Data      : Clock_Data;
    begin
-      Gade.Logging.Info ("Saving RTC:");
-      Print (Clk);
+      Gade.Logging.Info (Logger, "Saving RTC:");
+      Print (Logger, Clk);
       To_Clock_Data (Clk, Ada.Calendar.Clock, Clk_Data);
       Output_Stream := Ada.Streams.Stream_IO.Stream (File);
       Clock_Data_64_Buffer'Write (Output_Stream, Clk_Data.Content_64);
    exception
       when Error : others =>
-         Gade.Logging.Error ("Unable to write RTC file");
-         Gade.Logging.Error (Exception_Information (Error));
+         Gade.Logging.Error (Logger, "Unable to write RTC file");
+         Gade.Logging.Error (Logger, Exception_Information (Error));
    end Save;
 
 end Gade.Carts.RTC.File_IO;

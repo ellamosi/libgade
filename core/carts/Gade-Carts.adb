@@ -5,9 +5,9 @@ with Gade.Carts.Plain.Constructors; use Gade.Carts.Plain.Constructors;
 with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
 with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
 with Gade.Carts.MBC3.Constructors;  use Gade.Carts.MBC3.Constructors;
-with Gade.Logging;
 
 package body Gade.Carts is
+   use type Gade.Logging.Logger_Access;
 
    package Plain_Carts renames Plain.Constructors;
    package MBC1_Carts renames MBC1.Constructors;
@@ -40,7 +40,10 @@ package body Gade.Carts is
       V := Blank_Value;
    end Read_RAM;
 
-   function Load_ROM (Path : String) return Cart_NN_Access is
+   function Load_ROM
+     (Path   : String;
+      Logger : Gade.Logging.Logger_Access) return Cart_NN_Access
+   is
       ROM        : ROM_Content_Access;
       Header     : Cart_Header_Access;
       Controller : Controller_Type;
@@ -54,8 +57,8 @@ package body Gade.Carts is
       Header := Get_Header (ROM);
       Controller := Controller_Type_For_Cart (Header.Cart_Type);
 
-      Gade.Logging.Info ("Cartridge type: " & Header.Cart_Type'Img);
-      Gade.Logging.Info ("Controller type: " & Controller'Img);
+      Gade.Logging.Info (Logger, "Cartridge type: " & Header.Cart_Type'Img);
+      Gade.Logging.Info (Logger, "Controller type: " & Controller'Img);
 
       case Controller is
          when Cartridge_Info.None =>
@@ -70,6 +73,7 @@ package body Gade.Carts is
             C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path));
       end case;
 
+      Set_Logger (C.all, Logger);
       C.Load_RAM;
 
       return C;
@@ -87,7 +91,7 @@ package body Gade.Carts is
       end if;
    exception
       when Name_Error =>
-         Gade.Logging.Debug ("Save not found: " & C.Save_Path.all);
+         Gade.Logging.Debug (C.Logger, "Save not found: " & C.Save_Path.all);
    end Load_RAM;
 
    procedure Save_RAM (C : in out Cart) is
@@ -101,6 +105,18 @@ package body Gade.Carts is
          Close (File);
       end if;
    end Save_RAM;
+
+   procedure Set_Logger
+     (C      : in out Cart;
+      Logger : Gade.Logging.Logger_Access) is
+   begin
+      C.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
+   end Set_Logger;
+
+   function Logger_Of (C : Cart) return Gade.Logging.Logger_Access is
+   begin
+      return C.Logger;
+   end Logger_Of;
 
    function RAM_Path (ROM_Path : String) return String is
       use Ada.Directories;

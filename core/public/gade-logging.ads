@@ -4,17 +4,21 @@ package Gade.Logging is
 
    type Logger_Interface is interface;
    procedure Log
-     (Logger  : in out Logger_Interface;
+     (Logger  : Logger_Interface;
       Level   : Log_Level;
       Message : String) is abstract;
 
    type Logger_Access is access all Logger_Interface'Class;
 
-   procedure Set_Logger (Logger : Logger_Access);
+   function Default_Logger return Logger_Access;
 
-   procedure Debug (Message : String);
-   procedure Info (Message : String);
-   procedure Warn (Message : String);
-   procedure Error (Message : String);
+   procedure Log
+     (Logger  : Logger_Access;
+      Level   : Log_Level;
+      Message : String);
+   procedure Debug (Logger : Logger_Access; Message : String);
+   procedure Info (Logger : Logger_Access; Message : String);
+   procedure Warn (Logger : Logger_Access; Message : String);
+   procedure Error (Logger : Logger_Access; Message : String);
 
 end Gade.Logging;

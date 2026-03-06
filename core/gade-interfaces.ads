@@ -1,5 +1,5 @@
 limited with Gade.Input_Reader;
-with Gade.Logging;
+limited with Gade.Logging;
 limited with Gade.Video_Buffer;
 limited with Gade.Audio_Buffer;
 

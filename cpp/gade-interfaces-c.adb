@@ -6,17 +6,25 @@ package body Gade.Interfaces.C is
    procedure Initialize (This : out Gade_Type) is
    begin
       Gade.Interfaces.Create (This.G);
+      This.Input_Reader := null;
       This.Logger := null;
    end Initialize;
 
    procedure Finalize (This : in out Gade_Type) is
-      procedure Free is new Ada.Unchecked_Deallocation
+      procedure Free_Logger is new Ada.Unchecked_Deallocation
         (Object => Logger_Wrapper,
          Name   => Logger_Wrapper_Access);
+      procedure Free_Input_Reader is new Ada.Unchecked_Deallocation
+        (Object => Input_Reader_Wrapper,
+         Name   => Input_Reader_Wrapper_Access);
    begin
+      Gade.Interfaces.Set_Input_Reader (This.G, null);
+      if This.Input_Reader /= null then
+         Free_Input_Reader (This.Input_Reader);
+      end if;
       Gade.Interfaces.Set_Logger (This.G, null);
       if This.Logger /= null then
-         Free (This.Logger);
+         Free_Logger (This.Logger);
       end if;
       Gade.Interfaces.Finalize (This.G);
    end Finalize;
@@ -78,12 +86,25 @@ package body Gade.Interfaces.C is
    end Read_Input;
 
    procedure Set_Input_Reader
-     (This         : Gade_Type;
+     (This         : in out Gade_Type;
       Input_Reader : Input_Reader_Class_Access) is
+      procedure Free_Input_Reader is new Ada.Unchecked_Deallocation
+        (Object => Input_Reader_Wrapper,
+         Name   => Input_Reader_Wrapper_Access);
       Wrapper : Input_Reader_Wrapper_Access;
    begin
+      Gade.Interfaces.Set_Input_Reader (This.G, null);
+      if This.Input_Reader /= null then
+         Free_Input_Reader (This.Input_Reader);
+      end if;
+
+      if Input_Reader = null then
+         return;
+      end if;
+
       Wrapper := new Input_Reader_Wrapper;
       Wrapper.C_Instance := Input_Reader;
+      This.Input_Reader := Wrapper;
       Gade.Interfaces.Set_Input_Reader
         (This.G, Gade.Input_Reader.Input_Reader_Access (Wrapper));
    end Set_Input_Reader;
@@ -104,7 +125,7 @@ package body Gade.Interfaces.C is
 
    overriding
    procedure Log
-     (Wrapper : in out Logger_Wrapper;
+     (Wrapper : Logger_Wrapper;
       Level   : Log_Level;
       Message : String)
    is
