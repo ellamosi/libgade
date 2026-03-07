@@ -69,10 +69,10 @@ package body Gade.Interfaces.C is
    pragma Import (C, Read_Input, "InputReader_readInput");
 
    overriding
-   function Read_Input (Wrapper : Input_Reader_Wrapper) return Input_State is
+   function Read_Input (Wrapper : Input_Reader_Wrapper) return State is
       function To_Input_State is
          new Ada.Unchecked_Conversion (Source => unsigned_char,
-                                       Target => Input_State);
+                                       Target => State);
    begin
       return To_Input_State (Read_Input (Wrapper.C_Instance));
    end Read_Input;
@@ -98,7 +98,7 @@ package body Gade.Interfaces.C is
       Wrapper.C_Instance := Input_Reader;
       This.Input_Reader := Wrapper;
       Gade.Interfaces.Set_Input_Reader
-        (This.G, Gade.Input_Reader.Input_Reader_Access (Wrapper));
+        (This.G, Gade.Input.Reader_Access (Wrapper));
    end Set_Input_Reader;
 
    procedure Next_Frame

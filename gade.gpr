@@ -12,7 +12,7 @@ library project Gade is
      ("gade.ads",
       "gade-logging.ads",
       "gade-interfaces.ads",
-      "gade-input_reader.ads",
+      "gade-input.ads",
       "gade-video_buffer.ads",
       "gade-audio_buffer.ads");
 

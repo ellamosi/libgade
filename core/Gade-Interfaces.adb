@@ -1,7 +1,7 @@
 with Ada.Unchecked_Deallocation;
 
 with Gade.GB;           use Gade.GB;
-with Gade.Input_Reader; use Gade.Input_Reader;
+with Gade.Input; use Gade.Input;
 with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 with Gade.Video_Buffer; use Gade.Video_Buffer;
 with Gade.Dev.CPU.Instructions.Exec;        use Gade.Dev.CPU.Instructions.Exec;
@@ -25,7 +25,7 @@ package body Gade.Interfaces is
 
    procedure Create
      (G      : out Gade_Type;
-      Reader : Gade.Input_Reader.Input_Reader_Access;
+      Reader : Gade.Input.Reader_Access;
       Logger : Gade.Logging.Logger_Access) is
    begin
       G := new Opaque_Gade_Type;
@@ -48,7 +48,7 @@ package body Gade.Interfaces is
 
    procedure Set_Input_Reader
      (G      : Gade_Type;
-      Reader : Gade.Input_Reader.Input_Reader_Access) is
+      Reader : Gade.Input.Reader_Access) is
    begin
       G.GB.Joypad.Set_Input_Reader (Reader);
    end Set_Input_Reader;

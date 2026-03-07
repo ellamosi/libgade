@@ -1,4 +1,4 @@
-with Gade.Input_Reader; use Gade.Input_Reader;
+with Gade.Input; use Gade.Input;
 
 package Gade.Dev.Joypad is
 
@@ -28,7 +28,7 @@ package Gade.Dev.Joypad is
 
    procedure Set_Input_Reader
      (Joypad : in out Joypad_Type;
-      Reader : Input_Reader_Access);
+      Reader : Reader_Access);
 
 private
 
@@ -60,12 +60,12 @@ private
 
    type Joypad_Type is
      new Memory_Mapped_Device and Interrupt_Source with record
-      Reader : Input_Reader_Access := null;
+      Reader : Reader_Access := null;
       Map    : Joypad_Matrix_Type;
    end record;
 
    procedure Read_Button_Matrix
      (M     : in out Joypad_Matrix_Type;
-      Input : Input_State);
+      Input : State);
 
 end Gade.Dev.Joypad;
