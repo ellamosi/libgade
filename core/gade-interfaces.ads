@@ -1,4 +1,5 @@
-limited with Gade.Input_Reader;
+limited with Gade.Input;
+limited with Gade.Logging;
 limited with Gade.Video_Buffer;
 limited with Gade.Audio_Buffer;
 
@@ -12,6 +13,11 @@ package Gade.Interfaces is
 
    procedure Create (G : out Gade_Type);
 
+   procedure Create
+     (G      : out Gade_Type;
+      Reader : Gade.Input.Reader_Access;
+      Logger : Gade.Logging.Logger_Access);
+
    procedure Reset (G : Gade_Type);
 
    procedure Load_ROM
@@ -20,7 +26,7 @@ package Gade.Interfaces is
 
    procedure Set_Input_Reader
      (G      : Gade_Type;
-      Reader : Gade.Input_Reader.Input_Reader_Access);
+      Reader : Gade.Input.Reader_Access);
 
    procedure Run_For
      (G                 : Gade_Type;

@@ -19,7 +19,7 @@ package body Gade.Carts.MBC3 is
       use Gade.Carts.RTC.File_IO;
    begin
       Banked_RAM_Mixin.Banked_RAM_Cart (C).Load_RAM_File (File);
-      if C.RTC /= null then Load (C.RTC.all, File); end if;
+      if C.RTC /= null then Load (Logger_Of (C), C.RTC.all, File); end if;
    end Load_RAM_File;
 
    overriding
@@ -30,7 +30,7 @@ package body Gade.Carts.MBC3 is
       use Gade.Carts.RTC.File_IO;
    begin
       Banked_RAM_Mixin.Banked_RAM_Cart (C).Save_RAM_File (File);
-      if C.RTC /= null then Save (C.RTC.all, File); end if;
+      if C.RTC /= null then Save (Logger_Of (C), C.RTC.all, File); end if;
    end Save_RAM_File;
 
    overriding

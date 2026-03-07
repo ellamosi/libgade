@@ -1,14 +1,23 @@
 with Ada.Unchecked_Conversion;
+with Ada.Unchecked_Deallocation;
 
 package body Gade.Interfaces.C is
 
    procedure Initialize (This : out Gade_Type) is
    begin
       Gade.Interfaces.Create (This.G);
+      This.Input_Reader := null;
    end Initialize;
 
    procedure Finalize (This : in out Gade_Type) is
+      procedure Free_Input_Reader is new Ada.Unchecked_Deallocation
+        (Object => Input_Reader_Wrapper,
+         Name   => Input_Reader_Wrapper_Access);
    begin
+      Gade.Interfaces.Set_Input_Reader (This.G, null);
+      if This.Input_Reader /= null then
+         Free_Input_Reader (This.Input_Reader);
+      end if;
       Gade.Interfaces.Finalize (This.G);
    end Finalize;
 
@@ -60,23 +69,36 @@ package body Gade.Interfaces.C is
    pragma Import (C, Read_Input, "InputReader_readInput");
 
    overriding
-   function Read_Input (Wrapper : Input_Reader_Wrapper) return Input_State is
+   function Read_Input (Wrapper : Input_Reader_Wrapper) return State is
       function To_Input_State is
          new Ada.Unchecked_Conversion (Source => unsigned_char,
-                                       Target => Input_State);
+                                       Target => State);
    begin
       return To_Input_State (Read_Input (Wrapper.C_Instance));
    end Read_Input;
 
    procedure Set_Input_Reader
-     (This         : Gade_Type;
+     (This         : in out Gade_Type;
       Input_Reader : Input_Reader_Class_Access) is
+      procedure Free_Input_Reader is new Ada.Unchecked_Deallocation
+        (Object => Input_Reader_Wrapper,
+         Name   => Input_Reader_Wrapper_Access);
       Wrapper : Input_Reader_Wrapper_Access;
    begin
+      Gade.Interfaces.Set_Input_Reader (This.G, null);
+      if This.Input_Reader /= null then
+         Free_Input_Reader (This.Input_Reader);
+      end if;
+
+      if Input_Reader = null then
+         return;
+      end if;
+
       Wrapper := new Input_Reader_Wrapper;
       Wrapper.C_Instance := Input_Reader;
+      This.Input_Reader := Wrapper;
       Gade.Interfaces.Set_Input_Reader
-        (This.G, Gade.Input_Reader.Input_Reader_Access (Wrapper));
+        (This.G, Gade.Input.Reader_Access (Wrapper));
    end Set_Input_Reader;
 
    procedure Next_Frame

@@ -1,5 +1,3 @@
-with Ada.Text_IO;
-
 package body Gade.Carts.Mem.ROM is
 
    function Encompassing_Size (S : File_Size) return ROM_Content_Size is
@@ -20,19 +18,6 @@ package body Gade.Carts.Mem.ROM is
       F_Size : File_Size;
       Size   : ROM_Content_Size;
       Mem    : ROM_Content_Access;
-
-      --  TODO: Update expected output from tests and remove this.
-      procedure Print_Banks;
-      procedure Print_Banks is
-         use Ada.Text_IO;
-         ROM_Bank_Size : constant := 16 * 1024;
-         Banks : constant Natural := Natural (Size / ROM_Bank_Size);
-      begin
-         for i in 0 .. Banks - 1 loop
-            Put_Line ("Loading bank " & i'Img);
-         end loop;
-         Put_Line ("Loader: Successfully loaded" & Banks'Img & " ROM banks.");
-      end Print_Banks;
    begin
       F_Size := Ada.Directories.Size (Path);
       Size := Encompassing_Size (F_Size);
@@ -40,7 +25,6 @@ package body Gade.Carts.Mem.ROM is
       Open (File, In_File, Path);
       Load (Mem.all, File);
       Close (File);
-      Print_Banks; -- Temporary: to match expected test output
       return Mem;
    end Load;
 

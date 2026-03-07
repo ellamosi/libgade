@@ -6,12 +6,13 @@ package body Gade.Carts.MBC3.Constructors is
    function Create
      (ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
-      RAM_Path    : String)
+      RAM_Path    : String;
+      Logger      : Gade.Logging.Logger_Access)
       return MBC3_Cart_NN_Access
    is
       Result : constant MBC3_Cart_NN_Access := new MBC3_Cart;
    begin
-      Initialize (Result.all, ROM_Content, Header, RAM_Path);
+      Initialize (Result.all, ROM_Content, Header, RAM_Path, Logger);
       return Result;
    end Create;
 
@@ -19,7 +20,8 @@ package body Gade.Carts.MBC3.Constructors is
      (C           : out MBC3_Cart'Class;
       ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
-      RAM_Path    : String)
+      RAM_Path    : String;
+      Logger      : Gade.Logging.Logger_Access)
    is
       RAM_Content  : RAM_Content_Access;
       Bank_Factory : MBC3_RAM_Bank_Factory;
@@ -33,7 +35,7 @@ package body Gade.Carts.MBC3.Constructors is
       if Has_Timer then C.RTC := RTC.Constructors.Create; end if;
       RAM_Content := Create (Header.RAM_Size, Max_Content_Size);
       Savable := Has_Battery and (Has_Timer or RAM_Content /= null);
-      Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable);
+      Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable, Logger);
       Initialize (Bank_Factory, RAM_Content, C.RTC);
       MBC_Constructors.Initialize (C, ROM_Content, RAM_Content, Bank_Factory);
       Reset (C);

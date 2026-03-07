@@ -2,7 +2,7 @@ package body Gade.Dev.Joypad is
 
    procedure Read_Button_Matrix
      (M     : in out Joypad_Matrix_Type;
-      Input : Input_State) is
+      Input : State) is
    begin
       M.P10_IN :=
         not ((not M.P14_OUT and Input.RIGHT) or (not M.P15_OUT and Input.A));
@@ -32,7 +32,7 @@ package body Gade.Dev.Joypad is
    is
       pragma Unreferenced (GB, Address);
       New_Matrix : Joypad_Matrix_Type;
-      New_State  : Input_State;
+      New_State  : State;
    begin
       if Joypad.Reader /= null then
          New_Matrix := Joypad.Map;
@@ -81,7 +81,7 @@ package body Gade.Dev.Joypad is
 
    procedure Set_Input_Reader
      (Joypad : in out Joypad_Type;
-      Reader : Input_Reader_Access) is
+      Reader : Reader_Access) is
    begin
       Joypad.Reader := Reader;
    end Set_Input_Reader;

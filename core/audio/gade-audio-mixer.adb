@@ -1,18 +1,20 @@
-with Ada.Text_IO;    use Ada.Text_IO;
 with Ada.Exceptions; use Ada.Exceptions;
 
 package body Gade.Audio.Mixer is
+   use type Gade.Logging.Logger_Access;
 
    procedure Create (Mixer    : out Audio_Mixer;
                      Square_1 : not null Sweeping_Square_Channel_Access;
                      Square_2 : not null Square_Channel_Access;
                      Wave     : not null Wave_Channel_Access;
-                     Noise    : not null Noise_Channel_Access) is
+                     Noise    : not null Noise_Channel_Access;
+                     Logger   : Gade.Logging.Logger_Access) is
    begin
       Mixer.Square_1 := Square_1;
       Mixer.Square_2 := Square_2;
       Mixer.Wave := Wave;
       Mixer.Noise := Noise;
+      Mixer.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
    end Create;
 
    procedure Reset (Mixer : in out Audio_Mixer) is
@@ -71,7 +73,7 @@ package body Gade.Audio.Mixer is
       return Output * Mixer.Volume_Multiplier;
    exception
       when E : others =>
-         Put_Line (Exception_Information (E));
+         Gade.Logging.Error (Mixer.Logger, Exception_Information (E));
          return (0, 0);
    end Next_Sample;
 

@@ -9,6 +9,7 @@ use Gade.Audio.Channels,
     Gade.Audio.Channels.Pulse.Square,
     Gade.Audio.Channels.Pulse.Square.Sweeping,
     Gade.Audio.Channels.Wave;
+with Gade.Logging;
 
 --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Mixer
 --
@@ -28,7 +29,8 @@ private package Gade.Audio.Mixer is
                      Square_1 : not null Sweeping_Square_Channel_Access;
                      Square_2 : not null Square_Channel_Access;
                      Wave     : not null Wave_Channel_Access;
-                     Noise    : not null Noise_Channel_Access);
+                     Noise    : not null Noise_Channel_Access;
+                     Logger   : Gade.Logging.Logger_Access);
 
    procedure Reset (Mixer : in out Audio_Mixer);
 
@@ -117,6 +119,7 @@ private
 
       Power_Mask        : Byte;
       Volume_Multiplier : Stereo_Sample;
+      Logger            : Gade.Logging.Logger_Access;
    end record;
 
 end Gade.Audio.Mixer;

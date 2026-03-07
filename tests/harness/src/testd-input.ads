@@ -1,4 +1,4 @@
-with Gade.Input_Reader;
+with Gade.Input;
 with Interfaces;
 
 package Testd.Input is
@@ -14,11 +14,11 @@ package Testd.Input is
       Button_Down);
 
    type Manual_Input_Reader is
-     new Gade.Input_Reader.Input_Reader_Type with private;
+     new Gade.Input.Reader_Interface with private;
 
    overriding
    function Read_Input
-     (Reader : Manual_Input_Reader) return Gade.Input_Reader.Input_State;
+     (Reader : Manual_Input_Reader) return Gade.Input.State;
 
    procedure Clear (Reader : in out Manual_Input_Reader);
 
@@ -38,8 +38,8 @@ package Testd.Input is
 private
 
    type Manual_Input_Reader is
-     new Gade.Input_Reader.Input_Reader_Type with record
-      State : Gade.Input_Reader.Input_State := (others => False);
+     new Gade.Input.Reader_Interface with record
+      State : Gade.Input.State := (others => False);
    end record;
 
 end Testd.Input;

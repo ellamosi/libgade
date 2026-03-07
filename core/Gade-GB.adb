@@ -2,11 +2,15 @@ with Gade.Carts.Blank;
 
 package body Gade.GB is
 
-   procedure Create (GB : out GB_Type) is
+   procedure Create
+     (GB     : out GB_Type;
+      Logger : Gade.Logging.Logger_Access) is
+      use type Gade.Logging.Logger_Access;
    begin
+      GB.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
       Display.Create (GB.Display);
       GB.Cart := Cart_Access (Gade.Carts.Blank.Singleton);
-      Audio.Create (GB.Audio);
+      Audio.Create (GB.Audio, GB.Logger);
       Reset (GB);
    end Create;
 

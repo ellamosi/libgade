@@ -1,25 +1,37 @@
-with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
 
 with Gade.GB;           use Gade.GB;
-with Gade.Input_Reader; use Gade.Input_Reader;
+with Gade.Input; use Gade.Input;
 with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 with Gade.Video_Buffer; use Gade.Video_Buffer;
 with Gade.Dev.CPU.Instructions.Exec;        use Gade.Dev.CPU.Instructions.Exec;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
 with Gade.Carts;
+with Gade.Logging;
 
 package body Gade.Interfaces is
+   use type Gade.Logging.Logger_Access;
 
    type Opaque_Gade_Type is record
-      GB : Gade.GB.GB_Type;
+      GB     : Gade.GB.GB_Type;
+      Logger : Gade.Logging.Logger_Access;
    end record;
 
    procedure Create (G : out Gade_Type) is
    begin
+      Create (G, null, null);
+   end Create;
+
+   procedure Create
+     (G      : out Gade_Type;
+      Reader : Gade.Input.Reader_Access;
+      Logger : Gade.Logging.Logger_Access) is
+   begin
       G := new Opaque_Gade_Type;
-      G.GB.Create;
+      G.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
+      G.GB.Create (G.Logger);
+      G.GB.Joypad.Set_Input_Reader (Reader);
    end Create;
 
    procedure Reset (G : Gade_Type) is
@@ -31,12 +43,12 @@ package body Gade.Interfaces is
      (G    : Gade_Type;
       Path : String) is
    begin
-      G.GB.Cart := Gade.Carts.Load_ROM (Path);
+      G.GB.Cart := Gade.Carts.Load_ROM (Path, G.Logger);
    end Load_ROM;
 
    procedure Set_Input_Reader
      (G      : Gade_Type;
-      Reader : Gade.Input_Reader.Input_Reader_Access) is
+      Reader : Gade.Input.Reader_Access) is
    begin
       G.GB.Joypad.Set_Input_Reader (Reader);
    end Set_Input_Reader;
@@ -87,7 +99,7 @@ package body Gade.Interfaces is
         (Object => Opaque_Gade_Type, Name => Gade_Type);
    begin
       G.GB.Cart.Save_RAM;
-      Put_Line ("Finalize");
+      Gade.Logging.Debug (G.Logger, "Finalize");
       Free (G);
    end Finalize;
 

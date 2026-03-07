@@ -6,11 +6,12 @@ package body Gade.Carts.Plain.Constructors is
    function Create
      (Content  : ROM_Content_Access;
       Header   : Cart_Header;
-      RAM_Path : String) return Plain_Cart_NN_Access
+      RAM_Path : String;
+      Logger   : Gade.Logging.Logger_Access) return Plain_Cart_NN_Access
    is
       Result : constant Plain_Cart_NN_Access := new Plain_Cart;
    begin
-      Initialize (Result.all, Content, Header, RAM_Path);
+      Initialize (Result.all, Content, Header, RAM_Path, Logger);
       return Result;
    end Create;
 
@@ -18,7 +19,8 @@ package body Gade.Carts.Plain.Constructors is
      (C           : out Plain_Cart'Class;
       ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
-      RAM_Path    : String)
+      RAM_Path    : String;
+      Logger      : Gade.Logging.Logger_Access)
    is
       use ROM_RAM_Mixin.Banked_RAM_Mixin.Banked_RAM_Spaces;
 
@@ -29,7 +31,7 @@ package body Gade.Carts.Plain.Constructors is
       RAM_Content := Create (Header.RAM_Size, Max_Content_Size);
       Has_Battery := Cart_Type_Info_For_Cart (Header.Cart_Type).Battery;
       Savable := RAM_Content /= null and Has_Battery;
-      Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable);
+      Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable, Logger);
       ROM_RAM_Constructors.Initialize (C, ROM_Content, RAM_Content);
    end Initialize;
 

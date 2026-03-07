@@ -1,4 +1,5 @@
 with Gade.Carts.Mem.ROM; use Gade.Carts.Mem.ROM;
+with Gade.Logging;
 private with Gade.Carts.Mixins.ROM_RAM.Constructors;
 
 package Gade.Carts.Plain.Constructors is
@@ -6,7 +7,8 @@ package Gade.Carts.Plain.Constructors is
    function Create
      (Content  : ROM_Content_Access;
       Header   : Cart_Header;
-      RAM_Path : String)
+      RAM_Path : String;
+      Logger   : Gade.Logging.Logger_Access)
       return Plain_Cart_NN_Access;
 
 private
@@ -17,7 +19,8 @@ private
      (C           : out Plain_Cart'Class;
       ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
-      RAM_Path    : String);
+      RAM_Path    : String;
+      Logger      : Gade.Logging.Logger_Access);
 
    subtype Plain_RAM_Size_Type is RAM_Size_Type range None .. RAM_64kbit;
 

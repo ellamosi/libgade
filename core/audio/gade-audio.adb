@@ -36,7 +36,9 @@ package body Gade.Audio is
       Clean : Boolean;
    end record;
 
-   procedure Create (Audio : aliased out Audio_Type) is
+   procedure Create
+     (Audio  : aliased out Audio_Type;
+      Logger : Gade.Logging.Logger_Access) is
    begin
       Audio := new Opaque_Audio_Type;
 
@@ -50,7 +52,8 @@ package body Gade.Audio is
          Audio.Square_1'Access,
          Audio.Square_2'Access,
          Audio.Wave'Access,
-         Audio.Noise'Access);
+         Audio.Noise'Access,
+         Logger);
       Create
         (Audio.Frame_Sequencer,
          Audio.Square_1'Access,

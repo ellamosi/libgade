@@ -1,9 +1,9 @@
-package Gade.Input_Reader is
+package Gade.Input is
 
-   type Input_State is record
+   type State is record
       A, B, SEL, START, RIGHT, LEFT, UP, DOWN : Boolean;
    end record;
-   for Input_State use record
+   for State use record
       A      at 0 range 0 .. 0;
       B      at 0 range 1 .. 1;
       SEL    at 0 range 2 .. 2;
@@ -13,13 +13,13 @@ package Gade.Input_Reader is
       UP     at 0 range 6 .. 6;
       DOWN   at 0 range 7 .. 7;
    end record;
-   for Input_State'Size use 8;
-   pragma Convention (C, Input_State);
+   for State'Size use 8;
+   pragma Convention (C, State);
 
-   type Input_Reader_Type is interface;
-   type Input_Reader_Access is access all Input_Reader_Type'Class;
+   type Reader_Interface is interface;
+   type Reader_Access is access all Reader_Interface'Class;
 
    function Read_Input
-     (Reader : Input_Reader_Type) return Input_State is abstract;
+     (Reader : Reader_Interface) return State is abstract;
 
-end Gade.Input_Reader;
+end Gade.Input;

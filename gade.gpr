@@ -10,8 +10,9 @@ library project Gade is
 
    Base_Interfaces :=
      ("gade.ads",
+      "gade-logging.ads",
       "gade-interfaces.ads",
-      "gade-input_reader.ads",
+      "gade-input.ads",
       "gade-video_buffer.ads",
       "gade-audio_buffer.ads");
 
@@ -26,7 +27,6 @@ library project Gade is
 
    for Source_Dirs use
      ("core",
-      "core/public",
       "core/audio",
       "core/carts",
       "core/carts/banks",

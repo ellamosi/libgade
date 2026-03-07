@@ -7,7 +7,7 @@ package body Testd.Input is
 
    overriding
    function Read_Input
-     (Reader : Manual_Input_Reader) return Gade.Input_Reader.Input_State is
+     (Reader : Manual_Input_Reader) return Gade.Input.State is
    begin
       return Reader.State;
    end Read_Input;

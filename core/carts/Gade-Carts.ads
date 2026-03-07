@@ -1,5 +1,6 @@
 private with Gade.Cartridge_Info;
 private with Ada.Streams.Stream_IO;
+with Gade.Logging;
 
 private package Gade.Carts is
 
@@ -140,7 +141,9 @@ private package Gade.Carts is
 
    subtype Cart_NN_Access is not null Cart_Access;
 
-   function Load_ROM (Path : String) return Cart_NN_Access;
+   function Load_ROM
+     (Path   : String;
+      Logger : Gade.Logging.Logger_Access) return Cart_NN_Access;
 
    procedure Reset (C : in out Cart) is null;
 
@@ -164,10 +167,11 @@ private package Gade.Carts is
 
    procedure Load_RAM (C : in out Cart);
    procedure Save_RAM (C : in out Cart);
+   function Logger_Of (C : Cart) return Gade.Logging.Logger_Access;
 
    procedure Report_Cycles
      (C      : in out Cart;
-      Cycles : Positive) is null;
+     Cycles : Positive) is null;
 
 private
 
@@ -176,6 +180,7 @@ private
    type Cart is abstract tagged record
       Save_Path  : Path_Access;
       Persistent : Boolean;
+      Logger     : Gade.Logging.Logger_Access := Gade.Logging.Default_Logger;
    end record;
 
    procedure Load_RAM_File

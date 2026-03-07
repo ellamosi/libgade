@@ -4,7 +4,7 @@ with Gade.Video_Buffer; use Gade.Video_Buffer;
 with System;
 with Interfaces.C; use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
-with Gade.Input_Reader; use Gade.Input_Reader;
+with Gade.Input; use Gade.Input;
 
 package Gade.Interfaces.C is
 
@@ -41,15 +41,19 @@ package Gade.Interfaces.C is
    type Input_Reader_Class_Access is private;
 
    procedure Set_Input_Reader
-     (This         : Gade_Type;
+     (This         : in out Gade_Type;
       Input_Reader : Input_Reader_Class_Access);
    pragma Export (C, Set_Input_Reader, "gadeSetInputReader");
 
 private
 
+   type Input_Reader_Wrapper;
+   type Input_Reader_Wrapper_Access is access all Input_Reader_Wrapper;
+
    type Gade_Type is record
-      Vptr   : System.Address;
-      G      : Gade.Interfaces.Gade_Type;
+      Vptr         : System.Address;
+      G            : Gade.Interfaces.Gade_Type;
+      Input_Reader : Input_Reader_Wrapper_Access;
    end record;
    pragma Convention (C, Gade_Type);
 
@@ -58,12 +62,11 @@ private
    type Input_Reader_Class_Access is access all Input_Reader_Class;
    pragma Convention (C, Input_Reader_Class_Access);
 
-   type Input_Reader_Wrapper is new Input_Reader_Type with record
+   type Input_Reader_Wrapper is new Reader_Interface with record
       C_Instance : Input_Reader_Class_Access;
    end record;
-   type Input_Reader_Wrapper_Access is access all Input_Reader_Wrapper;
 
    overriding
-   function Read_Input (Wrapper : Input_Reader_Wrapper) return Input_State;
+   function Read_Input (Wrapper : Input_Reader_Wrapper) return State;
 
 end Gade.Interfaces.C;

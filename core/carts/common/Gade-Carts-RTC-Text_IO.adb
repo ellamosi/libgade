@@ -1,12 +1,13 @@
-with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Calendar.Formatting; use Ada.Calendar.Formatting;
 
 package body Gade.Carts.RTC.Text_IO is
 
-   procedure Print (Clk : Clock) is
+   procedure Print
+     (Logger : Gade.Logging.Logger_Access;
+      Clk    : Clock) is
    begin
-      Ada.Text_IO.Put_Line ("  Elapsed:    " & Counter_Image (Clk.Elapsed));
-      Ada.Text_IO.Put_Line ("  Latched:    " & Counter_Image (Clk.Latched));
+      Gade.Logging.Debug (Logger, "  Elapsed:    " & Counter_Image (Clk.Elapsed));
+      Gade.Logging.Debug (Logger, "  Latched:    " & Counter_Image (Clk.Latched));
    end Print;
 
    function Days (D : Duration) return Natural is
