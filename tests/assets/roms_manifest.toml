@@ -5,157 +5,186 @@ type = "http_zip_member"
 url = "https://gekkio.fi/files/mooneye-test-suite/mts-20240926-1737-443f6e1/mts-20240926-1737-443f6e1.zip"
 download_sha256 = "5cf50314cd3d42ec8f423b0a71b9ab6dbfad2386d8d88f03687af1b5b5baba71"
 
+[sources.blargg_cpu_instrs]
+type = "http_zip_member"
+url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/cpu_instrs.zip"
+download_sha256 = "7ad9fd3b8dc61b9fa399ddc687acde37779025b8be307ca9cbc79d44d8ee8cd7"
+
+[sources.blargg_dmg_sound]
+type = "http_zip_member"
+url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/dmg_sound.zip"
+download_sha256 = "76bb61c85ed79d8894fffa9ab47884d0d543fd6fd24428d65b24bb9a767f9f99"
+
+[sources.blargg_instr_timing]
+type = "http_zip_member"
+url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/instr_timing.zip"
+download_sha256 = "10d11343126aac60986a57e87cf6816b5b05274da15b8c1ca65154a2853c2f5b"
+
 [[roms]]
 id = "blargg/cpu_instrs"
 target = "assets/roms/blargg/cpu_instrs.gb"
 sha256 = "8c5e12f41e0ba5bbca796944f92ffe6de28809198682c4332e38d1b3cf56fcf2"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/cpu_instrs.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_01-special"
 target = "assets/roms/blargg/cpu_instrs_01-special.gb"
 sha256 = "fe61349cbaee10cc384b50f356e541c90d1bc380185716706b5d8c465a03cf89"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/01-special.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_02-interrupts"
 target = "assets/roms/blargg/cpu_instrs_02-interrupts.gb"
 sha256 = "fb90b0d2b9501910c49709abda1d8e70f757dc12020ebf8409a7779bbfd12229"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/02-interrupts.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_03-op_sp-hl"
 target = "assets/roms/blargg/cpu_instrs_03-op_sp-hl.gb"
 sha256 = "ca553e606d9b9c86fbd318f1b916c6f0b9df0cf1774825d4361a3fdff2e5a136"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/03-op sp,hl.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_04-op_r,imm"
 target = "assets/roms/blargg/cpu_instrs_04-op_r,imm.gb"
 sha256 = "7686aa7a39ef3d2520ec1037371b5f94dc283fbbfd0f5051d1f64d987bdd6671"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/04-op r,imm.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_05-op_rp"
 target = "assets/roms/blargg/cpu_instrs_05-op_rp.gb"
 sha256 = "d504adfa0a4c4793436a154f14492f044d38b3c6db9efc44138f3c9ad138b775"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/05-op rp.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_06-ld_r,r"
 target = "assets/roms/blargg/cpu_instrs_06-ld_r,r.gb"
 sha256 = "17ada54b0b9c1a33cd5429fce5b765e42392189ca36da96312222ffe309e7ed1"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/06-ld r,r.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_07-jr,jp,call,ret,rst"
 target = "assets/roms/blargg/cpu_instrs_07-jr,jp,call,ret,rst.gb"
 sha256 = "ab31d3daaaa3a98bdbd9395b64f48c1bdaa889aba5b19dd5aaff4ec2a7d228a3"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/07-jr,jp,call,ret,rst.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_08-misc"
 target = "assets/roms/blargg/cpu_instrs_08-misc.gb"
 sha256 = "974a71fe4c67f70f5cc6e98d4dc8c096057ff8a028b7bfa9f7a4330038cf8b7e"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/08-misc instrs.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_09-op_r-r"
 target = "assets/roms/blargg/cpu_instrs_09-op_r-r.gb"
 sha256 = "b28e1be5cd95f22bd1ecacdd33c6f03e607d68870e31a47b15a0229033d5ba2a"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/09-op r,r.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_10-bit_ops"
 target = "assets/roms/blargg/cpu_instrs_10-bit_ops.gb"
 sha256 = "7f5b8e488c6988b5aaba8c2a74529b7c180c55a58449d5ee89d606a07c53514a"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/10-bit ops.gb"
 
 [[roms]]
 id = "blargg/cpu_instrs_11-op_a,(hl)"
 target = "assets/roms/blargg/cpu_instrs_11-op_a,(hl).gb"
 sha256 = "0ec0cf9fda3f00becaefa476df6fb526c434abd9d4a4beac237c2c2692dac5d3"
-[roms.source]
-type = "local_file"
+source_id = "blargg_cpu_instrs"
+member = "cpu_instrs/individual/11-op a,(hl).gb"
 
 [[roms]]
 id = "blargg/dmg_sound_01-registers"
 target = "assets/roms/blargg/dmg_sound_01-registers.gb"
 sha256 = "c6b9fa4b9d9d26919b33ebe78a6ef19ad2df854186cf741ca2746179cc9fc3f1"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/01-registers.gb"
 
 [[roms]]
 id = "blargg/dmg_sound_02-len ctr"
 target = "assets/roms/blargg/dmg_sound_02-len ctr.gb"
 sha256 = "745544125a5065729cab22494a79f65c3836e4426f89e4cc43d330afe711b413"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/02-len ctr.gb"
 
 [[roms]]
 id = "blargg/dmg_sound_03-trigger"
 target = "assets/roms/blargg/dmg_sound_03-trigger.gb"
 sha256 = "bb11e7266a7143bafb8aa2a73ca70957c6011f36cd4e0b6aaf0678378294e75c"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/03-trigger.gb"
 
 [[roms]]
 id = "blargg/dmg_sound_04-sweep"
 target = "assets/roms/blargg/dmg_sound_04-sweep.gb"
 sha256 = "58bc14541d91bb020c7761b423825b3432cfde7ee2fa4d1116126e4cb9573c7e"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/04-sweep.gb"
 
 [[roms]]
 id = "blargg/dmg_sound_05-sweep details"
 target = "assets/roms/blargg/dmg_sound_05-sweep details.gb"
 sha256 = "f582ca3a0b2544b9510797d7d4dd56a17f53e000511b0ae88a6353200dcd9167"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/05-sweep details.gb"
 
 [[roms]]
 id = "blargg/dmg_sound_06-overflow on trigger"
 target = "assets/roms/blargg/dmg_sound_06-overflow on trigger.gb"
 sha256 = "1a511e95e84ed6fe6077cabf451a98b4e01fdef59cadae3efbc178113eb064b1"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/06-overflow on trigger.gb"
 
 [[roms]]
 id = "blargg/dmg_sound_07-len sweep period sync"
 target = "assets/roms/blargg/dmg_sound_07-len sweep period sync.gb"
 sha256 = "56bf5b0c18b996929c9b052ba5a02b450cb619bb6c24cc1d34ea20951c977bf7"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/07-len sweep period sync.gb"
 
 [[roms]]
 id = "blargg/dmg_sound_08-len ctr during power"
 target = "assets/roms/blargg/dmg_sound_08-len ctr during power.gb"
 sha256 = "31cb41f7be106a708ec0bc94f2a9d0b506d247cd591e9d0a2a6a960dc3bf6595"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/08-len ctr during power.gb"
 
 [[roms]]
 id = "blargg/dmg_sound_11-regs after power"
 target = "assets/roms/blargg/dmg_sound_11-regs after power.gb"
 sha256 = "d27dab46e8b881028723f1975328572d38e25d295289b974cd698916a0be5dab"
-[roms.source]
-type = "local_file"
+source_id = "blargg_dmg_sound"
+member = "dmg_sound/rom_singles/11-regs after power.gb"
 
 [[roms]]
 id = "blargg/instr_timing"
 target = "assets/roms/blargg/instr_timing.gb"
 sha256 = "646067b3d6c79fda810e9c3f1cb7c0efd5abb0a7ac06437c54e65720c15d9925"
+source_id = "blargg_instr_timing"
+member = "instr_timing/instr_timing.gb"
+
+[[roms]]
+id = "misc/lcd_lyc"
+target = "assets/roms/misc/lcd_lyc.gb"
+sha256 = "e38f282c0de068f34c125fe3e8bec8102304f126ad2241c6ce24a3e153528925"
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "misc/lcd_scanline_timing"
+target = "assets/roms/misc/lcd_scanline_timing.gb"
+sha256 = "5a48d5f88c9a8df2e748ed167044e12e6550493dc00ea40c605aa4c89ab67720"
 [roms.source]
 type = "local_file"
 
@@ -263,17 +292,3 @@ target = "assets/roms/mooneye/cart_mbc2_rom_512kb.gb"
 sha256 = "4748aeda444bee6520e1bd2268870b53c080a61adc4039c8f32eb101a03df635"
 source_id = "mooneye_public"
 member = "mts-20240926-1737-443f6e1/emulator-only/mbc2/rom_512kb.gb"
-
-[[roms]]
-id = "misc/lcd_lyc"
-target = "assets/roms/misc/lcd_lyc.gb"
-sha256 = "e38f282c0de068f34c125fe3e8bec8102304f126ad2241c6ce24a3e153528925"
-[roms.source]
-type = "local_file"
-
-[[roms]]
-id = "misc/lcd_scanline_timing"
-target = "assets/roms/misc/lcd_scanline_timing.gb"
-sha256 = "5a48d5f88c9a8df2e748ed167044e12e6550493dc00ea40c605aa4c89ab67720"
-[roms.source]
-type = "local_file"
