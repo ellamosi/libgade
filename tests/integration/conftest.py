@@ -16,8 +16,11 @@ HARNESS_PY_DIR = TESTSUITE_DIR / "harness"
 
 sys.path.insert(0, str(HARNESS_PY_DIR))
 
+from envfile import load_env_file  # noqa: E402
 from client import GadeTestdClient  # noqa: E402
 from integration.rom_assets import RomAssetError, ensure_rom_assets  # noqa: E402
+
+load_env_file(TESTSUITE_DIR / "secrets.env", override=False)
 
 
 def _build_argv(project_file):

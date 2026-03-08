@@ -64,6 +64,25 @@ Environment variables:
 - `GADE_ROM_CACHE_DIR`: Download cache directory (default `tests/.rom-cache/downloads`).
 - `GADE_ROM_STRICT=1`: Disallow missing checksums or manifest edits during test run.
 - `GADE_ROM_ALLOW_MANIFEST_UPDATE=0|1`: Control auto-writing generated checksums.
+- `GADE_COMMERCIAL_ROMS_URL`: Secret URL for encrypted commercial ROM bundle.
+- `GADE_COMMERCIAL_ROMS_PASSWORD`: Secret password for encrypted zip extraction.
+
+Local secret setup (never committed):
+- Preferred: create `tests/secrets.env` (dotenv-style). It is auto-loaded by
+  `python3 run.py` and by pytest startup.
+
+```sh
+cp tests/secrets.env.example tests/secrets.env
+# edit tests/secrets.env with real values
+```
+
+- Alternative: add exports to your shell profile (macOS zsh: `~/.zshrc`,
+  Linux bash: `~/.bashrc`).
+
+CI secret setup:
+- Add repository/org secrets named `GADE_COMMERCIAL_ROMS_URL` and
+  `GADE_COMMERCIAL_ROMS_PASSWORD`.
+- Expose them as environment variables in the test step.
 
 Supported source types in the manifest:
 - `local_file`: Existing local ROM file.
@@ -111,3 +130,10 @@ Add `test_*.py` modules under `integration/<source>/` and use the shared
 fixtures/helpers:
 - `integration/conftest.py`: harness/client/path fixtures.
 - `integration/helpers.py`: common operations for load/run/match/save flows.
+
+Commercial Tetris reference generation:
+
+```sh
+cd tests
+python3 integration/commercial/generate_tetris_refs.py
+```

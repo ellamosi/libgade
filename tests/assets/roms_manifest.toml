@@ -178,6 +178,7 @@ member = "instr_timing/instr_timing.gb"
 id = "misc/lcd_lyc"
 target = "assets/roms/misc/lcd_lyc.gb"
 sha256 = "e38f282c0de068f34c125fe3e8bec8102304f126ad2241c6ce24a3e153528925"
+
 [roms.source]
 type = "local_file"
 
@@ -185,8 +186,23 @@ type = "local_file"
 id = "misc/lcd_scanline_timing"
 target = "assets/roms/misc/lcd_scanline_timing.gb"
 sha256 = "5a48d5f88c9a8df2e748ed167044e12e6550493dc00ea40c605aa4c89ab67720"
+
 [roms.source]
 type = "local_file"
+
+[[roms]]
+id = "commercial/tetris"
+target = "assets/roms/commercial/tetris.gb"
+sha256 = "0d6535aef23969c7e5af2b077acaddb4a445b3d0df7bf34c8acef07b51b015c3"
+
+[roms.source]
+type = "http_encrypted_zip_member"
+url_env = "GADE_COMMERCIAL_ROMS_URL"
+zip_password_env = "GADE_COMMERCIAL_ROMS_PASSWORD"
+member = "nointro.gb/Tetris (World) (Rev 1).gb"
+encrypted = true
+cache_key = "commercial-roms"
+optional = true
 
 [[roms]]
 id = "mooneye/cart_mbc1_ram_256kb"

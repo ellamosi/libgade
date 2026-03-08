@@ -13,6 +13,7 @@ import os
 import shutil
 import tempfile
 import urllib.request
+import urllib.error
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -83,7 +84,23 @@ def _atomic_write(path: Path, data: bytes) -> None:
 def _download(url: str, out_path: Path) -> None:
     _ensure_parent(out_path)
     req = urllib.request.Request(url, headers={"User-Agent": "gade-rom-assets/1"})
-    with urllib.request.urlopen(req) as resp, out_path.open("wb") as out:
+    try:
+        with urllib.request.urlopen(req) as resp, out_path.open("wb") as out:
+            shutil.copyfileobj(resp, out)
+        return
+    except urllib.error.HTTPError as exc:
+        if exc.code not in (307, 308):
+            raise
+
+        redirect_to = exc.headers.get("Location")
+        if not redirect_to:
+            raise
+
+    redirected_req = urllib.request.Request(
+        redirect_to,
+        headers={"User-Agent": "gade-rom-assets/1"},
+    )
+    with urllib.request.urlopen(redirected_req) as resp, out_path.open("wb") as out:
         shutil.copyfileobj(resp, out)
 
 
@@ -335,6 +352,28 @@ def _extract_zip_member(
     member: str,
     password_env: Optional[str],
 ) -> bytes:
+    def resolve_member_name(zf, requested: str) -> str:
+        names = zf.namelist()
+        if requested in names:
+            return requested
+
+        requested_lower = requested.lower()
+        matches = [
+            name
+            for name in names
+            if name.lower() == requested_lower
+            or name.lower().endswith("/" + requested_lower)
+        ]
+        if len(matches) == 1:
+            return matches[0]
+        if len(matches) > 1:
+            raise RomAssetError(
+                "zip member '{}' is ambiguous; matches: {}".format(
+                    requested, ", ".join(matches)
+                )
+            )
+        raise RomAssetError("zip member '{}' not found".format(requested))
+
     pwd: Optional[bytes] = None
     if password_env:
         value = os.environ.get(password_env)
@@ -346,12 +385,14 @@ def _extract_zip_member(
 
     if pwd and pyzipper is not None:
         with pyzipper.AESZipFile(zip_path, "r") as zf:
-            return zf.read(member, pwd=pwd)
+            resolved = resolve_member_name(zf, member)
+            return zf.read(resolved, pwd=pwd)
 
     with zipfile.ZipFile(zip_path, "r") as zf:
         if pwd:
             zf.setpassword(pwd)
-        return zf.read(member)
+        resolved = resolve_member_name(zf, member)
+        return zf.read(resolved)
 
 
 def _materialize_rom(entry: RomEntry, source: Dict[str, Any], cache_dir: Path) -> bool:
@@ -434,6 +475,7 @@ def ensure_rom_assets(tests_root: Path) -> ResolveResult:
     verified = 0
 
     for entry in entries:
+        optional_source = bool(entry.source.get("optional", False))
         needs_fetch = True
         if entry.target.exists() and entry.checksum:
             got = _sha256_file(entry.target)
@@ -441,10 +483,18 @@ def ensure_rom_assets(tests_root: Path) -> ResolveResult:
                 needs_fetch = False
 
         if needs_fetch:
-            fetched = _materialize_rom(entry, entry.source, cache_dir)
+            try:
+                fetched = _materialize_rom(entry, entry.source, cache_dir)
+            except RomAssetError as exc:
+                if optional_source and not entry.target.exists():
+                    # Optional sources may be unavailable when secrets are absent.
+                    continue
+                raise
             downloaded += 1 if fetched else 0
 
         if not entry.target.exists():
+            if optional_source:
+                continue
             raise RomAssetError(
                 "ROM missing after resolution for '{}' ({})".format(entry.id, entry.target)
             )

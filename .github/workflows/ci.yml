@@ -54,3 +54,5 @@ jobs:
         run: alr exec -- python3 run.py
         env:
           GADE_ROM_STRICT: "1"
+          GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
+          GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
