@@ -10,7 +10,7 @@ This project started off as an homage to [my university's Computer Architecture 
 
 Why Ada? I learned to program in Ada, and I always felt that it was a more reliable candidate for native code compilation than the likes of C. The precise and platform independent representation clauses that the language offers that allow precisely defining the representation of memory mapped hardware was also a factor in the decision. Also, while such emulators exists in plenty of other languages I suspect it's the first one written in Ada.
 
-## Library architecture
+## Library Architecture
 `gade` is the emulator core library. It can be consumed by different front ends and by the test harness used by integration tests.
 
 Today, the main consumers are:
@@ -40,17 +40,11 @@ flowchart LR
 ```
 
 ## Build
-From `gade/`:
+From `gade/`, using [Alire](https://alire.ada.dev/):
 
 ```sh
 alr build
 ```
-
-Artifacts are generated inside the crate directory:
-
-- Objects: `obj/<build_mode>/<library_type>/`
-- Library outputs: `lib/`
-- Library metadata/sources: `lib/src/<library_type>/`
 
 ### State of affairs
 
@@ -72,5 +66,4 @@ Artifacts are generated inside the crate directory:
 #### Next steps
 - Performance optimizations (GPU rendering)
 - Performance optimizations (CPU interpretation/Interrupt handling)
-- Add a safe way to do integration testing with commercial ROMs
 - Support for more cartridge types
