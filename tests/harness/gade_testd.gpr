@@ -15,7 +15,11 @@ project Gade_Testd is
    for Create_Missing_Dirs use "True";
 
    package Compiler renames Gade.Compiler;
-   package Builder renames Gade.Builder;
+   package Builder is
+      for Default_Switches ("Ada") use Gade.Builder'Default_Switches ("Ada");
+      for Executable ("run_tests") use "run-tests";
+      for Executable ("gade_testd") use "gade-testd";
+   end Builder;
    package Linker is
       case Gade_Library is
          when "static" | "static-pic" =>

@@ -22,17 +22,15 @@ package Gade.Audio_Buffer is
    end record
      with Convention => C;
 
-   --  TODO: Rename
-   type Unconstrained_Audio_Buffer_Type is array (Natural range <>) of Stereo_Sample
+   type Audio_Buffer is array (Natural range <>) of Stereo_Sample
      with Convention => C;
 
    subtype Video_Frame_Buffer_Range is Natural range 0 .. Maximum_Samples - 1;
 
-   --  TODO: Rename, Video_Frame_Audio_Buffer_Type?
-   subtype Audio_Buffer_Type is
-     Unconstrained_Audio_Buffer_Type (Video_Frame_Buffer_Range);
+   subtype Frame_Audio_Buffer is
+     Audio_Buffer (Video_Frame_Buffer_Range);
 
-   type Audio_Buffer_Access is access all Audio_Buffer_Type
+   type Audio_Buffer_Access is access all Frame_Audio_Buffer
      with Convention => C;
 
 end Gade.Audio_Buffer;

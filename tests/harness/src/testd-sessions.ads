@@ -15,7 +15,7 @@ package Testd.Sessions is
       ROM_Loaded : Boolean := False;
 
       V_Buff : aliased Gade.Video_Buffer.RGB32_Display_Buffer;
-      A_Buff : aliased Gade.Audio_Buffer.Audio_Buffer_Type;
+      A_Buff : aliased Gade.Audio_Buffer.Frame_Audio_Buffer;
 
       Input_Reader : aliased Testd.Input.Manual_Input_Reader;
 

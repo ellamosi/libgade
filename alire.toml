@@ -1,6 +1,6 @@
 name = "gade"
 description = "A Game Boy emulation library in Ada"
-version = "0.1.0-dev"
+version = "0.1.0"
 
 authors = ["ellamosi"]
 maintainers = ["ellamosi <ellamosi@users.noreply.github.com>"]

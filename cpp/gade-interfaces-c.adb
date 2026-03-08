@@ -105,7 +105,7 @@ package body Gade.Interfaces.C is
      (This  : Gade_Type;
       Video : RGB32_Display_Buffer_Access)
    is
-      Audio             : aliased Audio_Buffer_Type;
+      Audio             : aliased Frame_Audio_Buffer;
       Generated_Samples : unsigned;
       Frame_Finished    : unsigned_char;
    begin

@@ -11,7 +11,7 @@ import pytest
 TESTSUITE_DIR = Path(__file__).resolve().parents[1]
 ROOT_DIR = TESTSUITE_DIR.parent
 HARNESS_PROJECT = TESTSUITE_DIR / "harness/gade_testd.gpr"
-HARNESS_BIN = TESTSUITE_DIR / "bin" / "gade_testd"
+HARNESS_BIN = TESTSUITE_DIR / "bin" / "gade-testd"
 HARNESS_PY_DIR = TESTSUITE_DIR / "harness"
 
 sys.path.insert(0, str(HARNESS_PY_DIR))
