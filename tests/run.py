@@ -6,6 +6,9 @@ import os
 import shutil
 import subprocess
 import sys
+from pathlib import Path
+
+from envfile import load_env_file
 
 
 def pytest_argv(args):
@@ -38,7 +41,7 @@ def ensure_pytest_available():
         return
     raise SystemExit(
         "pytest is required. Run setup first:\n"
-        "  ./bootstrap.sh"
+        "  alr build"
     )
 
 
@@ -61,6 +64,7 @@ def main():
     parser.add_argument("pattern", nargs="*", help="Filter testcases by substring")
     args = parser.parse_args()
 
+    load_env_file(Path(__file__).resolve().parent / "secrets.env", override=False)
     ensure_pytest_available()
     proc = subprocess.run(pytest_argv(args), cwd=".", env=pytest_env(args), check=False)
     raise SystemExit(proc.returncode)

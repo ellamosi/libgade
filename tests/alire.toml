@@ -10,6 +10,7 @@ website = "https://github.com/ellamosi/gade"
 tags = ["ada", "gameboy", "emulator", "test"]
 
 project-files = ["harness/gade_testd.gpr"]
+executables = ["run_tests"]
 
 [gpr-externals]
 mode = ["debug", "release"]
@@ -32,3 +33,7 @@ image_io = "^20240725.0.0"
 
 [[pins]]
 gade = { path = ".." }
+
+[[actions]]
+type = "post-build"
+command = ["python3", "-m", "pip", "install", "-r", "requirements.txt"]

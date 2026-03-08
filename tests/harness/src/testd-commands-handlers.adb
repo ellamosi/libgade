@@ -1,4 +1,5 @@
 with Ada.Exceptions; use Ada.Exceptions;
+with Ada.Characters.Handling; use Ada.Characters.Handling;
 with Ada.Strings; use Ada.Strings;
 with Ada.Strings.Fixed; use Ada.Strings.Fixed;
 with Interfaces; use Interfaces;
@@ -106,13 +107,24 @@ package body Testd.Commands.Handlers is
       Pos  : in out Positive)
    is
       Output_Path : constant String := Testd.Protocol.Next_Token (Line, Pos);
+      Lower_Path  : String := Output_Path;
    begin
       if not Ensure_ROM_Loaded (S) then
          return;
       elsif Output_Path = "" then
          Reply_ERR ("BAD_ARGS", "SAVE_FRAME requires output path");
       else
-         Image_IO.Operations.Write_BMP (Output_Path, To_Image (S.V_Buff));
+         for I in Lower_Path'Range loop
+            Lower_Path (I) := To_Lower (Lower_Path (I));
+         end loop;
+
+         if Lower_Path'Length >= 4
+           and then Lower_Path (Lower_Path'Last - 3 .. Lower_Path'Last) = ".png"
+         then
+            Image_IO.Operations.Write_PNG (Output_Path, To_Image (S.V_Buff));
+         else
+            Image_IO.Operations.Write_BMP (Output_Path, To_Image (S.V_Buff));
+         end if;
          Reply_OK;
       end if;
    exception

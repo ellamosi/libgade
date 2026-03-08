@@ -9,8 +9,7 @@ The harness is built automatically by the test runner.
 From `tests/`:
 
 ```sh
-./bootstrap.sh
-python3 run.py
+alr run
 ```
 
 ## Python client
@@ -88,7 +87,7 @@ Response format:
 - Response: `OK <natural>`
 
 `SAVE_FRAME <output_path>`
-- Args: output BMP path
+- Args: output image path (for example PNG)
 - Response: `OK` or `ERR BAD_STATE ...` / `ERR BAD_ARGS ...` / `ERR IMAGE ...`
 
 `MATCH_FRAME <ref_path>`
@@ -131,10 +130,10 @@ certain amount of frame.
 > RUN 2
 < OK
 
-> MATCH_FRAME assets/refs/mooneye/lcd_lyc.bmp
+> MATCH_FRAME assets/refs/misc/lcd_lyc.png
 < OK 17
 
-> SAVE_FRAME artifacts/lcd_lyc.bmp
+> SAVE_FRAME artifacts/misc/lcd_lyc.png
 < OK
 
 > QUIT
