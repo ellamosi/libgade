@@ -1,0 +1,317 @@
+{
+  "roms": [
+    {
+      "id": "blargg/cpu_instrs",
+      "sha256": "8c5e12f41e0ba5bbca796944f92ffe6de28809198682c4332e38d1b3cf56fcf2",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_01-special",
+      "sha256": "fe61349cbaee10cc384b50f356e541c90d1bc380185716706b5d8c465a03cf89",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_01-special.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_02-interrupts",
+      "sha256": "fb90b0d2b9501910c49709abda1d8e70f757dc12020ebf8409a7779bbfd12229",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_02-interrupts.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_03-op_sp-hl",
+      "sha256": "ca553e606d9b9c86fbd318f1b916c6f0b9df0cf1774825d4361a3fdff2e5a136",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_03-op_sp-hl.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_04-op_r,imm",
+      "sha256": "7686aa7a39ef3d2520ec1037371b5f94dc283fbbfd0f5051d1f64d987bdd6671",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_04-op_r,imm.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_05-op_rp",
+      "sha256": "d504adfa0a4c4793436a154f14492f044d38b3c6db9efc44138f3c9ad138b775",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_05-op_rp.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_06-ld_r,r",
+      "sha256": "17ada54b0b9c1a33cd5429fce5b765e42392189ca36da96312222ffe309e7ed1",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_06-ld_r,r.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_07-jr,jp,call,ret,rst",
+      "sha256": "ab31d3daaaa3a98bdbd9395b64f48c1bdaa889aba5b19dd5aaff4ec2a7d228a3",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_07-jr,jp,call,ret,rst.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_08-misc",
+      "sha256": "974a71fe4c67f70f5cc6e98d4dc8c096057ff8a028b7bfa9f7a4330038cf8b7e",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_08-misc.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_09-op_r-r",
+      "sha256": "b28e1be5cd95f22bd1ecacdd33c6f03e607d68870e31a47b15a0229033d5ba2a",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_09-op_r-r.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_10-bit_ops",
+      "sha256": "7f5b8e488c6988b5aaba8c2a74529b7c180c55a58449d5ee89d606a07c53514a",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_10-bit_ops.gb"
+    },
+    {
+      "id": "blargg/cpu_instrs_11-op_a,(hl)",
+      "sha256": "0ec0cf9fda3f00becaefa476df6fb526c434abd9d4a4beac237c2c2692dac5d3",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/cpu_instrs_11-op_a,(hl).gb"
+    },
+    {
+      "id": "blargg/dmg_sound_01-registers",
+      "sha256": "c6b9fa4b9d9d26919b33ebe78a6ef19ad2df854186cf741ca2746179cc9fc3f1",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_01-registers.gb"
+    },
+    {
+      "id": "blargg/dmg_sound_02-len ctr",
+      "sha256": "745544125a5065729cab22494a79f65c3836e4426f89e4cc43d330afe711b413",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_02-len ctr.gb"
+    },
+    {
+      "id": "blargg/dmg_sound_03-trigger",
+      "sha256": "bb11e7266a7143bafb8aa2a73ca70957c6011f36cd4e0b6aaf0678378294e75c",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_03-trigger.gb"
+    },
+    {
+      "id": "blargg/dmg_sound_04-sweep",
+      "sha256": "58bc14541d91bb020c7761b423825b3432cfde7ee2fa4d1116126e4cb9573c7e",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_04-sweep.gb"
+    },
+    {
+      "id": "blargg/dmg_sound_05-sweep details",
+      "sha256": "f582ca3a0b2544b9510797d7d4dd56a17f53e000511b0ae88a6353200dcd9167",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_05-sweep details.gb"
+    },
+    {
+      "id": "blargg/dmg_sound_06-overflow on trigger",
+      "sha256": "1a511e95e84ed6fe6077cabf451a98b4e01fdef59cadae3efbc178113eb064b1",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_06-overflow on trigger.gb"
+    },
+    {
+      "id": "blargg/dmg_sound_07-len sweep period sync",
+      "sha256": "56bf5b0c18b996929c9b052ba5a02b450cb619bb6c24cc1d34ea20951c977bf7",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_07-len sweep period sync.gb"
+    },
+    {
+      "id": "blargg/dmg_sound_08-len ctr during power",
+      "sha256": "31cb41f7be106a708ec0bc94f2a9d0b506d247cd591e9d0a2a6a960dc3bf6595",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_08-len ctr during power.gb"
+    },
+    {
+      "id": "blargg/dmg_sound_11-regs after power",
+      "sha256": "d27dab46e8b881028723f1975328572d38e25d295289b974cd698916a0be5dab",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/dmg_sound_11-regs after power.gb"
+    },
+    {
+      "id": "blargg/instr_timing",
+      "sha256": "646067b3d6c79fda810e9c3f1cb7c0efd5abb0a7ac06437c54e65720c15d9925",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/blargg/instr_timing.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc1_ram_256kb",
+      "sha256": "14c4f556655a730073150b9bbd7ce0f4e23e41b14d9e6c16b6eeae1788eb4696",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc1_ram_256kb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc1_ram_64kb",
+      "sha256": "9e76eb13682523189d027c1b45db0b17dd53092d8ee740a94e90994d14dfb99c",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc1_ram_64kb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc1_rom_16mb",
+      "sha256": "43f8ac4ea3557053354fb6a40ec8207317671a9f10107586dc8b1da460832de5",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc1_rom_16mb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc1_rom_1mb",
+      "sha256": "9fb154fd4cf49d4517e678d3c588210ece73aa86f0ef57624531572d32290c80",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc1_rom_1mb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc1_rom_2mb",
+      "sha256": "d5cdd7789807a540052220f88276ed3e07a51bc2a90a5b9f99cd11b1558023da",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc1_rom_2mb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc1_rom_4mb",
+      "sha256": "484f6e0de9dc836c0c232b6c67cfce3202c5042042beb4979a7bbecbd3131046",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc1_rom_4mb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc1_rom_512kb",
+      "sha256": "6f924a3696700bc1b81359858211915d38fd9a6112b61d4ee01c3d012a0202fe",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc1_rom_512kb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc1_rom_8mb",
+      "sha256": "e5dd51f60034bb7449aedbea73bd9434ae506dd01f937232de2e669352ea0ea4",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc1_rom_8mb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc2_bits_ramg",
+      "sha256": "8c93ecff69765b00b1a8a8b179ced4a7cc358cc3000764a33c603e0236259f68",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc2_bits_ramg.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc2_bits_romb",
+      "sha256": "36f57b37bfec131866a22192d34a061bef3e0aeef211b566425ffcb1a89efd1e",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc2_bits_romb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc2_bits_unused",
+      "sha256": "807ca2feb6df47b67207c531addbe9a6461e61c976bd3fb93645690db3df3c17",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc2_bits_unused.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc2_ram",
+      "sha256": "dfeda458eb071604361ba910e5fc853075b8d995f2036fd0c388956736366347",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc2_ram.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc2_rom_1mb",
+      "sha256": "4c410bea1c51ac9ee4b6703ccfe1841de5380e7e91ee16778683d1632bc647e5",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc2_rom_1mb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc2_rom_2mb",
+      "sha256": "18bbff553536b154e3d2e39b3d50b56c7d37d3ea052b36d77fb8fc6f8cb21030",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc2_rom_2mb.gb"
+    },
+    {
+      "id": "mooneye/cart_mbc2_rom_512kb",
+      "sha256": "9cf901a73c14b4712d55c9f5e5ddd427635e402037a8f475b4927407a38ca70a",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/cart_mbc2_rom_512kb.gb"
+    },
+    {
+      "id": "mooneye/lcd_lyc",
+      "sha256": "e38f282c0de068f34c125fe3e8bec8102304f126ad2241c6ce24a3e153528925",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/lcd_lyc.gb"
+    },
+    {
+      "id": "mooneye/lcd_scanline_timing",
+      "sha256": "5a48d5f88c9a8df2e748ed167044e12e6550493dc00ea40c605aa4c89ab67720",
+      "source": {
+        "type": "local_file"
+      },
+      "target": "assets/roms/mooneye/lcd_scanline_timing.gb"
+    }
+  ],
+  "version": 1
+}

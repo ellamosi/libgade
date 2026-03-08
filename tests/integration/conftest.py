@@ -17,6 +17,7 @@ HARNESS_PY_DIR = TESTSUITE_DIR / "harness"
 sys.path.insert(0, str(HARNESS_PY_DIR))
 
 from client import GadeTestdClient  # noqa: E402
+from integration.rom_assets import RomAssetError, ensure_rom_assets  # noqa: E402
 
 
 def _build_argv(project_file):
@@ -86,6 +87,22 @@ def pytest_collection_modifyitems(config, items):
     if deselected:
         config.hook.pytest_deselected(items=deselected)
         items[:] = keep
+
+
+@pytest.fixture(scope="session", autouse=True)
+def rom_assets_ready(tests_root):
+    try:
+        result = ensure_rom_assets(tests_root)
+    except RomAssetError as exc:
+        raise RuntimeError("ROM asset resolution failed: {}".format(exc)) from exc
+
+    print(
+        "ROM assets ready: verified={}, downloaded={}, manifest_updated={}".format(
+            result.verified,
+            result.downloaded,
+            result.manifest_updated,
+        )
+    )
 
 
 @pytest.fixture(scope="session")

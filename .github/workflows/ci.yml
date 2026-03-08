@@ -28,6 +28,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-alire-
 
+      - name: Cache ROM downloads
+        uses: actions/cache@v4
+        with:
+          path: tests/.rom-cache/downloads
+          key: ${{ runner.os }}-rom-downloads-${{ hashFiles('tests/assets/roms_manifest.json') }}
+          restore-keys: |
+            ${{ runner.os }}-rom-downloads-
+
       - name: Build with Alire
         run: alr build
 
@@ -44,3 +52,5 @@ jobs:
       - name: Run tests
         working-directory: tests
         run: alr exec -- python3 run.py
+        env:
+          GADE_ROM_STRICT: "1"

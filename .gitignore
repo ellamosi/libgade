@@ -21,6 +21,7 @@ obj/
 bin/
 tests/obj/
 tests/bin/
+tests/.rom-cache/
 lib/
 *.vscode/
 alire/
