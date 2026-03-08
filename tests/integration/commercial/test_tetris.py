@@ -8,7 +8,7 @@ from integration.helpers import assert_find_match_with_artifact
 
 def test_commercial_tetris_flow(client, tests_root, artifacts_dir):
     root = tests_root
-    rom = root / "assets" / "roms" / "commercial" / "tetris.gb"
+    rom = root / "assets" / "roms" / "commercial" / "Tetris (World) (Rev 1).gb"
     refs_root = root / "assets" / "refs" / "commercial"
     artifact_root = artifacts_dir / "commercial"
     artifact_root.mkdir(parents=True, exist_ok=True)

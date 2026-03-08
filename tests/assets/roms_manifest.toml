@@ -192,7 +192,7 @@ type = "local_file"
 
 [[roms]]
 id = "commercial/tetris"
-target = "assets/roms/commercial/tetris.gb"
+target = "assets/roms/commercial/Tetris (World) (Rev 1).gb"
 sha256 = "0d6535aef23969c7e5af2b077acaddb4a445b3d0df7bf34c8acef07b51b015c3"
 
 [roms.source]

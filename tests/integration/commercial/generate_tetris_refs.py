@@ -19,7 +19,9 @@ def main():
     parser = argparse.ArgumentParser("Generate Tetris commercial reference frames")
     parser.add_argument(
         "--rom",
-        default=str(TESTS_ROOT / "assets" / "roms" / "commercial" / "tetris.gb"),
+        default=str(
+            TESTS_ROOT / "assets" / "roms" / "commercial" / "Tetris (World) (Rev 1).gb"
+        ),
         help="Path to commercial Tetris ROM",
     )
     parser.add_argument(
