@@ -17,9 +17,9 @@ def test_commercial_tetris_flow(client, tests_root, artifacts_dir):
         pytest.skip("commercial ROM is not available yet: {}".format(rom))
 
     missing_refs = [
-        refs_root / (stage.name + ".bmp")
+        refs_root / (stage.name + ".png")
         for stage in TETRIS_STAGES
-        if not (refs_root / (stage.name + ".bmp")).exists()
+        if not (refs_root / (stage.name + ".png")).exists()
     ]
     if missing_refs:
         pytest.skip(
@@ -30,8 +30,8 @@ def test_commercial_tetris_flow(client, tests_root, artifacts_dir):
         )
 
     def verify_stage(stage_name):
-        ref = refs_root / (stage_name + ".bmp")
-        artifact = artifact_root / (stage_name + ".bmp")
+        ref = refs_root / (stage_name + ".png")
+        artifact = artifact_root / (stage_name + ".png")
         assert_find_match_with_artifact(
             client=client,
             ref=ref,

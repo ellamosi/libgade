@@ -10,6 +10,35 @@ This project started off as an homage to [my university's Computer Architecture 
 
 Why Ada? I learned to program in Ada, and I always felt that it was a more reliable candidate for native code compilation than the likes of C. The precise and platform independent representation clauses that the language offers that allow precisely defining the representation of memory mapped hardware was also a factor in the decision. Also, while such emulators exists in plenty of other languages I suspect it's the first one written in Ada.
 
+## Library architecture
+`gade` is the emulator core library. It can be consumed by different front ends and by the test harness used by integration tests.
+
+Today, the main consumers are:
+- [`gade-sdl`](https://github.com/ellamosi/gade-sdl): sibling SDL front end project.
+- `tests/harness/gade_testd`: command-driven harness binary used by `pytest` integration tests.
+
+The architecture is intentionally set up so new front ends can be added without changing emulator core behavior (for example, a native macOS Swift front end via Objective-C bindings).
+
+```mermaid
+flowchart LR
+    A[gade<br/>Ada emulator core library]
+
+    subgraph Frontends["Front ends / hosts"]
+      B[gade-sdl<br/>Easily portable SDL2 app]
+      C[gade_testd<br/>test harness process]
+      D[Possible Future frontends<br/>Such as Swift MacOS app<br/>via Objective-C bindings]
+    end
+
+    subgraph Testing["Automated test layer"]
+      F[pytest integration tests]
+    end
+
+    B --> A
+    C --> A
+    D --> A
+    F -->|line protocol| C
+```
+
 ## Build
 From `gade/`:
 

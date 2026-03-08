@@ -27,7 +27,7 @@ def main():
     parser.add_argument(
         "--refs-dir",
         default=str(TESTS_ROOT / "assets" / "refs" / "commercial"),
-        help="Directory to write generated reference BMPs",
+        help="Directory to write generated reference PNGs",
     )
     parser.add_argument(
         "--harness",
@@ -53,7 +53,7 @@ def main():
 
     with GadeTestdClient(executable=args.harness, timeout=args.timeout) as client:
         def save_stage(stage_name):
-            out = refs_dir / (stage_name + ".bmp")
+            out = refs_dir / (stage_name + ".png")
             out.parent.mkdir(parents=True, exist_ok=True)
             client.save_frame(str(out))
             print("saved {}".format(out))
