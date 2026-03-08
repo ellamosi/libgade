@@ -51,7 +51,7 @@ jobs:
 
       - name: Run tests
         working-directory: tests
-        run: alr exec -- python3 run.py
+        run: alr run --skip-build
         env:
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}

@@ -30,19 +30,19 @@ alr build
 Then:
 
 ```sh
-python3 run.py
+alr run
 ```
 
 List discovered tests:
 
 ```sh
-python3 run.py --list
+alr run --args="--list"
 ```
 
 Run a subset by substring filter:
 
 ```sh
-python3 run.py mbc1 cpu_instrs
+alr run --args="mbc1 cpu_instrs"
 ```
 
 Run pytest directly (same tests):
@@ -69,7 +69,7 @@ Environment variables:
 
 Local secret setup (never committed):
 - Preferred: create `tests/secrets.env` (dotenv-style). It is auto-loaded by
-  `python3 run.py` and by pytest startup.
+  `alr run`/`python3 run.py` and by pytest startup.
 
 ```sh
 cp tests/secrets.env.example tests/secrets.env

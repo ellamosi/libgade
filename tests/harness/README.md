@@ -9,8 +9,7 @@ The harness is built automatically by the test runner.
 From `tests/`:
 
 ```sh
-./bootstrap.sh
-python3 run.py
+alr run
 ```
 
 ## Python client
