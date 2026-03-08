@@ -473,6 +473,7 @@ def ensure_rom_assets(tests_root: Path) -> ResolveResult:
 
     downloaded = 0
     verified = 0
+    warned_missing_optional = set()
 
     for entry in entries:
         optional_source = bool(entry.source.get("optional", False))
@@ -483,11 +484,39 @@ def ensure_rom_assets(tests_root: Path) -> ResolveResult:
                 needs_fetch = False
 
         if needs_fetch:
+            if optional_source and not entry.target.exists():
+                missing_env = []
+                for env_key in ("url_env", "zip_password_env"):
+                    env_name = entry.source.get(env_key)
+                    if env_name and not os.environ.get(str(env_name), "").strip():
+                        missing_env.append(str(env_name))
+
+                if missing_env:
+                    warn_key = (entry.id, tuple(missing_env))
+                    if warn_key not in warned_missing_optional:
+                        print(
+                            "WARN optional ROM '{}' unavailable; set {} or provide local file at {}".format(
+                                entry.id,
+                                ", ".join(missing_env),
+                                entry.target,
+                            )
+                        )
+                        warned_missing_optional.add(warn_key)
+                    continue
+
             try:
                 fetched = _materialize_rom(entry, entry.source, cache_dir)
             except RomAssetError as exc:
                 if optional_source and not entry.target.exists():
                     # Optional sources may be unavailable when secrets are absent.
+                    warn_key = (entry.id, str(exc))
+                    if warn_key not in warned_missing_optional:
+                        print(
+                            "WARN optional ROM '{}' unavailable: {}".format(
+                                entry.id, exc
+                            )
+                        )
+                        warned_missing_optional.add(warn_key)
                     continue
                 raise
             downloaded += 1 if fetched else 0
