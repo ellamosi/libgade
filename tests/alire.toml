@@ -32,3 +32,7 @@ image_io = "^20240725.0.0"
 
 [[pins]]
 gade = { path = ".." }
+
+[[actions]]
+type = "post-build"
+command = ["python3", "-m", "pip", "install", "-r", "requirements.txt"]

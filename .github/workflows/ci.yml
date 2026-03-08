@@ -47,7 +47,7 @@ jobs:
 
       - name: Build tests with Alire
         working-directory: tests
-        run: ./bootstrap.sh
+        run: alr build
 
       - name: Run tests
         working-directory: tests

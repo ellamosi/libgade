@@ -24,7 +24,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 From `tests/`:
 
 ```sh
-./bootstrap.sh
+alr build
 ```
 
 Then:

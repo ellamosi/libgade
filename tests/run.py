@@ -41,7 +41,7 @@ def ensure_pytest_available():
         return
     raise SystemExit(
         "pytest is required. Run setup first:\n"
-        "  ./bootstrap.sh"
+        "  alr build"
     )
 
 

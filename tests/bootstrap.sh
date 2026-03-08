@@ -16,9 +16,7 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
-# Build Ada dependencies and testsuite artifacts via Alire's build wrapper,
-# which generates and wires dependency projects before invoking gprbuild.
+# Build Ada dependencies and testsuite artifacts via Alire's build wrapper.
+# Python test dependencies are installed by the post-build action in
+# tests/alire.toml.
 alr -n build
-
-# Install Python test dependencies in the same environment used by run.py.
-alr -n exec -- python3 -m pip install -r requirements.txt
