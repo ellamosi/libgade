@@ -17,7 +17,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 - `assets/roms/<source>/`: test ROMs grouped by source.
 - `assets/roms_manifest.toml`: ROM source/checksum manifest.
 - `assets/refs/<source>/`: reference images grouped by source.
-- `artifacts/`: captured output frames.
+- `artifacts/<source>/`: captured output frames grouped by source.
 - `harness/client.py`: Python client for the harness protocol.
 
 ## Run
