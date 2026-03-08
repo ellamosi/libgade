@@ -10,12 +10,12 @@ This project started as an homage to [my university's Computer Architecture depa
 
 Why Ada? I learned to program in Ada, and I always felt that it was a more reliable candidate for native code compilation than the likes of C. The precise and platform-independent representation clauses the language offers, which allow precise definition of memory-mapped hardware, were also a factor in the decision. Also, while such emulators exist in plenty of other languages, I suspect this is the first one written in Ada.
 
-## Library architecture
+## Library Architecture
 `gade` is the emulator core library. It can be consumed by different front ends and by the test harness used by integration tests.
 
 Today, the main consumers are:
 - [`gade-sdl`](https://github.com/ellamosi/gade-sdl): sibling SDL front end project.
-- `tests/harness/gade_testd`: command-driven harness binary used by `pytest` integration tests.
+- [`gade-testd`](tests/harness/): command-driven harness binary used by `pytest` integration tests.
 
 The architecture is intentionally set up so new front ends can be added without changing emulator core behavior (for example, a native macOS Swift front end via Objective-C bindings).
 
@@ -25,8 +25,14 @@ flowchart LR
 
     subgraph Frontends["Front ends / hosts"]
       B[gade-sdl<br/>Easily portable SDL2 app]
-      C[gade_testd<br/>test harness process]
-      D[Possible Future frontends<br/>Such as Swift MacOS app<br/>via Objective-C bindings]
+      C[gade-testd<br/>Test harness process]
+      D[Possible Future frontends such as Swift MacOS app via Objective-C bindings]
+      H[libgade_cpp_interface_check<br/>C++ interface compilation check]
+    end
+
+    subgraph CPP["C++ interface layer"]
+      G[gade-interfaces-c<br/>Ada C ABI bridge]
+      I[libgade.hpp<br/>C++ wrapper API]
     end
 
     subgraph Testing["Automated test layer"]
@@ -35,16 +41,21 @@ flowchart LR
 
     B --> A
     C --> A
-    D --> A
+    H --> I
+    D --> I
+    I --> G
+    G --> A
     F -->|line protocol| C
 ```
 
 ## Build
-From `gade/`:
+From `gade/`, using [Alire](https://alire.ada.dev/), you can build the library with:
 
 ```sh
 alr build
 ```
+
+For information on how to build and run the tests, see the [tests README](tests/README.md).
 
 ### Scenario Variables
 `gade` exposes two GPR scenario variables through `alire.toml`:
@@ -52,15 +63,9 @@ alr build
 - `GADE_BUILD_MODE`: `debug` | `release`
 - `GADE_LIBRARY_TYPE`: `relocatable` | `static` | `static-pic`
 
-Artifacts are generated inside the crate directory:
+## State of affairs
 
-- Objects: `obj/<build_mode>/<library_type>/`
-- Library outputs: `lib/`
-- Library metadata/sources: `lib/src/<library_type>/`
-
-### State of affairs
-
-#### What works
+### What works
 - Full CPU emulation (Passes Blargg's CPU instruction tests)
 - Plain, MBC1, MBC2, MBC3 cartridge types with saves and MBC3 RTC support
 - Joypad
@@ -71,12 +76,11 @@ Artifacts are generated inside the crate directory:
 - Mid scanline rendering
 - Audio
 
-#### What does not work
+### What does not work
 - Other cartridge controller types
 - Accurate timings
 
-#### Next steps
+### Next steps
 - Performance optimizations (GPU rendering)
 - Performance optimizations (CPU interpretation/Interrupt handling)
-- Add a safe way to do integration testing with commercial ROMs
 - Support for more cartridge types

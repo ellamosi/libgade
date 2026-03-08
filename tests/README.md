@@ -1,5 +1,5 @@
 # Gade tests
-The tests run integration tests against a shared `gade_testd` harness
+The tests run integration tests against a shared `gade-testd` harness
 binary. Test cases are regular `pytest` tests under `integration/`.
 
 ## Tested ROMs

@@ -10,7 +10,7 @@ website = "https://github.com/ellamosi/gade"
 tags = ["ada", "gameboy", "emulator", "test"]
 
 project-files = ["harness/gade_testd.gpr"]
-executables = ["run_tests"]
+executables = ["run-tests"]
 
 [gpr-externals]
 mode = ["debug", "release"]

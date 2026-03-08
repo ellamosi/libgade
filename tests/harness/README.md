@@ -1,6 +1,6 @@
-# gade_testd Harness
+# gade-testd Harness
 
-`gade_testd` is a long-lived command server for integration tests.
+`gade-testd` is a long-lived command server for integration tests.
 It speaks a simple line protocol over `stdin/stdout`.
 
 ## Build

@@ -30,14 +30,14 @@ class GadeTestdClient:
 
     def _default_executable(self):
         here = os.path.abspath(os.path.dirname(__file__))
-        return os.path.join(here, '..', 'bin', 'gade_testd')
+        return os.path.join(here, '..', 'bin', 'gade-testd')
 
     def start(self):
         if self._proc is not None:
             return
         if not os.path.exists(self.executable):
             raise FileNotFoundError(
-                'gade_testd executable not found: {}'.format(self.executable)
+                'gade-testd executable not found: {}'.format(self.executable)
             )
 
         self._proc = subprocess.Popen(

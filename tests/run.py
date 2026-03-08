@@ -58,8 +58,8 @@ def main():
     )
     parser.add_argument(
         "--harness",
-        default="bin/gade_testd",
-        help="Path to gade_testd executable",
+        default="bin/gade-testd",
+        help="Path to gade-testd executable",
     )
     parser.add_argument("pattern", nargs="*", help="Filter testcases by substring")
     args = parser.parse_args()

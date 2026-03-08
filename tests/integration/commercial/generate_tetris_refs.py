@@ -31,7 +31,7 @@ def main():
     )
     parser.add_argument(
         "--harness",
-        default=str(TESTS_ROOT / "bin" / "gade_testd"),
+        default=str(TESTS_ROOT / "bin" / "gade-testd"),
         help="Path to harness executable",
     )
     parser.add_argument(
