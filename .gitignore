@@ -22,6 +22,8 @@ bin/
 tests/obj/
 tests/bin/
 tests/.rom-cache/
+tests/assets/roms/blargg/
+tests/assets/roms/mooneye/
 lib/
 *.vscode/
 alire/
