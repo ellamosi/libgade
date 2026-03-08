@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: tests/.rom-cache/downloads
-          key: ${{ runner.os }}-rom-downloads-${{ hashFiles('tests/assets/roms_manifest.json') }}
+          key: ${{ runner.os }}-rom-downloads-${{ hashFiles('tests/assets/roms_manifest.toml') }}
           restore-keys: |
             ${{ runner.os }}-rom-downloads-
 

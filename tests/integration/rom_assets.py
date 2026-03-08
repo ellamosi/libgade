@@ -9,7 +9,6 @@ expected checksums before integration tests run.
 from __future__ import annotations
 
 import hashlib
-import json
 import os
 import shutil
 import tempfile
@@ -23,6 +22,20 @@ try:
     import pyzipper  # type: ignore
 except Exception:  # pragma: no cover - optional dependency
     pyzipper = None
+
+try:
+    import tomllib  # type: ignore[attr-defined]
+except Exception:  # pragma: no cover - python <3.11
+    tomllib = None
+    try:
+        import tomli as tomllib  # type: ignore
+    except Exception:  # pragma: no cover - dependency missing
+        tomllib = None
+
+try:
+    import tomli_w  # type: ignore
+except Exception:  # pragma: no cover - dependency missing
+    tomli_w = None
 
 
 MANIFEST_VERSION = 1
@@ -97,15 +110,66 @@ def _entry_from_obj(tests_root: Path, obj: Dict[str, Any]) -> RomEntry:
     return RomEntry(id=entry_id, target=target, checksum=checksum, source=source)
 
 
+def _resolve_source_for_entry(
+    entry_id: str,
+    obj: Dict[str, Any],
+    sources: Dict[str, Any],
+) -> Dict[str, Any]:
+    source_id = obj.get("source_id")
+    merged: Dict[str, Any] = {}
+
+    if source_id:
+        source_key = str(source_id)
+        source_base = sources.get(source_key)
+        if not isinstance(source_base, dict):
+            raise RomAssetError(
+                "entry '{}' references missing source_id '{}'".format(
+                    entry_id, source_key
+                )
+            )
+        merged.update(source_base)
+
+    source_inline = obj.get("source")
+    if source_inline:
+        if not isinstance(source_inline, dict):
+            raise RomAssetError(
+                "entry '{}' key 'source' must be a table".format(entry_id)
+            )
+        merged.update(source_inline)
+
+    for key in (
+        "type",
+        "url",
+        "url_env",
+        "download_sha256",
+        "cache_key",
+        "member",
+        "filename",
+        "encrypted",
+        "zip_password_env",
+    ):
+        if key in obj:
+            merged[key] = obj[key]
+
+    if not merged:
+        return {"type": "local_file"}
+    return merged
+
+
 def _load_manifest(manifest_path: Path) -> Dict[str, Any]:
     if not manifest_path.exists():
         return {"version": MANIFEST_VERSION, "roms": []}
 
-    with manifest_path.open("r", encoding="utf-8") as handle:
-        data = json.load(handle)
+    if tomllib is None:
+        raise RomAssetError(
+            "TOML parser is unavailable; install dependency 'tomli' for Python < 3.11"
+        )
+
+    with manifest_path.open("rb") as handle:
+        data = tomllib.load(handle)
 
     if not isinstance(data, dict):
-        raise RomAssetError("manifest must be a JSON object")
+        raise RomAssetError("manifest must be a TOML table")
 
     version = int(data.get("version", 0))
     if version != MANIFEST_VERSION:
@@ -119,12 +183,20 @@ def _load_manifest(manifest_path: Path) -> Dict[str, Any]:
     if not isinstance(roms, list):
         raise RomAssetError("manifest key 'roms' must be a list")
 
+    sources = data.get("sources", {})
+    if not isinstance(sources, dict):
+        raise RomAssetError("manifest key 'sources' must be a table")
+
     return data
 
 
 def _write_manifest(manifest_path: Path, manifest: Dict[str, Any]) -> None:
+    if tomli_w is None:
+        raise RomAssetError(
+            "TOML writer is unavailable; install dependency 'tomli-w'"
+        )
     _ensure_parent(manifest_path)
-    blob = json.dumps(manifest, sort_keys=True, indent=2) + "\n"
+    blob = tomli_w.dumps(manifest)
     _atomic_write(manifest_path, blob.encode("utf-8"))
 
 
@@ -142,10 +214,15 @@ def _index_manifest_entries(
     by_target: Dict[str, Dict[str, Any]] = {}
     by_id: Dict[str, Dict[str, Any]] = {}
 
+    sources = manifest.get("sources", {})
+
     for obj in manifest["roms"]:
         if not isinstance(obj, dict):
             raise RomAssetError("manifest rom entry must be object")
-        entry = _entry_from_obj(tests_root, obj)
+        entry_obj = dict(obj)
+        entry_id = str(entry_obj.get("id", ""))
+        entry_obj["source"] = _resolve_source_for_entry(entry_id, entry_obj, sources)
+        entry = _entry_from_obj(tests_root, entry_obj)
         target_rel = _normalize_rel_path(str(entry.target.relative_to(tests_root)))
         if target_rel in by_target:
             raise RomAssetError("duplicate target in manifest: {}".format(target_rel))
@@ -323,7 +400,7 @@ def ensure_rom_assets(tests_root: Path) -> ResolveResult:
     manifest_path = Path(
         os.environ.get(
             "GADE_ROM_MANIFEST",
-            str(tests_root / "assets" / "roms_manifest.json"),
+            str(tests_root / "assets" / "roms_manifest.toml"),
         )
     )
 

@@ -13,7 +13,7 @@ LCD_CASES = [
 
 @pytest.mark.parametrize("case_name,pre_frames,max_frames", LCD_CASES)
 def test_mooneye_lcd_case(client, tests_root, case_name, pre_frames, max_frames):
-    paths = case_paths(tests_root, source="mooneye", case_name=case_name)
+    paths = case_paths(tests_root, source="misc", case_name=case_name)
     run_case_with_artifact_on_failure(
         client=client,
         rom=paths.rom,

@@ -15,7 +15,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 ## Layout
 - `integration/<source>/test_*.py`: pytest test modules grouped by source.
 - `assets/roms/<source>/`: test ROMs grouped by source.
-- `assets/roms_manifest.json`: ROM source/checksum manifest.
+- `assets/roms_manifest.toml`: ROM source/checksum manifest.
 - `assets/refs/<source>/`: reference images grouped by source.
 - `artifacts/`: captured output frames.
 - `harness/client.py`: Python client for the harness protocol.
@@ -52,10 +52,12 @@ python3 -m pytest -q integration
 ```
 
 ## ROM asset resolver
-Integration startup resolves ROM assets from `assets/roms_manifest.json`:
+Integration startup resolves ROM assets from `assets/roms_manifest.toml`:
 - If `assets/roms/...` exists and checksum matches, no download happens.
 - If missing or checksum mismatch, ROM is re-materialized from the configured source.
 - Every ROM is validated with `sha256` before test execution.
+- Shared source definitions can be declared once under `[sources.<id>]` and
+  reused from ROM entries via `source_id`.
 
 Environment variables:
 - `GADE_ROM_MANIFEST`: Override manifest path.
@@ -70,37 +72,38 @@ Supported source types in the manifest:
 - `http_encrypted_zip_member`: Download encrypted zip and extract one member using `zip_password_env`.
 
 For sources using secrets, use `url_env` and/or `zip_password_env`.
+For shared/public bundles, prefer a top-level `[sources.<id>]` table and use
+`source_id` + per-ROM `member` to avoid URL duplication.
 
 Example manifest entries:
 
-```json
-{
-  "id": "mooneye/cart_mbc1_rom_1mb",
-  "target": "assets/roms/mooneye/cart_mbc1_rom_1mb.gb",
-  "sha256": "<rom sha256>",
-  "source": {
-    "type": "http_zip_member",
-    "url": "https://example.com/mooneye-test-suite.zip",
-    "download_sha256": "<zip sha256>",
-    "member": "tests/acceptance/bits/mem_oam.gb"
-  }
-}
+```toml
+[sources.mooneye_public]
+type = "http_zip_member"
+url = "https://example.com/mooneye-test-suite.zip"
+download_sha256 = "<zip sha256>"
+
+[[roms]]
+id = "mooneye/cart_mbc1_rom_1mb"
+target = "assets/roms/mooneye/cart_mbc1_rom_1mb.gb"
+sha256 = "<rom sha256>"
+source_id = "mooneye_public"
+member = "tests/acceptance/bits/mem_oam.gb"
 ```
 
-```json
-{
-  "id": "commercial/pokemon_red",
-  "target": "assets/roms/commercial/pokemon_red.gb",
-  "sha256": "<rom sha256>",
-  "source": {
-    "type": "http_encrypted_zip_member",
-    "url_env": "GADE_COMMERCIAL_ROMS_URL",
-    "download_sha256": "<encrypted zip sha256>",
-    "member": "pokemon_red.gb",
-    "zip_password_env": "GADE_COMMERCIAL_ROMS_PASSWORD",
-    "encrypted": true
-  }
-}
+```toml
+[[roms]]
+id = "commercial/pokemon_red"
+target = "assets/roms/commercial/pokemon_red.gb"
+sha256 = "<rom sha256>"
+
+[roms.source]
+type = "http_encrypted_zip_member"
+url_env = "GADE_COMMERCIAL_ROMS_URL"
+download_sha256 = "<encrypted zip sha256>"
+member = "pokemon_red.gb"
+zip_password_env = "GADE_COMMERCIAL_ROMS_PASSWORD"
+encrypted = true
 ```
 
 ## Writing tests
