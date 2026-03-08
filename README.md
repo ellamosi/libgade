@@ -46,12 +46,6 @@ From `gade/`:
 alr build
 ```
 
-Artifacts are generated inside the crate directory:
-
-- Objects: `obj/<build_mode>/<library_type>/`
-- Library outputs: `lib/`
-- Library metadata/sources: `lib/src/<library_type>/`
-
 ### State of affairs
 
 #### What works
@@ -72,5 +66,4 @@ Artifacts are generated inside the crate directory:
 #### Next steps
 - Performance optimizations (GPU rendering)
 - Performance optimizations (CPU interpretation/Interrupt handling)
-- Add a safe way to do integration testing with commercial ROMs
 - Support for more cartridge types
