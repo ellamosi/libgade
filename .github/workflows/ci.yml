@@ -14,27 +14,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Alire
-        uses: alire-project/setup-alire@v5
-
-      - name: Cache Alire dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/alire
-            ~/.config/alire
-            ~/.local/share/alire
-          key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire/alire.lock', 'tests/alire.toml', 'tests/alire/alire.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-alire-
-
-      - name: Cache ROM downloads
-        uses: actions/cache@v4
-        with:
-          path: tests/.rom-cache/downloads
-          key: ${{ runner.os }}-rom-downloads-${{ hashFiles('tests/assets/roms_manifest.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-rom-downloads-
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
 
       - name: Build with Alire
         run: alr build
@@ -66,30 +47,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Alire
-        uses: alire-project/setup-alire@v5
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
 
       - name: Install LCOV
         run: sudo apt-get update && sudo apt-get install -y lcov
-
-      - name: Cache Alire dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/alire
-            ~/.config/alire
-            ~/.local/share/alire
-          key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire/alire.lock', 'tests/alire.toml', 'tests/alire/alire.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-alire-
-
-      - name: Cache ROM downloads
-        uses: actions/cache@v4
-        with:
-          path: tests/.rom-cache/downloads
-          key: ${{ runner.os }}-rom-downloads-${{ hashFiles('tests/assets/roms_manifest.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-rom-downloads-
 
       - name: Build with coverage instrumentation
         run: alr build
