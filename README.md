@@ -1,5 +1,5 @@
 [![CI](https://github.com/ellamosi/gade/actions/workflows/ci.yml/badge.svg)](https://github.com/ellamosi/gade/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/ellamosi/gade/badge.svg?branch=main)](https://coveralls.io/github/ellamosi/gade?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/ellamosi/gade/badge.svg?branch=ci/coveralls-coverage-reports)](https://coveralls.io/github/ellamosi/gade?branch=ci/coveralls-coverage-reports)
 
 # Gade
 A Game Boy emulation library in Ada
