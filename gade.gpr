@@ -8,6 +8,10 @@ library project Gade is
    Gade_Library : Gade_Library_Type :=
      external ("GADE_LIBRARY_TYPE", "relocatable");
 
+   type Gade_Coverage_Type is ("false", "true");
+   Gade_Coverage : Gade_Coverage_Type :=
+     external ("GADE_COVERAGE", "false");
+
    Base_Interfaces :=
      ("gade.ads",
       "gade-logging.ads",
@@ -76,6 +80,16 @@ library project Gade is
          "-gnatyM120",         --  max line width style
          "-ffunction-sections", --  one section per function for linker GC
          "-fdata-sections");    --  one section per data item for linker GC
+
+      case Gade_Coverage is
+         when "true" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada") &
+              ("--coverage",
+               "-O0");
+         when others =>
+            null;
+      end case;
    end Compiler;
 
    package Naming is

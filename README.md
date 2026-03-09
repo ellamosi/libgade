@@ -1,4 +1,5 @@
 [![CI](https://github.com/ellamosi/gade/actions/workflows/ci.yml/badge.svg)](https://github.com/ellamosi/gade/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/ellamosi/gade/badge.svg?branch=main)](https://coveralls.io/github/ellamosi/gade?branch=main)
 
 # Gade
 A Game Boy emulation library in Ada
@@ -58,10 +59,11 @@ alr build
 For information on how to build and run the tests, see the [tests README](tests/README.md).
 
 ### Scenario Variables
-`gade` exposes two GPR scenario variables through `alire.toml`:
+`gade` exposes three GPR scenario variables through `alire.toml`:
 
 - `GADE_BUILD_MODE`: `debug` | `release`
 - `GADE_LIBRARY_TYPE`: `relocatable` | `static` | `static-pic`
+- `GADE_COVERAGE`: `false` | `true` (enables `--coverage` instrumentation)
 
 ## State of affairs
 
