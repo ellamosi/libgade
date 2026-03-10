@@ -81,11 +81,6 @@ jobs:
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
           GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
 
-      - name: Harness smoke run (coverage warm-up)
-        working-directory: tests
-        run: |
-          printf 'QUIT\n' | ./bin/gade-testd >/dev/null
-
       - name: Verify coverage artifacts exist
         run: |
           GCDA_COUNT="$(find . -name '*.gcda' | wc -l | tr -d ' ')"

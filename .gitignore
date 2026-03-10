@@ -30,3 +30,10 @@ lib/
 *.vscode/
 alire/
 config/
+
+# Coverage artifacts
+*.gcda
+*.gcno
+*.gcov
+*.gcov.json.gz
+coverage/
