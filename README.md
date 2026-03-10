@@ -61,8 +61,8 @@ For information on how to build and run the tests, see the [tests README](tests/
 ### Scenario Variables
 `gade` exposes three GPR scenario variables through `alire.toml`:
 
-- `GADE_BUILD_MODE`: `debug` | `release`
-- `GADE_LIBRARY_TYPE`: `relocatable` | `static` | `static-pic`
+- `GADE_BUILD_MODE`: `debug` enables safety/debug checks; `release` enables optimized runtime settings
+- `GADE_LIBRARY_TYPE`: `relocatable` for shared builds, `static` for static linking, `static-pic` for static PIC artifacts
 - `GADE_COVERAGE`: `false` | `true` (enables `--coverage` instrumentation)
 
 ## State of affairs
