@@ -102,6 +102,7 @@ jobs:
             "${HOME}/.config/*" \
             "${HOME}/.local/share/alire/*" \
             '*/alire/*' \
+            '*/b__*.adb' \
             '*/tests/harness/*' \
             '*/tests/obj/*' \
             --ignore-errors empty,unused \
