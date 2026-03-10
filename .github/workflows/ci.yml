@@ -17,7 +17,7 @@ jobs:
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
 
-      - name: Build with Alire
+      - name: Build library
         run: alr build
 
       - name: Build C++ interface library
@@ -26,7 +26,7 @@ jobs:
       - name: Build C++ interface check
         run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
 
-      - name: Build tests with Alire
+      - name: Build tests
         working-directory: tests
         run: alr build
 
@@ -53,28 +53,21 @@ jobs:
       - name: Install LCOV
         run: sudo apt-get update && sudo apt-get install -y lcov
 
-      - name: Build with coverage instrumentation
+      - name: Build library (coverage)
         run: alr build
         env:
           GADE_COVERAGE: "true"
 
-      - name: Build tests with coverage instrumentation
+      - name: Build tests (coverage)
         working-directory: tests
         run: alr build
         env:
           GADE_COVERAGE: "true"
-
-      - name: Build harness executable (coverage)
-        working-directory: tests
-        run: >
-          alr exec -- gprbuild -j0 -p -q -P harness/gade_testd.gpr
-          -XGADE_COVERAGE=true -XGADE_LIBRARY_TYPE=static -XGADE_BUILD_MODE=debug
 
       - name: Run tests (coverage)
         working-directory: tests
         run: alr exec -- python3 -m pytest -q integration
         env:
-          GADE_COVERAGE: "true"
           GADE_NO_BUILD: "1"
           GADE_HARNESS: "bin/gade-testd"
           GADE_ROM_STRICT: "1"
