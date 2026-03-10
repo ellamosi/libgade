@@ -78,7 +78,10 @@ jobs:
         run: |
           mkdir -p coverage
           GCOV_TOOL="$(alr exec -- sh -lc 'command -v gcov')"
-          lcov --gcov-tool "${GCOV_TOOL}" --capture --directory . --output-file coverage/lcov.info
+          # GNAT/GCC can report line hits while some internal blocks remain
+          # "unexecuted". Keep line-level coverage stable in CI logs; revisit
+          # this if we ever switch to branch/block coverage enforcement.
+          lcov --gcov-tool "${GCOV_TOOL}" --rc geninfo_unexecuted_blocks=1 --capture --directory . --output-file coverage/lcov.info
           lcov --remove coverage/lcov.info \
             '/usr/*' \
             '/opt/*' \
