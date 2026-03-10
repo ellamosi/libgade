@@ -32,7 +32,7 @@ jobs:
 
       - name: Run tests
         working-directory: tests
-        run: alr run --skip-build
+        run: alr run --skip-build --args="--no-build"
         env:
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
@@ -66,10 +66,8 @@ jobs:
 
       - name: Run tests (coverage)
         working-directory: tests
-        run: alr exec -- python3 -m pytest -q integration
+        run: alr run --skip-build --args="--no-build"
         env:
-          GADE_NO_BUILD: "1"
-          GADE_HARNESS: "bin/gade-testd"
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
           GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
