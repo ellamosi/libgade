@@ -83,12 +83,6 @@ jobs:
           # this if we ever switch to branch/block coverage enforcement.
           lcov --gcov-tool "${GCOV_TOOL}" --rc geninfo_unexecuted_blocks=1 --capture --directory . --output-file coverage/lcov.info
           lcov --remove coverage/lcov.info \
-            '/usr/*' \
-            '/opt/*' \
-            "${HOME}/.cache/*" \
-            "${HOME}/.config/*" \
-            "${HOME}/.local/share/alire/*" \
-            '*/alire/*' \
             '*/b__*.adb' \
             '*/tests/harness/*' \
             '*/tests/obj/*' \
