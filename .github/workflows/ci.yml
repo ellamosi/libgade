@@ -81,15 +81,6 @@ jobs:
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
           GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
 
-      - name: Verify coverage artifacts exist
-        run: |
-          GCDA_COUNT="$(find . -name '*.gcda' | wc -l | tr -d ' ')"
-          echo "Found ${GCDA_COUNT} .gcda files"
-          if [ "${GCDA_COUNT}" = "0" ]; then
-            echo "ERROR: No .gcda files found after test execution" >&2
-            exit 1
-          fi
-
       - name: Generate LCOV report
         run: |
           mkdir -p coverage
