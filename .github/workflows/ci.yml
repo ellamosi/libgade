@@ -64,14 +64,36 @@ jobs:
         env:
           GADE_COVERAGE: "true"
 
+      - name: Build harness executable (coverage)
+        working-directory: tests
+        run: >
+          alr exec -- gprbuild -j0 -p -q -P harness/gade_testd.gpr
+          -XGADE_COVERAGE=true -XGADE_LIBRARY_TYPE=static -XGADE_BUILD_MODE=debug
+
       - name: Run tests (coverage)
         working-directory: tests
-        run: alr run --skip-build
+        run: alr exec -- python3 -m pytest -q integration
         env:
           GADE_COVERAGE: "true"
+          GADE_NO_BUILD: "1"
+          GADE_HARNESS: "bin/gade-testd"
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
           GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
+
+      - name: Harness smoke run (coverage warm-up)
+        working-directory: tests
+        run: |
+          printf 'QUIT\n' | ./bin/gade-testd >/dev/null
+
+      - name: Verify coverage artifacts exist
+        run: |
+          GCDA_COUNT="$(find . -name '*.gcda' | wc -l | tr -d ' ')"
+          echo "Found ${GCDA_COUNT} .gcda files"
+          if [ "${GCDA_COUNT}" = "0" ]; then
+            echo "ERROR: No .gcda files found after test execution" >&2
+            exit 1
+          fi
 
       - name: Generate LCOV report
         run: |
@@ -85,6 +107,8 @@ jobs:
             "${HOME}/.config/*" \
             "${HOME}/.local/share/alire/*" \
             '*/alire/*' \
+            '*/tests/harness/*' \
+            '*/tests/obj/*' \
             --ignore-errors empty,unused \
             --output-file coverage/lcov.info
 
