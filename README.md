@@ -1,5 +1,6 @@
 [![CI](https://github.com/ellamosi/gade/actions/workflows/ci.yml/badge.svg)](https://github.com/ellamosi/gade/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/ellamosi/gade/badge.svg?branch=main)](https://coveralls.io/github/ellamosi/gade?branch=main)
+[![Ada 2022](https://img.shields.io/static/v1?label=&message=2022&color=green&labelColor=555&logo=ada&logoColor=white&logoSize=auto)](https://ada-lang.io/)
 
 # Gade
 A Game Boy emulation library in Ada
@@ -27,7 +28,7 @@ flowchart LR
     subgraph Frontends["Front ends / hosts"]
       B[gade-sdl<br/>Easily portable SDL2 app]
       C[gade-testd<br/>Test harness process]
-      D[Possible Future frontends such as Swift MacOS app via Objective-C bindings]
+      D[Possible alternate frontends such as Swift MacOS app via Objective-C bindings]
       H[libgade_cpp_interface_check<br/>C++ interface compilation check]
     end
 
