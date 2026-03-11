@@ -15,6 +15,7 @@ executables = ["run-tests"]
 [gpr-externals]
 mode = ["debug", "release"]
 GADE_LIBRARY_TYPE = ["relocatable", "static", "static-pic"]
+GADE_COVERAGE = ["false", "true"]
 
 [gpr-set-externals]
 mode = "debug"

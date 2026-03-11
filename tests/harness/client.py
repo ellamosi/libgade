@@ -66,12 +66,15 @@ class GadeTestdClient:
             return
 
         if proc.poll() is None:
-            proc.terminate()
             try:
                 proc.wait(timeout=self.timeout)
             except subprocess.TimeoutExpired:
-                proc.kill()
-                proc.wait()
+                proc.terminate()
+                try:
+                    proc.wait(timeout=self.timeout)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait()
 
     def __enter__(self):
         self.start()

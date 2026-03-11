@@ -14,29 +14,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Alire
-        uses: alire-project/setup-alire@v5
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
 
-      - name: Cache Alire dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/alire
-            ~/.config/alire
-            ~/.local/share/alire
-          key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire/alire.lock', 'tests/alire.toml', 'tests/alire/alire.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-alire-
-
-      - name: Cache ROM downloads
-        uses: actions/cache@v4
-        with:
-          path: tests/.rom-cache/downloads
-          key: ${{ runner.os }}-rom-downloads-${{ hashFiles('tests/assets/roms_manifest.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-rom-downloads-
-
-      - name: Build with Alire
+      - name: Build library
         run: alr build
 
       - name: Build C++ interface library
@@ -45,14 +26,74 @@ jobs:
       - name: Build C++ interface check
         run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
 
-      - name: Build tests with Alire
+      - name: Build tests
         working-directory: tests
         run: alr build
 
       - name: Run tests
         working-directory: tests
-        run: alr run --skip-build
+        # --skip-build avoids rebuilding run-tests; --no-build prevents pytest
+        # fixtures from rebuilding gade-testd with potentially different flags.
+        run: alr run --skip-build --args="--no-build"
         env:
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
           GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
+
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
+
+      - name: Install LCOV
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
+      - name: Build library (coverage)
+        run: alr build
+        env:
+          GADE_COVERAGE: "true"
+
+      - name: Build tests (coverage)
+        working-directory: tests
+        run: alr build
+        env:
+          GADE_COVERAGE: "true"
+
+      - name: Run tests (coverage)
+        working-directory: tests
+        # Keep test execution on binaries built in this job (coverage flags).
+        run: alr run --skip-build --args="--no-build"
+        env:
+          GADE_ROM_STRICT: "1"
+          GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
+          GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
+
+      - name: Generate LCOV report
+        run: |
+          mkdir -p coverage
+          GCOV_TOOL="$(alr exec -- sh -lc 'command -v gcov')"
+          # GNAT/GCC can report line hits while some internal blocks remain
+          # "unexecuted". Keep line-level coverage stable in CI logs; revisit
+          # this if we ever switch to branch/block coverage enforcement.
+          lcov --gcov-tool "${GCOV_TOOL}" --rc geninfo_unexecuted_blocks=1 --capture --directory . --output-file coverage/lcov.info
+          lcov --remove coverage/lcov.info \
+            '*/b__*.adb' \
+            '*/tests/harness/*' \
+            '*/tests/obj/*' \
+            --ignore-errors empty,unused \
+            --output-file coverage/lcov.info
+
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: coverage/lcov.info
+          format: lcov
+          flag-name: ada-core
