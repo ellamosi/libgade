@@ -2,24 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run: Integration Suite (alr run)",
+      "name": "Run: Tests",
       "type": "node-terminal",
       "request": "launch",
       "command": "cd \"${workspaceFolder}/tests\" && alr run",
-      "preLaunchTask": "Build: Tests"
-    },
-    {
-      "name": "Run: List Integration Tests",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "cd \"${workspaceFolder}/tests\" && alr run --args=--list",
-      "preLaunchTask": "Build: Tests"
-    },
-    {
-      "name": "Run: Pytest Integration (-q)",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "cd \"${workspaceFolder}/tests\" && python3 -m pytest -q integration",
       "preLaunchTask": "Build: Tests"
     }
   ]
