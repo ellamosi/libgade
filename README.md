@@ -2,6 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/ellamosi/gade/badge.svg?branch=main)](https://coveralls.io/github/ellamosi/gade?branch=main)
 [![Ada 2022](https://img.shields.io/static/v1?label=&message=2022&color=153261&labelColor=555&logo=ada&logoColor=white&logoSize=auto)](https://ada-lang.io/)
 [![Alire](https://img.shields.io/endpoint?url=https://alire.ada.dev/badges/gade.json)](https://alire.ada.dev/crates/gade.html)
+[![Mentioned in Awesome Ada](https://awesome.re/mentioned-badge.svg)](https://github.com/ohenley/awesome-ada)
 
 # Gade
 A Game Boy emulation library in Ada
