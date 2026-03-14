@@ -1,0 +1,80 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build: Gade (debug, relocatable)",
+      "type": "shell",
+      "command": "alr",
+      "args": ["build"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Default library build from workspace root"
+    },
+    {
+      "label": "Build: Gade (release, relocatable)",
+      "type": "shell",
+      "command": "alr",
+      "args": ["build", "--", "-XGADE_BUILD_MODE=release"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "detail": "Release library build using GADE_BUILD_MODE=release"
+    },
+    {
+      "label": "Build: Gade (debug, static)",
+      "type": "shell",
+      "command": "alr",
+      "args": ["build", "--", "-XGADE_LIBRARY_TYPE=static"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "detail": "Static library build using GADE_LIBRARY_TYPE=static"
+    },
+    {
+      "label": "Build: Tests",
+      "type": "shell",
+      "command": "alr",
+      "args": ["build"],
+      "options": {
+        "cwd": "${workspaceFolder}/tests"
+      },
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "detail": "Build test harness and test dependencies"
+    },
+    {
+      "label": "Test: Run Integration Suite",
+      "type": "shell",
+      "command": "alr",
+      "args": ["run"],
+      "options": {
+        "cwd": "${workspaceFolder}/tests"
+      },
+      "group": "test",
+      "problemMatcher": ["$gcc"],
+      "detail": "Run integration tests via tests/alire.toml"
+    },
+    {
+      "label": "Test: List Integration Tests",
+      "type": "shell",
+      "command": "alr",
+      "args": ["run", "--args=--list"],
+      "options": {
+        "cwd": "${workspaceFolder}/tests"
+      },
+      "group": "test",
+      "problemMatcher": [],
+      "detail": "List discovered integration tests"
+    }
+  ]
+}
