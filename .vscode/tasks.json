@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build: Gade (debug, static)",
+      "type": "shell",
+      "command": "alr",
+      "args": ["build", "--", "-XGADE_LIBRARY_TYPE=static"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "detail": "Static library build using GADE_LIBRARY_TYPE=static"
+    },
+    {
+      "label": "Build: Tests",
+      "type": "shell",
+      "command": "alr",
+      "args": ["build"],
+      "options": {
+        "cwd": "${workspaceFolder}/tests"
+      },
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "detail": "Build test harness and test dependencies"
+    }
+  ]
+}

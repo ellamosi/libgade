@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run: Tests",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "cd \"${workspaceFolder}/tests\" && alr run",
+      "preLaunchTask": "Build: Tests"
+    }
+  ]
+}

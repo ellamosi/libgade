@@ -27,7 +27,9 @@ tests/assets/roms/mooneye/
 tests/assets/roms/commercial/
 tests/secrets.env
 lib/
-*.vscode/
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
 alire/
 config/
 
