@@ -117,8 +117,8 @@ Response format:
 ## Example test sequence
 
 Most test cases follow a sequence similar to this one to compare the
-framebuffer against a reference image after running the emulator for
-certain amount of frame.
+framebuffer against a reference image after running the emulator for a
+certain number of frames.
 
 ```text
 > PING
@@ -131,7 +131,7 @@ certain amount of frame.
 < OK
 
 > MATCH_FRAME assets/refs/misc/lcd_lyc.png
-< OK 17
+< OK 1
 
 > SAVE_FRAME artifacts/misc/lcd_lyc.png
 < OK
