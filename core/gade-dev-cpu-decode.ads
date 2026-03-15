@@ -81,8 +81,6 @@ package Gade.Dev.CPU.Decode is
       Rel8        : Signed_Byte := 0;
       Bit_Index   : Natural range 0 .. 7 := 0;
       RST_Vector  : Word := 0;
-      Cycles      : M_Cycle_Count := 0;
-      Jump_Cycles : M_Cycle_Count := 0;
    end record;
 
    function Decode

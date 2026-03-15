@@ -1,5 +1,6 @@
 with Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Decoded_Instructions; use Gade.Dev.CPU.Decoded_Instructions;
+with Gade.Dev.CPU.Timing;
 with Gade.GB;                           use Gade.GB;
 
 package body Gade.Dev.CPU.Exec is
@@ -16,12 +17,7 @@ package body Gade.Dev.CPU.Exec is
 
       GB.CPU.Branch_Taken := False;
       Gade.Dev.CPU.Decoded_Instructions.Execute (GB, Instruction);
-
-      if GB.CPU.Branch_Taken then
-         Cycles := Instruction.Jump_Cycles;
-      else
-         Cycles := Instruction.Cycles;
-      end if;
+      Cycles := Gade.Dev.CPU.Timing.Cycles (Instruction, GB.CPU.Branch_Taken);
    end Execute;
 
 end Gade.Dev.CPU.Exec;

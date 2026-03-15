@@ -1,14 +1,9 @@
-with Gade.Dev.CPU.Instruction_Timing; use Gade.Dev.CPU.Instruction_Timing;
 with Gade.GB;                         use Gade.GB;
 with Gade.GB.Memory_Map;              use Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Decode is
 
    type Decoded_Instruction_Table is array (Byte) of Decoded_Instruction;
-
-   procedure Apply_Timing
-     (Inst        : in out Decoded_Instruction;
-      Table_Entry : Instruction_Timing_Entry);
 
    function Apply_Prefix
      (Inst   : Decoded_Instruction;
@@ -38,14 +33,6 @@ package body Gade.Dev.CPU.Decode is
       return Result;
    end Apply_Prefix;
 
-   procedure Apply_Timing
-     (Inst        : in out Decoded_Instruction;
-      Table_Entry : Instruction_Timing_Entry) is
-   begin
-      Inst.Cycles := Table_Entry.Cycles;
-      Inst.Jump_Cycles := Table_Entry.Jump_Cycles;
-   end Apply_Timing;
-
    function Make
      (Operation   : Operation_Kind;
       Dest        : Operand_Kind := OD_None;
@@ -67,9 +54,7 @@ package body Gade.Dev.CPU.Decode is
          Imm16 => 0,
          Rel8 => 0,
          Bit_Index => Bit_Index,
-         RST_Vector => RST_Vector,
-         Cycles => 0,
-         Jump_Cycles => 0);
+         RST_Vector => RST_Vector);
    end Make;
 
    Main_Decode_Table : constant Decoded_Instruction_Table :=
@@ -630,7 +615,6 @@ package body Gade.Dev.CPU.Decode is
             Prefix => CB,
             Opcode => Read_Byte (GB, GB.CPU.PC + 1));
          Inst.Length := 2;
-         Apply_Timing (Inst, Opcodes_CB (Inst.Opcode));
       else
          Inst := Apply_Prefix (Main_Decode_Table (Opcode), Prefix => Main, Opcode => Opcode);
 
@@ -648,7 +632,6 @@ package body Gade.Dev.CPU.Decode is
                null;
          end case;
 
-         Apply_Timing (Inst, Opcodes_Main (Opcode));
       end if;
 
       return Inst;
