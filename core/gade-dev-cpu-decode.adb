@@ -4,55 +4,16 @@ with Gade.GB.Memory_Map;              use Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Decode is
 
-   type Half_Opcode_Field is range 0 .. 3;
-   type Opcode_Field is range 0 .. 7;
-   type Quarter_Opcode_Field is range 0 .. 1;
-
    type Decoded_Instruction_Table is array (Byte) of Decoded_Instruction;
-
-   Condition_Map : constant array (Half_Opcode_Field) of Condition_Kind :=
-     [0 => COND_NZ, 1 => COND_Z, 2 => COND_NC, 3 => COND_C];
-
-   Register16_Map : constant array (Half_Opcode_Field) of Operand_Kind :=
-     [0 => OD_BC, 1 => OD_DE, 2 => OD_HL, 3 => OD_SP];
-
-   Register16_Stack_Map :
-     constant array (Half_Opcode_Field) of Operand_Kind :=
-       [0 => OD_BC, 1 => OD_DE, 2 => OD_HL, 3 => OD_AF];
-
-   Register8_Map : constant array (Opcode_Field) of Operand_Kind :=
-     [0 => OD_B, 1 => OD_C, 2 => OD_D, 3 => OD_E,
-      4 => OD_H, 5 => OD_L, 6 => OD_Addr_HL, 7 => OD_A];
-
-   ALU_Operation_Map : constant array (Opcode_Field) of Operation_Kind :=
-     [0 => OP_ADD, 1 => OP_ADC, 2 => OP_SUB, 3 => OP_SBC,
-      4 => OP_AND, 5 => OP_XOR, 6 => OP_OR, 7 => OP_CP];
-
-   CB_Rotate_Operation_Map : constant array (Opcode_Field) of Operation_Kind :=
-     [0 => OP_RLC, 1 => OP_RRC, 2 => OP_RL, 3 => OP_RR,
-      4 => OP_SLA, 5 => OP_SRA, 6 => OP_SWAP, 7 => OP_SRL];
-
-   Accumulator_Rotate_Operation_Map :
-     constant array (Half_Opcode_Field range 0 .. 3) of Operation_Kind :=
-       [0 => OP_RLCA, 1 => OP_RRCA, 2 => OP_RLA, 3 => OP_RRA];
-
-   function Apply_Prefix
-     (Inst   : Decoded_Instruction;
-      Prefix : Prefix_Kind;
-      Opcode : Byte) return Decoded_Instruction;
 
    procedure Apply_Timing
      (Inst        : in out Decoded_Instruction;
       Table_Entry : Instruction_Entry);
 
-   function Build_CB_Table return Decoded_Instruction_Table;
-   function Build_Main_Table return Decoded_Instruction_Table;
-
-   function Field_P (Opcode : Byte) return Half_Opcode_Field;
-   function Field_Q (Opcode : Byte) return Quarter_Opcode_Field;
-   function Field_X (Opcode : Byte) return Half_Opcode_Field;
-   function Field_Y (Opcode : Byte) return Opcode_Field;
-   function Field_Z (Opcode : Byte) return Opcode_Field;
+   function Apply_Prefix
+     (Inst   : Decoded_Instruction;
+      Prefix : Prefix_Kind;
+      Opcode : Byte) return Decoded_Instruction;
 
    function Lookup_Entry
      (Prefix : Prefix_Kind;
@@ -89,31 +50,6 @@ package body Gade.Dev.CPU.Decode is
       Inst.Jump_Cycles := Table_Entry.Jump_Cycles;
    end Apply_Timing;
 
-   function Field_P (Opcode : Byte) return Half_Opcode_Field is
-   begin
-      return Half_Opcode_Field (Field_Y (Opcode) / 2);
-   end Field_P;
-
-   function Field_Q (Opcode : Byte) return Quarter_Opcode_Field is
-   begin
-      return Quarter_Opcode_Field (Field_Y (Opcode) mod 2);
-   end Field_Q;
-
-   function Field_X (Opcode : Byte) return Half_Opcode_Field is
-   begin
-      return Half_Opcode_Field (Opcode / 64);
-   end Field_X;
-
-   function Field_Y (Opcode : Byte) return Opcode_Field is
-   begin
-      return Opcode_Field ((Opcode / 8) mod 8);
-   end Field_Y;
-
-   function Field_Z (Opcode : Byte) return Opcode_Field is
-   begin
-      return Opcode_Field (Opcode mod 8);
-   end Field_Z;
-
    function Make
      (Operation   : Operation_Kind;
       Dest        : Operand_Kind := OD_None;
@@ -140,274 +76,551 @@ package body Gade.Dev.CPU.Decode is
          Jump_Cycles => 0);
    end Make;
 
-   function Build_CB_Table return Decoded_Instruction_Table is
-      Table : Decoded_Instruction_Table := [others => Make (OP_Invalid)];
-      Opcode : Byte;
-   begin
-      for X in Half_Opcode_Field loop
-         for Y in Opcode_Field loop
-            for Z in Opcode_Field loop
-               Opcode := Byte (Integer (X) * 64 + Integer (Y) * 8 + Integer (Z));
+   Main_Decode_Table : constant Decoded_Instruction_Table :=
+     [16#00# => Make (OP_NOP),
+      16#01# => Make (OP_LD, Dest => OD_BC, Src => OD_Imm16, Length => 3),
+      16#02# => Make (OP_LD, Dest => OD_Addr_BC, Src => OD_A),
+      16#03# => Make (OP_INC, Dest => OD_BC),
+      16#04# => Make (OP_INC, Dest => OD_B),
+      16#05# => Make (OP_DEC, Dest => OD_B),
+      16#06# => Make (OP_LD, Dest => OD_B, Src => OD_Imm8, Length => 2),
+      16#07# => Make (OP_RLCA),
+      16#08# => Make (OP_LD, Dest => OD_Addr_Imm16, Src => OD_SP, Length => 3),
+      16#09# => Make (OP_ADD, Dest => OD_HL, Src => OD_BC),
+      16#0A# => Make (OP_LD, Dest => OD_A, Src => OD_Addr_BC),
+      16#0B# => Make (OP_DEC, Dest => OD_BC),
+      16#0C# => Make (OP_INC, Dest => OD_C),
+      16#0D# => Make (OP_DEC, Dest => OD_C),
+      16#0E# => Make (OP_LD, Dest => OD_C, Src => OD_Imm8, Length => 2),
+      16#0F# => Make (OP_RRCA),
 
-               case X is
-                  when 0 =>
-                     Table (Opcode) :=
-                       Make (CB_Rotate_Operation_Map (Y),
-                             Dest => Register8_Map (Z));
-                  when 1 =>
-                     Table (Opcode) :=
-                       Make (OP_BIT,
-                             Dest => OD_Bit_Index,
-                             Src => Register8_Map (Z),
-                             Bit_Index => Natural (Y));
-                  when 2 =>
-                     Table (Opcode) :=
-                       Make (OP_RES,
-                             Dest => Register8_Map (Z),
-                             Src => Register8_Map (Z),
-                             Bit_Index => Natural (Y));
-                  when 3 =>
-                     Table (Opcode) :=
-                       Make (OP_SET,
-                             Dest => Register8_Map (Z),
-                             Src => Register8_Map (Z),
-                             Bit_Index => Natural (Y));
-               end case;
-            end loop;
-         end loop;
-      end loop;
+      16#10# => Make (OP_STOP, Length => 2),
+      16#11# => Make (OP_LD, Dest => OD_DE, Src => OD_Imm16, Length => 3),
+      16#12# => Make (OP_LD, Dest => OD_Addr_DE, Src => OD_A),
+      16#13# => Make (OP_INC, Dest => OD_DE),
+      16#14# => Make (OP_INC, Dest => OD_D),
+      16#15# => Make (OP_DEC, Dest => OD_D),
+      16#16# => Make (OP_LD, Dest => OD_D, Src => OD_Imm8, Length => 2),
+      16#17# => Make (OP_RLA),
+      16#18# => Make (OP_JR, Src => OD_Rel8, Length => 2),
+      16#19# => Make (OP_ADD, Dest => OD_HL, Src => OD_DE),
+      16#1A# => Make (OP_LD, Dest => OD_A, Src => OD_Addr_DE),
+      16#1B# => Make (OP_DEC, Dest => OD_DE),
+      16#1C# => Make (OP_INC, Dest => OD_E),
+      16#1D# => Make (OP_DEC, Dest => OD_E),
+      16#1E# => Make (OP_LD, Dest => OD_E, Src => OD_Imm8, Length => 2),
+      16#1F# => Make (OP_RRA),
 
-      return Table;
-   end Build_CB_Table;
+      16#20# => Make (OP_JR, Src => OD_Rel8, Condition => COND_NZ, Length => 2),
+      16#21# => Make (OP_LD, Dest => OD_HL, Src => OD_Imm16, Length => 3),
+      16#22# => Make (OP_LD, Dest => OD_Addr_HL_Inc, Src => OD_A),
+      16#23# => Make (OP_INC, Dest => OD_HL),
+      16#24# => Make (OP_INC, Dest => OD_H),
+      16#25# => Make (OP_DEC, Dest => OD_H),
+      16#26# => Make (OP_LD, Dest => OD_H, Src => OD_Imm8, Length => 2),
+      16#27# => Make (OP_DAA),
+      16#28# => Make (OP_JR, Src => OD_Rel8, Condition => COND_Z, Length => 2),
+      16#29# => Make (OP_ADD, Dest => OD_HL, Src => OD_HL),
+      16#2A# => Make (OP_LD, Dest => OD_A, Src => OD_Addr_HL_Inc),
+      16#2B# => Make (OP_DEC, Dest => OD_HL),
+      16#2C# => Make (OP_INC, Dest => OD_L),
+      16#2D# => Make (OP_DEC, Dest => OD_L),
+      16#2E# => Make (OP_LD, Dest => OD_L, Src => OD_Imm8, Length => 2),
+      16#2F# => Make (OP_CPL),
 
-   function Build_Main_Table return Decoded_Instruction_Table is
-      Table  : Decoded_Instruction_Table := [others => Make (OP_Invalid)];
-      Opcode : Byte;
-      X      : Half_Opcode_Field;
-      Y      : Opcode_Field;
-      Z      : Opcode_Field;
-      P      : Half_Opcode_Field;
-      Q      : Quarter_Opcode_Field;
-   begin
-      for Raw in 0 .. 255 loop
-         Opcode := Byte (Raw);
-         X := Field_X (Opcode);
-         Y := Field_Y (Opcode);
-         Z := Field_Z (Opcode);
-         P := Field_P (Opcode);
-         Q := Field_Q (Opcode);
+      16#30# => Make (OP_JR, Src => OD_Rel8, Condition => COND_NC, Length => 2),
+      16#31# => Make (OP_LD, Dest => OD_SP, Src => OD_Imm16, Length => 3),
+      16#32# => Make (OP_LD, Dest => OD_Addr_HL_Dec, Src => OD_A),
+      16#33# => Make (OP_INC, Dest => OD_SP),
+      16#34# => Make (OP_INC, Dest => OD_Addr_HL),
+      16#35# => Make (OP_DEC, Dest => OD_Addr_HL),
+      16#36# => Make (OP_LD, Dest => OD_Addr_HL, Src => OD_Imm8, Length => 2),
+      16#37# => Make (OP_SCF),
+      16#38# => Make (OP_JR, Src => OD_Rel8, Condition => COND_C, Length => 2),
+      16#39# => Make (OP_ADD, Dest => OD_HL, Src => OD_SP),
+      16#3A# => Make (OP_LD, Dest => OD_A, Src => OD_Addr_HL_Dec),
+      16#3B# => Make (OP_DEC, Dest => OD_SP),
+      16#3C# => Make (OP_INC, Dest => OD_A),
+      16#3D# => Make (OP_DEC, Dest => OD_A),
+      16#3E# => Make (OP_LD, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#3F# => Make (OP_CCF),
 
-         case X is
-            when 0 =>
-               case Z is
-                  when 0 =>
-                     case Y is
-                        when 0 =>
-                           Table (Opcode) := Make (OP_NOP);
-                        when 1 =>
-                           Table (Opcode) :=
-                             Make (OP_LD, Dest => OD_Addr_Imm16, Src => OD_SP,
-                                   Length => 3);
-                        when 2 =>
-                           Table (Opcode) := Make (OP_STOP, Length => 2);
-                        when 3 =>
-                           Table (Opcode) :=
-                             Make (OP_JR, Src => OD_Rel8, Length => 2);
-                        when others =>
-                           Table (Opcode) :=
-                             Make (OP_JR,
-                                   Src => OD_Rel8,
-                                   Condition => Condition_Map (Half_Opcode_Field (Y - 4)),
-                                   Length => 2);
-                     end case;
-                  when 1 =>
-                     if Q = 0 then
-                        Table (Opcode) :=
-                          Make (OP_LD,
-                                Dest => Register16_Map (P),
-                                Src => OD_Imm16,
-                                Length => 3);
-                     else
-                        Table (Opcode) :=
-                          Make (OP_ADD, Dest => OD_HL, Src => Register16_Map (P));
-                     end if;
-                  when 2 =>
-                     if Q = 0 then
-                        case P is
-                           when 0 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_Addr_BC, Src => OD_A);
-                           when 1 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_Addr_DE, Src => OD_A);
-                           when 2 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_Addr_HL_Inc, Src => OD_A);
-                           when 3 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_Addr_HL_Dec, Src => OD_A);
-                        end case;
-                     else
-                        case P is
-                           when 0 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_Addr_BC);
-                           when 1 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_Addr_DE);
-                           when 2 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_Addr_HL_Inc);
-                           when 3 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_Addr_HL_Dec);
-                        end case;
-                     end if;
-                  when 3 =>
-                     if Q = 0 then
-                        Table (Opcode) :=
-                          Make (OP_INC, Dest => Register16_Map (P));
-                     else
-                        Table (Opcode) :=
-                          Make (OP_DEC, Dest => Register16_Map (P));
-                     end if;
-                  when 4 =>
-                     Table (Opcode) := Make (OP_INC, Dest => Register8_Map (Y));
-                  when 5 =>
-                     Table (Opcode) := Make (OP_DEC, Dest => Register8_Map (Y));
-                  when 6 =>
-                     Table (Opcode) :=
-                       Make (OP_LD, Dest => Register8_Map (Y), Src => OD_Imm8,
-                             Length => 2);
-                  when 7 =>
-                     case Y is
-                        when 0 .. 3 =>
-                           Table (Opcode) :=
-                             Make (Accumulator_Rotate_Operation_Map
-                                     (Half_Opcode_Field (Y)));
-                        when 4 =>
-                           Table (Opcode) := Make (OP_DAA);
-                        when 5 =>
-                           Table (Opcode) := Make (OP_CPL);
-                        when 6 =>
-                           Table (Opcode) := Make (OP_SCF);
-                        when 7 =>
-                           Table (Opcode) := Make (OP_CCF);
-                     end case;
-               end case;
+      16#40# => Make (OP_LD, Dest => OD_B, Src => OD_B),
+      16#41# => Make (OP_LD, Dest => OD_B, Src => OD_C),
+      16#42# => Make (OP_LD, Dest => OD_B, Src => OD_D),
+      16#43# => Make (OP_LD, Dest => OD_B, Src => OD_E),
+      16#44# => Make (OP_LD, Dest => OD_B, Src => OD_H),
+      16#45# => Make (OP_LD, Dest => OD_B, Src => OD_L),
+      16#46# => Make (OP_LD, Dest => OD_B, Src => OD_Addr_HL),
+      16#47# => Make (OP_LD, Dest => OD_B, Src => OD_A),
+      16#48# => Make (OP_LD, Dest => OD_C, Src => OD_B),
+      16#49# => Make (OP_LD, Dest => OD_C, Src => OD_C),
+      16#4A# => Make (OP_LD, Dest => OD_C, Src => OD_D),
+      16#4B# => Make (OP_LD, Dest => OD_C, Src => OD_E),
+      16#4C# => Make (OP_LD, Dest => OD_C, Src => OD_H),
+      16#4D# => Make (OP_LD, Dest => OD_C, Src => OD_L),
+      16#4E# => Make (OP_LD, Dest => OD_C, Src => OD_Addr_HL),
+      16#4F# => Make (OP_LD, Dest => OD_C, Src => OD_A),
 
-            when 1 =>
-               if Y = 6 and then Z = 6 then
-                  Table (Opcode) := Make (OP_HALT);
-               else
-                  Table (Opcode) :=
-                    Make (OP_LD, Dest => Register8_Map (Y), Src => Register8_Map (Z));
-               end if;
+      16#50# => Make (OP_LD, Dest => OD_D, Src => OD_B),
+      16#51# => Make (OP_LD, Dest => OD_D, Src => OD_C),
+      16#52# => Make (OP_LD, Dest => OD_D, Src => OD_D),
+      16#53# => Make (OP_LD, Dest => OD_D, Src => OD_E),
+      16#54# => Make (OP_LD, Dest => OD_D, Src => OD_H),
+      16#55# => Make (OP_LD, Dest => OD_D, Src => OD_L),
+      16#56# => Make (OP_LD, Dest => OD_D, Src => OD_Addr_HL),
+      16#57# => Make (OP_LD, Dest => OD_D, Src => OD_A),
+      16#58# => Make (OP_LD, Dest => OD_E, Src => OD_B),
+      16#59# => Make (OP_LD, Dest => OD_E, Src => OD_C),
+      16#5A# => Make (OP_LD, Dest => OD_E, Src => OD_D),
+      16#5B# => Make (OP_LD, Dest => OD_E, Src => OD_E),
+      16#5C# => Make (OP_LD, Dest => OD_E, Src => OD_H),
+      16#5D# => Make (OP_LD, Dest => OD_E, Src => OD_L),
+      16#5E# => Make (OP_LD, Dest => OD_E, Src => OD_Addr_HL),
+      16#5F# => Make (OP_LD, Dest => OD_E, Src => OD_A),
 
-            when 2 =>
-               Table (Opcode) :=
-                 Make (ALU_Operation_Map (Y), Dest => OD_A, Src => Register8_Map (Z));
+      16#60# => Make (OP_LD, Dest => OD_H, Src => OD_B),
+      16#61# => Make (OP_LD, Dest => OD_H, Src => OD_C),
+      16#62# => Make (OP_LD, Dest => OD_H, Src => OD_D),
+      16#63# => Make (OP_LD, Dest => OD_H, Src => OD_E),
+      16#64# => Make (OP_LD, Dest => OD_H, Src => OD_H),
+      16#65# => Make (OP_LD, Dest => OD_H, Src => OD_L),
+      16#66# => Make (OP_LD, Dest => OD_H, Src => OD_Addr_HL),
+      16#67# => Make (OP_LD, Dest => OD_H, Src => OD_A),
+      16#68# => Make (OP_LD, Dest => OD_L, Src => OD_B),
+      16#69# => Make (OP_LD, Dest => OD_L, Src => OD_C),
+      16#6A# => Make (OP_LD, Dest => OD_L, Src => OD_D),
+      16#6B# => Make (OP_LD, Dest => OD_L, Src => OD_E),
+      16#6C# => Make (OP_LD, Dest => OD_L, Src => OD_H),
+      16#6D# => Make (OP_LD, Dest => OD_L, Src => OD_L),
+      16#6E# => Make (OP_LD, Dest => OD_L, Src => OD_Addr_HL),
+      16#6F# => Make (OP_LD, Dest => OD_L, Src => OD_A),
 
-            when 3 =>
-               case Z is
-                  when 0 =>
-                     case Y is
-                        when 0 .. 3 =>
-                           Table (Opcode) :=
-                             Make (OP_RET, Condition => Condition_Map (Half_Opcode_Field (Y)));
-                        when 4 =>
-                           Table (Opcode) :=
-                             Make (OP_LD, Dest => OD_High_Addr_Imm8, Src => OD_A,
-                                   Length => 2);
-                        when 5 =>
-                           Table (Opcode) :=
-                             Make (OP_ADD, Dest => OD_SP, Src => OD_Rel8, Length => 2);
-                        when 6 =>
-                           Table (Opcode) :=
-                             Make (OP_LD, Dest => OD_A, Src => OD_High_Addr_Imm8,
-                                   Length => 2);
-                        when 7 =>
-                           Table (Opcode) :=
-                             Make (OP_LD, Dest => OD_HL, Src => OD_SP_Plus_Rel8,
-                                   Length => 2);
-                     end case;
+      16#70# => Make (OP_LD, Dest => OD_Addr_HL, Src => OD_B),
+      16#71# => Make (OP_LD, Dest => OD_Addr_HL, Src => OD_C),
+      16#72# => Make (OP_LD, Dest => OD_Addr_HL, Src => OD_D),
+      16#73# => Make (OP_LD, Dest => OD_Addr_HL, Src => OD_E),
+      16#74# => Make (OP_LD, Dest => OD_Addr_HL, Src => OD_H),
+      16#75# => Make (OP_LD, Dest => OD_Addr_HL, Src => OD_L),
+      16#76# => Make (OP_HALT),
+      16#77# => Make (OP_LD, Dest => OD_Addr_HL, Src => OD_A),
+      16#78# => Make (OP_LD, Dest => OD_A, Src => OD_B),
+      16#79# => Make (OP_LD, Dest => OD_A, Src => OD_C),
+      16#7A# => Make (OP_LD, Dest => OD_A, Src => OD_D),
+      16#7B# => Make (OP_LD, Dest => OD_A, Src => OD_E),
+      16#7C# => Make (OP_LD, Dest => OD_A, Src => OD_H),
+      16#7D# => Make (OP_LD, Dest => OD_A, Src => OD_L),
+      16#7E# => Make (OP_LD, Dest => OD_A, Src => OD_Addr_HL),
+      16#7F# => Make (OP_LD, Dest => OD_A, Src => OD_A),
 
-                  when 1 =>
-                     if Q = 0 then
-                        Table (Opcode) :=
-                          Make (OP_POP, Dest => Register16_Stack_Map (P));
-                     else
-                        case P is
-                           when 0 =>
-                              Table (Opcode) := Make (OP_RET);
-                           when 1 =>
-                              Table (Opcode) := Make (OP_RETI);
-                           when 2 =>
-                              Table (Opcode) := Make (OP_JP, Src => OD_HL);
-                           when 3 =>
-                              Table (Opcode) := Make (OP_LD, Dest => OD_SP, Src => OD_HL);
-                        end case;
-                     end if;
+      16#80# => Make (OP_ADD, Dest => OD_A, Src => OD_B),
+      16#81# => Make (OP_ADD, Dest => OD_A, Src => OD_C),
+      16#82# => Make (OP_ADD, Dest => OD_A, Src => OD_D),
+      16#83# => Make (OP_ADD, Dest => OD_A, Src => OD_E),
+      16#84# => Make (OP_ADD, Dest => OD_A, Src => OD_H),
+      16#85# => Make (OP_ADD, Dest => OD_A, Src => OD_L),
+      16#86# => Make (OP_ADD, Dest => OD_A, Src => OD_Addr_HL),
+      16#87# => Make (OP_ADD, Dest => OD_A, Src => OD_A),
+      16#88# => Make (OP_ADC, Dest => OD_A, Src => OD_B),
+      16#89# => Make (OP_ADC, Dest => OD_A, Src => OD_C),
+      16#8A# => Make (OP_ADC, Dest => OD_A, Src => OD_D),
+      16#8B# => Make (OP_ADC, Dest => OD_A, Src => OD_E),
+      16#8C# => Make (OP_ADC, Dest => OD_A, Src => OD_H),
+      16#8D# => Make (OP_ADC, Dest => OD_A, Src => OD_L),
+      16#8E# => Make (OP_ADC, Dest => OD_A, Src => OD_Addr_HL),
+      16#8F# => Make (OP_ADC, Dest => OD_A, Src => OD_A),
 
-                  when 2 =>
-                     case Y is
-                        when 0 .. 3 =>
-                           Table (Opcode) :=
-                             Make (OP_JP, Src => OD_Imm16,
-                                   Condition => Condition_Map (Half_Opcode_Field (Y)),
-                                   Length => 3);
-                        when 4 =>
-                           Table (Opcode) := Make (OP_LD, Dest => OD_High_Addr_C, Src => OD_A);
-                        when 5 =>
-                           Table (Opcode) :=
-                             Make (OP_LD, Dest => OD_Addr_Imm16, Src => OD_A, Length => 3);
-                        when 6 =>
-                           Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_High_Addr_C);
-                        when 7 =>
-                           Table (Opcode) :=
-                             Make (OP_LD, Dest => OD_A, Src => OD_Addr_Imm16, Length => 3);
-                     end case;
+      16#90# => Make (OP_SUB, Dest => OD_A, Src => OD_B),
+      16#91# => Make (OP_SUB, Dest => OD_A, Src => OD_C),
+      16#92# => Make (OP_SUB, Dest => OD_A, Src => OD_D),
+      16#93# => Make (OP_SUB, Dest => OD_A, Src => OD_E),
+      16#94# => Make (OP_SUB, Dest => OD_A, Src => OD_H),
+      16#95# => Make (OP_SUB, Dest => OD_A, Src => OD_L),
+      16#96# => Make (OP_SUB, Dest => OD_A, Src => OD_Addr_HL),
+      16#97# => Make (OP_SUB, Dest => OD_A, Src => OD_A),
+      16#98# => Make (OP_SBC, Dest => OD_A, Src => OD_B),
+      16#99# => Make (OP_SBC, Dest => OD_A, Src => OD_C),
+      16#9A# => Make (OP_SBC, Dest => OD_A, Src => OD_D),
+      16#9B# => Make (OP_SBC, Dest => OD_A, Src => OD_E),
+      16#9C# => Make (OP_SBC, Dest => OD_A, Src => OD_H),
+      16#9D# => Make (OP_SBC, Dest => OD_A, Src => OD_L),
+      16#9E# => Make (OP_SBC, Dest => OD_A, Src => OD_Addr_HL),
+      16#9F# => Make (OP_SBC, Dest => OD_A, Src => OD_A),
 
-                  when 3 =>
-                     case Y is
-                        when 0 =>
-                           Table (Opcode) := Make (OP_JP, Src => OD_Imm16, Length => 3);
-                        when 1 =>
-                           Table (Opcode) := Make (OP_Invalid);
-                        when 6 =>
-                           Table (Opcode) := Make (OP_DI);
-                        when 7 =>
-                           Table (Opcode) := Make (OP_EI);
-                        when others =>
-                           null;
-                     end case;
+      16#A0# => Make (OP_AND, Dest => OD_A, Src => OD_B),
+      16#A1# => Make (OP_AND, Dest => OD_A, Src => OD_C),
+      16#A2# => Make (OP_AND, Dest => OD_A, Src => OD_D),
+      16#A3# => Make (OP_AND, Dest => OD_A, Src => OD_E),
+      16#A4# => Make (OP_AND, Dest => OD_A, Src => OD_H),
+      16#A5# => Make (OP_AND, Dest => OD_A, Src => OD_L),
+      16#A6# => Make (OP_AND, Dest => OD_A, Src => OD_Addr_HL),
+      16#A7# => Make (OP_AND, Dest => OD_A, Src => OD_A),
+      16#A8# => Make (OP_XOR, Dest => OD_A, Src => OD_B),
+      16#A9# => Make (OP_XOR, Dest => OD_A, Src => OD_C),
+      16#AA# => Make (OP_XOR, Dest => OD_A, Src => OD_D),
+      16#AB# => Make (OP_XOR, Dest => OD_A, Src => OD_E),
+      16#AC# => Make (OP_XOR, Dest => OD_A, Src => OD_H),
+      16#AD# => Make (OP_XOR, Dest => OD_A, Src => OD_L),
+      16#AE# => Make (OP_XOR, Dest => OD_A, Src => OD_Addr_HL),
+      16#AF# => Make (OP_XOR, Dest => OD_A, Src => OD_A),
 
-                  when 4 =>
-                     if Y <= 3 then
-                        Table (Opcode) :=
-                          Make (OP_CALL, Src => OD_Imm16,
-                                Condition => Condition_Map (Half_Opcode_Field (Y)),
-                                Length => 3);
-                     end if;
+      16#B0# => Make (OP_OR, Dest => OD_A, Src => OD_B),
+      16#B1# => Make (OP_OR, Dest => OD_A, Src => OD_C),
+      16#B2# => Make (OP_OR, Dest => OD_A, Src => OD_D),
+      16#B3# => Make (OP_OR, Dest => OD_A, Src => OD_E),
+      16#B4# => Make (OP_OR, Dest => OD_A, Src => OD_H),
+      16#B5# => Make (OP_OR, Dest => OD_A, Src => OD_L),
+      16#B6# => Make (OP_OR, Dest => OD_A, Src => OD_Addr_HL),
+      16#B7# => Make (OP_OR, Dest => OD_A, Src => OD_A),
+      16#B8# => Make (OP_CP, Dest => OD_A, Src => OD_B),
+      16#B9# => Make (OP_CP, Dest => OD_A, Src => OD_C),
+      16#BA# => Make (OP_CP, Dest => OD_A, Src => OD_D),
+      16#BB# => Make (OP_CP, Dest => OD_A, Src => OD_E),
+      16#BC# => Make (OP_CP, Dest => OD_A, Src => OD_H),
+      16#BD# => Make (OP_CP, Dest => OD_A, Src => OD_L),
+      16#BE# => Make (OP_CP, Dest => OD_A, Src => OD_Addr_HL),
+      16#BF# => Make (OP_CP, Dest => OD_A, Src => OD_A),
 
-                  when 5 =>
-                     if Q = 0 then
-                        Table (Opcode) :=
-                          Make (OP_PUSH, Src => Register16_Stack_Map (P));
-                     elsif P = 0 then
-                        Table (Opcode) := Make (OP_CALL, Src => OD_Imm16, Length => 3);
-                     end if;
+      16#C0# => Make (OP_RET, Condition => COND_NZ),
+      16#C1# => Make (OP_POP, Dest => OD_BC),
+      16#C2# => Make (OP_JP, Src => OD_Imm16, Condition => COND_NZ, Length => 3),
+      16#C3# => Make (OP_JP, Src => OD_Imm16, Length => 3),
+      16#C4# => Make (OP_CALL, Src => OD_Imm16, Condition => COND_NZ, Length => 3),
+      16#C5# => Make (OP_PUSH, Src => OD_BC),
+      16#C6# => Make (OP_ADD, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#C7# => Make (OP_RST, Dest => OD_RST_Vector, RST_Vector => 16#00#),
+      16#C8# => Make (OP_RET, Condition => COND_Z),
+      16#C9# => Make (OP_RET),
+      16#CA# => Make (OP_JP, Src => OD_Imm16, Condition => COND_Z, Length => 3),
+      16#CB# => Make (OP_Invalid),
+      16#CC# => Make (OP_CALL, Src => OD_Imm16, Condition => COND_Z, Length => 3),
+      16#CD# => Make (OP_CALL, Src => OD_Imm16, Length => 3),
+      16#CE# => Make (OP_ADC, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#CF# => Make (OP_RST, Dest => OD_RST_Vector, RST_Vector => 16#08#),
 
-                  when 6 =>
-                     Table (Opcode) :=
-                       Make (ALU_Operation_Map (Y), Dest => OD_A, Src => OD_Imm8,
-                             Length => 2);
+      16#D0# => Make (OP_RET, Condition => COND_NC),
+      16#D1# => Make (OP_POP, Dest => OD_DE),
+      16#D2# => Make (OP_JP, Src => OD_Imm16, Condition => COND_NC, Length => 3),
+      16#D3# => Make (OP_Invalid),
+      16#D4# => Make (OP_CALL, Src => OD_Imm16, Condition => COND_NC, Length => 3),
+      16#D5# => Make (OP_PUSH, Src => OD_DE),
+      16#D6# => Make (OP_SUB, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#D7# => Make (OP_RST, Dest => OD_RST_Vector, RST_Vector => 16#10#),
+      16#D8# => Make (OP_RET, Condition => COND_C),
+      16#D9# => Make (OP_RETI),
+      16#DA# => Make (OP_JP, Src => OD_Imm16, Condition => COND_C, Length => 3),
+      16#DB# => Make (OP_Invalid),
+      16#DC# => Make (OP_CALL, Src => OD_Imm16, Condition => COND_C, Length => 3),
+      16#DD# => Make (OP_Invalid),
+      16#DE# => Make (OP_SBC, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#DF# => Make (OP_RST, Dest => OD_RST_Vector, RST_Vector => 16#18#),
 
-                  when 7 =>
-                     Table (Opcode) :=
-                       Make (OP_RST, Dest => OD_RST_Vector,
-                             RST_Vector => Word (Natural (Y) * 8));
-               end case;
-         end case;
-      end loop;
+      16#E0# => Make (OP_LD, Dest => OD_High_Addr_Imm8, Src => OD_A, Length => 2),
+      16#E1# => Make (OP_POP, Dest => OD_HL),
+      16#E2# => Make (OP_LD, Dest => OD_High_Addr_C, Src => OD_A),
+      16#E3# => Make (OP_Invalid),
+      16#E4# => Make (OP_Invalid),
+      16#E5# => Make (OP_PUSH, Src => OD_HL),
+      16#E6# => Make (OP_AND, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#E7# => Make (OP_RST, Dest => OD_RST_Vector, RST_Vector => 16#20#),
+      16#E8# => Make (OP_ADD, Dest => OD_SP, Src => OD_Rel8, Length => 2),
+      16#E9# => Make (OP_JP, Src => OD_HL),
+      16#EA# => Make (OP_LD, Dest => OD_Addr_Imm16, Src => OD_A, Length => 3),
+      16#EB# => Make (OP_Invalid),
+      16#EC# => Make (OP_Invalid),
+      16#ED# => Make (OP_Invalid),
+      16#EE# => Make (OP_XOR, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#EF# => Make (OP_RST, Dest => OD_RST_Vector, RST_Vector => 16#28#),
 
-      return Table;
-   end Build_Main_Table;
+      16#F0# => Make (OP_LD, Dest => OD_A, Src => OD_High_Addr_Imm8, Length => 2),
+      16#F1# => Make (OP_POP, Dest => OD_AF),
+      16#F2# => Make (OP_LD, Dest => OD_A, Src => OD_High_Addr_C),
+      16#F3# => Make (OP_DI),
+      16#F4# => Make (OP_Invalid),
+      16#F5# => Make (OP_PUSH, Src => OD_AF),
+      16#F6# => Make (OP_OR, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#F7# => Make (OP_RST, Dest => OD_RST_Vector, RST_Vector => 16#30#),
+      16#F8# => Make (OP_LD, Dest => OD_HL, Src => OD_SP_Plus_Rel8, Length => 2),
+      16#F9# => Make (OP_LD, Dest => OD_SP, Src => OD_HL),
+      16#FA# => Make (OP_LD, Dest => OD_A, Src => OD_Addr_Imm16, Length => 3),
+      16#FB# => Make (OP_EI),
+      16#FC# => Make (OP_Invalid),
+      16#FD# => Make (OP_Invalid),
+      16#FE# => Make (OP_CP, Dest => OD_A, Src => OD_Imm8, Length => 2),
+      16#FF# => Make (OP_RST, Dest => OD_RST_Vector, RST_Vector => 16#38#)];
 
-   Main_Decode_Table : constant Decoded_Instruction_Table := Build_Main_Table;
-   CB_Decode_Table   : constant Decoded_Instruction_Table := Build_CB_Table;
+   CB_Decode_Table : constant Decoded_Instruction_Table :=
+     [16#00# => Make (OP_RLC, Dest => OD_B),
+      16#01# => Make (OP_RLC, Dest => OD_C),
+      16#02# => Make (OP_RLC, Dest => OD_D),
+      16#03# => Make (OP_RLC, Dest => OD_E),
+      16#04# => Make (OP_RLC, Dest => OD_H),
+      16#05# => Make (OP_RLC, Dest => OD_L),
+      16#06# => Make (OP_RLC, Dest => OD_Addr_HL),
+      16#07# => Make (OP_RLC, Dest => OD_A),
+      16#08# => Make (OP_RRC, Dest => OD_B),
+      16#09# => Make (OP_RRC, Dest => OD_C),
+      16#0A# => Make (OP_RRC, Dest => OD_D),
+      16#0B# => Make (OP_RRC, Dest => OD_E),
+      16#0C# => Make (OP_RRC, Dest => OD_H),
+      16#0D# => Make (OP_RRC, Dest => OD_L),
+      16#0E# => Make (OP_RRC, Dest => OD_Addr_HL),
+      16#0F# => Make (OP_RRC, Dest => OD_A),
+
+      16#10# => Make (OP_RL, Dest => OD_B),
+      16#11# => Make (OP_RL, Dest => OD_C),
+      16#12# => Make (OP_RL, Dest => OD_D),
+      16#13# => Make (OP_RL, Dest => OD_E),
+      16#14# => Make (OP_RL, Dest => OD_H),
+      16#15# => Make (OP_RL, Dest => OD_L),
+      16#16# => Make (OP_RL, Dest => OD_Addr_HL),
+      16#17# => Make (OP_RL, Dest => OD_A),
+      16#18# => Make (OP_RR, Dest => OD_B),
+      16#19# => Make (OP_RR, Dest => OD_C),
+      16#1A# => Make (OP_RR, Dest => OD_D),
+      16#1B# => Make (OP_RR, Dest => OD_E),
+      16#1C# => Make (OP_RR, Dest => OD_H),
+      16#1D# => Make (OP_RR, Dest => OD_L),
+      16#1E# => Make (OP_RR, Dest => OD_Addr_HL),
+      16#1F# => Make (OP_RR, Dest => OD_A),
+
+      16#20# => Make (OP_SLA, Dest => OD_B),
+      16#21# => Make (OP_SLA, Dest => OD_C),
+      16#22# => Make (OP_SLA, Dest => OD_D),
+      16#23# => Make (OP_SLA, Dest => OD_E),
+      16#24# => Make (OP_SLA, Dest => OD_H),
+      16#25# => Make (OP_SLA, Dest => OD_L),
+      16#26# => Make (OP_SLA, Dest => OD_Addr_HL),
+      16#27# => Make (OP_SLA, Dest => OD_A),
+      16#28# => Make (OP_SRA, Dest => OD_B),
+      16#29# => Make (OP_SRA, Dest => OD_C),
+      16#2A# => Make (OP_SRA, Dest => OD_D),
+      16#2B# => Make (OP_SRA, Dest => OD_E),
+      16#2C# => Make (OP_SRA, Dest => OD_H),
+      16#2D# => Make (OP_SRA, Dest => OD_L),
+      16#2E# => Make (OP_SRA, Dest => OD_Addr_HL),
+      16#2F# => Make (OP_SRA, Dest => OD_A),
+
+      16#30# => Make (OP_SWAP, Dest => OD_B),
+      16#31# => Make (OP_SWAP, Dest => OD_C),
+      16#32# => Make (OP_SWAP, Dest => OD_D),
+      16#33# => Make (OP_SWAP, Dest => OD_E),
+      16#34# => Make (OP_SWAP, Dest => OD_H),
+      16#35# => Make (OP_SWAP, Dest => OD_L),
+      16#36# => Make (OP_SWAP, Dest => OD_Addr_HL),
+      16#37# => Make (OP_SWAP, Dest => OD_A),
+      16#38# => Make (OP_SRL, Dest => OD_B),
+      16#39# => Make (OP_SRL, Dest => OD_C),
+      16#3A# => Make (OP_SRL, Dest => OD_D),
+      16#3B# => Make (OP_SRL, Dest => OD_E),
+      16#3C# => Make (OP_SRL, Dest => OD_H),
+      16#3D# => Make (OP_SRL, Dest => OD_L),
+      16#3E# => Make (OP_SRL, Dest => OD_Addr_HL),
+      16#3F# => Make (OP_SRL, Dest => OD_A),
+
+      16#40# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_B, Bit_Index => 0),
+      16#41# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_C, Bit_Index => 0),
+      16#42# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_D, Bit_Index => 0),
+      16#43# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_E, Bit_Index => 0),
+      16#44# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_H, Bit_Index => 0),
+      16#45# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_L, Bit_Index => 0),
+      16#46# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_Addr_HL, Bit_Index => 0),
+      16#47# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_A, Bit_Index => 0),
+      16#48# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_B, Bit_Index => 1),
+      16#49# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_C, Bit_Index => 1),
+      16#4A# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_D, Bit_Index => 1),
+      16#4B# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_E, Bit_Index => 1),
+      16#4C# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_H, Bit_Index => 1),
+      16#4D# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_L, Bit_Index => 1),
+      16#4E# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_Addr_HL, Bit_Index => 1),
+      16#4F# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_A, Bit_Index => 1),
+
+      16#50# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_B, Bit_Index => 2),
+      16#51# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_C, Bit_Index => 2),
+      16#52# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_D, Bit_Index => 2),
+      16#53# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_E, Bit_Index => 2),
+      16#54# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_H, Bit_Index => 2),
+      16#55# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_L, Bit_Index => 2),
+      16#56# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_Addr_HL, Bit_Index => 2),
+      16#57# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_A, Bit_Index => 2),
+      16#58# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_B, Bit_Index => 3),
+      16#59# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_C, Bit_Index => 3),
+      16#5A# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_D, Bit_Index => 3),
+      16#5B# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_E, Bit_Index => 3),
+      16#5C# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_H, Bit_Index => 3),
+      16#5D# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_L, Bit_Index => 3),
+      16#5E# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_Addr_HL, Bit_Index => 3),
+      16#5F# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_A, Bit_Index => 3),
+
+      16#60# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_B, Bit_Index => 4),
+      16#61# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_C, Bit_Index => 4),
+      16#62# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_D, Bit_Index => 4),
+      16#63# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_E, Bit_Index => 4),
+      16#64# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_H, Bit_Index => 4),
+      16#65# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_L, Bit_Index => 4),
+      16#66# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_Addr_HL, Bit_Index => 4),
+      16#67# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_A, Bit_Index => 4),
+      16#68# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_B, Bit_Index => 5),
+      16#69# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_C, Bit_Index => 5),
+      16#6A# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_D, Bit_Index => 5),
+      16#6B# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_E, Bit_Index => 5),
+      16#6C# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_H, Bit_Index => 5),
+      16#6D# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_L, Bit_Index => 5),
+      16#6E# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_Addr_HL, Bit_Index => 5),
+      16#6F# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_A, Bit_Index => 5),
+
+      16#70# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_B, Bit_Index => 6),
+      16#71# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_C, Bit_Index => 6),
+      16#72# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_D, Bit_Index => 6),
+      16#73# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_E, Bit_Index => 6),
+      16#74# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_H, Bit_Index => 6),
+      16#75# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_L, Bit_Index => 6),
+      16#76# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_Addr_HL, Bit_Index => 6),
+      16#77# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_A, Bit_Index => 6),
+      16#78# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_B, Bit_Index => 7),
+      16#79# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_C, Bit_Index => 7),
+      16#7A# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_D, Bit_Index => 7),
+      16#7B# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_E, Bit_Index => 7),
+      16#7C# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_H, Bit_Index => 7),
+      16#7D# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_L, Bit_Index => 7),
+      16#7E# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_Addr_HL, Bit_Index => 7),
+      16#7F# => Make (OP_BIT, Dest => OD_Bit_Index, Src => OD_A, Bit_Index => 7),
+
+      16#80# => Make (OP_RES, Dest => OD_B, Src => OD_B, Bit_Index => 0),
+      16#81# => Make (OP_RES, Dest => OD_C, Src => OD_C, Bit_Index => 0),
+      16#82# => Make (OP_RES, Dest => OD_D, Src => OD_D, Bit_Index => 0),
+      16#83# => Make (OP_RES, Dest => OD_E, Src => OD_E, Bit_Index => 0),
+      16#84# => Make (OP_RES, Dest => OD_H, Src => OD_H, Bit_Index => 0),
+      16#85# => Make (OP_RES, Dest => OD_L, Src => OD_L, Bit_Index => 0),
+      16#86# => Make (OP_RES, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 0),
+      16#87# => Make (OP_RES, Dest => OD_A, Src => OD_A, Bit_Index => 0),
+      16#88# => Make (OP_RES, Dest => OD_B, Src => OD_B, Bit_Index => 1),
+      16#89# => Make (OP_RES, Dest => OD_C, Src => OD_C, Bit_Index => 1),
+      16#8A# => Make (OP_RES, Dest => OD_D, Src => OD_D, Bit_Index => 1),
+      16#8B# => Make (OP_RES, Dest => OD_E, Src => OD_E, Bit_Index => 1),
+      16#8C# => Make (OP_RES, Dest => OD_H, Src => OD_H, Bit_Index => 1),
+      16#8D# => Make (OP_RES, Dest => OD_L, Src => OD_L, Bit_Index => 1),
+      16#8E# => Make (OP_RES, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 1),
+      16#8F# => Make (OP_RES, Dest => OD_A, Src => OD_A, Bit_Index => 1),
+
+      16#90# => Make (OP_RES, Dest => OD_B, Src => OD_B, Bit_Index => 2),
+      16#91# => Make (OP_RES, Dest => OD_C, Src => OD_C, Bit_Index => 2),
+      16#92# => Make (OP_RES, Dest => OD_D, Src => OD_D, Bit_Index => 2),
+      16#93# => Make (OP_RES, Dest => OD_E, Src => OD_E, Bit_Index => 2),
+      16#94# => Make (OP_RES, Dest => OD_H, Src => OD_H, Bit_Index => 2),
+      16#95# => Make (OP_RES, Dest => OD_L, Src => OD_L, Bit_Index => 2),
+      16#96# => Make (OP_RES, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 2),
+      16#97# => Make (OP_RES, Dest => OD_A, Src => OD_A, Bit_Index => 2),
+      16#98# => Make (OP_RES, Dest => OD_B, Src => OD_B, Bit_Index => 3),
+      16#99# => Make (OP_RES, Dest => OD_C, Src => OD_C, Bit_Index => 3),
+      16#9A# => Make (OP_RES, Dest => OD_D, Src => OD_D, Bit_Index => 3),
+      16#9B# => Make (OP_RES, Dest => OD_E, Src => OD_E, Bit_Index => 3),
+      16#9C# => Make (OP_RES, Dest => OD_H, Src => OD_H, Bit_Index => 3),
+      16#9D# => Make (OP_RES, Dest => OD_L, Src => OD_L, Bit_Index => 3),
+      16#9E# => Make (OP_RES, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 3),
+      16#9F# => Make (OP_RES, Dest => OD_A, Src => OD_A, Bit_Index => 3),
+
+      16#A0# => Make (OP_RES, Dest => OD_B, Src => OD_B, Bit_Index => 4),
+      16#A1# => Make (OP_RES, Dest => OD_C, Src => OD_C, Bit_Index => 4),
+      16#A2# => Make (OP_RES, Dest => OD_D, Src => OD_D, Bit_Index => 4),
+      16#A3# => Make (OP_RES, Dest => OD_E, Src => OD_E, Bit_Index => 4),
+      16#A4# => Make (OP_RES, Dest => OD_H, Src => OD_H, Bit_Index => 4),
+      16#A5# => Make (OP_RES, Dest => OD_L, Src => OD_L, Bit_Index => 4),
+      16#A6# => Make (OP_RES, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 4),
+      16#A7# => Make (OP_RES, Dest => OD_A, Src => OD_A, Bit_Index => 4),
+      16#A8# => Make (OP_RES, Dest => OD_B, Src => OD_B, Bit_Index => 5),
+      16#A9# => Make (OP_RES, Dest => OD_C, Src => OD_C, Bit_Index => 5),
+      16#AA# => Make (OP_RES, Dest => OD_D, Src => OD_D, Bit_Index => 5),
+      16#AB# => Make (OP_RES, Dest => OD_E, Src => OD_E, Bit_Index => 5),
+      16#AC# => Make (OP_RES, Dest => OD_H, Src => OD_H, Bit_Index => 5),
+      16#AD# => Make (OP_RES, Dest => OD_L, Src => OD_L, Bit_Index => 5),
+      16#AE# => Make (OP_RES, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 5),
+      16#AF# => Make (OP_RES, Dest => OD_A, Src => OD_A, Bit_Index => 5),
+
+      16#B0# => Make (OP_RES, Dest => OD_B, Src => OD_B, Bit_Index => 6),
+      16#B1# => Make (OP_RES, Dest => OD_C, Src => OD_C, Bit_Index => 6),
+      16#B2# => Make (OP_RES, Dest => OD_D, Src => OD_D, Bit_Index => 6),
+      16#B3# => Make (OP_RES, Dest => OD_E, Src => OD_E, Bit_Index => 6),
+      16#B4# => Make (OP_RES, Dest => OD_H, Src => OD_H, Bit_Index => 6),
+      16#B5# => Make (OP_RES, Dest => OD_L, Src => OD_L, Bit_Index => 6),
+      16#B6# => Make (OP_RES, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 6),
+      16#B7# => Make (OP_RES, Dest => OD_A, Src => OD_A, Bit_Index => 6),
+      16#B8# => Make (OP_RES, Dest => OD_B, Src => OD_B, Bit_Index => 7),
+      16#B9# => Make (OP_RES, Dest => OD_C, Src => OD_C, Bit_Index => 7),
+      16#BA# => Make (OP_RES, Dest => OD_D, Src => OD_D, Bit_Index => 7),
+      16#BB# => Make (OP_RES, Dest => OD_E, Src => OD_E, Bit_Index => 7),
+      16#BC# => Make (OP_RES, Dest => OD_H, Src => OD_H, Bit_Index => 7),
+      16#BD# => Make (OP_RES, Dest => OD_L, Src => OD_L, Bit_Index => 7),
+      16#BE# => Make (OP_RES, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 7),
+      16#BF# => Make (OP_RES, Dest => OD_A, Src => OD_A, Bit_Index => 7),
+
+      16#C0# => Make (OP_SET, Dest => OD_B, Src => OD_B, Bit_Index => 0),
+      16#C1# => Make (OP_SET, Dest => OD_C, Src => OD_C, Bit_Index => 0),
+      16#C2# => Make (OP_SET, Dest => OD_D, Src => OD_D, Bit_Index => 0),
+      16#C3# => Make (OP_SET, Dest => OD_E, Src => OD_E, Bit_Index => 0),
+      16#C4# => Make (OP_SET, Dest => OD_H, Src => OD_H, Bit_Index => 0),
+      16#C5# => Make (OP_SET, Dest => OD_L, Src => OD_L, Bit_Index => 0),
+      16#C6# => Make (OP_SET, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 0),
+      16#C7# => Make (OP_SET, Dest => OD_A, Src => OD_A, Bit_Index => 0),
+      16#C8# => Make (OP_SET, Dest => OD_B, Src => OD_B, Bit_Index => 1),
+      16#C9# => Make (OP_SET, Dest => OD_C, Src => OD_C, Bit_Index => 1),
+      16#CA# => Make (OP_SET, Dest => OD_D, Src => OD_D, Bit_Index => 1),
+      16#CB# => Make (OP_SET, Dest => OD_E, Src => OD_E, Bit_Index => 1),
+      16#CC# => Make (OP_SET, Dest => OD_H, Src => OD_H, Bit_Index => 1),
+      16#CD# => Make (OP_SET, Dest => OD_L, Src => OD_L, Bit_Index => 1),
+      16#CE# => Make (OP_SET, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 1),
+      16#CF# => Make (OP_SET, Dest => OD_A, Src => OD_A, Bit_Index => 1),
+
+      16#D0# => Make (OP_SET, Dest => OD_B, Src => OD_B, Bit_Index => 2),
+      16#D1# => Make (OP_SET, Dest => OD_C, Src => OD_C, Bit_Index => 2),
+      16#D2# => Make (OP_SET, Dest => OD_D, Src => OD_D, Bit_Index => 2),
+      16#D3# => Make (OP_SET, Dest => OD_E, Src => OD_E, Bit_Index => 2),
+      16#D4# => Make (OP_SET, Dest => OD_H, Src => OD_H, Bit_Index => 2),
+      16#D5# => Make (OP_SET, Dest => OD_L, Src => OD_L, Bit_Index => 2),
+      16#D6# => Make (OP_SET, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 2),
+      16#D7# => Make (OP_SET, Dest => OD_A, Src => OD_A, Bit_Index => 2),
+      16#D8# => Make (OP_SET, Dest => OD_B, Src => OD_B, Bit_Index => 3),
+      16#D9# => Make (OP_SET, Dest => OD_C, Src => OD_C, Bit_Index => 3),
+      16#DA# => Make (OP_SET, Dest => OD_D, Src => OD_D, Bit_Index => 3),
+      16#DB# => Make (OP_SET, Dest => OD_E, Src => OD_E, Bit_Index => 3),
+      16#DC# => Make (OP_SET, Dest => OD_H, Src => OD_H, Bit_Index => 3),
+      16#DD# => Make (OP_SET, Dest => OD_L, Src => OD_L, Bit_Index => 3),
+      16#DE# => Make (OP_SET, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 3),
+      16#DF# => Make (OP_SET, Dest => OD_A, Src => OD_A, Bit_Index => 3),
+
+      16#E0# => Make (OP_SET, Dest => OD_B, Src => OD_B, Bit_Index => 4),
+      16#E1# => Make (OP_SET, Dest => OD_C, Src => OD_C, Bit_Index => 4),
+      16#E2# => Make (OP_SET, Dest => OD_D, Src => OD_D, Bit_Index => 4),
+      16#E3# => Make (OP_SET, Dest => OD_E, Src => OD_E, Bit_Index => 4),
+      16#E4# => Make (OP_SET, Dest => OD_H, Src => OD_H, Bit_Index => 4),
+      16#E5# => Make (OP_SET, Dest => OD_L, Src => OD_L, Bit_Index => 4),
+      16#E6# => Make (OP_SET, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 4),
+      16#E7# => Make (OP_SET, Dest => OD_A, Src => OD_A, Bit_Index => 4),
+      16#E8# => Make (OP_SET, Dest => OD_B, Src => OD_B, Bit_Index => 5),
+      16#E9# => Make (OP_SET, Dest => OD_C, Src => OD_C, Bit_Index => 5),
+      16#EA# => Make (OP_SET, Dest => OD_D, Src => OD_D, Bit_Index => 5),
+      16#EB# => Make (OP_SET, Dest => OD_E, Src => OD_E, Bit_Index => 5),
+      16#EC# => Make (OP_SET, Dest => OD_H, Src => OD_H, Bit_Index => 5),
+      16#ED# => Make (OP_SET, Dest => OD_L, Src => OD_L, Bit_Index => 5),
+      16#EE# => Make (OP_SET, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 5),
+      16#EF# => Make (OP_SET, Dest => OD_A, Src => OD_A, Bit_Index => 5),
+
+      16#F0# => Make (OP_SET, Dest => OD_B, Src => OD_B, Bit_Index => 6),
+      16#F1# => Make (OP_SET, Dest => OD_C, Src => OD_C, Bit_Index => 6),
+      16#F2# => Make (OP_SET, Dest => OD_D, Src => OD_D, Bit_Index => 6),
+      16#F3# => Make (OP_SET, Dest => OD_E, Src => OD_E, Bit_Index => 6),
+      16#F4# => Make (OP_SET, Dest => OD_H, Src => OD_H, Bit_Index => 6),
+      16#F5# => Make (OP_SET, Dest => OD_L, Src => OD_L, Bit_Index => 6),
+      16#F6# => Make (OP_SET, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 6),
+      16#F7# => Make (OP_SET, Dest => OD_A, Src => OD_A, Bit_Index => 6),
+      16#F8# => Make (OP_SET, Dest => OD_B, Src => OD_B, Bit_Index => 7),
+      16#F9# => Make (OP_SET, Dest => OD_C, Src => OD_C, Bit_Index => 7),
+      16#FA# => Make (OP_SET, Dest => OD_D, Src => OD_D, Bit_Index => 7),
+      16#FB# => Make (OP_SET, Dest => OD_E, Src => OD_E, Bit_Index => 7),
+      16#FC# => Make (OP_SET, Dest => OD_H, Src => OD_H, Bit_Index => 7),
+      16#FD# => Make (OP_SET, Dest => OD_L, Src => OD_L, Bit_Index => 7),
+      16#FE# => Make (OP_SET, Dest => OD_Addr_HL, Src => OD_Addr_HL, Bit_Index => 7),
+      16#FF# => Make (OP_SET, Dest => OD_A, Src => OD_A, Bit_Index => 7)];
 
    function Decode
      (GB : in out Gade.GB.GB_Type) return Decoded_Instruction
