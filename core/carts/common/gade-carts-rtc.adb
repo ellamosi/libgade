@@ -33,14 +33,16 @@ package body Gade.Carts.RTC is
 
    procedure Report_Cycles
      (Clk    : in out Clock;
-      Cycles : Positive)
+      Cycles : M_Cycle_Count)
    is
-      New_Cycles, Seconds : Natural;
+      T_Cycles : constant T_Cycle_Count := To_T_Cycles (Cycles);
+      New_Cycles : T_Cycle_Count;
+      Seconds : Natural;
    begin
-      New_Cycles := Clk.Cycles + Cycles;
+      New_Cycles := Clk.Cycles + T_Cycles;
       Clk.Cycles := New_Cycles mod Cycles_Per_Second;
       if New_Cycles > Cycles_Per_Second and not Clk.Elapsed.Halted then
-         Seconds := New_Cycles / Cycles_Per_Second;
+         Seconds := Natural (New_Cycles / Cycles_Per_Second);
          Increase_Counter (Clk.Elapsed, Duration (Seconds));
       end if;
    end Report_Cycles;

@@ -61,15 +61,15 @@ package body Gade.Interfaces is
       Audio             : Gade.Audio_Buffer.Audio_Buffer_Access;
       Frame_Finished    : out Boolean)
    is
-      Instruction_Cycles, Interrupt_Cycles : Natural;
-      Iteration_Cycles                     : Natural;
+      Instruction_Cycles, Interrupt_Cycles : M_Cycle_Count;
+      Iteration_Cycles                     : M_Cycle_Count;
       Iteration_Samples                    : Natural;
-      Generated_Cycles                     : Natural := 0;
+      Generated_Cycles                     : M_Cycle_Count := 0;
    begin
       Frame_Finished := False;
       Generated_Samples := 0;
       while not Frame_Finished and Generated_Samples < Requested_Samples loop
-         Instruction_Cycles := CPU_Cycles_Per_Audio_Sample;
+         Instruction_Cycles := CPU_M_Cycles_Per_Audio_Sample;
          if not G.GB.CPU.Halted then
             Gade.Dev.CPU.Instructions.Exec.Execute
               (G.GB.CPU, G.GB, Instruction_Cycles);
@@ -83,7 +83,7 @@ package body Gade.Interfaces is
          --  Keep both units explicit: T-cycles for frame/accounting paths and
          --  audio samples for the frontend-facing output contract.
          Iteration_Cycles := Instruction_Cycles + Interrupt_Cycles;
-         Iteration_Samples := Iteration_Cycles / CPU_Cycles_Per_Audio_Sample;
+         Iteration_Samples := Natural (Iteration_Cycles / CPU_M_Cycles_Per_Audio_Sample);
 
          Generated_Cycles := Generated_Cycles + Iteration_Cycles;
          Generated_Samples := Generated_Samples + Iteration_Samples;

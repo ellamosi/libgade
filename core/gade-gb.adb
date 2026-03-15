@@ -33,7 +33,7 @@ package body Gade.GB is
      (GB     : in out GB_Type;
       Video  : RGB32_Display_Buffer_Access;
       Audio  : Audio_Buffer_Access;
-      Cycles : Positive) is
+      Cycles : M_Cycle_Count) is
    begin
       Report_Cycles (GB.Joypad, GB, Cycles);
       Report_Cycles (GB.Display, GB, Video, Cycles);
@@ -44,7 +44,7 @@ package body Gade.GB is
    procedure Report_Frame
      (GB     : in out GB_Type;
       Audio  : Audio_Buffer_Access;
-      Cycles : Positive)
+      Cycles : M_Cycle_Count)
    is
    begin
       GB.Cart.Report_Cycles (Cycles);

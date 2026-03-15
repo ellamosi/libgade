@@ -76,7 +76,7 @@ package body Gade.Carts.MBC3 is
    overriding
    procedure Report_Cycles
      (C      : in out MBC3_Cart;
-      Cycles : Positive)
+      Cycles : M_Cycle_Count)
    is
    begin
       if C.RTC /= null then Report_Cycles (C.RTC.all, Cycles); end if;

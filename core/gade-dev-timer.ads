@@ -32,7 +32,7 @@ package Gade.Dev.Timer is
    procedure Report_Cycles
      (Timer  : in out Timer_Type;
       GB     : in out Gade.GB.GB_Type;
-      Cycles : Positive);
+      Cycles : M_Cycle_Count);
 
 private
 
@@ -44,14 +44,14 @@ private
    type Timer_Stop_Type is (Stop, Start);
 
    --  1024 Clocks, 16 Clocks, 64 Clocks, 256 Clocks
-   TIMA_Clocks : constant array (Input_Clock_Type) of Natural :=
+   TIMA_Clocks : constant array (Input_Clock_Type) of T_Cycle_Count :=
      [f_4_096   => 1024,
       f_262_144 => 16,
       f_65_536  => 64,
       f_16_384  => 256];
 
    DIV_Increment_Freq : constant Input_Clock_Type := f_16_384;
-   DIV_Increment_TIMA_Clocks : constant Natural :=
+   DIV_Increment_TIMA_Clocks : constant T_Cycle_Count :=
      TIMA_Clocks (DIV_Increment_Freq);
 
    --  Name     - TAC
@@ -94,10 +94,10 @@ private
    end record with Unchecked_Union;
 
    type Timer_Type is
-     new Memory_Mapped_Device and Interrupt_Source with record
-      Ticks        : Integer;
-      Modulo_Ticks : Natural;
-      DIV_Ticks    : Natural;
+      new Memory_Mapped_Device and Interrupt_Source with record
+      Ticks        : T_Cycle_Count;
+      Modulo_Ticks : T_Cycle_Count;
+      DIV_Ticks    : T_Cycle_Count;
       Map          : Timer_Map_Type;
    end record;
 

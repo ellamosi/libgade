@@ -34,8 +34,12 @@ package body Gade.Audio.Timers is
       Observer : in out Observer_Type)
    is
    begin
+      if not T.Is_Enabled or else T.Has_Finished then
+         return;
+      end if;
+
       T.Remaining := T.Remaining - T.Step;
-      if T.Has_Finished and T.Is_Enabled then
+      if T.Has_Finished then
          T.Disable;
          Notify (Observer);
       end if;

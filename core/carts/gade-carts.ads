@@ -1,6 +1,7 @@
 private with Gade.Cartridge_Info;
 private with Ada.Streams.Stream_IO;
 with Gade.Logging;
+with Gade.Timing; use Gade.Timing;
 
 private package Gade.Carts is
 
@@ -171,7 +172,7 @@ private package Gade.Carts is
 
    procedure Report_Cycles
      (C      : in out Cart;
-     Cycles : Positive) is null;
+      Cycles : M_Cycle_Count) is null;
 
 private
 

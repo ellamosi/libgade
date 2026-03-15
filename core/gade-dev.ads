@@ -1,4 +1,5 @@
 limited with Gade.GB;
+with Gade.Timing; use Gade.Timing;
 
 private package Gade.Dev is
 
@@ -28,6 +29,6 @@ private package Gade.Dev is
    procedure Report_Cycles
      (Device : in out Interrupt_Source;
       GB     : in out Gade.GB.GB_Type;
-      Cycles : Positive) is abstract;
+      Cycles : M_Cycle_Count) is abstract;
 
 end Gade.Dev;

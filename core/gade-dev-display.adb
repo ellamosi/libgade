@@ -5,6 +5,7 @@ with Gade.GB;             use Gade.GB;
 with Gade.GB.Memory_Map;  use Gade.GB.Memory_Map;
 with Gade.Dev.OAM;        use Gade.Dev.OAM;
 with Gade.Dev.Display.Handlers;
+with Gade.Timing;         use Gade.Timing;
 
 package body Gade.Dev.Display is
 
@@ -91,14 +92,15 @@ package body Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Video   : RGB32_Display_Buffer_Access;
-      Cycles  : Positive) is
+      Cycles  : M_Cycle_Count) is
+      Handler_Cycles : constant Natural := Natural (To_T_Cycles (Cycles));
    begin
       if Display.Map.LCDC.LCD_Operation then
          Gade.Dev.Display.Handlers.Report_Cycles
            (Display.Display_Handler.all,
             GB,
             Video,
-            Cycles);
+            Handler_Cycles);
       elsif not Display.Map.LCDC.LCD_Operation and Display.Frame_Finished then
          --  Blank LCD when disabled, this might need to be revisited
          --  It could likely be implemented in a Disabled handler

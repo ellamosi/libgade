@@ -24,7 +24,7 @@ package Gade.Dev.Joypad is
    overriding procedure Report_Cycles
      (Joypad : in out Joypad_Type;
       GB     : in out Gade.GB.GB_Type;
-      Cycles : Positive);
+      Cycles : M_Cycle_Count);
 
    procedure Set_Input_Reader
      (Joypad : in out Joypad_Type;
