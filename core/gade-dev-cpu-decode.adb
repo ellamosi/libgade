@@ -5,10 +5,10 @@ package body Gade.Dev.CPU.Decode is
 
    type Decoded_Instruction_Table is array (Byte) of Decoded_Instruction;
 
-   function Apply_Prefix
-     (Inst   : Decoded_Instruction;
-      Prefix : Prefix_Kind;
-      Opcode : Byte) return Decoded_Instruction;
+   procedure Apply_Prefix
+     (Inst   : in out Decoded_Instruction;
+      Prefix :        Prefix_Kind;
+      Opcode :        Byte);
 
    function Make
      (Operation   : Operation_Kind;
@@ -21,16 +21,13 @@ package body Gade.Dev.CPU.Decode is
 
    function To_Rel8 (Value : Byte) return Signed_Byte;
 
-   function Apply_Prefix
-     (Inst   : Decoded_Instruction;
-      Prefix : Prefix_Kind;
-      Opcode : Byte) return Decoded_Instruction
-   is
-      Result : Decoded_Instruction := Inst;
+   procedure Apply_Prefix
+     (Inst   : in out Decoded_Instruction;
+      Prefix :        Prefix_Kind;
+      Opcode :        Byte) is
    begin
-      Result.Prefix := Prefix;
-      Result.Opcode := Opcode;
-      return Result;
+      Inst.Prefix := Prefix;
+      Inst.Opcode := Opcode;
    end Apply_Prefix;
 
    function Make
@@ -610,13 +607,15 @@ package body Gade.Dev.CPU.Decode is
       Opcode : constant Byte := Read_Byte (GB, GB.CPU.PC);
    begin
       if Opcode = 16#CB# then
-         Inst := Apply_Prefix
-           (CB_Decode_Table (Read_Byte (GB, GB.CPU.PC + 1)),
+         Inst := CB_Decode_Table (Read_Byte (GB, GB.CPU.PC + 1));
+         Apply_Prefix
+           (Inst,
             Prefix => CB,
             Opcode => Read_Byte (GB, GB.CPU.PC + 1));
          Inst.Length := 2;
       else
-         Inst := Apply_Prefix (Main_Decode_Table (Opcode), Prefix => Main, Opcode => Opcode);
+         Inst := Main_Decode_Table (Opcode);
+         Apply_Prefix (Inst, Prefix => Main, Opcode => Opcode);
 
          case Inst.Length is
             when 2 =>

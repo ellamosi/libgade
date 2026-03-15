@@ -7,20 +7,23 @@ package Gade.Dev.CPU.Staging is
    --  instruction timing model structural and inspectable.
 
    type Stage_Kind is
-     (Fetch_Imm8,
-      Fetch_Imm16_Lo,
-      Fetch_Imm16_Hi,
-      Read,
-      Write,
-      Internal,
-      Push_Hi,
-      Push_Lo,
-      Pop_Lo,
-      Pop_Hi,
-      Cond_Check,
-      Commit);
+     (Fetch_Imm8,     --  Fetch an 8-bit immediate operand
+      Fetch_Imm16_Lo, --  Fetch low byte of a 16-bit immediate
+      Fetch_Imm16_Hi, --  Fetch high byte of a 16-bit immediate
+      Read,           --  Read from a resolved memory operand
+      Write,          --  Write to a resolved memory operand
+      Internal,       --  Internal CPU-only work with no bus transfer
+      Push_Hi,        --  Push high byte onto the stack
+      Push_Lo,        --  Push low byte onto the stack
+      Pop_Lo,         --  Pop low byte from the stack
+      Pop_Hi,         --  Pop high byte from the stack
+      Cond_Check,     --  Evaluate a branch condition
+      Commit);        --  Commit the instruction result or control transfer
 
-   type Stage_Flag is (None, Skip_If_Not_Taken);
+   type Stage_Flag is
+     (None,             --  Stage always contributes to execution/timing
+      Skip_If_Not_Taken --  Stage only applies when a conditional branch is taken
+     );
 
    type Stage is record
       Kind : Stage_Kind := Commit;

@@ -2,69 +2,88 @@ limited with Gade.GB;
 
 package Gade.Dev.CPU.Decode is
 
-   type Condition_Kind is (COND_None, COND_NZ, COND_Z, COND_NC, COND_C);
+   type Condition_Kind is
+     (COND_None, --  Unconditional
+      COND_NZ,   --  Zero flag clear
+      COND_Z,    --  Zero flag set
+      COND_NC,   --  Carry flag clear
+      COND_C);   --  Carry flag set
 
    type Operand_Kind is
-     (OD_None,
-      OD_A, OD_B, OD_C, OD_D, OD_E, OD_H, OD_L,
-      OD_AF, OD_BC, OD_DE, OD_HL, OD_SP, OD_PC,
-      OD_Addr_BC, OD_Addr_DE, OD_Addr_HL,
-      OD_Addr_HL_Inc, OD_Addr_HL_Dec,
-      OD_Addr_Imm16,
-      OD_High_Addr_C,
-      OD_High_Addr_Imm8,
-      OD_Imm8,
-      OD_Imm16,
-      OD_Rel8,
-      OD_SP_Plus_Rel8,
-      OD_Bit_Index,
-      OD_RST_Vector);
+     (OD_None,           --  No operand
+      OD_A,              --  8-bit register A
+      OD_B,              --  8-bit register B
+      OD_C,              --  8-bit register C
+      OD_D,              --  8-bit register D
+      OD_E,              --  8-bit register E
+      OD_H,              --  8-bit register H
+      OD_L,              --  8-bit register L
+      OD_AF,             --  16-bit register pair AF
+      OD_BC,             --  16-bit register pair BC
+      OD_DE,             --  16-bit register pair DE
+      OD_HL,             --  16-bit register pair HL
+      OD_SP,             --  Stack pointer
+      OD_PC,             --  Program counter
+      OD_Addr_BC,        --  Memory at address in BC
+      OD_Addr_DE,        --  Memory at address in DE
+      OD_Addr_HL,        --  Memory at address in HL
+      OD_Addr_HL_Inc,    --  Memory at HL, then increment HL
+      OD_Addr_HL_Dec,    --  Memory at HL, then decrement HL
+      OD_Addr_Imm16,     --  Memory at 16-bit immediate address
+      OD_High_Addr_C,    --  Memory at FF00 + C
+      OD_High_Addr_Imm8, --  Memory at FF00 + immediate byte
+      OD_Imm8,           --  8-bit immediate operand
+      OD_Imm16,          --  16-bit immediate operand
+      OD_Rel8,           --  8-bit relative branch displacement
+      OD_SP_Plus_Rel8,   --  SP plus signed 8-bit displacement
+      OD_Bit_Index,      --  Bit index used by BIT/RES/SET
+      OD_RST_Vector);    --  Fixed restart vector
 
    type Operation_Kind is
-     (OP_Invalid,
-      OP_NOP,
-      OP_LD,
-      OP_PUSH,
-      OP_POP,
-      OP_ADD,
-      OP_ADC,
-      OP_SUB,
-      OP_SBC,
-      OP_AND,
-      OP_XOR,
-      OP_OR,
-      OP_CP,
-      OP_INC,
-      OP_DEC,
-      OP_DAA,
-      OP_CPL,
-      OP_CCF,
-      OP_SCF,
-      OP_JR,
-      OP_JP,
-      OP_CALL,
-      OP_RET,
-      OP_RETI,
-      OP_RST,
-      OP_BIT,
-      OP_SET,
-      OP_RES,
-      OP_RLC,
-      OP_RRC,
-      OP_RL,
-      OP_RR,
-      OP_RLCA,
-      OP_RRCA,
-      OP_RLA,
-      OP_RRA,
-      OP_SLA,
-      OP_SRA,
-      OP_SWAP,
-      OP_SRL,
-      OP_DI,
-      OP_EI,
-      OP_HALT,
-      OP_STOP);
+     (OP_Invalid, --  Invalid or unimplemented opcode
+      OP_NOP,     --  No operation
+      OP_LD,      --  Load or store data
+      OP_PUSH,    --  Push 16-bit value onto stack
+      OP_POP,     --  Pop 16-bit value from stack
+      OP_ADD,     --  Add
+      OP_ADC,     --  Add with carry
+      OP_SUB,     --  Subtract
+      OP_SBC,     --  Subtract with carry
+      OP_AND,     --  Bitwise AND
+      OP_XOR,     --  Bitwise XOR
+      OP_OR,      --  Bitwise OR
+      OP_CP,      --  Compare against A
+      OP_INC,     --  Increment
+      OP_DEC,     --  Decrement
+      OP_DAA,     --  Decimal adjust accumulator
+      OP_CPL,     --  Complement accumulator
+      OP_CCF,     --  Complement carry flag
+      OP_SCF,     --  Set carry flag
+      OP_JR,      --  Relative jump
+      OP_JP,      --  Absolute jump
+      OP_CALL,    --  Call subroutine
+      OP_RET,     --  Return from subroutine
+      OP_RETI,    --  Return and enable interrupts
+      OP_RST,     --  Restart to fixed vector
+      OP_BIT,     --  Test bit
+      OP_SET,     --  Set bit
+      OP_RES,     --  Reset bit
+      OP_RLC,     --  Rotate left circular
+      OP_RRC,     --  Rotate right circular
+      OP_RL,      --  Rotate left through carry
+      OP_RR,      --  Rotate right through carry
+      OP_RLCA,    --  Accumulator rotate left circular
+      OP_RRCA,    --  Accumulator rotate right circular
+      OP_RLA,     --  Accumulator rotate left through carry
+      OP_RRA,     --  Accumulator rotate right through carry
+      OP_SLA,     --  Shift left arithmetic
+      OP_SRA,     --  Shift right arithmetic
+      OP_SWAP,    --  Swap high and low nibbles
+      OP_SRL,     --  Shift right logical
+      OP_DI,      --  Disable interrupts
+      OP_EI,      --  Enable interrupts
+      OP_HALT,    --  Halt CPU until wake condition
+      OP_STOP);   --  Stop CPU
 
    type Prefix_Kind is (Main, CB);
 
