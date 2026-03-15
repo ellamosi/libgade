@@ -1,5 +1,6 @@
 with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 with Gade.Logging;
+with Gade.Timing; use Gade.Timing;
 
 limited with Gade.Audio.Frame_Sequencer;
 
@@ -29,12 +30,12 @@ private package Gade.Audio is
    procedure Report_Cycles
      (Audio        : in out Audio_Type;
       Audio_Buffer : Audio_Buffer_Access;
-      Cycles       : Positive);
+      Cycles       : M_Cycle_Count);
 
    procedure Flush_Frame
      (Audio        : in out Audio_Type;
       Audio_Buffer : Audio_Buffer_Access;
-      Cycles       : Positive);
+      Cycles       : M_Cycle_Count);
 
 private
 

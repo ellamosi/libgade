@@ -31,7 +31,7 @@ package body Gade.Audio is
       Powered       : Boolean;
       Power_Control : Power_Control_Status;
 
-      Elapsed_Cycles : Natural;
+      Elapsed_Cycles : M_Cycle_Count;
 
       Clean : Boolean;
    end record;
@@ -164,12 +164,12 @@ package body Gade.Audio is
 
    procedure Report_Cycles (Audio        : in out Audio_Type;
                             Audio_Buffer : Audio_Buffer_Access;
-                            Cycles       : Positive)
+                            Cycles       : M_Cycle_Count)
    is
-      Target_Cycles : constant Natural := Audio.Elapsed_Cycles + Cycles / 4;
+      Target_Cycles : constant M_Cycle_Count := Audio.Elapsed_Cycles + Cycles;
    begin
       while Audio.Elapsed_Cycles < Target_Cycles loop
-         Audio_Buffer (Audio.Elapsed_Cycles) := Audio.Mixer.Next_Sample;
+         Audio_Buffer (Natural (Audio.Elapsed_Cycles)) := Audio.Mixer.Next_Sample;
 
          Audio.Frame_Sequencer.Tick;
 
@@ -214,7 +214,7 @@ package body Gade.Audio is
 
    procedure Flush_Frame (Audio        : in out Audio_Type;
                           Audio_Buffer : Audio_Buffer_Access;
-                          Cycles       : Positive)
+                          Cycles       : M_Cycle_Count)
    is
       pragma Unreferenced (Cycles, Audio_Buffer);
    begin

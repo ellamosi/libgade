@@ -32,7 +32,7 @@ package Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Video   : RGB32_Display_Buffer_Access;
-      Cycles  : Positive);
+      Cycles  : M_Cycle_Count);
 
    procedure Check_Frame_Finished
      (Display  : in out Display_Type;

@@ -59,7 +59,7 @@ package body Gade.Dev.Joypad is
    procedure Report_Cycles
      (Joypad : in out Joypad_Type;
       GB     : in out Gade.GB.GB_Type;
-      Cycles : Positive) is
+      Cycles : M_Cycle_Count) is
 
 --        function High_To_Low
 --          (Old_Matrix, New_Matrix : Joypad_Matrix_Type) return Boolean is
@@ -71,6 +71,7 @@ package body Gade.Dev.Joypad is
 --             (Joypad.Map.P12_IN and not New_Matrix.P12_IN) or
 --             (Joypad.Map.P13_IN and not New_Matrix.P13_IN);
 --        end High_To_Low;
+      pragma Unreferenced (Joypad, GB, Cycles);
    begin
       --  TODO: Tweak types/make procedures for all this masking/addresses
       --  if High_To_Low(Joypad.Matrix, New_Matrix) then

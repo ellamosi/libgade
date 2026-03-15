@@ -15,7 +15,7 @@ package Gade.Carts.MBC3 is
    overriding
    procedure Report_Cycles
      (C      : in out MBC3_Cart;
-      Cycles : Positive);
+      Cycles : M_Cycle_Count);
 
 private
    use Gade.Carts.RTC;

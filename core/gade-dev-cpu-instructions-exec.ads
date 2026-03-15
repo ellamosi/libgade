@@ -5,6 +5,6 @@ package Gade.Dev.CPU.Instructions.Exec is
    procedure Execute
      (CPU    : in out CPU_Context;
       GB     : in out Gade.GB.GB_Type;
-      Cycles : out Natural);
+      Cycles : out M_Cycle_Count);
 
 end Gade.Dev.CPU.Instructions.Exec;

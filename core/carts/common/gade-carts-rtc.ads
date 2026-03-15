@@ -26,7 +26,7 @@ package Gade.Carts.RTC is
 
    procedure Report_Cycles
      (Clk    : in out Clock;
-      Cycles : Positive);
+      Cycles : M_Cycle_Count);
 
 private
 
@@ -40,7 +40,7 @@ private
 
    Day_Count_Cardinality : constant := 512;
 
-   Cycles_Per_Second : constant := 4_190_000;
+   Cycles_Per_Second : constant T_Cycle_Count := 4_190_000;
 
    type Day_Count is mod Day_Count_Cardinality;
 
@@ -75,7 +75,7 @@ private
       Elapsed   : Counter;
       Latched   : Counter;
       Registers : Counter_Registers;
-      Cycles    : Natural;
+      Cycles    : T_Cycle_Count;
    end record;
 
    Max_Span : constant Duration :=

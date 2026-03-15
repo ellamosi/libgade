@@ -56,16 +56,18 @@ package body Gade.Dev.Timer is
    procedure Report_Cycles
      (Timer  : in out Timer_Type;
       GB     : in out Gade.GB.GB_Type;
-      Cycles : Positive)
+      Cycles : M_Cycle_Count)
    is
-      New_Ticks, New_Counter, Counter_Increment : Integer;
+      T_Cycles : constant T_Cycle_Count := To_T_Cycles (Cycles);
+      New_Ticks : T_Cycle_Count;
+      New_Counter, Counter_Increment : Integer;
    begin
       if Is_Running (Timer) then
-         New_Ticks := (Timer.Ticks + Cycles);
+         New_Ticks := Timer.Ticks + T_Cycles;
          Timer.Ticks := New_Ticks mod Timer.Modulo_Ticks;
          if New_Ticks >= Timer.Modulo_Ticks then
             --  Put_Line("Counter" & Timer.Map.Timer_Counter'Img);
-            Counter_Increment := New_Ticks / Timer.Modulo_Ticks;
+            Counter_Increment := Integer (New_Ticks / Timer.Modulo_Ticks);
             New_Counter := Integer (Timer.Map.Timer_Counter) + Counter_Increment;
             if New_Counter >= 256 then
                Timer.Map.Timer_Counter := Timer.Map.Timer_Modulo;
@@ -74,7 +76,7 @@ package body Gade.Dev.Timer is
             Timer.Map.Timer_Counter := Byte (New_Counter mod 256);
          end if;
       end if;
-      Timer.DIV_Ticks := (Timer.DIV_Ticks + Cycles) mod 256 * 256;
+      Timer.DIV_Ticks := ((Timer.DIV_Ticks + T_Cycles) mod 256) * 256;
       --  Put_Line("Ticks" & Timer.Ticks'Img & " Counter" &
       --  Timer.Map.Timer_Counter'Img & " Modulo" & Timer.Modulo_Ticks'Img);
    end Report_Cycles;

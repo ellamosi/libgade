@@ -53,7 +53,7 @@ package Gade.Dev.Interrupts is
 
    procedure Service_Interrupts
      (GB     : in out Gade.GB.GB_Type;
-      Cycles : out Natural);
+      Cycles : out M_Cycle_Count);
 
 private
 

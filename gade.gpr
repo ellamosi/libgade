@@ -17,6 +17,7 @@ library project Gade is
       "gade-logging.ads",
       "gade-interfaces.ads",
       "gade-input.ads",
+      "gade-timing.ads",
       "gade-video_buffer.ads",
       "gade-audio_buffer.ads");
 

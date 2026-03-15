@@ -11,6 +11,7 @@ with Gade.Video_Buffer;   use Gade.Video_Buffer;
 with Gade.Audio_Buffer;   use Gade.Audio_Buffer;
 with Gade.Carts;          use Gade.Carts;
 with Gade.Logging;
+with Gade.Timing;         use Gade.Timing;
 
 private package Gade.GB is
 
@@ -57,12 +58,12 @@ private package Gade.GB is
      (GB     : in out GB_Type;
       Video  : RGB32_Display_Buffer_Access;
       Audio  : Audio_Buffer_Access;
-      Cycles : Positive);
+      Cycles : M_Cycle_Count);
 
    procedure Report_Frame
      (GB     : in out GB_Type;
       Audio  : Audio_Buffer_Access;
-      Cycles : Positive);
+      Cycles : M_Cycle_Count);
 
 private
 

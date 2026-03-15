@@ -78,7 +78,7 @@ package body Gade.Dev.Interrupts is
    end Interrupt_Requested;
 
    procedure Service_Interrupts (GB     : in out Gade.GB.GB_Type;
-                                 Cycles : out Natural) is
+                                 Cycles : out M_Cycle_Count) is
       Interrupt_Enable : Interrupt_Flag_Register_Type;
       Interrupt_Flags : Interrupt_Flag_Register_Type;
    begin
@@ -99,7 +99,7 @@ package body Gade.Dev.Interrupts is
                --  Save reset interrupt flags
                GB.Interrupt_Flag.Map := Interrupt_Flags;
                --  Set interrupt servicing delay
-               Cycles := 20;
+               Cycles := 5;
                return;
             end if;
          end loop;

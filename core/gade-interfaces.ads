@@ -2,12 +2,13 @@ limited with Gade.Input;
 limited with Gade.Logging;
 limited with Gade.Video_Buffer;
 limited with Gade.Audio_Buffer;
+with Gade.Timing; use Gade.Timing;
 
 package Gade.Interfaces is
 
    CPU_Clock_Frequency : constant := 4_194_304; -- Hz (T-Cycles)
    CPU_M_Frequency     : constant := CPU_Clock_Frequency / 4; -- Hz (M-Cycles)
-   CPU_Cycles_Per_Audio_Sample : constant := CPU_Clock_Frequency / CPU_M_Frequency;
+   CPU_M_Cycles_Per_Audio_Sample : constant M_Cycle_Count := 1;
 
    type Gade_Type is private;
 
