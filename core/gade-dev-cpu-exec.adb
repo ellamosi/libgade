@@ -1,15 +1,15 @@
-with Gade.Dev.CPU.Decode;               use Gade.Dev.CPU.Decode;
+with Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Decoded_Instructions; use Gade.Dev.CPU.Decoded_Instructions;
 with Gade.GB;                           use Gade.GB;
 
-package body Gade.Dev.CPU.Instructions.Exec is
+package body Gade.Dev.CPU.Exec is
 
    procedure Execute
      (CPU    : in out CPU_Context;
       GB     : in out Gade.GB.GB_Type;
       Cycles : out M_Cycle_Count) is
       pragma Unreferenced (CPU);
-      Instruction : Decoded_Instruction;
+      Instruction : Gade.Dev.CPU.Decode.Decoded_Instruction;
    begin
       Instruction := Gade.Dev.CPU.Decode.Decode (GB);
       GB.CPU.PC := GB.CPU.PC + Word (Instruction.Length);
@@ -24,4 +24,4 @@ package body Gade.Dev.CPU.Instructions.Exec is
       end if;
    end Execute;
 
-end Gade.Dev.CPU.Instructions.Exec;
+end Gade.Dev.CPU.Exec;

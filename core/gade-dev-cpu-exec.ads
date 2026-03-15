@@ -1,10 +1,10 @@
 limited with Gade.GB;
 
-package Gade.Dev.CPU.Instructions.Exec is
+package Gade.Dev.CPU.Exec is
 
    procedure Execute
      (CPU    : in out CPU_Context;
       GB     : in out Gade.GB.GB_Type;
       Cycles : out M_Cycle_Count);
 
-end Gade.Dev.CPU.Instructions.Exec;
+end Gade.Dev.CPU.Exec;

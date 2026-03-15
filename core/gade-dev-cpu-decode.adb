@@ -1,4 +1,4 @@
-with Gade.Dev.CPU.Instructions.Table; use Gade.Dev.CPU.Instructions.Table;
+with Gade.Dev.CPU.Instruction_Timing; use Gade.Dev.CPU.Instruction_Timing;
 with Gade.GB;                         use Gade.GB;
 with Gade.GB.Memory_Map;              use Gade.GB.Memory_Map;
 
@@ -8,16 +8,12 @@ package body Gade.Dev.CPU.Decode is
 
    procedure Apply_Timing
      (Inst        : in out Decoded_Instruction;
-      Table_Entry : Instruction_Entry);
+      Table_Entry : Instruction_Timing_Entry);
 
    function Apply_Prefix
      (Inst   : Decoded_Instruction;
       Prefix : Prefix_Kind;
       Opcode : Byte) return Decoded_Instruction;
-
-   function Lookup_Entry
-     (Prefix : Prefix_Kind;
-      Opcode : Byte) return Instruction_Entry;
 
    function Make
      (Operation   : Operation_Kind;
@@ -44,7 +40,7 @@ package body Gade.Dev.CPU.Decode is
 
    procedure Apply_Timing
      (Inst        : in out Decoded_Instruction;
-      Table_Entry : Instruction_Entry) is
+      Table_Entry : Instruction_Timing_Entry) is
    begin
       Inst.Cycles := Table_Entry.Cycles;
       Inst.Jump_Cycles := Table_Entry.Jump_Cycles;
@@ -634,7 +630,7 @@ package body Gade.Dev.CPU.Decode is
             Prefix => CB,
             Opcode => Read_Byte (GB, GB.CPU.PC + 1));
          Inst.Length := 2;
-         Apply_Timing (Inst, Lookup_Entry (CB, Inst.Opcode));
+         Apply_Timing (Inst, Opcodes_CB (Inst.Opcode));
       else
          Inst := Apply_Prefix (Main_Decode_Table (Opcode), Prefix => Main, Opcode => Opcode);
 
@@ -652,23 +648,11 @@ package body Gade.Dev.CPU.Decode is
                null;
          end case;
 
-         Apply_Timing (Inst, Lookup_Entry (Main, Opcode));
+         Apply_Timing (Inst, Opcodes_Main (Opcode));
       end if;
 
       return Inst;
    end Decode;
-
-   function Lookup_Entry
-     (Prefix : Prefix_Kind;
-      Opcode : Byte) return Instruction_Entry is
-   begin
-      case Prefix is
-         when Main =>
-            return Opcodes_Main.Entries (Opcode);
-         when CB =>
-            return Opcodes_CB.Entries (Opcode);
-      end case;
-   end Lookup_Entry;
 
    function To_Rel8 (Value : Byte) return Signed_Byte is
       Integer_Value : constant Integer := Integer (Value);
