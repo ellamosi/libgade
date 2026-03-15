@@ -8,6 +8,8 @@ package body Gade.Dev.CPU.Decode is
    type Opcode_Field is range 0 .. 7;
    type Quarter_Opcode_Field is range 0 .. 1;
 
+   type Decoded_Instruction_Table is array (Byte) of Decoded_Instruction;
+
    Condition_Map : constant array (Half_Opcode_Field) of Condition_Kind :=
      [0 => COND_NZ, 1 => COND_Z, 2 => COND_NC, 3 => COND_C];
 
@@ -22,351 +24,70 @@ package body Gade.Dev.CPU.Decode is
      [0 => OD_B, 1 => OD_C, 2 => OD_D, 3 => OD_E,
       4 => OD_H, 5 => OD_L, 6 => OD_Addr_HL, 7 => OD_A];
 
+   ALU_Operation_Map : constant array (Opcode_Field) of Operation_Kind :=
+     [0 => OP_ADD, 1 => OP_ADC, 2 => OP_SUB, 3 => OP_SBC,
+      4 => OP_AND, 5 => OP_XOR, 6 => OP_OR, 7 => OP_CP];
+
+   CB_Rotate_Operation_Map : constant array (Opcode_Field) of Operation_Kind :=
+     [0 => OP_RLC, 1 => OP_RRC, 2 => OP_RL, 3 => OP_RR,
+      4 => OP_SLA, 5 => OP_SRA, 6 => OP_SWAP, 7 => OP_SRL];
+
+   Accumulator_Rotate_Operation_Map :
+     constant array (Half_Opcode_Field range 0 .. 3) of Operation_Kind :=
+       [0 => OP_RLCA, 1 => OP_RRCA, 2 => OP_RLA, 3 => OP_RRA];
+
+   function Apply_Prefix
+     (Inst   : Decoded_Instruction;
+      Prefix : Prefix_Kind;
+      Opcode : Byte) return Decoded_Instruction;
+
    procedure Apply_Timing
-     (Inst : in out Decoded_Instruction;
+     (Inst        : in out Decoded_Instruction;
       Table_Entry : Instruction_Entry);
 
-   procedure Decode_CB
-     (Opcode : Byte;
-      Inst   : in out Decoded_Instruction);
+   function Build_CB_Table return Decoded_Instruction_Table;
+   function Build_Main_Table return Decoded_Instruction_Table;
 
-   procedure Decode_Main
-     (Opcode : Byte;
-      Inst   : in out Decoded_Instruction);
-
+   function Field_P (Opcode : Byte) return Half_Opcode_Field;
+   function Field_Q (Opcode : Byte) return Quarter_Opcode_Field;
    function Field_X (Opcode : Byte) return Half_Opcode_Field;
    function Field_Y (Opcode : Byte) return Opcode_Field;
    function Field_Z (Opcode : Byte) return Opcode_Field;
-   function Field_P (Opcode : Byte) return Half_Opcode_Field;
-   function Field_Q (Opcode : Byte) return Quarter_Opcode_Field;
 
    function Lookup_Entry
      (Prefix : Prefix_Kind;
       Opcode : Byte) return Instruction_Entry;
 
+   function Make
+     (Operation   : Operation_Kind;
+      Dest        : Operand_Kind := OD_None;
+      Src         : Operand_Kind := OD_None;
+      Condition   : Condition_Kind := COND_None;
+      Length      : Positive := 1;
+      Bit_Index   : Natural := 0;
+      RST_Vector  : Word := 0) return Decoded_Instruction;
+
    function To_Rel8 (Value : Byte) return Signed_Byte;
 
+   function Apply_Prefix
+     (Inst   : Decoded_Instruction;
+      Prefix : Prefix_Kind;
+      Opcode : Byte) return Decoded_Instruction
+   is
+      Result : Decoded_Instruction := Inst;
+   begin
+      Result.Prefix := Prefix;
+      Result.Opcode := Opcode;
+      return Result;
+   end Apply_Prefix;
+
    procedure Apply_Timing
-     (Inst : in out Decoded_Instruction;
+     (Inst        : in out Decoded_Instruction;
       Table_Entry : Instruction_Entry) is
    begin
       Inst.Cycles := Table_Entry.Cycles;
       Inst.Jump_Cycles := Table_Entry.Jump_Cycles;
    end Apply_Timing;
-
-   function Decode
-     (GB : in out Gade.GB.GB_Type) return Decoded_Instruction
-   is
-      Inst   : Decoded_Instruction;
-      Opcode : constant Byte := Read_Byte (GB, GB.CPU.PC);
-   begin
-      if Opcode = 16#CB# then
-         Inst.Prefix := CB;
-         Inst.Length := 2;
-         Inst.Opcode := Read_Byte (GB, GB.CPU.PC + 1);
-         Decode_CB (Inst.Opcode, Inst);
-         Apply_Timing (Inst, Lookup_Entry (CB, Inst.Opcode));
-      else
-         Inst.Opcode := Opcode;
-         Decode_Main (Opcode, Inst);
-
-         case Inst.Length is
-            when 2 =>
-               Inst.Imm8 := Read_Byte (GB, GB.CPU.PC + 1);
-               Inst.Rel8 := To_Rel8 (Inst.Imm8);
-            when 3 =>
-               Inst.Imm8 := Read_Byte (GB, GB.CPU.PC + 1);
-               Inst.Imm16 := Read_Word (GB, GB.CPU.PC + 1);
-               if Inst.Src = OD_Rel8 or else Inst.Dest = OD_Rel8 then
-                  Inst.Rel8 := To_Rel8 (Inst.Imm8);
-               end if;
-            when others =>
-               null;
-         end case;
-
-         Apply_Timing (Inst, Lookup_Entry (Main, Opcode));
-      end if;
-
-      return Inst;
-   end Decode;
-
-   procedure Decode_CB
-     (Opcode : Byte;
-      Inst   : in out Decoded_Instruction)
-   is
-      X : constant Half_Opcode_Field := Field_X (Opcode);
-      Y : constant Opcode_Field := Field_Y (Opcode);
-      Z : constant Opcode_Field := Field_Z (Opcode);
-   begin
-      Inst.Dest := Register8_Map (Z);
-
-      case X is
-         when 0 =>
-            Inst.Operation :=
-              (case Y is
-                  when 0 => OP_RLC,
-                  when 1 => OP_RRC,
-                  when 2 => OP_RL,
-                  when 3 => OP_RR,
-                  when 4 => OP_SLA,
-                  when 5 => OP_SRA,
-                  when 6 => OP_SWAP,
-                  when 7 => OP_SRL);
-         when 1 =>
-            Inst.Operation := OP_BIT;
-            Inst.Src := Inst.Dest;
-            Inst.Dest := OD_Bit_Index;
-            Inst.Bit_Index := Natural (Y);
-         when 2 =>
-            Inst.Operation := OP_RES;
-            Inst.Src := Inst.Dest;
-            Inst.Bit_Index := Natural (Y);
-         when 3 =>
-            Inst.Operation := OP_SET;
-            Inst.Src := Inst.Dest;
-            Inst.Bit_Index := Natural (Y);
-      end case;
-   end Decode_CB;
-
-   procedure Decode_Main
-     (Opcode : Byte;
-      Inst   : in out Decoded_Instruction)
-   is
-      X : constant Half_Opcode_Field := Field_X (Opcode);
-      Y : constant Opcode_Field := Field_Y (Opcode);
-      Z : constant Opcode_Field := Field_Z (Opcode);
-      P : constant Half_Opcode_Field := Field_P (Opcode);
-      Q : constant Quarter_Opcode_Field := Field_Q (Opcode);
-   begin
-      case X is
-         when 0 =>
-            case Z is
-               when 0 =>
-                  case Y is
-                     when 0 =>
-                        Inst.Operation := OP_NOP;
-                     when 1 =>
-                        Inst.Operation := OP_LD;
-                        Inst.Dest := OD_Addr_Imm16;
-                        Inst.Src := OD_SP;
-                        Inst.Length := 3;
-                     when 2 =>
-                        Inst.Operation := OP_STOP;
-                        Inst.Length := 2;
-                     when 3 =>
-                        Inst.Operation := OP_JR;
-                        Inst.Src := OD_Rel8;
-                        Inst.Length := 2;
-                     when others =>
-                        Inst.Operation := OP_JR;
-                        Inst.Condition := Condition_Map (Half_Opcode_Field (Y - 4));
-                        Inst.Src := OD_Rel8;
-                        Inst.Length := 2;
-                  end case;
-               when 1 =>
-                  if Q = 0 then
-                     Inst.Operation := OP_LD;
-                     Inst.Dest := Register16_Map (P);
-                     Inst.Src := OD_Imm16;
-                     Inst.Length := 3;
-                  else
-                     Inst.Operation := OP_ADD;
-                     Inst.Dest := OD_HL;
-                     Inst.Src := Register16_Map (P);
-                  end if;
-               when 2 =>
-                  if Q = 0 then
-                     Inst.Operation := OP_LD;
-                     Inst.Src := OD_A;
-                     case P is
-                        when 0 => Inst.Dest := OD_Addr_BC;
-                        when 1 => Inst.Dest := OD_Addr_DE;
-                        when 2 => Inst.Dest := OD_Addr_HL_Inc;
-                        when 3 => Inst.Dest := OD_Addr_HL_Dec;
-                     end case;
-                  else
-                     Inst.Operation := OP_LD;
-                     Inst.Dest := OD_A;
-                     case P is
-                        when 0 => Inst.Src := OD_Addr_BC;
-                        when 1 => Inst.Src := OD_Addr_DE;
-                        when 2 => Inst.Src := OD_Addr_HL_Inc;
-                        when 3 => Inst.Src := OD_Addr_HL_Dec;
-                     end case;
-                  end if;
-               when 3 =>
-                  Inst.Operation := (if Q = 0 then OP_INC else OP_DEC);
-                  Inst.Dest := Register16_Map (P);
-               when 4 =>
-                  Inst.Operation := OP_INC;
-                  Inst.Dest := Register8_Map (Y);
-               when 5 =>
-                  Inst.Operation := OP_DEC;
-                  Inst.Dest := Register8_Map (Y);
-               when 6 =>
-                  Inst.Operation := OP_LD;
-                  Inst.Dest := Register8_Map (Y);
-                  Inst.Src := OD_Imm8;
-                  Inst.Length := 2;
-               when 7 =>
-                  case Y is
-                     when 0 => Inst.Operation := OP_RLCA;
-                     when 1 => Inst.Operation := OP_RRCA;
-                     when 2 => Inst.Operation := OP_RLA;
-                     when 3 => Inst.Operation := OP_RRA;
-                     when 4 => Inst.Operation := OP_DAA;
-                     when 5 => Inst.Operation := OP_CPL;
-                     when 6 => Inst.Operation := OP_SCF;
-                     when 7 => Inst.Operation := OP_CCF;
-                  end case;
-            end case;
-         when 1 =>
-            if Y = 6 and then Z = 6 then
-               Inst.Operation := OP_HALT;
-            else
-               Inst.Operation := OP_LD;
-               Inst.Dest := Register8_Map (Y);
-               Inst.Src := Register8_Map (Z);
-            end if;
-         when 2 =>
-            Inst.Dest := OD_A;
-            Inst.Src := Register8_Map (Z);
-            Inst.Operation :=
-              (case Y is
-                  when 0 => OP_ADD,
-                  when 1 => OP_ADC,
-                  when 2 => OP_SUB,
-                  when 3 => OP_SBC,
-                  when 4 => OP_AND,
-                  when 5 => OP_XOR,
-                  when 6 => OP_OR,
-                  when 7 => OP_CP);
-         when 3 =>
-            case Z is
-               when 0 =>
-                  case Y is
-                     when 0 .. 3 =>
-                        Inst.Operation := OP_RET;
-                        Inst.Condition := Condition_Map (Half_Opcode_Field (Y));
-                     when 4 =>
-                        Inst.Operation := OP_LD;
-                        Inst.Dest := OD_High_Addr_Imm8;
-                        Inst.Src := OD_A;
-                        Inst.Length := 2;
-                     when 5 =>
-                        Inst.Operation := OP_ADD;
-                        Inst.Dest := OD_SP;
-                        Inst.Src := OD_Rel8;
-                        Inst.Length := 2;
-                     when 6 =>
-                        Inst.Operation := OP_LD;
-                        Inst.Dest := OD_A;
-                        Inst.Src := OD_High_Addr_Imm8;
-                        Inst.Length := 2;
-                     when 7 =>
-                        Inst.Operation := OP_LD;
-                        Inst.Dest := OD_HL;
-                        Inst.Src := OD_SP_Plus_Rel8;
-                        Inst.Length := 2;
-                  end case;
-               when 1 =>
-                  if Q = 0 then
-                     Inst.Operation := OP_POP;
-                     Inst.Dest := Register16_Stack_Map (P);
-                  else
-                     case P is
-                        when 0 =>
-                           Inst.Operation := OP_RET;
-                        when 1 =>
-                           Inst.Operation := OP_RETI;
-                        when 2 =>
-                           Inst.Operation := OP_JP;
-                           Inst.Src := OD_HL;
-                        when 3 =>
-                           Inst.Operation := OP_LD;
-                           Inst.Dest := OD_SP;
-                           Inst.Src := OD_HL;
-                     end case;
-                  end if;
-               when 2 =>
-                  case Y is
-                     when 0 .. 3 =>
-                        Inst.Operation := OP_JP;
-                        Inst.Condition := Condition_Map (Half_Opcode_Field (Y));
-                        Inst.Src := OD_Imm16;
-                        Inst.Length := 3;
-                     when 4 =>
-                        Inst.Operation := OP_LD;
-                        Inst.Dest := OD_High_Addr_C;
-                        Inst.Src := OD_A;
-                     when 5 =>
-                        Inst.Operation := OP_LD;
-                        Inst.Dest := OD_Addr_Imm16;
-                        Inst.Src := OD_A;
-                        Inst.Length := 3;
-                     when 6 =>
-                        Inst.Operation := OP_LD;
-                        Inst.Dest := OD_A;
-                        Inst.Src := OD_High_Addr_C;
-                     when 7 =>
-                        Inst.Operation := OP_LD;
-                        Inst.Dest := OD_A;
-                        Inst.Src := OD_Addr_Imm16;
-                        Inst.Length := 3;
-                  end case;
-               when 3 =>
-                  case Y is
-                     when 0 =>
-                        Inst.Operation := OP_JP;
-                        Inst.Src := OD_Imm16;
-                        Inst.Length := 3;
-                     when 1 =>
-                        Inst.Prefix := CB;
-                        Inst.Operation := OP_Invalid;
-                     when 6 =>
-                        Inst.Operation := OP_DI;
-                     when 7 =>
-                        Inst.Operation := OP_EI;
-                     when others =>
-                        null;
-                  end case;
-               when 4 =>
-                  if Y <= 3 then
-                     Inst.Operation := OP_CALL;
-                     Inst.Condition := Condition_Map (Half_Opcode_Field (Y));
-                     Inst.Src := OD_Imm16;
-                     Inst.Length := 3;
-                  end if;
-               when 5 =>
-                  if Q = 0 then
-                     Inst.Operation := OP_PUSH;
-                     Inst.Src := Register16_Stack_Map (P);
-                  elsif P = 0 then
-                     Inst.Operation := OP_CALL;
-                     Inst.Src := OD_Imm16;
-                     Inst.Length := 3;
-                  end if;
-               when 6 =>
-                  Inst.Dest := OD_A;
-                  Inst.Src := OD_Imm8;
-                  Inst.Length := 2;
-                  Inst.Operation :=
-                    (case Y is
-                        when 0 => OP_ADD,
-                        when 1 => OP_ADC,
-                        when 2 => OP_SUB,
-                        when 3 => OP_SBC,
-                        when 4 => OP_AND,
-                        when 5 => OP_XOR,
-                        when 6 => OP_OR,
-                        when 7 => OP_CP);
-               when 7 =>
-                  Inst.Operation := OP_RST;
-                  Inst.Dest := OD_RST_Vector;
-                  Inst.RST_Vector := Word (Natural (Y) * 8);
-            end case;
-      end case;
-   end Decode_Main;
 
    function Field_P (Opcode : Byte) return Half_Opcode_Field is
    begin
@@ -392,6 +113,336 @@ package body Gade.Dev.CPU.Decode is
    begin
       return Opcode_Field (Opcode mod 8);
    end Field_Z;
+
+   function Make
+     (Operation   : Operation_Kind;
+      Dest        : Operand_Kind := OD_None;
+      Src         : Operand_Kind := OD_None;
+      Condition   : Condition_Kind := COND_None;
+      Length      : Positive := 1;
+      Bit_Index   : Natural := 0;
+      RST_Vector  : Word := 0) return Decoded_Instruction is
+   begin
+      return
+        (Prefix => Main,
+         Opcode => 0,
+         Length => Length,
+         Operation => Operation,
+         Dest => Dest,
+         Src => Src,
+         Condition => Condition,
+         Imm8 => 0,
+         Imm16 => 0,
+         Rel8 => 0,
+         Bit_Index => Bit_Index,
+         RST_Vector => RST_Vector,
+         Cycles => 0,
+         Jump_Cycles => 0);
+   end Make;
+
+   function Build_CB_Table return Decoded_Instruction_Table is
+      Table : Decoded_Instruction_Table := [others => Make (OP_Invalid)];
+      Opcode : Byte;
+   begin
+      for X in Half_Opcode_Field loop
+         for Y in Opcode_Field loop
+            for Z in Opcode_Field loop
+               Opcode := Byte (Integer (X) * 64 + Integer (Y) * 8 + Integer (Z));
+
+               case X is
+                  when 0 =>
+                     Table (Opcode) :=
+                       Make (CB_Rotate_Operation_Map (Y),
+                             Dest => Register8_Map (Z));
+                  when 1 =>
+                     Table (Opcode) :=
+                       Make (OP_BIT,
+                             Dest => OD_Bit_Index,
+                             Src => Register8_Map (Z),
+                             Bit_Index => Natural (Y));
+                  when 2 =>
+                     Table (Opcode) :=
+                       Make (OP_RES,
+                             Dest => Register8_Map (Z),
+                             Src => Register8_Map (Z),
+                             Bit_Index => Natural (Y));
+                  when 3 =>
+                     Table (Opcode) :=
+                       Make (OP_SET,
+                             Dest => Register8_Map (Z),
+                             Src => Register8_Map (Z),
+                             Bit_Index => Natural (Y));
+               end case;
+            end loop;
+         end loop;
+      end loop;
+
+      return Table;
+   end Build_CB_Table;
+
+   function Build_Main_Table return Decoded_Instruction_Table is
+      Table  : Decoded_Instruction_Table := [others => Make (OP_Invalid)];
+      Opcode : Byte;
+      X      : Half_Opcode_Field;
+      Y      : Opcode_Field;
+      Z      : Opcode_Field;
+      P      : Half_Opcode_Field;
+      Q      : Quarter_Opcode_Field;
+   begin
+      for Raw in 0 .. 255 loop
+         Opcode := Byte (Raw);
+         X := Field_X (Opcode);
+         Y := Field_Y (Opcode);
+         Z := Field_Z (Opcode);
+         P := Field_P (Opcode);
+         Q := Field_Q (Opcode);
+
+         case X is
+            when 0 =>
+               case Z is
+                  when 0 =>
+                     case Y is
+                        when 0 =>
+                           Table (Opcode) := Make (OP_NOP);
+                        when 1 =>
+                           Table (Opcode) :=
+                             Make (OP_LD, Dest => OD_Addr_Imm16, Src => OD_SP,
+                                   Length => 3);
+                        when 2 =>
+                           Table (Opcode) := Make (OP_STOP, Length => 2);
+                        when 3 =>
+                           Table (Opcode) :=
+                             Make (OP_JR, Src => OD_Rel8, Length => 2);
+                        when others =>
+                           Table (Opcode) :=
+                             Make (OP_JR,
+                                   Src => OD_Rel8,
+                                   Condition => Condition_Map (Half_Opcode_Field (Y - 4)),
+                                   Length => 2);
+                     end case;
+                  when 1 =>
+                     if Q = 0 then
+                        Table (Opcode) :=
+                          Make (OP_LD,
+                                Dest => Register16_Map (P),
+                                Src => OD_Imm16,
+                                Length => 3);
+                     else
+                        Table (Opcode) :=
+                          Make (OP_ADD, Dest => OD_HL, Src => Register16_Map (P));
+                     end if;
+                  when 2 =>
+                     if Q = 0 then
+                        case P is
+                           when 0 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_Addr_BC, Src => OD_A);
+                           when 1 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_Addr_DE, Src => OD_A);
+                           when 2 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_Addr_HL_Inc, Src => OD_A);
+                           when 3 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_Addr_HL_Dec, Src => OD_A);
+                        end case;
+                     else
+                        case P is
+                           when 0 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_Addr_BC);
+                           when 1 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_Addr_DE);
+                           when 2 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_Addr_HL_Inc);
+                           when 3 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_Addr_HL_Dec);
+                        end case;
+                     end if;
+                  when 3 =>
+                     if Q = 0 then
+                        Table (Opcode) :=
+                          Make (OP_INC, Dest => Register16_Map (P));
+                     else
+                        Table (Opcode) :=
+                          Make (OP_DEC, Dest => Register16_Map (P));
+                     end if;
+                  when 4 =>
+                     Table (Opcode) := Make (OP_INC, Dest => Register8_Map (Y));
+                  when 5 =>
+                     Table (Opcode) := Make (OP_DEC, Dest => Register8_Map (Y));
+                  when 6 =>
+                     Table (Opcode) :=
+                       Make (OP_LD, Dest => Register8_Map (Y), Src => OD_Imm8,
+                             Length => 2);
+                  when 7 =>
+                     case Y is
+                        when 0 .. 3 =>
+                           Table (Opcode) :=
+                             Make (Accumulator_Rotate_Operation_Map
+                                     (Half_Opcode_Field (Y)));
+                        when 4 =>
+                           Table (Opcode) := Make (OP_DAA);
+                        when 5 =>
+                           Table (Opcode) := Make (OP_CPL);
+                        when 6 =>
+                           Table (Opcode) := Make (OP_SCF);
+                        when 7 =>
+                           Table (Opcode) := Make (OP_CCF);
+                     end case;
+               end case;
+
+            when 1 =>
+               if Y = 6 and then Z = 6 then
+                  Table (Opcode) := Make (OP_HALT);
+               else
+                  Table (Opcode) :=
+                    Make (OP_LD, Dest => Register8_Map (Y), Src => Register8_Map (Z));
+               end if;
+
+            when 2 =>
+               Table (Opcode) :=
+                 Make (ALU_Operation_Map (Y), Dest => OD_A, Src => Register8_Map (Z));
+
+            when 3 =>
+               case Z is
+                  when 0 =>
+                     case Y is
+                        when 0 .. 3 =>
+                           Table (Opcode) :=
+                             Make (OP_RET, Condition => Condition_Map (Half_Opcode_Field (Y)));
+                        when 4 =>
+                           Table (Opcode) :=
+                             Make (OP_LD, Dest => OD_High_Addr_Imm8, Src => OD_A,
+                                   Length => 2);
+                        when 5 =>
+                           Table (Opcode) :=
+                             Make (OP_ADD, Dest => OD_SP, Src => OD_Rel8, Length => 2);
+                        when 6 =>
+                           Table (Opcode) :=
+                             Make (OP_LD, Dest => OD_A, Src => OD_High_Addr_Imm8,
+                                   Length => 2);
+                        when 7 =>
+                           Table (Opcode) :=
+                             Make (OP_LD, Dest => OD_HL, Src => OD_SP_Plus_Rel8,
+                                   Length => 2);
+                     end case;
+
+                  when 1 =>
+                     if Q = 0 then
+                        Table (Opcode) :=
+                          Make (OP_POP, Dest => Register16_Stack_Map (P));
+                     else
+                        case P is
+                           when 0 =>
+                              Table (Opcode) := Make (OP_RET);
+                           when 1 =>
+                              Table (Opcode) := Make (OP_RETI);
+                           when 2 =>
+                              Table (Opcode) := Make (OP_JP, Src => OD_HL);
+                           when 3 =>
+                              Table (Opcode) := Make (OP_LD, Dest => OD_SP, Src => OD_HL);
+                        end case;
+                     end if;
+
+                  when 2 =>
+                     case Y is
+                        when 0 .. 3 =>
+                           Table (Opcode) :=
+                             Make (OP_JP, Src => OD_Imm16,
+                                   Condition => Condition_Map (Half_Opcode_Field (Y)),
+                                   Length => 3);
+                        when 4 =>
+                           Table (Opcode) := Make (OP_LD, Dest => OD_High_Addr_C, Src => OD_A);
+                        when 5 =>
+                           Table (Opcode) :=
+                             Make (OP_LD, Dest => OD_Addr_Imm16, Src => OD_A, Length => 3);
+                        when 6 =>
+                           Table (Opcode) := Make (OP_LD, Dest => OD_A, Src => OD_High_Addr_C);
+                        when 7 =>
+                           Table (Opcode) :=
+                             Make (OP_LD, Dest => OD_A, Src => OD_Addr_Imm16, Length => 3);
+                     end case;
+
+                  when 3 =>
+                     case Y is
+                        when 0 =>
+                           Table (Opcode) := Make (OP_JP, Src => OD_Imm16, Length => 3);
+                        when 1 =>
+                           Table (Opcode) := Make (OP_Invalid);
+                        when 6 =>
+                           Table (Opcode) := Make (OP_DI);
+                        when 7 =>
+                           Table (Opcode) := Make (OP_EI);
+                        when others =>
+                           null;
+                     end case;
+
+                  when 4 =>
+                     if Y <= 3 then
+                        Table (Opcode) :=
+                          Make (OP_CALL, Src => OD_Imm16,
+                                Condition => Condition_Map (Half_Opcode_Field (Y)),
+                                Length => 3);
+                     end if;
+
+                  when 5 =>
+                     if Q = 0 then
+                        Table (Opcode) :=
+                          Make (OP_PUSH, Src => Register16_Stack_Map (P));
+                     elsif P = 0 then
+                        Table (Opcode) := Make (OP_CALL, Src => OD_Imm16, Length => 3);
+                     end if;
+
+                  when 6 =>
+                     Table (Opcode) :=
+                       Make (ALU_Operation_Map (Y), Dest => OD_A, Src => OD_Imm8,
+                             Length => 2);
+
+                  when 7 =>
+                     Table (Opcode) :=
+                       Make (OP_RST, Dest => OD_RST_Vector,
+                             RST_Vector => Word (Natural (Y) * 8));
+               end case;
+         end case;
+      end loop;
+
+      return Table;
+   end Build_Main_Table;
+
+   Main_Decode_Table : constant Decoded_Instruction_Table := Build_Main_Table;
+   CB_Decode_Table   : constant Decoded_Instruction_Table := Build_CB_Table;
+
+   function Decode
+     (GB : in out Gade.GB.GB_Type) return Decoded_Instruction
+   is
+      Inst   : Decoded_Instruction;
+      Opcode : constant Byte := Read_Byte (GB, GB.CPU.PC);
+   begin
+      if Opcode = 16#CB# then
+         Inst := Apply_Prefix
+           (CB_Decode_Table (Read_Byte (GB, GB.CPU.PC + 1)),
+            Prefix => CB,
+            Opcode => Read_Byte (GB, GB.CPU.PC + 1));
+         Apply_Timing (Inst, Lookup_Entry (CB, Inst.Opcode));
+      else
+         Inst := Apply_Prefix (Main_Decode_Table (Opcode), Prefix => Main, Opcode => Opcode);
+
+         case Inst.Length is
+            when 2 =>
+               Inst.Imm8 := Read_Byte (GB, GB.CPU.PC + 1);
+               Inst.Rel8 := To_Rel8 (Inst.Imm8);
+            when 3 =>
+               Inst.Imm8 := Read_Byte (GB, GB.CPU.PC + 1);
+               Inst.Imm16 := Read_Word (GB, GB.CPU.PC + 1);
+               if Inst.Src = OD_Rel8 or else Inst.Dest = OD_Rel8 then
+                  Inst.Rel8 := To_Rel8 (Inst.Imm8);
+               end if;
+            when others =>
+               null;
+         end case;
+
+         Apply_Timing (Inst, Lookup_Entry (Main, Opcode));
+      end if;
+
+      return Inst;
+   end Decode;
 
    function Lookup_Entry
      (Prefix : Prefix_Kind;

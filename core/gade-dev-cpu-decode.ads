@@ -88,4 +88,27 @@ package Gade.Dev.CPU.Decode is
    function Decode
      (GB : in out Gade.GB.GB_Type) return Decoded_Instruction;
 
+private
+
+   --
+   --  https://archive.gbdev.io/salvage/decoding_gbz80_opcodes/Decoding%20Gamboy%20Z80%20Opcodes.html
+   --  Bits in opcode | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | (MSB → LSB)
+   --                 |   x   |     y     |     z     |
+   --                         |   p   | q |
+
+   --  Upon establishing the opcode, the Z80's path of action is generally dictated by these values:
+
+   --  x = the opcode's 1st octal digit (i.e. bits 7-6)
+   --  y = the opcode's 2nd octal digit (i.e. bits 5-3)
+   --  z = the opcode's 3rd octal digit (i.e. bits 2-0)
+   --  p = y rightshifted one position (i.e. bits 5-4)
+   --  q = y modulo 2 (i.e. bit 3)
+
+   --  The following placeholders for instructions and operands are used:
+
+   --  d = displacement byte (8-bit signed integer)
+   --  n = 8-bit immediate operand (unsigned integer)
+   --  nn = 16-bit immediate operand (unsigned integer)
+   --  tab[x] = whatever is contained in the table named tab at index x (analogous for y and z and other table names)
+
 end Gade.Dev.CPU.Decode;
