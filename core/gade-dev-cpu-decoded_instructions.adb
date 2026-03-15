@@ -27,7 +27,7 @@ package body Gade.Dev.CPU.Decoded_Instructions is
       Operand :        Operand_Kind) return Byte;
 
    function Read_Word_Operand
-     (GB      : in out GB_Type;
+     (GB      :        GB_Type;
       Inst    :        Decoded_Instruction;
       Operand :        Operand_Kind) return Word;
 
@@ -154,10 +154,9 @@ package body Gade.Dev.CPU.Decoded_Instructions is
    end Read_Byte_Operand;
 
    function Read_Word_Operand
-     (GB      : in out GB_Type;
+     (GB      :        GB_Type;
       Inst    :        Decoded_Instruction;
       Operand :        Operand_Kind) return Word is
-      Result : Word;
    begin
       case Operand is
          when OD_AF =>
@@ -176,10 +175,6 @@ package body Gade.Dev.CPU.Decoded_Instructions is
             return Inst.Imm16;
          when OD_RST_Vector =>
             return Inst.RST_Vector;
-         when OD_SP_Plus_Rel8 =>
-            Result := GB.CPU.Regs.SP;
-            Add_Offset (GB.CPU, Result, Inst.Imm8, True);
-            return Result;
          when others =>
             raise Program_Error;
       end case;
@@ -253,9 +248,10 @@ package body Gade.Dev.CPU.Decoded_Instructions is
       Byte_Value : Byte;
       Word_Value : Word;
    begin
-      if Inst.Src = OD_SP_Plus_Rel8 then
-         Word_Value := Read_Word_Operand (GB, Inst, Inst.Src);
-         Write_Word_Operand (GB, Inst.Dest, Word_Value);
+      if Inst.Dest = OD_HL and then Inst.Src = OD_SP_Plus_Rel8 then
+         Word_Value := GB.CPU.Regs.SP;
+         Do_Add (GB.CPU, Word_Value, Inst.Imm8);
+         GB.CPU.Regs.HL := Word_Value;
       elsif Inst.Dest = OD_Addr_Imm16 and then Inst.Src = OD_SP then
          Write_Word (GB, Inst.Imm16, GB.CPU.Regs.SP);
       elsif Is_Word_Operand (Inst.Dest) and then Is_Word_Operand (Inst.Src) then
