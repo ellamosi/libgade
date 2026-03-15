@@ -1,9 +1,6 @@
---  with Ada.Integer_Text_IO;             use Ada.Integer_Text_IO;
-
-with Gade.Dev.CPU.Instructions.Table; use Gade.Dev.CPU.Instructions.Table;
-with Gade.GB;                         use Gade.GB;
-with Gade.GB.Memory_Map;              use Gade.GB.Memory_Map;
-with Gade.Logging;
+with Gade.Dev.CPU.Decode;               use Gade.Dev.CPU.Decode;
+with Gade.Dev.CPU.Decoded_Instructions; use Gade.Dev.CPU.Decoded_Instructions;
+with Gade.GB;                           use Gade.GB;
 
 package body Gade.Dev.CPU.Instructions.Exec is
 
@@ -12,37 +9,19 @@ package body Gade.Dev.CPU.Instructions.Exec is
       GB     : in out Gade.GB.GB_Type;
       Cycles : out M_Cycle_Count) is
       pragma Unreferenced (CPU);
-      --  Instruction_Addr : constant Word := GB.CPU.PC;
-      Current_Table    : access constant Instruction_Array;
-      Instruction      : access constant Instruction_Entry;
-      Partial_Opcode   : Byte;
+      Instruction : Decoded_Instruction;
    begin
-      Current_Table := Opcodes_Main.Entries'Access;
-      --  Ada.Integer_Text_IO.Put(Integer(Instruction_Addr), Base => 16);
-      loop
-         Partial_Opcode := Read_Byte (GB, GB.CPU.PC);
-         GB.CPU.PC := GB.CPU.PC + 1;
+      Instruction := Gade.Dev.CPU.Decode.Decode (GB);
+      GB.CPU.PC := GB.CPU.PC + Word (Instruction.Length);
 
-         Instruction := Current_Table (Partial_Opcode)'Access;
-         if Instruction.Method /= null then
-            --  Put_Line(' ' & Instruction.Name.all);
+      GB.CPU.Branch_Taken := False;
+      Gade.Dev.CPU.Decoded_Instructions.Execute (GB, Instruction);
 
-            GB.CPU.Branch_Taken := False;
-            Instruction.Method (GB); -- RUN INSTRUCTION
-
-            if GB.CPU.Branch_Taken then
-               Cycles := Instruction.Jump_Cycles;
-            else
-               Cycles := Instruction.Cycles;
-            end if;
-            exit;
-         elsif Instruction.Extended_Table /= null then
-            Current_Table := Instruction.Extended_Table.Entries'Access;
-         else
-            Gade.Logging.Error (GB.Logger, "Unrecognized opcode!");
-            raise Program_Error;
-         end if;
-      end loop;
+      if GB.CPU.Branch_Taken then
+         Cycles := Instruction.Jump_Cycles;
+      else
+         Cycles := Instruction.Cycles;
+      end if;
    end Execute;
 
 end Gade.Dev.CPU.Instructions.Exec;

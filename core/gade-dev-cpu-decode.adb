@@ -633,6 +633,7 @@ package body Gade.Dev.CPU.Decode is
            (CB_Decode_Table (Read_Byte (GB, GB.CPU.PC + 1)),
             Prefix => CB,
             Opcode => Read_Byte (GB, GB.CPU.PC + 1));
+         Inst.Length := 2;
          Apply_Timing (Inst, Lookup_Entry (CB, Inst.Opcode));
       else
          Inst := Apply_Prefix (Main_Decode_Table (Opcode), Prefix => Main, Opcode => Opcode);
