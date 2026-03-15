@@ -4,7 +4,7 @@ with Gade.GB;           use Gade.GB;
 with Gade.Input; use Gade.Input;
 with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 with Gade.Video_Buffer; use Gade.Video_Buffer;
-with Gade.Dev.CPU.Instructions.Exec;        use Gade.Dev.CPU.Instructions.Exec;
+with Gade.Dev.CPU.Exec;                     use Gade.Dev.CPU.Exec;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
 with Gade.Carts;
@@ -71,7 +71,7 @@ package body Gade.Interfaces is
       while not Frame_Finished and Generated_Samples < Requested_Samples loop
          Instruction_Cycles := CPU_M_Cycles_Per_Audio_Sample;
          if not G.GB.CPU.Halted then
-            Gade.Dev.CPU.Instructions.Exec.Execute
+            Gade.Dev.CPU.Exec.Execute
               (G.GB.CPU, G.GB, Instruction_Cycles);
          end if;
          Report_Cycles (G.GB, Video, Audio, Instruction_Cycles);
