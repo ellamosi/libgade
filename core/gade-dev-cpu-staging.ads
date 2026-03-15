@@ -1,4 +1,5 @@
-with Gade.Timing; use Gade.Timing;
+with Gade.Dev.CPU.Decode; use Gade.Dev.CPU.Decode;
+with Gade.Timing;         use Gade.Timing;
 
 package Gade.Dev.CPU.Staging is
 
@@ -27,7 +28,7 @@ package Gade.Dev.CPU.Staging is
       Flag : Stage_Flag := None;
    end record;
 
-   Max_Stage_Count : constant := 6;
+   Max_Stage_Count : constant := 7;
 
    subtype Stage_Index is Positive range 1 .. Max_Stage_Count;
    type Stage_Count is range 0 .. Max_Stage_Count;
@@ -40,5 +41,8 @@ package Gade.Dev.CPU.Staging is
 
    Empty_Template : constant Stage_Template :=
      (Count => 0, Items => [others => (others => <>)]);
+
+   function Template_For
+     (Inst : Decoded_Instruction) return Stage_Template;
 
 end Gade.Dev.CPU.Staging;
