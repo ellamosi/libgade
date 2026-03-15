@@ -1,5 +1,5 @@
 with Gade.Dev.CPU.Decode; use Gade.Dev.CPU.Decode;
-with Gade.Timing;         use Gade.Timing;
+with Gade.Timing;
 
 package Gade.Dev.CPU.Staging is
 
@@ -24,7 +24,7 @@ package Gade.Dev.CPU.Staging is
 
    type Stage is record
       Kind : Stage_Kind := Commit;
-      Cost : M_Cycle_Count := 1;
+      Cost : Gade.Timing.M_Cycle_Count := 1;
       Flag : Stage_Flag := None;
    end record;
 

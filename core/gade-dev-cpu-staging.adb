@@ -175,7 +175,6 @@ package body Gade.Dev.CPU.Staging is
             Append (Template, Fetch_Imm8);
             if Inst.Condition /= COND_None then
                Append (Template, Cond_Check);
-               Append (Template, Internal, Flag => Skip_If_Not_Taken);
                Append (Template, Commit, Flag => Skip_If_Not_Taken);
             else
                Append (Template, Internal);
@@ -192,6 +191,7 @@ package body Gade.Dev.CPU.Staging is
                   Append (Template, Cond_Check);
                   Append (Template, Commit, Flag => Skip_If_Not_Taken);
                else
+                  Append (Template, Internal);
                   Append (Template, Commit);
                end if;
             end if;
@@ -201,7 +201,6 @@ package body Gade.Dev.CPU.Staging is
             Append (Template, Fetch_Imm16_Hi);
             if Inst.Condition /= COND_None then
                Append (Template, Cond_Check);
-               Append (Template, Internal, Flag => Skip_If_Not_Taken);
                Append (Template, Push_Hi, Flag => Skip_If_Not_Taken);
                Append (Template, Push_Lo, Flag => Skip_If_Not_Taken);
                Append (Template, Commit, Flag => Skip_If_Not_Taken);
@@ -215,10 +214,10 @@ package body Gade.Dev.CPU.Staging is
          when OP_RET =>
             if Inst.Condition /= COND_None then
                Append (Template, Cond_Check);
+               Append (Template, Internal);
                Append (Template, Pop_Lo, Flag => Skip_If_Not_Taken);
                Append (Template, Pop_Hi, Flag => Skip_If_Not_Taken);
                Append (Template, Commit, Flag => Skip_If_Not_Taken);
-               Append (Template, Internal, Flag => Skip_If_Not_Taken);
             else
                Append (Template, Pop_Lo);
                Append (Template, Pop_Hi);
