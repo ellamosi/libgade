@@ -93,6 +93,8 @@ package body Gade.Dev.Display is
       GB      : in out Gade.GB.GB_Type;
       Video   : RGB32_Display_Buffer_Access;
       Cycles  : M_Cycle_Count) is
+      --  The public scheduler is normalized to M-cycles, but the LCD mode
+      --  handlers still use legacy T-cycle timing tables and caches.
       Handler_Cycles : constant Natural := Natural (To_T_Cycles (Cycles));
    begin
       if Display.Map.LCDC.LCD_Operation then

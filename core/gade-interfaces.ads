@@ -8,7 +8,15 @@ package Gade.Interfaces is
 
    CPU_Clock_Frequency : constant := 4_194_304; -- Hz (T-Cycles)
    CPU_M_Frequency     : constant := CPU_Clock_Frequency / 4; -- Hz (M-Cycles)
+   --  The frontend-facing audio contract is one generated sample per M-cycle.
    CPU_M_Cycles_Per_Audio_Sample : constant M_Cycle_Count := 1;
+
+   --  Timing normalization follow-up:
+   --  - CPU instruction table already reports M-cycles.
+   --  - APU outer scheduling already runs in M-cycles.
+   --  - Timer and RTC still use T-cycles internally by design.
+   --  - LCD handlers still use T-cycle timings and are converted at the
+   --    display boundary for now.
 
    type Gade_Type is private;
 

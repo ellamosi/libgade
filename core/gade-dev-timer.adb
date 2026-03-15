@@ -58,6 +58,8 @@ package body Gade.Dev.Timer is
       GB     : in out Gade.GB.GB_Type;
       Cycles : M_Cycle_Count)
    is
+      --  Timer edge detection remains T-cycle based even though the emulator
+      --  scheduler now reports time in M-cycles.
       T_Cycles : constant T_Cycle_Count := To_T_Cycles (Cycles);
       New_Ticks : T_Cycle_Count;
       New_Counter, Counter_Increment : Integer;

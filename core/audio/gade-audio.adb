@@ -31,6 +31,7 @@ package body Gade.Audio is
       Powered       : Boolean;
       Power_Control : Power_Control_Status;
 
+      --  The APU outer scheduler consumes one sample step per M-cycle.
       Elapsed_Cycles : M_Cycle_Count;
 
       Clean : Boolean;
