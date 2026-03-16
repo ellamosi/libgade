@@ -636,6 +636,23 @@ package body Gade.Dev.CPU.Decode is
       return Inst;
    end Decode;
 
+   function Decode_Template
+     (Prefix : Prefix_Kind;
+      Opcode : Byte) return Decoded_Instruction is
+      Inst : Decoded_Instruction;
+   begin
+      case Prefix is
+         when Main =>
+            Inst := Main_Decode_Table (Opcode);
+         when CB =>
+            Inst := CB_Decode_Table (Opcode);
+            Inst.Length := 2;
+      end case;
+
+      Apply_Prefix (Inst, Prefix => Prefix, Opcode => Opcode);
+      return Inst;
+   end Decode_Template;
+
    function To_Rel8 (Value : Byte) return Signed_Byte is
       Integer_Value : constant Integer := Integer (Value);
    begin

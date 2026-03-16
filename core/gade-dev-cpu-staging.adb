@@ -1,10 +1,18 @@
 package body Gade.Dev.CPU.Staging is
 
+   type Stage_Template_Table is array (Byte) of Stage_Template;
+
    function Is_Direct_Memory_Operand (Operand : Operand_Kind) return Boolean;
 
    function Is_HL_Memory_Operand (Operand : Operand_Kind) return Boolean;
 
    function Is_Register16_Operand (Operand : Operand_Kind) return Boolean;
+
+   function Build_Stage_Table
+     (Prefix : Prefix_Kind) return Stage_Template_Table;
+
+   function Build_Template
+     (Inst : Decoded_Instruction) return Stage_Template;
 
    procedure Append
      (Template : in out Stage_Template;
@@ -55,14 +63,14 @@ package body Gade.Dev.CPU.Staging is
         (Kind => Kind, Cost => Cost, Flag => Flag);
    end Append;
 
-   function Template_For
+   function Build_Template
      (Inst : Decoded_Instruction) return Stage_Template
    is
       Template : Stage_Template := Empty_Template;
    begin
       case Inst.Operation is
          when OP_Invalid =>
-            raise Program_Error;
+            null;
 
          when OP_NOP | OP_RLCA | OP_RRCA | OP_RLA | OP_RRA |
               OP_DAA | OP_CPL | OP_CCF | OP_SCF |
@@ -262,6 +270,32 @@ package body Gade.Dev.CPU.Staging is
       end case;
 
       return Template;
+   end Build_Template;
+
+   function Build_Stage_Table
+     (Prefix : Prefix_Kind) return Stage_Template_Table is
+      Result : Stage_Template_Table := [others => Empty_Template];
+   begin
+      for Opcode in Byte'Range loop
+         Result (Opcode) :=
+           Build_Template (Decode_Template (Prefix => Prefix, Opcode => Opcode));
+      end loop;
+
+      return Result;
+   end Build_Stage_Table;
+
+   Main_Stage_Table : constant Stage_Template_Table := Build_Stage_Table (Main);
+   CB_Stage_Table   : constant Stage_Template_Table := Build_Stage_Table (CB);
+
+   function Template_For
+     (Inst : Decoded_Instruction) return Stage_Template is
+   begin
+      case Inst.Prefix is
+         when Main =>
+            return Main_Stage_Table (Inst.Opcode);
+         when CB =>
+            return CB_Stage_Table (Inst.Opcode);
+      end case;
    end Template_For;
 
 end Gade.Dev.CPU.Staging;

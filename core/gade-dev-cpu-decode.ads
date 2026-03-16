@@ -105,6 +105,10 @@ package Gade.Dev.CPU.Decode is
    function Decode
      (GB : in out Gade.GB.GB_Type) return Decoded_Instruction;
 
+   function Decode_Template
+     (Prefix : Prefix_Kind;
+      Opcode : Byte) return Decoded_Instruction;
+
 private
 
    --
