@@ -1,12 +1,10 @@
-with Gade.Dev.CPU.Arithmetic; use Gade.Dev.CPU.Arithmetic;
-with Gade.Dev.CPU.Bitwise;    use Gade.Dev.CPU.Bitwise;
 with Gade.Dev.CPU.Decode;     use Gade.Dev.CPU.Decode;
+with Gade.Dev.CPU.Generic_Handlers;
 with Gade.Dev.CPU.Generic_Instruction_Definitions;
-with Gade.Dev.CPU.Logic;      use Gade.Dev.CPU.Logic;
-with Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    package Definitions renames Gade.Dev.CPU.Generic_Instruction_Definitions;
+   package Handlers renames Gade.Dev.CPU.Generic_Handlers;
 
    type Handler_Table is array (Byte) of Instruction_Handler;
 
@@ -14,15 +12,270 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
 
    function Build_CB_Table return Handler_Table;
 
-   function Read_Byte_Operand
-     (GB      : in out Gade.GB.GB_Type;
-      Operand :        Operand_Kind;
-      Inst    :        Decoded_Instruction) return Byte;
+   function Hex_Digit (Value : Natural) return Character;
 
-   procedure Write_Byte_Operand
-     (GB      : in out Gade.GB.GB_Type;
-      Operand :        Operand_Kind;
-      Value   :        Byte);
+   function Hex_Byte (Value : Byte) return String;
+
+   function Hex_Word (Value : Word) return String;
+
+   function Prefix_Image (Prefix : Prefix_Kind) return String;
+
+   procedure Execute_RES_0_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_B);
+   procedure Execute_RES_0_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_C);
+   procedure Execute_RES_0_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_D);
+   procedure Execute_RES_0_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_E);
+   procedure Execute_RES_0_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_H);
+   procedure Execute_RES_0_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_L);
+   procedure Execute_RES_0_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_0_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_A);
+   procedure Execute_RES_1_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_B);
+   procedure Execute_RES_1_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_C);
+   procedure Execute_RES_1_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_D);
+   procedure Execute_RES_1_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_E);
+   procedure Execute_RES_1_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_H);
+   procedure Execute_RES_1_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_L);
+   procedure Execute_RES_1_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_1_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_A);
+   procedure Execute_RES_2_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_B);
+   procedure Execute_RES_2_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_C);
+   procedure Execute_RES_2_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_D);
+   procedure Execute_RES_2_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_E);
+   procedure Execute_RES_2_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_H);
+   procedure Execute_RES_2_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_L);
+   procedure Execute_RES_2_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_2_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_A);
+   procedure Execute_RES_3_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_B);
+   procedure Execute_RES_3_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_C);
+   procedure Execute_RES_3_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_D);
+   procedure Execute_RES_3_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_E);
+   procedure Execute_RES_3_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_H);
+   procedure Execute_RES_3_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_L);
+   procedure Execute_RES_3_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_3_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_A);
+   procedure Execute_RES_4_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_B);
+   procedure Execute_RES_4_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_C);
+   procedure Execute_RES_4_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_D);
+   procedure Execute_RES_4_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_E);
+   procedure Execute_RES_4_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_H);
+   procedure Execute_RES_4_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_L);
+   procedure Execute_RES_4_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_4_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_A);
+   procedure Execute_RES_5_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_B);
+   procedure Execute_RES_5_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_C);
+   procedure Execute_RES_5_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_D);
+   procedure Execute_RES_5_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_E);
+   procedure Execute_RES_5_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_H);
+   procedure Execute_RES_5_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_L);
+   procedure Execute_RES_5_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_5_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_A);
+   procedure Execute_RES_6_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_B);
+   procedure Execute_RES_6_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_C);
+   procedure Execute_RES_6_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_D);
+   procedure Execute_RES_6_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_E);
+   procedure Execute_RES_6_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_H);
+   procedure Execute_RES_6_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_L);
+   procedure Execute_RES_6_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_6_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_A);
+   procedure Execute_RES_7_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_B);
+   procedure Execute_RES_7_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_C);
+   procedure Execute_RES_7_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_D);
+   procedure Execute_RES_7_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_E);
+   procedure Execute_RES_7_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_H);
+   procedure Execute_RES_7_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_L);
+   procedure Execute_RES_7_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_7_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_A);
+   procedure Execute_SET_0_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_B);
+   procedure Execute_SET_0_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_C);
+   procedure Execute_SET_0_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_D);
+   procedure Execute_SET_0_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_E);
+   procedure Execute_SET_0_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_H);
+   procedure Execute_SET_0_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_L);
+   procedure Execute_SET_0_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_0_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_A);
+   procedure Execute_SET_1_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_B);
+   procedure Execute_SET_1_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_C);
+   procedure Execute_SET_1_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_D);
+   procedure Execute_SET_1_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_E);
+   procedure Execute_SET_1_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_H);
+   procedure Execute_SET_1_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_L);
+   procedure Execute_SET_1_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_1_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_A);
+   procedure Execute_SET_2_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_B);
+   procedure Execute_SET_2_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_C);
+   procedure Execute_SET_2_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_D);
+   procedure Execute_SET_2_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_E);
+   procedure Execute_SET_2_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_H);
+   procedure Execute_SET_2_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_L);
+   procedure Execute_SET_2_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_2_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_A);
+   procedure Execute_SET_3_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_B);
+   procedure Execute_SET_3_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_C);
+   procedure Execute_SET_3_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_D);
+   procedure Execute_SET_3_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_E);
+   procedure Execute_SET_3_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_H);
+   procedure Execute_SET_3_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_L);
+   procedure Execute_SET_3_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_3_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_A);
+   procedure Execute_SET_4_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_B);
+   procedure Execute_SET_4_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_C);
+   procedure Execute_SET_4_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_D);
+   procedure Execute_SET_4_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_E);
+   procedure Execute_SET_4_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_H);
+   procedure Execute_SET_4_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_L);
+   procedure Execute_SET_4_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_4_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_A);
+   procedure Execute_SET_5_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_B);
+   procedure Execute_SET_5_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_C);
+   procedure Execute_SET_5_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_D);
+   procedure Execute_SET_5_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_E);
+   procedure Execute_SET_5_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_H);
+   procedure Execute_SET_5_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_L);
+   procedure Execute_SET_5_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_5_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_A);
+   procedure Execute_SET_6_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_B);
+   procedure Execute_SET_6_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_C);
+   procedure Execute_SET_6_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_D);
+   procedure Execute_SET_6_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_E);
+   procedure Execute_SET_6_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_H);
+   procedure Execute_SET_6_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_L);
+   procedure Execute_SET_6_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_6_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_A);
+   procedure Execute_SET_7_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_B);
+   procedure Execute_SET_7_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_C);
+   procedure Execute_SET_7_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_D);
+   procedure Execute_SET_7_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_E);
+   procedure Execute_SET_7_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_H);
+   procedure Execute_SET_7_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_L);
+   procedure Execute_SET_7_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_7_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_A);
 
    function Build_Main_Table return Handler_Table is
       Table : Handler_Table := [others => null];
@@ -270,6 +523,7 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       Table (16#E8#) := Definitions.Execute_ADD_SP_Imm8'Access;
       Table (16#EE#) := Definitions.Execute_XOR_A_Imm8'Access;
       Table (16#F3#) := Definitions.Execute_DI'Access;
+      Table (16#F6#) := Definitions.Execute_OR_A_Imm8'Access;
       Table (16#FB#) := Definitions.Execute_EI'Access;
       Table (16#FE#) := Definitions.Execute_CP_A_Imm8'Access;
       return Table;
@@ -278,12 +532,6 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    function Build_CB_Table return Handler_Table is
       Table : Handler_Table := [others => null];
    begin
-      Table (16#40#) := Definitions.Execute_BIT_0_B'Access;
-      Table (16#5E#) := Definitions.Execute_BIT_3_Addr_HL'Access;
-      Table (16#A9#) := Definitions.Execute_RES_5_C'Access;
-      Table (16#BE#) := Definitions.Execute_RES_7_Addr_HL'Access;
-      Table (16#D7#) := Definitions.Execute_SET_2_A'Access;
-      Table (16#F6#) := Definitions.Execute_SET_6_Addr_HL'Access;
       Table (16#00#) := Definitions.Execute_RLC_B'Access;
       Table (16#01#) := Definitions.Execute_RLC_C'Access;
       Table (16#02#) := Definitions.Execute_RLC_D'Access;
@@ -348,6 +596,198 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       Table (16#3D#) := Definitions.Execute_SRL_L'Access;
       Table (16#3E#) := Definitions.Execute_SRL_Addr_HL'Access;
       Table (16#3F#) := Definitions.Execute_SRL_A'Access;
+      Table (16#40#) := Definitions.Execute_BIT_0_B'Access;
+      Table (16#41#) := Definitions.Execute_BIT_0_C'Access;
+      Table (16#42#) := Definitions.Execute_BIT_0_D'Access;
+      Table (16#43#) := Definitions.Execute_BIT_0_E'Access;
+      Table (16#44#) := Definitions.Execute_BIT_0_H'Access;
+      Table (16#45#) := Definitions.Execute_BIT_0_L'Access;
+      Table (16#46#) := Definitions.Execute_BIT_0_Addr_HL'Access;
+      Table (16#47#) := Definitions.Execute_BIT_0_A'Access;
+      Table (16#48#) := Definitions.Execute_BIT_1_B'Access;
+      Table (16#49#) := Definitions.Execute_BIT_1_C'Access;
+      Table (16#4A#) := Definitions.Execute_BIT_1_D'Access;
+      Table (16#4B#) := Definitions.Execute_BIT_1_E'Access;
+      Table (16#4C#) := Definitions.Execute_BIT_1_H'Access;
+      Table (16#4D#) := Definitions.Execute_BIT_1_L'Access;
+      Table (16#4E#) := Definitions.Execute_BIT_1_Addr_HL'Access;
+      Table (16#4F#) := Definitions.Execute_BIT_1_A'Access;
+      Table (16#50#) := Definitions.Execute_BIT_2_B'Access;
+      Table (16#51#) := Definitions.Execute_BIT_2_C'Access;
+      Table (16#52#) := Definitions.Execute_BIT_2_D'Access;
+      Table (16#53#) := Definitions.Execute_BIT_2_E'Access;
+      Table (16#54#) := Definitions.Execute_BIT_2_H'Access;
+      Table (16#55#) := Definitions.Execute_BIT_2_L'Access;
+      Table (16#56#) := Definitions.Execute_BIT_2_Addr_HL'Access;
+      Table (16#57#) := Definitions.Execute_BIT_2_A'Access;
+      Table (16#58#) := Definitions.Execute_BIT_3_B'Access;
+      Table (16#59#) := Definitions.Execute_BIT_3_C'Access;
+      Table (16#5A#) := Definitions.Execute_BIT_3_D'Access;
+      Table (16#5B#) := Definitions.Execute_BIT_3_E'Access;
+      Table (16#5C#) := Definitions.Execute_BIT_3_H'Access;
+      Table (16#5D#) := Definitions.Execute_BIT_3_L'Access;
+      Table (16#5E#) := Definitions.Execute_BIT_3_Addr_HL'Access;
+      Table (16#5F#) := Definitions.Execute_BIT_3_A'Access;
+      Table (16#60#) := Definitions.Execute_BIT_4_B'Access;
+      Table (16#61#) := Definitions.Execute_BIT_4_C'Access;
+      Table (16#62#) := Definitions.Execute_BIT_4_D'Access;
+      Table (16#63#) := Definitions.Execute_BIT_4_E'Access;
+      Table (16#64#) := Definitions.Execute_BIT_4_H'Access;
+      Table (16#65#) := Definitions.Execute_BIT_4_L'Access;
+      Table (16#66#) := Definitions.Execute_BIT_4_Addr_HL'Access;
+      Table (16#67#) := Definitions.Execute_BIT_4_A'Access;
+      Table (16#68#) := Definitions.Execute_BIT_5_B'Access;
+      Table (16#69#) := Definitions.Execute_BIT_5_C'Access;
+      Table (16#6A#) := Definitions.Execute_BIT_5_D'Access;
+      Table (16#6B#) := Definitions.Execute_BIT_5_E'Access;
+      Table (16#6C#) := Definitions.Execute_BIT_5_H'Access;
+      Table (16#6D#) := Definitions.Execute_BIT_5_L'Access;
+      Table (16#6E#) := Definitions.Execute_BIT_5_Addr_HL'Access;
+      Table (16#6F#) := Definitions.Execute_BIT_5_A'Access;
+      Table (16#70#) := Definitions.Execute_BIT_6_B'Access;
+      Table (16#71#) := Definitions.Execute_BIT_6_C'Access;
+      Table (16#72#) := Definitions.Execute_BIT_6_D'Access;
+      Table (16#73#) := Definitions.Execute_BIT_6_E'Access;
+      Table (16#74#) := Definitions.Execute_BIT_6_H'Access;
+      Table (16#75#) := Definitions.Execute_BIT_6_L'Access;
+      Table (16#76#) := Definitions.Execute_BIT_6_Addr_HL'Access;
+      Table (16#77#) := Definitions.Execute_BIT_6_A'Access;
+      Table (16#78#) := Definitions.Execute_BIT_7_B'Access;
+      Table (16#79#) := Definitions.Execute_BIT_7_C'Access;
+      Table (16#7A#) := Definitions.Execute_BIT_7_D'Access;
+      Table (16#7B#) := Definitions.Execute_BIT_7_E'Access;
+      Table (16#7C#) := Definitions.Execute_BIT_7_H'Access;
+      Table (16#7D#) := Definitions.Execute_BIT_7_L'Access;
+      Table (16#7E#) := Definitions.Execute_BIT_7_Addr_HL'Access;
+      Table (16#7F#) := Definitions.Execute_BIT_7_A'Access;
+      Table (16#80#) := Execute_RES_0_B'Access;
+      Table (16#81#) := Execute_RES_0_C'Access;
+      Table (16#82#) := Execute_RES_0_D'Access;
+      Table (16#83#) := Execute_RES_0_E'Access;
+      Table (16#84#) := Execute_RES_0_H'Access;
+      Table (16#85#) := Execute_RES_0_L'Access;
+      Table (16#86#) := Execute_RES_0_Addr_HL'Access;
+      Table (16#87#) := Execute_RES_0_A'Access;
+      Table (16#88#) := Execute_RES_1_B'Access;
+      Table (16#89#) := Execute_RES_1_C'Access;
+      Table (16#8A#) := Execute_RES_1_D'Access;
+      Table (16#8B#) := Execute_RES_1_E'Access;
+      Table (16#8C#) := Execute_RES_1_H'Access;
+      Table (16#8D#) := Execute_RES_1_L'Access;
+      Table (16#8E#) := Execute_RES_1_Addr_HL'Access;
+      Table (16#8F#) := Execute_RES_1_A'Access;
+      Table (16#90#) := Execute_RES_2_B'Access;
+      Table (16#91#) := Execute_RES_2_C'Access;
+      Table (16#92#) := Execute_RES_2_D'Access;
+      Table (16#93#) := Execute_RES_2_E'Access;
+      Table (16#94#) := Execute_RES_2_H'Access;
+      Table (16#95#) := Execute_RES_2_L'Access;
+      Table (16#96#) := Execute_RES_2_Addr_HL'Access;
+      Table (16#97#) := Execute_RES_2_A'Access;
+      Table (16#98#) := Execute_RES_3_B'Access;
+      Table (16#99#) := Execute_RES_3_C'Access;
+      Table (16#9A#) := Execute_RES_3_D'Access;
+      Table (16#9B#) := Execute_RES_3_E'Access;
+      Table (16#9C#) := Execute_RES_3_H'Access;
+      Table (16#9D#) := Execute_RES_3_L'Access;
+      Table (16#9E#) := Execute_RES_3_Addr_HL'Access;
+      Table (16#9F#) := Execute_RES_3_A'Access;
+      Table (16#A0#) := Execute_RES_4_B'Access;
+      Table (16#A1#) := Execute_RES_4_C'Access;
+      Table (16#A2#) := Execute_RES_4_D'Access;
+      Table (16#A3#) := Execute_RES_4_E'Access;
+      Table (16#A4#) := Execute_RES_4_H'Access;
+      Table (16#A5#) := Execute_RES_4_L'Access;
+      Table (16#A6#) := Execute_RES_4_Addr_HL'Access;
+      Table (16#A7#) := Execute_RES_4_A'Access;
+      Table (16#A8#) := Execute_RES_5_B'Access;
+      Table (16#A9#) := Execute_RES_5_C'Access;
+      Table (16#AA#) := Execute_RES_5_D'Access;
+      Table (16#AB#) := Execute_RES_5_E'Access;
+      Table (16#AC#) := Execute_RES_5_H'Access;
+      Table (16#AD#) := Execute_RES_5_L'Access;
+      Table (16#AE#) := Execute_RES_5_Addr_HL'Access;
+      Table (16#AF#) := Execute_RES_5_A'Access;
+      Table (16#B0#) := Execute_RES_6_B'Access;
+      Table (16#B1#) := Execute_RES_6_C'Access;
+      Table (16#B2#) := Execute_RES_6_D'Access;
+      Table (16#B3#) := Execute_RES_6_E'Access;
+      Table (16#B4#) := Execute_RES_6_H'Access;
+      Table (16#B5#) := Execute_RES_6_L'Access;
+      Table (16#B6#) := Execute_RES_6_Addr_HL'Access;
+      Table (16#B7#) := Execute_RES_6_A'Access;
+      Table (16#B8#) := Execute_RES_7_B'Access;
+      Table (16#B9#) := Execute_RES_7_C'Access;
+      Table (16#BA#) := Execute_RES_7_D'Access;
+      Table (16#BB#) := Execute_RES_7_E'Access;
+      Table (16#BC#) := Execute_RES_7_H'Access;
+      Table (16#BD#) := Execute_RES_7_L'Access;
+      Table (16#BE#) := Execute_RES_7_Addr_HL'Access;
+      Table (16#BF#) := Execute_RES_7_A'Access;
+      Table (16#C0#) := Execute_SET_0_B'Access;
+      Table (16#C1#) := Execute_SET_0_C'Access;
+      Table (16#C2#) := Execute_SET_0_D'Access;
+      Table (16#C3#) := Execute_SET_0_E'Access;
+      Table (16#C4#) := Execute_SET_0_H'Access;
+      Table (16#C5#) := Execute_SET_0_L'Access;
+      Table (16#C6#) := Execute_SET_0_Addr_HL'Access;
+      Table (16#C7#) := Execute_SET_0_A'Access;
+      Table (16#C8#) := Execute_SET_1_B'Access;
+      Table (16#C9#) := Execute_SET_1_C'Access;
+      Table (16#CA#) := Execute_SET_1_D'Access;
+      Table (16#CB#) := Execute_SET_1_E'Access;
+      Table (16#CC#) := Execute_SET_1_H'Access;
+      Table (16#CD#) := Execute_SET_1_L'Access;
+      Table (16#CE#) := Execute_SET_1_Addr_HL'Access;
+      Table (16#CF#) := Execute_SET_1_A'Access;
+      Table (16#D0#) := Execute_SET_2_B'Access;
+      Table (16#D1#) := Execute_SET_2_C'Access;
+      Table (16#D2#) := Execute_SET_2_D'Access;
+      Table (16#D3#) := Execute_SET_2_E'Access;
+      Table (16#D4#) := Execute_SET_2_H'Access;
+      Table (16#D5#) := Execute_SET_2_L'Access;
+      Table (16#D6#) := Execute_SET_2_Addr_HL'Access;
+      Table (16#D7#) := Execute_SET_2_A'Access;
+      Table (16#D8#) := Execute_SET_3_B'Access;
+      Table (16#D9#) := Execute_SET_3_C'Access;
+      Table (16#DA#) := Execute_SET_3_D'Access;
+      Table (16#DB#) := Execute_SET_3_E'Access;
+      Table (16#DC#) := Execute_SET_3_H'Access;
+      Table (16#DD#) := Execute_SET_3_L'Access;
+      Table (16#DE#) := Execute_SET_3_Addr_HL'Access;
+      Table (16#DF#) := Execute_SET_3_A'Access;
+      Table (16#E0#) := Execute_SET_4_B'Access;
+      Table (16#E1#) := Execute_SET_4_C'Access;
+      Table (16#E2#) := Execute_SET_4_D'Access;
+      Table (16#E3#) := Execute_SET_4_E'Access;
+      Table (16#E4#) := Execute_SET_4_H'Access;
+      Table (16#E5#) := Execute_SET_4_L'Access;
+      Table (16#E6#) := Execute_SET_4_Addr_HL'Access;
+      Table (16#E7#) := Execute_SET_4_A'Access;
+      Table (16#E8#) := Execute_SET_5_B'Access;
+      Table (16#E9#) := Execute_SET_5_C'Access;
+      Table (16#EA#) := Execute_SET_5_D'Access;
+      Table (16#EB#) := Execute_SET_5_E'Access;
+      Table (16#EC#) := Execute_SET_5_H'Access;
+      Table (16#ED#) := Execute_SET_5_L'Access;
+      Table (16#EE#) := Execute_SET_5_Addr_HL'Access;
+      Table (16#EF#) := Execute_SET_5_A'Access;
+      Table (16#F0#) := Execute_SET_6_B'Access;
+      Table (16#F1#) := Execute_SET_6_C'Access;
+      Table (16#F2#) := Execute_SET_6_D'Access;
+      Table (16#F3#) := Execute_SET_6_E'Access;
+      Table (16#F4#) := Execute_SET_6_H'Access;
+      Table (16#F5#) := Execute_SET_6_L'Access;
+      Table (16#F6#) := Execute_SET_6_Addr_HL'Access;
+      Table (16#F7#) := Execute_SET_6_A'Access;
+      Table (16#F8#) := Execute_SET_7_B'Access;
+      Table (16#F9#) := Execute_SET_7_C'Access;
+      Table (16#FA#) := Execute_SET_7_D'Access;
+      Table (16#FB#) := Execute_SET_7_E'Access;
+      Table (16#FC#) := Execute_SET_7_H'Access;
+      Table (16#FD#) := Execute_SET_7_L'Access;
+      Table (16#FE#) := Execute_SET_7_Addr_HL'Access;
+      Table (16#FF#) := Execute_SET_7_A'Access;
       return Table;
    end Build_CB_Table;
 
@@ -366,195 +806,78 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       return CB_Table (Opcode);
    end CB_Handler;
 
-   function Read_Byte_Operand
-     (GB      : in out Gade.GB.GB_Type;
-      Operand :        Operand_Kind;
-      Inst    :        Decoded_Instruction) return Byte is
-   begin
-      case Operand is
-         when OD_A =>
-            return GB.CPU.Regs.A;
-         when OD_B =>
-            return GB.CPU.Regs.B;
-         when OD_C =>
-            return GB.CPU.Regs.C;
-         when OD_D =>
-            return GB.CPU.Regs.D;
-         when OD_E =>
-            return GB.CPU.Regs.E;
-         when OD_H =>
-            return GB.CPU.Regs.H;
-         when OD_L =>
-            return GB.CPU.Regs.L;
-         when OD_Addr_HL =>
-            return Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.Regs.HL);
-         when OD_Imm8 =>
-            return Inst.Imm8;
-         when others =>
-            raise Program_Error;
-      end case;
-   end Read_Byte_Operand;
-
-   procedure Write_Byte_Operand
-     (GB      : in out Gade.GB.GB_Type;
-      Operand :        Operand_Kind;
-      Value   :        Byte) is
-   begin
-      case Operand is
-         when OD_A =>
-            GB.CPU.Regs.A := Value;
-         when OD_B =>
-            GB.CPU.Regs.B := Value;
-         when OD_C =>
-            GB.CPU.Regs.C := Value;
-         when OD_D =>
-            GB.CPU.Regs.D := Value;
-         when OD_E =>
-            GB.CPU.Regs.E := Value;
-         when OD_H =>
-            GB.CPU.Regs.H := Value;
-         when OD_L =>
-            GB.CPU.Regs.L := Value;
-         when OD_Addr_HL =>
-            Gade.GB.Memory_Map.Write_Byte (GB, GB.CPU.Regs.HL, Value);
-         when others =>
-            raise Program_Error;
-      end case;
-   end Write_Byte_Operand;
-
    procedure Execute
      (GB          : in out Gade.GB.GB_Type;
       Instruction :        Decoded_Instruction) is
       Handler : Instruction_Handler;
-      Value   : Byte;
-      Word_Value : Word;
-      Dummy   : Byte;
    begin
       case Instruction.Prefix is
          when Main =>
             Handler := Main_Handler (Instruction.Opcode);
-            if Handler /= null then
-               GB.CPU.PC := GB.CPU.PC + 1;
-               Handler.all (GB);
-               return;
+            if Handler = null then
+               raise Program_Error with
+                 "missing "
+                 & Prefix_Image (Instruction.Prefix)
+                 & " handler for opcode 0x"
+                 & Hex_Byte (Instruction.Opcode)
+                 & " at PC=0x"
+                 & Hex_Word (GB.CPU.PC);
             end if;
 
-            GB.CPU.PC := GB.CPU.PC + Word (Instruction.Length);
-
-            case Instruction.Operation is
-               when OP_Invalid =>
-                  raise Program_Error;
-               when OP_NOP =>
-                  null;
-               when OP_ADD =>
-                  if Instruction.Dest = OD_HL then
-                     case Instruction.Src is
-                        when OD_BC =>
-                           Word_Value := GB.CPU.Regs.HL;
-                           Do_Add (GB.CPU, GB.CPU.Regs.BC, Word_Value);
-                           GB.CPU.Regs.HL := Word_Value;
-                        when OD_DE =>
-                           Word_Value := GB.CPU.Regs.HL;
-                           Do_Add (GB.CPU, GB.CPU.Regs.DE, Word_Value);
-                           GB.CPU.Regs.HL := Word_Value;
-                        when OD_HL =>
-                           Word_Value := GB.CPU.Regs.HL;
-                           Do_Add (GB.CPU, GB.CPU.Regs.HL, Word_Value);
-                           GB.CPU.Regs.HL := Word_Value;
-                        when OD_SP =>
-                           Word_Value := GB.CPU.Regs.HL;
-                           Do_Add (GB.CPU, GB.CPU.Regs.SP, Word_Value);
-                           GB.CPU.Regs.HL := Word_Value;
-                        when others =>
-                           raise Program_Error;
-                     end case;
-                  elsif Instruction.Dest = OD_SP and then Instruction.Src = OD_Rel8 then
-                     Do_Add (GB.CPU, GB.CPU.Regs.SP, Instruction.Imm8);
-                  else
-                     Value := Read_Byte_Operand (GB, Instruction.Src, Instruction);
-                     Do_Add (GB.CPU, Value, GB.CPU.Regs.A, ADD_Carry);
-                  end if;
-               when OP_ADC =>
-                  Value := Read_Byte_Operand (GB, Instruction.Src, Instruction);
-                  Do_Add (GB.CPU, Value, GB.CPU.Regs.A, ADC_Carry);
-               when OP_SUB =>
-                  Value := Read_Byte_Operand (GB, Instruction.Src, Instruction);
-                  Do_Sub (GB.CPU, Value, GB.CPU.Regs.A, SUB_Carry);
-               when OP_SBC =>
-                  Value := Read_Byte_Operand (GB, Instruction.Src, Instruction);
-                  Do_Sub (GB.CPU, Value, GB.CPU.Regs.A, SBC_Carry);
-               when OP_AND =>
-                  Do_AND (GB.CPU, Read_Byte_Operand (GB, Instruction.Src, Instruction));
-               when OP_XOR =>
-                  Do_XOR (GB.CPU, Read_Byte_Operand (GB, Instruction.Src, Instruction));
-               when OP_OR =>
-                  Do_OR (GB.CPU, Read_Byte_Operand (GB, Instruction.Src, Instruction));
-               when OP_CP =>
-                  Do_Sub
-                    (GB.CPU,
-                     Read_Byte_Operand (GB, Instruction.Src, Instruction),
-                     Dummy,
-                     SUB_Carry);
-               when OP_DAA =>
-                  Definitions.Execute_DAA (GB);
-               when OP_CPL =>
-                  Definitions.Execute_CPL (GB);
-               when OP_SCF =>
-                  Definitions.Execute_SCF (GB);
-               when OP_CCF =>
-                  Definitions.Execute_CCF (GB);
-               when OP_HALT =>
-                  Definitions.Execute_HALT (GB);
-               when OP_STOP =>
-                  Definitions.Execute_STOP (GB);
-               when OP_DI =>
-                  Definitions.Execute_DI (GB);
-               when OP_EI =>
-                  Definitions.Execute_EI (GB);
-               when others =>
-                  raise Program_Error;
-            end case;
-
+            GB.CPU.PC := GB.CPU.PC + 1;
          when CB =>
             Handler := CB_Handler (Instruction.Opcode);
-            if Handler /= null then
-               GB.CPU.PC := GB.CPU.PC + 2;
-               Handler.all (GB);
-               return;
+            if Handler = null then
+               raise Program_Error with
+                 "missing "
+                 & Prefix_Image (Instruction.Prefix)
+                 & " handler for opcode 0x"
+                 & Hex_Byte (Instruction.Opcode)
+                 & " at PC=0x"
+                 & Hex_Word (GB.CPU.PC);
             end if;
 
             GB.CPU.PC := GB.CPU.PC + 2;
-
-            case Instruction.Operation is
-               when OP_Invalid =>
-                  raise Program_Error;
-               when OP_BIT =>
-                  Do_Bit
-                    (GB.CPU,
-                     Bit_Index (Instruction.Bit_Index),
-                     Read_Byte_Operand (GB, Instruction.Src, Instruction));
-               when OP_SET =>
-                  Value := Read_Byte_Operand (GB, Instruction.Dest, Instruction);
-                  Do_Set_Bit
-                    (GB.CPU,
-                     SR_SET,
-                     Bit_Index (Instruction.Bit_Index),
-                     Value,
-                     Value);
-                  Write_Byte_Operand (GB, Instruction.Dest, Value);
-               when OP_RES =>
-                  Value := Read_Byte_Operand (GB, Instruction.Dest, Instruction);
-                  Do_Set_Bit
-                    (GB.CPU,
-                     SR_RES,
-                     Bit_Index (Instruction.Bit_Index),
-                     Value,
-                     Value);
-                  Write_Byte_Operand (GB, Instruction.Dest, Value);
-               when others =>
-                  raise Program_Error;
-            end case;
       end case;
+
+      Handler.all (GB);
    end Execute;
+
+   function Hex_Digit (Value : Natural) return Character is
+   begin
+      if Value < 10 then
+         return Character'Val (Character'Pos ('0') + Value);
+      else
+         return Character'Val (Character'Pos ('A') + Value - 10);
+      end if;
+   end Hex_Digit;
+
+   function Hex_Byte (Value : Byte) return String is
+      Raw : constant Natural := Natural (Value);
+   begin
+      return
+        [1 => Hex_Digit (Raw / 16),
+         2 => Hex_Digit (Raw mod 16)];
+   end Hex_Byte;
+
+   function Hex_Word (Value : Word) return String is
+      Raw : constant Natural := Natural (Value);
+   begin
+      return
+        [1 => Hex_Digit ((Raw / 16#1000#) mod 16),
+         2 => Hex_Digit ((Raw / 16#100#) mod 16),
+         3 => Hex_Digit ((Raw / 16#10#) mod 16),
+         4 => Hex_Digit (Raw mod 16)];
+   end Hex_Word;
+
+   function Prefix_Image (Prefix : Prefix_Kind) return String is
+   begin
+      case Prefix is
+         when Main =>
+            return "main";
+         when CB =>
+            return "cb";
+      end case;
+   end Prefix_Image;
 
 end Gade.Dev.CPU.Generic_Dispatch_Prototype;
