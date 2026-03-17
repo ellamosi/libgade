@@ -156,4 +156,39 @@ package Gade.Dev.CPU.Generic_Handlers is
    procedure Execute_Flow
      (GB : in out Gade.GB.GB_Type);
 
+   procedure Execute_NOP
+     (GB : in out Gade.GB.GB_Type);
+
+   generic
+      Source : Word_Register_Kind;
+   procedure Execute_Add_HL
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_Add_SP_Imm8
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_DAA
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_CPL
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_SCF
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_CCF
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_HALT
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_STOP
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_DI
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_EI
+     (GB : in out Gade.GB.GB_Type);
+
 end Gade.Dev.CPU.Generic_Handlers;

@@ -1,4 +1,9 @@
+with Gade.Dev.CPU.Arithmetic; use Gade.Dev.CPU.Arithmetic;
+with Gade.Dev.CPU.Bitwise;    use Gade.Dev.CPU.Bitwise;
+with Gade.Dev.CPU.Decode;     use Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Generic_Instruction_Definitions;
+with Gade.Dev.CPU.Logic;      use Gade.Dev.CPU.Logic;
+with Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    package Definitions renames Gade.Dev.CPU.Generic_Instruction_Definitions;
@@ -8,6 +13,16 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    function Build_Main_Table return Handler_Table;
 
    function Build_CB_Table return Handler_Table;
+
+   function Read_Byte_Operand
+     (GB      : in out Gade.GB.GB_Type;
+      Operand :        Operand_Kind;
+      Inst    :        Decoded_Instruction) return Byte;
+
+   procedure Write_Byte_Operand
+     (GB      : in out Gade.GB.GB_Type;
+      Operand :        Operand_Kind;
+      Value   :        Byte);
 
    function Build_Main_Table return Handler_Table is
       Table : Handler_Table := [others => null];
@@ -181,6 +196,82 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       Table (16#F8#) := Definitions.Execute_LD_HL_SP_Plus_Imm8'Access;
       Table (16#F9#) := Definitions.Execute_LD_SP_HL'Access;
       Table (16#FA#) := Definitions.Execute_LD_A_Addr_Imm16'Access;
+      Table (16#00#) := Definitions.Execute_NOP'Access;
+      Table (16#09#) := Definitions.Execute_ADD_HL_BC'Access;
+      Table (16#10#) := Definitions.Execute_STOP'Access;
+      Table (16#19#) := Definitions.Execute_ADD_HL_DE'Access;
+      Table (16#27#) := Definitions.Execute_DAA'Access;
+      Table (16#29#) := Definitions.Execute_ADD_HL_HL'Access;
+      Table (16#2F#) := Definitions.Execute_CPL'Access;
+      Table (16#37#) := Definitions.Execute_SCF'Access;
+      Table (16#39#) := Definitions.Execute_ADD_HL_SP'Access;
+      Table (16#3F#) := Definitions.Execute_CCF'Access;
+      Table (16#76#) := Definitions.Execute_HALT'Access;
+      Table (16#81#) := Definitions.Execute_ADD_A_C'Access;
+      Table (16#82#) := Definitions.Execute_ADD_A_D'Access;
+      Table (16#83#) := Definitions.Execute_ADD_A_E'Access;
+      Table (16#84#) := Definitions.Execute_ADD_A_H'Access;
+      Table (16#85#) := Definitions.Execute_ADD_A_L'Access;
+      Table (16#87#) := Definitions.Execute_ADD_A_A'Access;
+      Table (16#88#) := Definitions.Execute_ADC_A_B'Access;
+      Table (16#8A#) := Definitions.Execute_ADC_A_D'Access;
+      Table (16#8B#) := Definitions.Execute_ADC_A_E'Access;
+      Table (16#8C#) := Definitions.Execute_ADC_A_H'Access;
+      Table (16#8D#) := Definitions.Execute_ADC_A_L'Access;
+      Table (16#8E#) := Definitions.Execute_ADC_A_Addr_HL'Access;
+      Table (16#8F#) := Definitions.Execute_ADC_A_A'Access;
+      Table (16#90#) := Definitions.Execute_SUB_A_B'Access;
+      Table (16#91#) := Definitions.Execute_SUB_A_C'Access;
+      Table (16#93#) := Definitions.Execute_SUB_A_E'Access;
+      Table (16#94#) := Definitions.Execute_SUB_A_H'Access;
+      Table (16#95#) := Definitions.Execute_SUB_A_L'Access;
+      Table (16#96#) := Definitions.Execute_SUB_A_Addr_HL'Access;
+      Table (16#97#) := Definitions.Execute_SUB_A_A'Access;
+      Table (16#98#) := Definitions.Execute_SBC_A_B'Access;
+      Table (16#99#) := Definitions.Execute_SBC_A_C'Access;
+      Table (16#9A#) := Definitions.Execute_SBC_A_D'Access;
+      Table (16#9C#) := Definitions.Execute_SBC_A_H'Access;
+      Table (16#9D#) := Definitions.Execute_SBC_A_L'Access;
+      Table (16#9E#) := Definitions.Execute_SBC_A_Addr_HL'Access;
+      Table (16#9F#) := Definitions.Execute_SBC_A_A'Access;
+      Table (16#A0#) := Definitions.Execute_AND_A_B'Access;
+      Table (16#A1#) := Definitions.Execute_AND_A_C'Access;
+      Table (16#A2#) := Definitions.Execute_AND_A_D'Access;
+      Table (16#A3#) := Definitions.Execute_AND_A_E'Access;
+      Table (16#A5#) := Definitions.Execute_AND_A_L'Access;
+      Table (16#A6#) := Definitions.Execute_AND_A_Addr_HL'Access;
+      Table (16#A7#) := Definitions.Execute_AND_A_A'Access;
+      Table (16#A8#) := Definitions.Execute_XOR_A_B'Access;
+      Table (16#A9#) := Definitions.Execute_XOR_A_C'Access;
+      Table (16#AA#) := Definitions.Execute_XOR_A_D'Access;
+      Table (16#AB#) := Definitions.Execute_XOR_A_E'Access;
+      Table (16#AC#) := Definitions.Execute_XOR_A_H'Access;
+      Table (16#AE#) := Definitions.Execute_XOR_A_Addr_HL'Access;
+      Table (16#AF#) := Definitions.Execute_XOR_A_A'Access;
+      Table (16#B0#) := Definitions.Execute_OR_A_B'Access;
+      Table (16#B1#) := Definitions.Execute_OR_A_C'Access;
+      Table (16#B2#) := Definitions.Execute_OR_A_D'Access;
+      Table (16#B3#) := Definitions.Execute_OR_A_E'Access;
+      Table (16#B4#) := Definitions.Execute_OR_A_H'Access;
+      Table (16#B5#) := Definitions.Execute_OR_A_L'Access;
+      Table (16#B6#) := Definitions.Execute_OR_A_Addr_HL'Access;
+      Table (16#B8#) := Definitions.Execute_CP_A_B'Access;
+      Table (16#B9#) := Definitions.Execute_CP_A_C'Access;
+      Table (16#BA#) := Definitions.Execute_CP_A_D'Access;
+      Table (16#BB#) := Definitions.Execute_CP_A_E'Access;
+      Table (16#BC#) := Definitions.Execute_CP_A_H'Access;
+      Table (16#BD#) := Definitions.Execute_CP_A_L'Access;
+      Table (16#BF#) := Definitions.Execute_CP_A_A'Access;
+      Table (16#C6#) := Definitions.Execute_ADD_A_Imm8'Access;
+      Table (16#CE#) := Definitions.Execute_ADC_A_Imm8'Access;
+      Table (16#D6#) := Definitions.Execute_SUB_A_Imm8'Access;
+      Table (16#DE#) := Definitions.Execute_SBC_A_Imm8'Access;
+      Table (16#E6#) := Definitions.Execute_AND_A_Imm8'Access;
+      Table (16#E8#) := Definitions.Execute_ADD_SP_Imm8'Access;
+      Table (16#EE#) := Definitions.Execute_XOR_A_Imm8'Access;
+      Table (16#F3#) := Definitions.Execute_DI'Access;
+      Table (16#FB#) := Definitions.Execute_EI'Access;
+      Table (16#FE#) := Definitions.Execute_CP_A_Imm8'Access;
       return Table;
    end Build_Main_Table;
 
@@ -274,5 +365,196 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    begin
       return CB_Table (Opcode);
    end CB_Handler;
+
+   function Read_Byte_Operand
+     (GB      : in out Gade.GB.GB_Type;
+      Operand :        Operand_Kind;
+      Inst    :        Decoded_Instruction) return Byte is
+   begin
+      case Operand is
+         when OD_A =>
+            return GB.CPU.Regs.A;
+         when OD_B =>
+            return GB.CPU.Regs.B;
+         when OD_C =>
+            return GB.CPU.Regs.C;
+         when OD_D =>
+            return GB.CPU.Regs.D;
+         when OD_E =>
+            return GB.CPU.Regs.E;
+         when OD_H =>
+            return GB.CPU.Regs.H;
+         when OD_L =>
+            return GB.CPU.Regs.L;
+         when OD_Addr_HL =>
+            return Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.Regs.HL);
+         when OD_Imm8 =>
+            return Inst.Imm8;
+         when others =>
+            raise Program_Error;
+      end case;
+   end Read_Byte_Operand;
+
+   procedure Write_Byte_Operand
+     (GB      : in out Gade.GB.GB_Type;
+      Operand :        Operand_Kind;
+      Value   :        Byte) is
+   begin
+      case Operand is
+         when OD_A =>
+            GB.CPU.Regs.A := Value;
+         when OD_B =>
+            GB.CPU.Regs.B := Value;
+         when OD_C =>
+            GB.CPU.Regs.C := Value;
+         when OD_D =>
+            GB.CPU.Regs.D := Value;
+         when OD_E =>
+            GB.CPU.Regs.E := Value;
+         when OD_H =>
+            GB.CPU.Regs.H := Value;
+         when OD_L =>
+            GB.CPU.Regs.L := Value;
+         when OD_Addr_HL =>
+            Gade.GB.Memory_Map.Write_Byte (GB, GB.CPU.Regs.HL, Value);
+         when others =>
+            raise Program_Error;
+      end case;
+   end Write_Byte_Operand;
+
+   procedure Execute
+     (GB          : in out Gade.GB.GB_Type;
+      Instruction :        Decoded_Instruction) is
+      Handler : Instruction_Handler;
+      Value   : Byte;
+      Word_Value : Word;
+      Dummy   : Byte;
+   begin
+      case Instruction.Prefix is
+         when Main =>
+            Handler := Main_Handler (Instruction.Opcode);
+            if Handler /= null then
+               GB.CPU.PC := GB.CPU.PC + 1;
+               Handler.all (GB);
+               return;
+            end if;
+
+            GB.CPU.PC := GB.CPU.PC + Word (Instruction.Length);
+
+            case Instruction.Operation is
+               when OP_Invalid =>
+                  raise Program_Error;
+               when OP_NOP =>
+                  null;
+               when OP_ADD =>
+                  if Instruction.Dest = OD_HL then
+                     case Instruction.Src is
+                        when OD_BC =>
+                           Word_Value := GB.CPU.Regs.HL;
+                           Do_Add (GB.CPU, GB.CPU.Regs.BC, Word_Value);
+                           GB.CPU.Regs.HL := Word_Value;
+                        when OD_DE =>
+                           Word_Value := GB.CPU.Regs.HL;
+                           Do_Add (GB.CPU, GB.CPU.Regs.DE, Word_Value);
+                           GB.CPU.Regs.HL := Word_Value;
+                        when OD_HL =>
+                           Word_Value := GB.CPU.Regs.HL;
+                           Do_Add (GB.CPU, GB.CPU.Regs.HL, Word_Value);
+                           GB.CPU.Regs.HL := Word_Value;
+                        when OD_SP =>
+                           Word_Value := GB.CPU.Regs.HL;
+                           Do_Add (GB.CPU, GB.CPU.Regs.SP, Word_Value);
+                           GB.CPU.Regs.HL := Word_Value;
+                        when others =>
+                           raise Program_Error;
+                     end case;
+                  elsif Instruction.Dest = OD_SP and then Instruction.Src = OD_Rel8 then
+                     Do_Add (GB.CPU, GB.CPU.Regs.SP, Instruction.Imm8);
+                  else
+                     Value := Read_Byte_Operand (GB, Instruction.Src, Instruction);
+                     Do_Add (GB.CPU, Value, GB.CPU.Regs.A, ADD_Carry);
+                  end if;
+               when OP_ADC =>
+                  Value := Read_Byte_Operand (GB, Instruction.Src, Instruction);
+                  Do_Add (GB.CPU, Value, GB.CPU.Regs.A, ADC_Carry);
+               when OP_SUB =>
+                  Value := Read_Byte_Operand (GB, Instruction.Src, Instruction);
+                  Do_Sub (GB.CPU, Value, GB.CPU.Regs.A, SUB_Carry);
+               when OP_SBC =>
+                  Value := Read_Byte_Operand (GB, Instruction.Src, Instruction);
+                  Do_Sub (GB.CPU, Value, GB.CPU.Regs.A, SBC_Carry);
+               when OP_AND =>
+                  Do_AND (GB.CPU, Read_Byte_Operand (GB, Instruction.Src, Instruction));
+               when OP_XOR =>
+                  Do_XOR (GB.CPU, Read_Byte_Operand (GB, Instruction.Src, Instruction));
+               when OP_OR =>
+                  Do_OR (GB.CPU, Read_Byte_Operand (GB, Instruction.Src, Instruction));
+               when OP_CP =>
+                  Do_Sub
+                    (GB.CPU,
+                     Read_Byte_Operand (GB, Instruction.Src, Instruction),
+                     Dummy,
+                     SUB_Carry);
+               when OP_DAA =>
+                  Definitions.Execute_DAA (GB);
+               when OP_CPL =>
+                  Definitions.Execute_CPL (GB);
+               when OP_SCF =>
+                  Definitions.Execute_SCF (GB);
+               when OP_CCF =>
+                  Definitions.Execute_CCF (GB);
+               when OP_HALT =>
+                  Definitions.Execute_HALT (GB);
+               when OP_STOP =>
+                  Definitions.Execute_STOP (GB);
+               when OP_DI =>
+                  Definitions.Execute_DI (GB);
+               when OP_EI =>
+                  Definitions.Execute_EI (GB);
+               when others =>
+                  raise Program_Error;
+            end case;
+
+         when CB =>
+            Handler := CB_Handler (Instruction.Opcode);
+            if Handler /= null then
+               GB.CPU.PC := GB.CPU.PC + 2;
+               Handler.all (GB);
+               return;
+            end if;
+
+            GB.CPU.PC := GB.CPU.PC + 2;
+
+            case Instruction.Operation is
+               when OP_Invalid =>
+                  raise Program_Error;
+               when OP_BIT =>
+                  Do_Bit
+                    (GB.CPU,
+                     Bit_Index (Instruction.Bit_Index),
+                     Read_Byte_Operand (GB, Instruction.Src, Instruction));
+               when OP_SET =>
+                  Value := Read_Byte_Operand (GB, Instruction.Dest, Instruction);
+                  Do_Set_Bit
+                    (GB.CPU,
+                     SR_SET,
+                     Bit_Index (Instruction.Bit_Index),
+                     Value,
+                     Value);
+                  Write_Byte_Operand (GB, Instruction.Dest, Value);
+               when OP_RES =>
+                  Value := Read_Byte_Operand (GB, Instruction.Dest, Instruction);
+                  Do_Set_Bit
+                    (GB.CPU,
+                     SR_RES,
+                     Bit_Index (Instruction.Bit_Index),
+                     Value,
+                     Value);
+                  Write_Byte_Operand (GB, Instruction.Dest, Value);
+               when others =>
+                  raise Program_Error;
+            end case;
+      end case;
+   end Execute;
 
 end Gade.Dev.CPU.Generic_Dispatch_Prototype;

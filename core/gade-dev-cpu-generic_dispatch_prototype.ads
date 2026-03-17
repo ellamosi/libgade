@@ -1,3 +1,4 @@
+with Gade.Dev.CPU.Decode;
 with Gade.GB;
 
 package Gade.Dev.CPU.Generic_Dispatch_Prototype is
@@ -9,5 +10,9 @@ package Gade.Dev.CPU.Generic_Dispatch_Prototype is
 
    function CB_Handler
      (Opcode : Byte) return Instruction_Handler;
+
+   procedure Execute
+     (GB          : in out Gade.GB.GB_Type;
+      Instruction :        Gade.Dev.CPU.Decode.Decoded_Instruction);
 
 end Gade.Dev.CPU.Generic_Dispatch_Prototype;
