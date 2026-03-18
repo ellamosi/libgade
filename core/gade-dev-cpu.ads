@@ -1,4 +1,4 @@
-with Gade.Timing; use Gade.Timing;
+with Gade.Timing;
 
 package Gade.Dev.CPU is
 
@@ -48,7 +48,7 @@ package Gade.Dev.CPU is
       Halted : Boolean;
       --  Mem   : Memory_Map_Type;
       Branch_Taken : Boolean;
-      Stepped_Cycles : M_Cycle_Count := 0;
+      Stepped_Cycles : Gade.Timing.M_Cycle_Count := 0;
    end record;
 
    type P_CPU_Context is access CPU_Context;

@@ -1,4 +1,5 @@
 with Gade.Dev.CPU.Decode;     use Gade.Dev.CPU.Decode;
+with Gade.Dev.CPU.Cycle_Steps;
 with Gade.Dev.CPU.Generic_Handlers;
 with Gade.Dev.CPU.Generic_Instruction_Definitions;
 with Gade.Dev.CPU.Timing;
@@ -816,10 +817,12 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       Prefix  : Prefix_Kind := Main;
    begin
       Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC);
+      Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
 
       if Opcode = 16#CB# then
          Prefix := CB;
          Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC + 1);
+         Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
       end if;
 
       GB.CPU.Branch_Taken := False;

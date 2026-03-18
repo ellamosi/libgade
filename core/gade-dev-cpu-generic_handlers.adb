@@ -276,15 +276,25 @@ package body Gade.Dev.CPU.Generic_Handlers is
    procedure Push_Word
      (GB    : in out Gade.GB.GB_Type;
       Value :        Word) is
+      Hi : constant Byte := Byte (Value / 2**8);
+      Lo : constant Byte := Byte (Value and 16#00FF#);
    begin
-      Push (GB, Value);
+      GB.CPU.Regs.SP := GB.CPU.Regs.SP - 1;
+      Bus_Write_Byte (GB, GB.CPU.Regs.SP, Hi);
+      GB.CPU.Regs.SP := GB.CPU.Regs.SP - 1;
+      Bus_Write_Byte (GB, GB.CPU.Regs.SP, Lo);
    end Push_Word;
 
    procedure Pop_Word
      (GB    : in out Gade.GB.GB_Type;
       Value :    out Word) is
+      Lo : constant Byte := Bus_Read_Byte (GB, GB.CPU.Regs.SP);
+      Hi : Byte;
    begin
-      Pop (GB, Value);
+      GB.CPU.Regs.SP := GB.CPU.Regs.SP + 1;
+      Hi := Bus_Read_Byte (GB, GB.CPU.Regs.SP);
+      GB.CPU.Regs.SP := GB.CPU.Regs.SP + 1;
+      Value := Word (Lo) + Word (Hi) * 2**8;
    end Pop_Word;
 
    procedure Adjust_HL_Auto
@@ -406,6 +416,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
       Value : Word := GB.CPU.Regs.SP;
    begin
       Do_Add (GB.CPU, Value, Fetch_Imm8 (GB));
+      Internal_Cycle (GB);
       GB.CPU.Regs.HL := Value;
    end Execute_LD_HL_SP_Plus_Imm8;
 
@@ -430,6 +441,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
       else
          Value := Value - 1;
       end if;
+      Internal_Cycle (GB);
       Write_Word_Register (GB, Target, Value);
    end Execute_Inc_Dec_Word;
 
@@ -461,6 +473,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
    procedure Execute_Push
      (GB : in out Gade.GB.GB_Type) is
    begin
+      Internal_Cycle (GB);
       Push_Word (GB, Read_Word_Register (GB, Source));
    end Execute_Push;
 
@@ -481,10 +494,17 @@ package body Gade.Dev.CPU.Generic_Handlers is
          when FLOW_RET =>
             if Check_Condition (GB.CPU, Condition) then
                GB.CPU.Branch_Taken := Condition /= JCOND_None;
+               Internal_Cycle (GB);
                Pop_Word (GB, GB.CPU.PC);
+               if Condition /= JCOND_None then
+                  Internal_Cycle (GB);
+               end if;
+            elsif Condition /= JCOND_None then
+               Internal_Cycle (GB);
             end if;
 
          when FLOW_RETI =>
+            Internal_Cycle (GB);
             Pop_Word (GB, GB.CPU.PC);
             GB.CPU.IFF := IE_EI;
 
@@ -492,6 +512,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
             Offset := Fetch_Imm8 (GB);
             if Check_Condition (GB.CPU, Condition) then
                GB.CPU.Branch_Taken := Condition /= JCOND_None;
+               Internal_Cycle (GB);
                Add_Offset (GB.CPU, GB.CPU.PC, Offset, False);
             end if;
 
@@ -504,6 +525,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
                Destination := Fetch_Imm16 (GB);
                if Check_Condition (GB.CPU, Condition) then
                   GB.CPU.Branch_Taken := Condition /= JCOND_None;
+                  Internal_Cycle (GB);
                   GB.CPU.PC := Destination;
                end if;
             end if;
