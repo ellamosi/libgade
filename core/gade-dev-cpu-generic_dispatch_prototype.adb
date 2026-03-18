@@ -2,7 +2,6 @@ with Gade.Dev.CPU.Decode;     use Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Cycle_Steps;
 with Gade.Dev.CPU.Generic_Handlers;
 with Gade.Dev.CPU.Generic_Instruction_Definitions;
-with Gade.Dev.CPU.Timing;
 with Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
@@ -810,8 +809,7 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    end CB_Handler;
 
    procedure Execute
-     (GB     : in out Gade.GB.GB_Type;
-      Cycles :    out M_Cycle_Count) is
+     (GB : in out Gade.GB.GB_Type) is
       Handler : Instruction_Handler;
       Opcode  : Byte;
       Prefix  : Prefix_Kind := Main;
@@ -857,7 +855,6 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       end case;
 
       Handler.all (GB);
-      Cycles := Gade.Dev.CPU.Timing.Total_Cycles (Prefix, Opcode, GB.CPU.Branch_Taken);
    end Execute;
 
    function Hex_Digit (Value : Natural) return Character is

@@ -1,5 +1,4 @@
 with Gade.GB;
-with Gade.Timing;
 
 package Gade.Dev.CPU.Generic_Dispatch_Prototype is
 
@@ -12,7 +11,6 @@ package Gade.Dev.CPU.Generic_Dispatch_Prototype is
      (Opcode : Byte) return Instruction_Handler;
 
    procedure Execute
-     (GB     : in out Gade.GB.GB_Type;
-      Cycles :    out Gade.Timing.M_Cycle_Count);
+     (GB : in out Gade.GB.GB_Type);
 
 end Gade.Dev.CPU.Generic_Dispatch_Prototype;
