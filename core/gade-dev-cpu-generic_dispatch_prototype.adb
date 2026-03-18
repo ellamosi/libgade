@@ -1,6 +1,8 @@
 with Gade.Dev.CPU.Decode;     use Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Generic_Handlers;
 with Gade.Dev.CPU.Generic_Instruction_Definitions;
+with Gade.Dev.CPU.Timing;
+with Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    package Definitions renames Gade.Dev.CPU.Generic_Instruction_Definitions;
@@ -807,32 +809,43 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    end CB_Handler;
 
    procedure Execute
-     (GB          : in out Gade.GB.GB_Type;
-      Instruction :        Decoded_Instruction) is
+     (GB     : in out Gade.GB.GB_Type;
+      Cycles :    out M_Cycle_Count) is
       Handler : Instruction_Handler;
+      Opcode  : Byte;
+      Prefix  : Prefix_Kind := Main;
    begin
-      case Instruction.Prefix is
+      Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC);
+
+      if Opcode = 16#CB# then
+         Prefix := CB;
+         Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC + 1);
+      end if;
+
+      GB.CPU.Branch_Taken := False;
+
+      case Prefix is
          when Main =>
-            Handler := Main_Handler (Instruction.Opcode);
+            Handler := Main_Handler (Opcode);
             if Handler = null then
                raise Program_Error with
                  "missing "
-                 & Prefix_Image (Instruction.Prefix)
+                 & Prefix_Image (Prefix)
                  & " handler for opcode 0x"
-                 & Hex_Byte (Instruction.Opcode)
+                 & Hex_Byte (Opcode)
                  & " at PC=0x"
                  & Hex_Word (GB.CPU.PC);
             end if;
 
             GB.CPU.PC := GB.CPU.PC + 1;
          when CB =>
-            Handler := CB_Handler (Instruction.Opcode);
+            Handler := CB_Handler (Opcode);
             if Handler = null then
                raise Program_Error with
                  "missing "
-                 & Prefix_Image (Instruction.Prefix)
+                 & Prefix_Image (Prefix)
                  & " handler for opcode 0x"
-                 & Hex_Byte (Instruction.Opcode)
+                 & Hex_Byte (Opcode)
                  & " at PC=0x"
                  & Hex_Word (GB.CPU.PC);
             end if;
@@ -841,6 +854,7 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       end case;
 
       Handler.all (GB);
+      Cycles := Gade.Dev.CPU.Timing.Total_Cycles (Prefix, Opcode, GB.CPU.Branch_Taken);
    end Execute;
 
    function Hex_Digit (Value : Natural) return Character is
