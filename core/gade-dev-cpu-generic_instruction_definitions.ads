@@ -50,25 +50,263 @@ package Gade.Dev.CPU.Generic_Instruction_Definitions is
       Index     => 3,
       Target    => Handlers.SRC_Addr_HL);
 
+   procedure Execute_RES_0_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_B);
+   procedure Execute_RES_0_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_C);
+   procedure Execute_RES_0_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_D);
+   procedure Execute_RES_0_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_E);
+   procedure Execute_RES_0_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_H);
+   procedure Execute_RES_0_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_L);
+   procedure Execute_RES_0_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_0_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_A);
+   procedure Execute_RES_1_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_B);
+   procedure Execute_RES_1_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_C);
+   procedure Execute_RES_1_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_D);
+   procedure Execute_RES_1_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_E);
+   procedure Execute_RES_1_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_H);
+   procedure Execute_RES_1_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_L);
+   procedure Execute_RES_1_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_1_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_A);
+   procedure Execute_RES_2_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_B);
+   procedure Execute_RES_2_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_C);
+   procedure Execute_RES_2_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_D);
+   procedure Execute_RES_2_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_E);
+   procedure Execute_RES_2_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_H);
+   procedure Execute_RES_2_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_L);
+   procedure Execute_RES_2_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_2_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_A);
+   procedure Execute_RES_3_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_B);
+   procedure Execute_RES_3_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_C);
+   procedure Execute_RES_3_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_D);
+   procedure Execute_RES_3_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_E);
+   procedure Execute_RES_3_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_H);
+   procedure Execute_RES_3_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_L);
+   procedure Execute_RES_3_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_3_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_A);
+   procedure Execute_RES_4_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_B);
+   procedure Execute_RES_4_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_C);
+   procedure Execute_RES_4_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_D);
+   procedure Execute_RES_4_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_E);
+   procedure Execute_RES_4_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_H);
+   procedure Execute_RES_4_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_L);
+   procedure Execute_RES_4_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_4_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_A);
+   procedure Execute_RES_5_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_B);
    procedure Execute_RES_5_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset,
-      Index     => 5,
-      Target    => Handlers.SRC_C);
-
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_C);
+   procedure Execute_RES_5_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_D);
+   procedure Execute_RES_5_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_E);
+   procedure Execute_RES_5_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_H);
+   procedure Execute_RES_5_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_L);
+   procedure Execute_RES_5_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_5_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_A);
+   procedure Execute_RES_6_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_B);
+   procedure Execute_RES_6_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_C);
+   procedure Execute_RES_6_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_D);
+   procedure Execute_RES_6_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_E);
+   procedure Execute_RES_6_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_H);
+   procedure Execute_RES_6_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_L);
+   procedure Execute_RES_6_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_6_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_A);
+   procedure Execute_RES_7_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_B);
+   procedure Execute_RES_7_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_C);
+   procedure Execute_RES_7_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_D);
+   procedure Execute_RES_7_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_E);
+   procedure Execute_RES_7_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_H);
+   procedure Execute_RES_7_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_L);
    procedure Execute_RES_7_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset,
-      Index     => 7,
-      Target    => Handlers.SRC_Addr_HL);
-
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_RES_7_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_A);
+   procedure Execute_SET_0_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_B);
+   procedure Execute_SET_0_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_C);
+   procedure Execute_SET_0_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_D);
+   procedure Execute_SET_0_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_E);
+   procedure Execute_SET_0_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_H);
+   procedure Execute_SET_0_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_L);
+   procedure Execute_SET_0_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_0_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_A);
+   procedure Execute_SET_1_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_B);
+   procedure Execute_SET_1_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_C);
+   procedure Execute_SET_1_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_D);
+   procedure Execute_SET_1_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_E);
+   procedure Execute_SET_1_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_H);
+   procedure Execute_SET_1_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_L);
+   procedure Execute_SET_1_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_1_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_A);
+   procedure Execute_SET_2_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_B);
+   procedure Execute_SET_2_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_C);
+   procedure Execute_SET_2_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_D);
+   procedure Execute_SET_2_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_E);
+   procedure Execute_SET_2_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_H);
+   procedure Execute_SET_2_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_L);
+   procedure Execute_SET_2_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_Addr_HL);
    procedure Execute_SET_2_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set,
-      Index     => 2,
-      Target    => Handlers.SRC_A);
-
+     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_A);
+   procedure Execute_SET_3_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_B);
+   procedure Execute_SET_3_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_C);
+   procedure Execute_SET_3_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_D);
+   procedure Execute_SET_3_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_E);
+   procedure Execute_SET_3_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_H);
+   procedure Execute_SET_3_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_L);
+   procedure Execute_SET_3_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_3_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_A);
+   procedure Execute_SET_4_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_B);
+   procedure Execute_SET_4_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_C);
+   procedure Execute_SET_4_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_D);
+   procedure Execute_SET_4_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_E);
+   procedure Execute_SET_4_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_H);
+   procedure Execute_SET_4_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_L);
+   procedure Execute_SET_4_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_4_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_A);
+   procedure Execute_SET_5_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_B);
+   procedure Execute_SET_5_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_C);
+   procedure Execute_SET_5_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_D);
+   procedure Execute_SET_5_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_E);
+   procedure Execute_SET_5_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_H);
+   procedure Execute_SET_5_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_L);
+   procedure Execute_SET_5_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_5_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_A);
+   procedure Execute_SET_6_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_B);
+   procedure Execute_SET_6_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_C);
+   procedure Execute_SET_6_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_D);
+   procedure Execute_SET_6_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_E);
+   procedure Execute_SET_6_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_H);
+   procedure Execute_SET_6_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_L);
    procedure Execute_SET_6_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set,
-      Index     => 6,
-      Target    => Handlers.SRC_Addr_HL);
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_6_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_A);
+   procedure Execute_SET_7_B is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_B);
+   procedure Execute_SET_7_C is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_C);
+   procedure Execute_SET_7_D is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_D);
+   procedure Execute_SET_7_E is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_E);
+   procedure Execute_SET_7_H is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_H);
+   procedure Execute_SET_7_L is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_L);
+   procedure Execute_SET_7_Addr_HL is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_Addr_HL);
+   procedure Execute_SET_7_A is new Handlers.Execute_Bit_Source
+     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_A);
+
 
    procedure Execute_LD_BC_Imm16 is new Handlers.Execute_LD_Word
      (Dest   => Handlers.REG_BC,

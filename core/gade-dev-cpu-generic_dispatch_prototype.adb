@@ -1,13 +1,10 @@
 with Gade.Dev.CPU.Decode;     use Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Cycle_Steps;
-with Gade.Dev.CPU.Generic_Handlers;
 with Gade.Dev.CPU.Generic_Instruction_Definitions;
 with Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    package Definitions renames Gade.Dev.CPU.Generic_Instruction_Definitions;
-   package Handlers renames Gade.Dev.CPU.Generic_Handlers;
-
    type Handler_Table is array (Byte) of Instruction_Handler;
 
    function Build_Main_Table return Handler_Table;
@@ -22,262 +19,6 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
 
    function Prefix_Image (Prefix : Prefix_Kind) return String;
 
-   procedure Execute_RES_0_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_B);
-   procedure Execute_RES_0_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_C);
-   procedure Execute_RES_0_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_D);
-   procedure Execute_RES_0_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_E);
-   procedure Execute_RES_0_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_H);
-   procedure Execute_RES_0_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_L);
-   procedure Execute_RES_0_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_RES_0_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_A);
-   procedure Execute_RES_1_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_B);
-   procedure Execute_RES_1_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_C);
-   procedure Execute_RES_1_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_D);
-   procedure Execute_RES_1_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_E);
-   procedure Execute_RES_1_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_H);
-   procedure Execute_RES_1_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_L);
-   procedure Execute_RES_1_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_RES_1_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 1, Target => Handlers.SRC_A);
-   procedure Execute_RES_2_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_B);
-   procedure Execute_RES_2_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_C);
-   procedure Execute_RES_2_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_D);
-   procedure Execute_RES_2_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_E);
-   procedure Execute_RES_2_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_H);
-   procedure Execute_RES_2_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_L);
-   procedure Execute_RES_2_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_RES_2_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 2, Target => Handlers.SRC_A);
-   procedure Execute_RES_3_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_B);
-   procedure Execute_RES_3_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_C);
-   procedure Execute_RES_3_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_D);
-   procedure Execute_RES_3_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_E);
-   procedure Execute_RES_3_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_H);
-   procedure Execute_RES_3_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_L);
-   procedure Execute_RES_3_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_RES_3_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 3, Target => Handlers.SRC_A);
-   procedure Execute_RES_4_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_B);
-   procedure Execute_RES_4_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_C);
-   procedure Execute_RES_4_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_D);
-   procedure Execute_RES_4_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_E);
-   procedure Execute_RES_4_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_H);
-   procedure Execute_RES_4_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_L);
-   procedure Execute_RES_4_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_RES_4_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 4, Target => Handlers.SRC_A);
-   procedure Execute_RES_5_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_B);
-   procedure Execute_RES_5_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_C);
-   procedure Execute_RES_5_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_D);
-   procedure Execute_RES_5_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_E);
-   procedure Execute_RES_5_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_H);
-   procedure Execute_RES_5_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_L);
-   procedure Execute_RES_5_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_RES_5_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 5, Target => Handlers.SRC_A);
-   procedure Execute_RES_6_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_B);
-   procedure Execute_RES_6_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_C);
-   procedure Execute_RES_6_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_D);
-   procedure Execute_RES_6_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_E);
-   procedure Execute_RES_6_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_H);
-   procedure Execute_RES_6_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_L);
-   procedure Execute_RES_6_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_RES_6_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 6, Target => Handlers.SRC_A);
-   procedure Execute_RES_7_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_B);
-   procedure Execute_RES_7_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_C);
-   procedure Execute_RES_7_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_D);
-   procedure Execute_RES_7_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_E);
-   procedure Execute_RES_7_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_H);
-   procedure Execute_RES_7_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_L);
-   procedure Execute_RES_7_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_RES_7_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Reset, Index => 7, Target => Handlers.SRC_A);
-   procedure Execute_SET_0_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_B);
-   procedure Execute_SET_0_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_C);
-   procedure Execute_SET_0_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_D);
-   procedure Execute_SET_0_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_E);
-   procedure Execute_SET_0_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_H);
-   procedure Execute_SET_0_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_L);
-   procedure Execute_SET_0_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_SET_0_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 0, Target => Handlers.SRC_A);
-   procedure Execute_SET_1_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_B);
-   procedure Execute_SET_1_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_C);
-   procedure Execute_SET_1_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_D);
-   procedure Execute_SET_1_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_E);
-   procedure Execute_SET_1_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_H);
-   procedure Execute_SET_1_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_L);
-   procedure Execute_SET_1_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_SET_1_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 1, Target => Handlers.SRC_A);
-   procedure Execute_SET_2_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_B);
-   procedure Execute_SET_2_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_C);
-   procedure Execute_SET_2_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_D);
-   procedure Execute_SET_2_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_E);
-   procedure Execute_SET_2_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_H);
-   procedure Execute_SET_2_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_L);
-   procedure Execute_SET_2_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_SET_2_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 2, Target => Handlers.SRC_A);
-   procedure Execute_SET_3_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_B);
-   procedure Execute_SET_3_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_C);
-   procedure Execute_SET_3_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_D);
-   procedure Execute_SET_3_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_E);
-   procedure Execute_SET_3_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_H);
-   procedure Execute_SET_3_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_L);
-   procedure Execute_SET_3_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_SET_3_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 3, Target => Handlers.SRC_A);
-   procedure Execute_SET_4_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_B);
-   procedure Execute_SET_4_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_C);
-   procedure Execute_SET_4_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_D);
-   procedure Execute_SET_4_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_E);
-   procedure Execute_SET_4_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_H);
-   procedure Execute_SET_4_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_L);
-   procedure Execute_SET_4_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_SET_4_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 4, Target => Handlers.SRC_A);
-   procedure Execute_SET_5_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_B);
-   procedure Execute_SET_5_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_C);
-   procedure Execute_SET_5_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_D);
-   procedure Execute_SET_5_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_E);
-   procedure Execute_SET_5_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_H);
-   procedure Execute_SET_5_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_L);
-   procedure Execute_SET_5_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_SET_5_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 5, Target => Handlers.SRC_A);
-   procedure Execute_SET_6_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_B);
-   procedure Execute_SET_6_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_C);
-   procedure Execute_SET_6_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_D);
-   procedure Execute_SET_6_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_E);
-   procedure Execute_SET_6_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_H);
-   procedure Execute_SET_6_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_L);
-   procedure Execute_SET_6_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_SET_6_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 6, Target => Handlers.SRC_A);
-   procedure Execute_SET_7_B is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_B);
-   procedure Execute_SET_7_C is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_C);
-   procedure Execute_SET_7_D is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_D);
-   procedure Execute_SET_7_E is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_E);
-   procedure Execute_SET_7_H is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_H);
-   procedure Execute_SET_7_L is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_L);
-   procedure Execute_SET_7_Addr_HL is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_Addr_HL);
-   procedure Execute_SET_7_A is new Handlers.Execute_Bit_Source
-     (Operation => Handlers.BIT_Set, Index => 7, Target => Handlers.SRC_A);
 
    function Build_Main_Table return Handler_Table is
       Table : Handler_Table := [others => null];
@@ -662,134 +403,134 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       Table (16#7D#) := Definitions.Execute_BIT_7_L'Access;
       Table (16#7E#) := Definitions.Execute_BIT_7_Addr_HL'Access;
       Table (16#7F#) := Definitions.Execute_BIT_7_A'Access;
-      Table (16#80#) := Execute_RES_0_B'Access;
-      Table (16#81#) := Execute_RES_0_C'Access;
-      Table (16#82#) := Execute_RES_0_D'Access;
-      Table (16#83#) := Execute_RES_0_E'Access;
-      Table (16#84#) := Execute_RES_0_H'Access;
-      Table (16#85#) := Execute_RES_0_L'Access;
-      Table (16#86#) := Execute_RES_0_Addr_HL'Access;
-      Table (16#87#) := Execute_RES_0_A'Access;
-      Table (16#88#) := Execute_RES_1_B'Access;
-      Table (16#89#) := Execute_RES_1_C'Access;
-      Table (16#8A#) := Execute_RES_1_D'Access;
-      Table (16#8B#) := Execute_RES_1_E'Access;
-      Table (16#8C#) := Execute_RES_1_H'Access;
-      Table (16#8D#) := Execute_RES_1_L'Access;
-      Table (16#8E#) := Execute_RES_1_Addr_HL'Access;
-      Table (16#8F#) := Execute_RES_1_A'Access;
-      Table (16#90#) := Execute_RES_2_B'Access;
-      Table (16#91#) := Execute_RES_2_C'Access;
-      Table (16#92#) := Execute_RES_2_D'Access;
-      Table (16#93#) := Execute_RES_2_E'Access;
-      Table (16#94#) := Execute_RES_2_H'Access;
-      Table (16#95#) := Execute_RES_2_L'Access;
-      Table (16#96#) := Execute_RES_2_Addr_HL'Access;
-      Table (16#97#) := Execute_RES_2_A'Access;
-      Table (16#98#) := Execute_RES_3_B'Access;
-      Table (16#99#) := Execute_RES_3_C'Access;
-      Table (16#9A#) := Execute_RES_3_D'Access;
-      Table (16#9B#) := Execute_RES_3_E'Access;
-      Table (16#9C#) := Execute_RES_3_H'Access;
-      Table (16#9D#) := Execute_RES_3_L'Access;
-      Table (16#9E#) := Execute_RES_3_Addr_HL'Access;
-      Table (16#9F#) := Execute_RES_3_A'Access;
-      Table (16#A0#) := Execute_RES_4_B'Access;
-      Table (16#A1#) := Execute_RES_4_C'Access;
-      Table (16#A2#) := Execute_RES_4_D'Access;
-      Table (16#A3#) := Execute_RES_4_E'Access;
-      Table (16#A4#) := Execute_RES_4_H'Access;
-      Table (16#A5#) := Execute_RES_4_L'Access;
-      Table (16#A6#) := Execute_RES_4_Addr_HL'Access;
-      Table (16#A7#) := Execute_RES_4_A'Access;
-      Table (16#A8#) := Execute_RES_5_B'Access;
-      Table (16#A9#) := Execute_RES_5_C'Access;
-      Table (16#AA#) := Execute_RES_5_D'Access;
-      Table (16#AB#) := Execute_RES_5_E'Access;
-      Table (16#AC#) := Execute_RES_5_H'Access;
-      Table (16#AD#) := Execute_RES_5_L'Access;
-      Table (16#AE#) := Execute_RES_5_Addr_HL'Access;
-      Table (16#AF#) := Execute_RES_5_A'Access;
-      Table (16#B0#) := Execute_RES_6_B'Access;
-      Table (16#B1#) := Execute_RES_6_C'Access;
-      Table (16#B2#) := Execute_RES_6_D'Access;
-      Table (16#B3#) := Execute_RES_6_E'Access;
-      Table (16#B4#) := Execute_RES_6_H'Access;
-      Table (16#B5#) := Execute_RES_6_L'Access;
-      Table (16#B6#) := Execute_RES_6_Addr_HL'Access;
-      Table (16#B7#) := Execute_RES_6_A'Access;
-      Table (16#B8#) := Execute_RES_7_B'Access;
-      Table (16#B9#) := Execute_RES_7_C'Access;
-      Table (16#BA#) := Execute_RES_7_D'Access;
-      Table (16#BB#) := Execute_RES_7_E'Access;
-      Table (16#BC#) := Execute_RES_7_H'Access;
-      Table (16#BD#) := Execute_RES_7_L'Access;
-      Table (16#BE#) := Execute_RES_7_Addr_HL'Access;
-      Table (16#BF#) := Execute_RES_7_A'Access;
-      Table (16#C0#) := Execute_SET_0_B'Access;
-      Table (16#C1#) := Execute_SET_0_C'Access;
-      Table (16#C2#) := Execute_SET_0_D'Access;
-      Table (16#C3#) := Execute_SET_0_E'Access;
-      Table (16#C4#) := Execute_SET_0_H'Access;
-      Table (16#C5#) := Execute_SET_0_L'Access;
-      Table (16#C6#) := Execute_SET_0_Addr_HL'Access;
-      Table (16#C7#) := Execute_SET_0_A'Access;
-      Table (16#C8#) := Execute_SET_1_B'Access;
-      Table (16#C9#) := Execute_SET_1_C'Access;
-      Table (16#CA#) := Execute_SET_1_D'Access;
-      Table (16#CB#) := Execute_SET_1_E'Access;
-      Table (16#CC#) := Execute_SET_1_H'Access;
-      Table (16#CD#) := Execute_SET_1_L'Access;
-      Table (16#CE#) := Execute_SET_1_Addr_HL'Access;
-      Table (16#CF#) := Execute_SET_1_A'Access;
-      Table (16#D0#) := Execute_SET_2_B'Access;
-      Table (16#D1#) := Execute_SET_2_C'Access;
-      Table (16#D2#) := Execute_SET_2_D'Access;
-      Table (16#D3#) := Execute_SET_2_E'Access;
-      Table (16#D4#) := Execute_SET_2_H'Access;
-      Table (16#D5#) := Execute_SET_2_L'Access;
-      Table (16#D6#) := Execute_SET_2_Addr_HL'Access;
-      Table (16#D7#) := Execute_SET_2_A'Access;
-      Table (16#D8#) := Execute_SET_3_B'Access;
-      Table (16#D9#) := Execute_SET_3_C'Access;
-      Table (16#DA#) := Execute_SET_3_D'Access;
-      Table (16#DB#) := Execute_SET_3_E'Access;
-      Table (16#DC#) := Execute_SET_3_H'Access;
-      Table (16#DD#) := Execute_SET_3_L'Access;
-      Table (16#DE#) := Execute_SET_3_Addr_HL'Access;
-      Table (16#DF#) := Execute_SET_3_A'Access;
-      Table (16#E0#) := Execute_SET_4_B'Access;
-      Table (16#E1#) := Execute_SET_4_C'Access;
-      Table (16#E2#) := Execute_SET_4_D'Access;
-      Table (16#E3#) := Execute_SET_4_E'Access;
-      Table (16#E4#) := Execute_SET_4_H'Access;
-      Table (16#E5#) := Execute_SET_4_L'Access;
-      Table (16#E6#) := Execute_SET_4_Addr_HL'Access;
-      Table (16#E7#) := Execute_SET_4_A'Access;
-      Table (16#E8#) := Execute_SET_5_B'Access;
-      Table (16#E9#) := Execute_SET_5_C'Access;
-      Table (16#EA#) := Execute_SET_5_D'Access;
-      Table (16#EB#) := Execute_SET_5_E'Access;
-      Table (16#EC#) := Execute_SET_5_H'Access;
-      Table (16#ED#) := Execute_SET_5_L'Access;
-      Table (16#EE#) := Execute_SET_5_Addr_HL'Access;
-      Table (16#EF#) := Execute_SET_5_A'Access;
-      Table (16#F0#) := Execute_SET_6_B'Access;
-      Table (16#F1#) := Execute_SET_6_C'Access;
-      Table (16#F2#) := Execute_SET_6_D'Access;
-      Table (16#F3#) := Execute_SET_6_E'Access;
-      Table (16#F4#) := Execute_SET_6_H'Access;
-      Table (16#F5#) := Execute_SET_6_L'Access;
-      Table (16#F6#) := Execute_SET_6_Addr_HL'Access;
-      Table (16#F7#) := Execute_SET_6_A'Access;
-      Table (16#F8#) := Execute_SET_7_B'Access;
-      Table (16#F9#) := Execute_SET_7_C'Access;
-      Table (16#FA#) := Execute_SET_7_D'Access;
-      Table (16#FB#) := Execute_SET_7_E'Access;
-      Table (16#FC#) := Execute_SET_7_H'Access;
-      Table (16#FD#) := Execute_SET_7_L'Access;
-      Table (16#FE#) := Execute_SET_7_Addr_HL'Access;
-      Table (16#FF#) := Execute_SET_7_A'Access;
+      Table (16#80#) := Definitions.Execute_RES_0_B'Access;
+      Table (16#81#) := Definitions.Execute_RES_0_C'Access;
+      Table (16#82#) := Definitions.Execute_RES_0_D'Access;
+      Table (16#83#) := Definitions.Execute_RES_0_E'Access;
+      Table (16#84#) := Definitions.Execute_RES_0_H'Access;
+      Table (16#85#) := Definitions.Execute_RES_0_L'Access;
+      Table (16#86#) := Definitions.Execute_RES_0_Addr_HL'Access;
+      Table (16#87#) := Definitions.Execute_RES_0_A'Access;
+      Table (16#88#) := Definitions.Execute_RES_1_B'Access;
+      Table (16#89#) := Definitions.Execute_RES_1_C'Access;
+      Table (16#8A#) := Definitions.Execute_RES_1_D'Access;
+      Table (16#8B#) := Definitions.Execute_RES_1_E'Access;
+      Table (16#8C#) := Definitions.Execute_RES_1_H'Access;
+      Table (16#8D#) := Definitions.Execute_RES_1_L'Access;
+      Table (16#8E#) := Definitions.Execute_RES_1_Addr_HL'Access;
+      Table (16#8F#) := Definitions.Execute_RES_1_A'Access;
+      Table (16#90#) := Definitions.Execute_RES_2_B'Access;
+      Table (16#91#) := Definitions.Execute_RES_2_C'Access;
+      Table (16#92#) := Definitions.Execute_RES_2_D'Access;
+      Table (16#93#) := Definitions.Execute_RES_2_E'Access;
+      Table (16#94#) := Definitions.Execute_RES_2_H'Access;
+      Table (16#95#) := Definitions.Execute_RES_2_L'Access;
+      Table (16#96#) := Definitions.Execute_RES_2_Addr_HL'Access;
+      Table (16#97#) := Definitions.Execute_RES_2_A'Access;
+      Table (16#98#) := Definitions.Execute_RES_3_B'Access;
+      Table (16#99#) := Definitions.Execute_RES_3_C'Access;
+      Table (16#9A#) := Definitions.Execute_RES_3_D'Access;
+      Table (16#9B#) := Definitions.Execute_RES_3_E'Access;
+      Table (16#9C#) := Definitions.Execute_RES_3_H'Access;
+      Table (16#9D#) := Definitions.Execute_RES_3_L'Access;
+      Table (16#9E#) := Definitions.Execute_RES_3_Addr_HL'Access;
+      Table (16#9F#) := Definitions.Execute_RES_3_A'Access;
+      Table (16#A0#) := Definitions.Execute_RES_4_B'Access;
+      Table (16#A1#) := Definitions.Execute_RES_4_C'Access;
+      Table (16#A2#) := Definitions.Execute_RES_4_D'Access;
+      Table (16#A3#) := Definitions.Execute_RES_4_E'Access;
+      Table (16#A4#) := Definitions.Execute_RES_4_H'Access;
+      Table (16#A5#) := Definitions.Execute_RES_4_L'Access;
+      Table (16#A6#) := Definitions.Execute_RES_4_Addr_HL'Access;
+      Table (16#A7#) := Definitions.Execute_RES_4_A'Access;
+      Table (16#A8#) := Definitions.Execute_RES_5_B'Access;
+      Table (16#A9#) := Definitions.Execute_RES_5_C'Access;
+      Table (16#AA#) := Definitions.Execute_RES_5_D'Access;
+      Table (16#AB#) := Definitions.Execute_RES_5_E'Access;
+      Table (16#AC#) := Definitions.Execute_RES_5_H'Access;
+      Table (16#AD#) := Definitions.Execute_RES_5_L'Access;
+      Table (16#AE#) := Definitions.Execute_RES_5_Addr_HL'Access;
+      Table (16#AF#) := Definitions.Execute_RES_5_A'Access;
+      Table (16#B0#) := Definitions.Execute_RES_6_B'Access;
+      Table (16#B1#) := Definitions.Execute_RES_6_C'Access;
+      Table (16#B2#) := Definitions.Execute_RES_6_D'Access;
+      Table (16#B3#) := Definitions.Execute_RES_6_E'Access;
+      Table (16#B4#) := Definitions.Execute_RES_6_H'Access;
+      Table (16#B5#) := Definitions.Execute_RES_6_L'Access;
+      Table (16#B6#) := Definitions.Execute_RES_6_Addr_HL'Access;
+      Table (16#B7#) := Definitions.Execute_RES_6_A'Access;
+      Table (16#B8#) := Definitions.Execute_RES_7_B'Access;
+      Table (16#B9#) := Definitions.Execute_RES_7_C'Access;
+      Table (16#BA#) := Definitions.Execute_RES_7_D'Access;
+      Table (16#BB#) := Definitions.Execute_RES_7_E'Access;
+      Table (16#BC#) := Definitions.Execute_RES_7_H'Access;
+      Table (16#BD#) := Definitions.Execute_RES_7_L'Access;
+      Table (16#BE#) := Definitions.Execute_RES_7_Addr_HL'Access;
+      Table (16#BF#) := Definitions.Execute_RES_7_A'Access;
+      Table (16#C0#) := Definitions.Execute_SET_0_B'Access;
+      Table (16#C1#) := Definitions.Execute_SET_0_C'Access;
+      Table (16#C2#) := Definitions.Execute_SET_0_D'Access;
+      Table (16#C3#) := Definitions.Execute_SET_0_E'Access;
+      Table (16#C4#) := Definitions.Execute_SET_0_H'Access;
+      Table (16#C5#) := Definitions.Execute_SET_0_L'Access;
+      Table (16#C6#) := Definitions.Execute_SET_0_Addr_HL'Access;
+      Table (16#C7#) := Definitions.Execute_SET_0_A'Access;
+      Table (16#C8#) := Definitions.Execute_SET_1_B'Access;
+      Table (16#C9#) := Definitions.Execute_SET_1_C'Access;
+      Table (16#CA#) := Definitions.Execute_SET_1_D'Access;
+      Table (16#CB#) := Definitions.Execute_SET_1_E'Access;
+      Table (16#CC#) := Definitions.Execute_SET_1_H'Access;
+      Table (16#CD#) := Definitions.Execute_SET_1_L'Access;
+      Table (16#CE#) := Definitions.Execute_SET_1_Addr_HL'Access;
+      Table (16#CF#) := Definitions.Execute_SET_1_A'Access;
+      Table (16#D0#) := Definitions.Execute_SET_2_B'Access;
+      Table (16#D1#) := Definitions.Execute_SET_2_C'Access;
+      Table (16#D2#) := Definitions.Execute_SET_2_D'Access;
+      Table (16#D3#) := Definitions.Execute_SET_2_E'Access;
+      Table (16#D4#) := Definitions.Execute_SET_2_H'Access;
+      Table (16#D5#) := Definitions.Execute_SET_2_L'Access;
+      Table (16#D6#) := Definitions.Execute_SET_2_Addr_HL'Access;
+      Table (16#D7#) := Definitions.Execute_SET_2_A'Access;
+      Table (16#D8#) := Definitions.Execute_SET_3_B'Access;
+      Table (16#D9#) := Definitions.Execute_SET_3_C'Access;
+      Table (16#DA#) := Definitions.Execute_SET_3_D'Access;
+      Table (16#DB#) := Definitions.Execute_SET_3_E'Access;
+      Table (16#DC#) := Definitions.Execute_SET_3_H'Access;
+      Table (16#DD#) := Definitions.Execute_SET_3_L'Access;
+      Table (16#DE#) := Definitions.Execute_SET_3_Addr_HL'Access;
+      Table (16#DF#) := Definitions.Execute_SET_3_A'Access;
+      Table (16#E0#) := Definitions.Execute_SET_4_B'Access;
+      Table (16#E1#) := Definitions.Execute_SET_4_C'Access;
+      Table (16#E2#) := Definitions.Execute_SET_4_D'Access;
+      Table (16#E3#) := Definitions.Execute_SET_4_E'Access;
+      Table (16#E4#) := Definitions.Execute_SET_4_H'Access;
+      Table (16#E5#) := Definitions.Execute_SET_4_L'Access;
+      Table (16#E6#) := Definitions.Execute_SET_4_Addr_HL'Access;
+      Table (16#E7#) := Definitions.Execute_SET_4_A'Access;
+      Table (16#E8#) := Definitions.Execute_SET_5_B'Access;
+      Table (16#E9#) := Definitions.Execute_SET_5_C'Access;
+      Table (16#EA#) := Definitions.Execute_SET_5_D'Access;
+      Table (16#EB#) := Definitions.Execute_SET_5_E'Access;
+      Table (16#EC#) := Definitions.Execute_SET_5_H'Access;
+      Table (16#ED#) := Definitions.Execute_SET_5_L'Access;
+      Table (16#EE#) := Definitions.Execute_SET_5_Addr_HL'Access;
+      Table (16#EF#) := Definitions.Execute_SET_5_A'Access;
+      Table (16#F0#) := Definitions.Execute_SET_6_B'Access;
+      Table (16#F1#) := Definitions.Execute_SET_6_C'Access;
+      Table (16#F2#) := Definitions.Execute_SET_6_D'Access;
+      Table (16#F3#) := Definitions.Execute_SET_6_E'Access;
+      Table (16#F4#) := Definitions.Execute_SET_6_H'Access;
+      Table (16#F5#) := Definitions.Execute_SET_6_L'Access;
+      Table (16#F6#) := Definitions.Execute_SET_6_Addr_HL'Access;
+      Table (16#F7#) := Definitions.Execute_SET_6_A'Access;
+      Table (16#F8#) := Definitions.Execute_SET_7_B'Access;
+      Table (16#F9#) := Definitions.Execute_SET_7_C'Access;
+      Table (16#FA#) := Definitions.Execute_SET_7_D'Access;
+      Table (16#FB#) := Definitions.Execute_SET_7_E'Access;
+      Table (16#FC#) := Definitions.Execute_SET_7_H'Access;
+      Table (16#FD#) := Definitions.Execute_SET_7_L'Access;
+      Table (16#FE#) := Definitions.Execute_SET_7_Addr_HL'Access;
+      Table (16#FF#) := Definitions.Execute_SET_7_A'Access;
       return Table;
    end Build_CB_Table;
 
