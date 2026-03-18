@@ -1,20 +1,33 @@
 with Gade.Dev.CPU.Arithmetic; use Gade.Dev.CPU.Arithmetic;
 with Gade.Dev.CPU.Bitwise;    use Gade.Dev.CPU.Bitwise;
+with Gade.Dev.CPU.Cycle_Steps;
 with Gade.Dev.CPU.Logic;      use Gade.Dev.CPU.Logic;
 with Gade.GB.Memory_Map;      use Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Generic_Handlers is
 
-   function Read_Source
+   function Bus_Read_Byte
+     (GB      : in out Gade.GB.GB_Type;
+      Address :        Word) return Byte;
+
+   procedure Bus_Write_Byte
+     (GB      : in out Gade.GB.GB_Type;
+      Address :        Word;
+      Value   :        Byte);
+
+   procedure Internal_Cycle
+     (GB : in out Gade.GB.GB_Type);
+
+   function Fetch_Source
      (GB     : in out Gade.GB.GB_Type;
       Source :        Byte_Source_Kind) return Byte;
 
-   procedure Write_Target
+   procedure Store_Target
      (GB     : in out Gade.GB.GB_Type;
       Target :        Byte_Target_Kind;
       Value  :        Byte);
 
-   function Read_Target
+   function Load_Target
      (GB     : in out Gade.GB.GB_Type;
       Target :        Byte_Target_Kind) return Byte;
 
@@ -37,6 +50,14 @@ package body Gade.Dev.CPU.Generic_Handlers is
       Target :        Word_Register_Kind;
       Value  :        Word);
 
+   procedure Push_Word
+     (GB    : in out Gade.GB.GB_Type;
+      Value :        Word);
+
+   procedure Pop_Word
+     (GB    : in out Gade.GB.GB_Type;
+      Value :    out Word);
+
    procedure Adjust_HL_Auto
      (GB     : in out Gade.GB.GB_Type;
       Source :        Byte_Source_Kind);
@@ -49,7 +70,30 @@ package body Gade.Dev.CPU.Generic_Handlers is
      (CPU       : CPU_Context;
       Condition : Jump_Condition_Kind) return Boolean;
 
-   function Read_Source
+   function Bus_Read_Byte
+     (GB      : in out Gade.GB.GB_Type;
+      Address :        Word) return Byte is
+   begin
+      Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
+      return Read_Byte (GB, Address);
+   end Bus_Read_Byte;
+
+   procedure Bus_Write_Byte
+     (GB      : in out Gade.GB.GB_Type;
+      Address :        Word;
+      Value   :        Byte) is
+   begin
+      Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
+      Write_Byte (GB, Address, Value);
+   end Bus_Write_Byte;
+
+   procedure Internal_Cycle
+     (GB : in out Gade.GB.GB_Type) is
+   begin
+      Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
+   end Internal_Cycle;
+
+   function Fetch_Source
      (GB     : in out Gade.GB.GB_Type;
       Source :        Byte_Source_Kind) return Byte is
    begin
@@ -69,25 +113,25 @@ package body Gade.Dev.CPU.Generic_Handlers is
          when SRC_L =>
             return GB.CPU.Regs.L;
          when SRC_Addr_BC =>
-            return Read_Byte (GB, GB.CPU.Regs.BC);
+            return Bus_Read_Byte (GB, GB.CPU.Regs.BC);
          when SRC_Addr_DE =>
-            return Read_Byte (GB, GB.CPU.Regs.DE);
+            return Bus_Read_Byte (GB, GB.CPU.Regs.DE);
          when SRC_Addr_HL =>
-            return Read_Byte (GB, GB.CPU.Regs.HL);
+            return Bus_Read_Byte (GB, GB.CPU.Regs.HL);
          when SRC_Addr_HL_Inc | SRC_Addr_HL_Dec =>
-            return Read_Byte (GB, GB.CPU.Regs.HL);
+            return Bus_Read_Byte (GB, GB.CPU.Regs.HL);
          when SRC_Addr_Imm16 =>
-            return Read_Byte (GB, Fetch_Imm16 (GB));
+            return Bus_Read_Byte (GB, Fetch_Imm16 (GB));
          when SRC_High_Addr_C =>
-            return Read_Byte (GB, 16#FF00# + Word (GB.CPU.Regs.C));
+            return Bus_Read_Byte (GB, 16#FF00# + Word (GB.CPU.Regs.C));
          when SRC_High_Addr_Imm8 =>
-            return Read_Byte (GB, 16#FF00# + Word (Fetch_Imm8 (GB)));
+            return Bus_Read_Byte (GB, 16#FF00# + Word (Fetch_Imm8 (GB)));
          when SRC_Imm8 =>
             return Fetch_Imm8 (GB);
       end case;
-   end Read_Source;
+   end Fetch_Source;
 
-   procedure Write_Target
+   procedure Store_Target
      (GB     : in out Gade.GB.GB_Type;
       Target :        Byte_Target_Kind;
       Value  :        Byte) is
@@ -108,23 +152,23 @@ package body Gade.Dev.CPU.Generic_Handlers is
          when DST_L =>
             GB.CPU.Regs.L := Value;
          when DST_Addr_BC =>
-            Write_Byte (GB, GB.CPU.Regs.BC, Value);
+            Bus_Write_Byte (GB, GB.CPU.Regs.BC, Value);
          when DST_Addr_DE =>
-            Write_Byte (GB, GB.CPU.Regs.DE, Value);
+            Bus_Write_Byte (GB, GB.CPU.Regs.DE, Value);
          when DST_Addr_HL =>
-            Write_Byte (GB, GB.CPU.Regs.HL, Value);
+            Bus_Write_Byte (GB, GB.CPU.Regs.HL, Value);
          when DST_Addr_HL_Inc | DST_Addr_HL_Dec =>
-            Write_Byte (GB, GB.CPU.Regs.HL, Value);
+            Bus_Write_Byte (GB, GB.CPU.Regs.HL, Value);
          when DST_Addr_Imm16 =>
-            Write_Byte (GB, Fetch_Imm16 (GB), Value);
+            Bus_Write_Byte (GB, Fetch_Imm16 (GB), Value);
          when DST_High_Addr_C =>
-            Write_Byte (GB, 16#FF00# + Word (GB.CPU.Regs.C), Value);
+            Bus_Write_Byte (GB, 16#FF00# + Word (GB.CPU.Regs.C), Value);
          when DST_High_Addr_Imm8 =>
-            Write_Byte (GB, 16#FF00# + Word (Fetch_Imm8 (GB)), Value);
+            Bus_Write_Byte (GB, 16#FF00# + Word (Fetch_Imm8 (GB)), Value);
       end case;
-   end Write_Target;
+   end Store_Target;
 
-   function Read_Target
+   function Load_Target
      (GB     : in out Gade.GB.GB_Type;
       Target :        Byte_Target_Kind) return Byte is
    begin
@@ -144,23 +188,23 @@ package body Gade.Dev.CPU.Generic_Handlers is
          when DST_L =>
             return GB.CPU.Regs.L;
          when DST_Addr_BC =>
-            return Read_Byte (GB, GB.CPU.Regs.BC);
+            return Bus_Read_Byte (GB, GB.CPU.Regs.BC);
          when DST_Addr_DE =>
-            return Read_Byte (GB, GB.CPU.Regs.DE);
+            return Bus_Read_Byte (GB, GB.CPU.Regs.DE);
          when DST_Addr_HL | DST_Addr_HL_Inc | DST_Addr_HL_Dec =>
-            return Read_Byte (GB, GB.CPU.Regs.HL);
+            return Bus_Read_Byte (GB, GB.CPU.Regs.HL);
          when DST_Addr_Imm16 =>
-            return Read_Byte (GB, Fetch_Imm16 (GB));
+            return Bus_Read_Byte (GB, Fetch_Imm16 (GB));
          when DST_High_Addr_C =>
-            return Read_Byte (GB, 16#FF00# + Word (GB.CPU.Regs.C));
+            return Bus_Read_Byte (GB, 16#FF00# + Word (GB.CPU.Regs.C));
          when DST_High_Addr_Imm8 =>
-            return Read_Byte (GB, 16#FF00# + Word (Fetch_Imm8 (GB)));
+            return Bus_Read_Byte (GB, 16#FF00# + Word (Fetch_Imm8 (GB)));
       end case;
-   end Read_Target;
+   end Load_Target;
 
    function Fetch_Imm8
      (GB : in out Gade.GB.GB_Type) return Byte is
-      Value : constant Byte := Read_Byte (GB, GB.CPU.PC);
+      Value : constant Byte := Bus_Read_Byte (GB, GB.CPU.PC);
    begin
       GB.CPU.PC := GB.CPU.PC + 1;
       return Value;
@@ -168,10 +212,10 @@ package body Gade.Dev.CPU.Generic_Handlers is
 
    function Fetch_Imm16
      (GB : in out Gade.GB.GB_Type) return Word is
-      Value : constant Word := Read_Word (GB, GB.CPU.PC);
+      Lo : constant Byte := Fetch_Imm8 (GB);
+      Hi : constant Byte := Fetch_Imm8 (GB);
    begin
-      GB.CPU.PC := GB.CPU.PC + 2;
-      return Value;
+      return Word (Lo) + Word (Hi) * 2**8;
    end Fetch_Imm16;
 
    function Read_Word_Register
@@ -229,6 +273,20 @@ package body Gade.Dev.CPU.Generic_Handlers is
       end case;
    end Write_Word_Register;
 
+   procedure Push_Word
+     (GB    : in out Gade.GB.GB_Type;
+      Value :        Word) is
+   begin
+      Push (GB, Value);
+   end Push_Word;
+
+   procedure Pop_Word
+     (GB    : in out Gade.GB.GB_Type;
+      Value :    out Word) is
+   begin
+      Pop (GB, Value);
+   end Pop_Word;
+
    procedure Adjust_HL_Auto
      (GB     : in out Gade.GB.GB_Type;
       Source :        Byte_Source_Kind) is
@@ -277,7 +335,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
 
    procedure Execute_ALU_A_Source
      (GB : in out Gade.GB.GB_Type) is
-      Value : constant Byte := Read_Source (GB, Source);
+      Value : constant Byte := Fetch_Source (GB, Source);
       Dummy : Byte;
    begin
       case Operation is
@@ -302,7 +360,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
 
    procedure Execute_Bit_Source
      (GB : in out Gade.GB.GB_Type) is
-      Value  : constant Byte := Read_Source (GB, Target);
+      Value  : constant Byte := Fetch_Source (GB, Target);
       Result : Byte;
    begin
       case Operation is
@@ -310,18 +368,18 @@ package body Gade.Dev.CPU.Generic_Handlers is
             Do_Bit (GB.CPU, Index, Value);
          when BIT_Set =>
             Do_Set_Bit (GB.CPU, SR_SET, Index, Value, Result);
-            Write_Target (GB, Byte_Target_Kind'Val (Byte_Source_Kind'Pos (Target)), Result);
+            Store_Target (GB, Byte_Target_Kind'Val (Byte_Source_Kind'Pos (Target)), Result);
          when BIT_Reset =>
             Do_Set_Bit (GB.CPU, SR_RES, Index, Value, Result);
-            Write_Target (GB, Byte_Target_Kind'Val (Byte_Source_Kind'Pos (Target)), Result);
+            Store_Target (GB, Byte_Target_Kind'Val (Byte_Source_Kind'Pos (Target)), Result);
       end case;
    end Execute_Bit_Source;
 
    procedure Execute_LD_Byte
      (GB : in out Gade.GB.GB_Type) is
-      Value : constant Byte := Read_Source (GB, Source);
+      Value : constant Byte := Fetch_Source (GB, Source);
    begin
-      Write_Target (GB, Dest, Value);
+      Store_Target (GB, Dest, Value);
       Adjust_HL_Auto (GB, Source);
       Adjust_HL_Auto (GB, Dest);
    end Execute_LD_Byte;
@@ -335,7 +393,12 @@ package body Gade.Dev.CPU.Generic_Handlers is
    procedure Execute_LD_Addr_Imm16_SP
      (GB : in out Gade.GB.GB_Type) is
    begin
-      Write_Word (GB, Fetch_Imm16 (GB), GB.CPU.Regs.SP);
+      declare
+         Address : constant Word := Fetch_Imm16 (GB);
+      begin
+         Bus_Write_Byte (GB, Address, Byte (GB.CPU.Regs.SP and 16#00FF#));
+         Bus_Write_Byte (GB, Address + 1, Byte (GB.CPU.Regs.SP / 2**8));
+      end;
    end Execute_LD_Addr_Imm16_SP;
 
    procedure Execute_LD_HL_SP_Plus_Imm8
@@ -348,14 +411,14 @@ package body Gade.Dev.CPU.Generic_Handlers is
 
    procedure Execute_Inc_Dec_Byte
      (GB : in out Gade.GB.GB_Type) is
-      Value : Byte := Read_Target (GB, Target);
+      Value : Byte := Load_Target (GB, Target);
    begin
       Do_Inc_Dec
         (GB.CPU,
          (if Operation = OP_INC then INC else DEC),
          Value,
          Value);
-      Write_Target (GB, Target, Value);
+      Store_Target (GB, Target, Value);
    end Execute_Inc_Dec_Byte;
 
    procedure Execute_Inc_Dec_Word
@@ -372,7 +435,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
 
    procedure Execute_Rotate_Shift
      (GB : in out Gade.GB.GB_Type) is
-      Value : Byte := Read_Target (GB, Target);
+      Value : Byte := Load_Target (GB, Target);
    begin
       case Operation is
          when ROT_RLC =>
@@ -392,20 +455,20 @@ package body Gade.Dev.CPU.Generic_Handlers is
          when ROT_SRL =>
             Do_SR (GB.CPU, S_L, Value);
       end case;
-      Write_Target (GB, Target, Value);
+      Store_Target (GB, Target, Value);
    end Execute_Rotate_Shift;
 
    procedure Execute_Push
      (GB : in out Gade.GB.GB_Type) is
    begin
-      Push (GB, Read_Word_Register (GB, Source));
+      Push_Word (GB, Read_Word_Register (GB, Source));
    end Execute_Push;
 
    procedure Execute_Pop
      (GB : in out Gade.GB.GB_Type) is
       Value : Word;
    begin
-      Pop (GB, Value);
+      Pop_Word (GB, Value);
       Write_Word_Register (GB, Dest, Value);
    end Execute_Pop;
 
@@ -418,11 +481,11 @@ package body Gade.Dev.CPU.Generic_Handlers is
          when FLOW_RET =>
             if Check_Condition (GB.CPU, Condition) then
                GB.CPU.Branch_Taken := Condition /= JCOND_None;
-               Pop (GB, GB.CPU.PC);
+               Pop_Word (GB, GB.CPU.PC);
             end if;
 
          when FLOW_RETI =>
-            Pop (GB, GB.CPU.PC);
+            Pop_Word (GB, GB.CPU.PC);
             GB.CPU.IFF := IE_EI;
 
          when FLOW_JR =>
@@ -449,12 +512,14 @@ package body Gade.Dev.CPU.Generic_Handlers is
             Destination := Fetch_Imm16 (GB);
             if Check_Condition (GB.CPU, Condition) then
                GB.CPU.Branch_Taken := Condition /= JCOND_None;
-               Push (GB, GB.CPU.PC);
+               Internal_Cycle (GB);
+               Push_Word (GB, GB.CPU.PC);
                GB.CPU.PC := Destination;
             end if;
 
          when FLOW_RST =>
-            Push (GB, GB.CPU.PC);
+            Internal_Cycle (GB);
+            Push_Word (GB, GB.CPU.PC);
             GB.CPU.PC := Vector;
       end case;
    end Execute_Flow;
@@ -471,6 +536,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
       Value : Word := GB.CPU.Regs.HL;
    begin
       Do_Add (GB.CPU, Read_Word_Register (GB, Source), Value);
+      Internal_Cycle (GB);
       GB.CPU.Regs.HL := Value;
    end Execute_Add_HL;
 
@@ -478,6 +544,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
      (GB : in out Gade.GB.GB_Type) is
    begin
       Do_Add (GB.CPU, GB.CPU.Regs.SP, Fetch_Imm8 (GB));
+      Internal_Cycle (GB);
    end Execute_Add_SP_Imm8;
 
    procedure Execute_DAA

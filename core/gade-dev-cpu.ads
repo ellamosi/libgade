@@ -1,3 +1,5 @@
+with Gade.Timing; use Gade.Timing;
+
 package Gade.Dev.CPU is
 
    type CPU_Flag is new Boolean;
@@ -46,6 +48,7 @@ package Gade.Dev.CPU is
       Halted : Boolean;
       --  Mem   : Memory_Map_Type;
       Branch_Taken : Boolean;
+      Stepped_Cycles : M_Cycle_Count := 0;
    end record;
 
    type P_CPU_Context is access CPU_Context;
