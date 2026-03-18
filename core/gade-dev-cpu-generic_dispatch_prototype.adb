@@ -1,4 +1,3 @@
-with Gade.Dev.CPU.Decode;     use Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Cycle_Steps;
 with Gade.Dev.CPU.Generic_Handlers;
 with Gade.Dev.CPU.Generic_Instruction_Definitions;
@@ -7,6 +6,8 @@ with Gade.GB.Memory_Map;
 package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
    package Definitions renames Gade.Dev.CPU.Generic_Instruction_Definitions;
    package Handlers renames Gade.Dev.CPU.Generic_Handlers;
+
+   type Opcode_Prefix is (Main_Prefix, CB_Prefix);
 
    type Handler_Table is array (Byte) of Instruction_Handler;
 
@@ -20,7 +21,7 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
 
    function Hex_Word (Value : Word) return String;
 
-   function Prefix_Image (Prefix : Prefix_Kind) return String;
+   function Prefix_Image (Prefix : Opcode_Prefix) return String;
 
    procedure Execute_RES_0_B is new Handlers.Execute_Bit_Source
      (Operation => Handlers.BIT_Reset, Index => 0, Target => Handlers.SRC_B);
@@ -812,13 +813,13 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
      (GB : in out Gade.GB.GB_Type) is
       Handler : Instruction_Handler;
       Opcode  : Byte;
-      Prefix  : Prefix_Kind := Main;
+      Prefix  : Opcode_Prefix := Main_Prefix;
    begin
       Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC);
       Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
 
       if Opcode = 16#CB# then
-         Prefix := CB;
+         Prefix := CB_Prefix;
          Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC + 1);
          Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
       end if;
@@ -826,7 +827,7 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
       GB.CPU.Branch_Taken := False;
 
       case Prefix is
-         when Main =>
+         when Main_Prefix =>
             Handler := Main_Handler (Opcode);
             if Handler = null then
                raise Program_Error with
@@ -839,7 +840,7 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
             end if;
 
             GB.CPU.PC := GB.CPU.PC + 1;
-         when CB =>
+         when CB_Prefix =>
             Handler := CB_Handler (Opcode);
             if Handler = null then
                raise Program_Error with
@@ -884,12 +885,12 @@ package body Gade.Dev.CPU.Generic_Dispatch_Prototype is
          4 => Hex_Digit (Raw mod 16)];
    end Hex_Word;
 
-   function Prefix_Image (Prefix : Prefix_Kind) return String is
+   function Prefix_Image (Prefix : Opcode_Prefix) return String is
    begin
       case Prefix is
-         when Main =>
+         when Main_Prefix =>
             return "main";
-         when CB =>
+         when CB_Prefix =>
             return "cb";
       end case;
    end Prefix_Image;
