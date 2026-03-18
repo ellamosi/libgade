@@ -398,6 +398,11 @@ package body Gade.Dev.CPU.Generic_Handlers is
      (GB : in out Gade.GB.GB_Type) is
    begin
       Write_Word_Register (GB, Dest, Read_Word_Source (GB, Source));
+
+      --  LD SP,HL performs an extra internal machine cycle.
+      if Dest = REG_SP and then Source = WSRC_HL then
+         Internal_Cycle (GB);
+      end if;
    end Execute_LD_Word;
 
    procedure Execute_LD_Addr_Imm16_SP
@@ -566,6 +571,7 @@ package body Gade.Dev.CPU.Generic_Handlers is
      (GB : in out Gade.GB.GB_Type) is
    begin
       Do_Add (GB.CPU, GB.CPU.Regs.SP, Fetch_Imm8 (GB));
+      Internal_Cycle (GB);
       Internal_Cycle (GB);
    end Execute_Add_SP_Imm8;
 
