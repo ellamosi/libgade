@@ -1,119 +1,72 @@
 package Gade.Dev.CPU.Instructions.Flow is
    package Instructions renames Gade.Dev.CPU.Instructions;
 
-   procedure Execute_JR is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JR);
-
-   procedure Execute_JR_NZ is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JR,
-      Condition => Instructions.JCOND_NZ);
-
-   procedure Execute_JR_Z is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JR,
-      Condition => Instructions.JCOND_Z);
-
-   procedure Execute_JR_NC is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JR,
-      Condition => Instructions.JCOND_NC);
-
-   procedure Execute_JR_C is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JR,
-      Condition => Instructions.JCOND_C);
-
-   procedure Execute_JP is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JP);
-
-   procedure Execute_JP_NZ is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JP,
-      Condition => Instructions.JCOND_NZ);
-
-   procedure Execute_JP_Z is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JP,
-      Condition => Instructions.JCOND_Z);
-
-   procedure Execute_JP_NC is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JP,
-      Condition => Instructions.JCOND_NC);
-
-   procedure Execute_JP_C is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JP,
-      Condition => Instructions.JCOND_C);
-
-   procedure Execute_JP_HL is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_JP,
-      Target    => Instructions.JTARGET_HL);
-
-   procedure Execute_CALL is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_CALL);
-
-   procedure Execute_CALL_NZ is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_CALL,
-      Condition => Instructions.JCOND_NZ);
-
-   procedure Execute_CALL_Z is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_CALL,
-      Condition => Instructions.JCOND_Z);
-
-   procedure Execute_CALL_NC is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_CALL,
-      Condition => Instructions.JCOND_NC);
-
-   procedure Execute_CALL_C is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_CALL,
-      Condition => Instructions.JCOND_C);
-
-   procedure Execute_RET_NZ is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RET,
-      Condition => Instructions.JCOND_NZ);
-
-   procedure Execute_RET_Z is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RET,
-      Condition => Instructions.JCOND_Z);
-
-   procedure Execute_RET is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RET);
-
-   procedure Execute_RET_NC is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RET,
-      Condition => Instructions.JCOND_NC);
-
-   procedure Execute_RET_C is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RET,
-      Condition => Instructions.JCOND_C);
-
-   procedure Execute_RETI is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RETI);
-
-   procedure Execute_RST_00 is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RST,
-      Vector    => 16#0000#);
-
-   procedure Execute_RST_08 is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RST,
-      Vector    => 16#0008#);
-
-   procedure Execute_RST_10 is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RST,
-      Vector    => 16#0010#);
-
-   procedure Execute_RST_18 is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RST,
-      Vector    => 16#0018#);
-
-   procedure Execute_RST_20 is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RST,
-      Vector    => 16#0020#);
-
-   procedure Execute_RST_28 is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RST,
-      Vector    => 16#0028#);
-
-   procedure Execute_RST_30 is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RST,
-      Vector    => 16#0030#);
-
-   procedure Execute_RST_38 is new Instructions.Execute_Flow
-     (Operation => Instructions.FLOW_RST,
-      Vector    => 16#0038#);
+   generic
+      Operation : Instructions.Flow_Op_Kind;
+      Condition : Instructions.Jump_Condition_Kind := Instructions.JCOND_None;
+      Target    : Instructions.Jump_Target_Kind := Instructions.JTARGET_Imm16;
+      Vector    : Word := 0;
+   procedure Execute_Flow
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JR
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JR_NZ
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JR_Z
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JR_NC
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JR_C
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JP
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JP_NZ
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JP_Z
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JP_NC
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JP_C
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_JP_HL
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_CALL
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_CALL_NZ
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_CALL_Z
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_CALL_NC
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_CALL_C
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RET_NZ
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RET_Z
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RET
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RET_NC
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RET_C
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RETI
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RST_00
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RST_08
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RST_10
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RST_18
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RST_20
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RST_28
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RST_30
+     (GB : in out Gade.GB.GB_Type);
+   procedure Execute_RST_38
+     (GB : in out Gade.GB.GB_Type);
 
 end Gade.Dev.CPU.Instructions.Flow;

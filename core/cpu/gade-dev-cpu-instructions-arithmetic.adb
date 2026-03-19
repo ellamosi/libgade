@@ -193,4 +193,218 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       CPU.Regs.A := Byte (A_Native);
    end Do_Daa;
 
+   procedure Execute_ADD_SP_Imm8
+     (GB : in out Gade.GB.GB_Type) is
+   begin
+      Do_Add (GB.CPU, GB.CPU.Regs.SP, Instructions.Fetch_Imm8 (GB));
+      Instructions.Internal_Cycle (GB);
+      Instructions.Internal_Cycle (GB);
+   end Execute_ADD_SP_Imm8;
+
+   procedure Execute_DAA
+     (GB : in out Gade.GB.GB_Type) is
+   begin
+      Do_Daa (GB.CPU);
+   end Execute_DAA;
+
+
+   procedure Execute_Inc_Dec_Byte
+     (GB : in out Gade.GB.GB_Type) is
+      Value : Byte := Instructions.Load_Target (GB, Target);
+   begin
+      Do_Inc_Dec
+        (GB.CPU,
+         (if Operation = Instructions.OP_INC then INC else DEC),
+         Value,
+         Value);
+      Instructions.Store_Target (GB, Target, Value);
+   end Execute_Inc_Dec_Byte;
+
+   procedure Execute_Inc_Dec_Word
+     (GB : in out Gade.GB.GB_Type) is
+      Value : Word := Instructions.Read_Word_Register (GB, Target);
+   begin
+      if Operation = Instructions.OP_INC then
+         Value := Value + 1;
+      else
+         Value := Value - 1;
+      end if;
+      Instructions.Internal_Cycle (GB);
+      Instructions.Write_Word_Register (GB, Target, Value);
+   end Execute_Inc_Dec_Word;
+
+   procedure Execute_Add_HL
+     (GB : in out Gade.GB.GB_Type) is
+      Value : Word := GB.CPU.Regs.HL;
+   begin
+      Do_Add (GB.CPU, Instructions.Read_Word_Register (GB, Source), Value);
+      Instructions.Internal_Cycle (GB);
+      GB.CPU.Regs.HL := Value;
+   end Execute_Add_HL;
+
+   procedure Execute_INC_B_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.DST_B);
+
+   procedure Execute_DEC_B_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.DST_B);
+
+   procedure Execute_INC_C_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.DST_C);
+
+   procedure Execute_DEC_C_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.DST_C);
+
+   procedure Execute_INC_D_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.DST_D);
+
+   procedure Execute_DEC_D_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.DST_D);
+
+   procedure Execute_INC_E_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.DST_E);
+
+   procedure Execute_DEC_E_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.DST_E);
+
+   procedure Execute_INC_H_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.DST_H);
+
+   procedure Execute_DEC_H_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.DST_H);
+
+   procedure Execute_INC_L_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.DST_L);
+
+   procedure Execute_DEC_L_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.DST_L);
+
+   procedure Execute_INC_Addr_HL_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.DST_Addr_HL);
+
+   procedure Execute_DEC_Addr_HL_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.DST_Addr_HL);
+
+   procedure Execute_INC_A_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.DST_A);
+
+   procedure Execute_DEC_A_Impl is new Execute_Inc_Dec_Byte
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.DST_A);
+
+   procedure Execute_INC_BC_Impl is new Execute_Inc_Dec_Word
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.REG_BC);
+
+   procedure Execute_DEC_BC_Impl is new Execute_Inc_Dec_Word
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.REG_BC);
+
+   procedure Execute_INC_DE_Impl is new Execute_Inc_Dec_Word
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.REG_DE);
+
+   procedure Execute_DEC_DE_Impl is new Execute_Inc_Dec_Word
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.REG_DE);
+
+   procedure Execute_INC_SP_Impl is new Execute_Inc_Dec_Word
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.REG_SP);
+
+   procedure Execute_INC_HL_Impl is new Execute_Inc_Dec_Word
+     (Operation => Instructions.OP_INC,
+      Target    => Instructions.REG_HL);
+
+   procedure Execute_DEC_HL_Impl is new Execute_Inc_Dec_Word
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.REG_HL);
+
+   procedure Execute_DEC_SP_Impl is new Execute_Inc_Dec_Word
+     (Operation => Instructions.OP_DEC,
+      Target    => Instructions.REG_SP);
+
+   procedure Execute_ADD_HL_BC_Impl is new Execute_Add_HL
+     (Source => Instructions.REG_BC);
+
+   procedure Execute_ADD_HL_DE_Impl is new Execute_Add_HL
+     (Source => Instructions.REG_DE);
+
+   procedure Execute_ADD_HL_HL_Impl is new Execute_Add_HL
+     (Source => Instructions.REG_HL);
+
+   procedure Execute_ADD_HL_SP_Impl is new Execute_Add_HL
+     (Source => Instructions.REG_SP);
+
+   procedure Execute_INC_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_B_Impl;
+   procedure Execute_DEC_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_B_Impl;
+   procedure Execute_INC_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_C_Impl;
+   procedure Execute_DEC_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_C_Impl;
+   procedure Execute_INC_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_D_Impl;
+   procedure Execute_DEC_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_D_Impl;
+   procedure Execute_INC_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_E_Impl;
+   procedure Execute_DEC_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_E_Impl;
+   procedure Execute_INC_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_H_Impl;
+   procedure Execute_DEC_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_H_Impl;
+   procedure Execute_INC_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_L_Impl;
+   procedure Execute_DEC_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_L_Impl;
+   procedure Execute_INC_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_Addr_HL_Impl;
+   procedure Execute_DEC_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_Addr_HL_Impl;
+   procedure Execute_INC_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_A_Impl;
+   procedure Execute_DEC_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_A_Impl;
+   procedure Execute_INC_BC
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_BC_Impl;
+   procedure Execute_DEC_BC
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_BC_Impl;
+   procedure Execute_INC_DE
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_DE_Impl;
+   procedure Execute_DEC_DE
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_DE_Impl;
+   procedure Execute_INC_SP
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_SP_Impl;
+   procedure Execute_INC_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_INC_HL_Impl;
+   procedure Execute_DEC_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_HL_Impl;
+   procedure Execute_DEC_SP
+     (GB : in out Gade.GB.GB_Type) renames Execute_DEC_SP_Impl;
+   procedure Execute_ADD_HL_BC
+     (GB : in out Gade.GB.GB_Type) renames Execute_ADD_HL_BC_Impl;
+   procedure Execute_ADD_HL_DE
+     (GB : in out Gade.GB.GB_Type) renames Execute_ADD_HL_DE_Impl;
+   procedure Execute_ADD_HL_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_ADD_HL_HL_Impl;
+   procedure Execute_ADD_HL_SP
+     (GB : in out Gade.GB.GB_Type) renames Execute_ADD_HL_SP_Impl;
+
 end Gade.Dev.CPU.Instructions.Arithmetic;

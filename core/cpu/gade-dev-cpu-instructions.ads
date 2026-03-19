@@ -89,107 +89,77 @@ package Gade.Dev.CPU.Instructions is
 
    type Jump_Target_Kind is (JTARGET_Imm16, JTARGET_HL);
 
+   function Bus_Read_Byte
+     (GB      : in out Gade.GB.GB_Type;
+      Address :        Word) return Byte;
+
+   procedure Bus_Write_Byte
+     (GB      : in out Gade.GB.GB_Type;
+      Address :        Word;
+      Value   :        Byte);
+
+   procedure Internal_Cycle
+     (GB : in out Gade.GB.GB_Type);
+
+   function Fetch_Source
+     (GB     : in out Gade.GB.GB_Type;
+      Source :        Byte_Source_Kind) return Byte;
+
+   procedure Store_Target
+     (GB     : in out Gade.GB.GB_Type;
+      Target :        Byte_Target_Kind;
+      Value  :        Byte);
+
+   function Load_Target
+     (GB     : in out Gade.GB.GB_Type;
+      Target :        Byte_Target_Kind) return Byte;
+
+   function Fetch_Imm8
+     (GB : in out Gade.GB.GB_Type) return Byte;
+
+   function Fetch_Imm16
+     (GB : in out Gade.GB.GB_Type) return Word;
+
+   function Read_Word_Register
+     (GB     : Gade.GB.GB_Type;
+      Target : Word_Register_Kind) return Word;
+
+   function Read_Word_Source
+     (GB     : in out Gade.GB.GB_Type;
+      Source :        Word_Source_Kind) return Word;
+
+   procedure Write_Word_Register
+     (GB     : in out Gade.GB.GB_Type;
+      Target :        Word_Register_Kind;
+      Value  :        Word);
+
+   procedure Push_Word
+     (GB    : in out Gade.GB.GB_Type;
+      Value :        Word);
+
+   procedure Pop_Word
+     (GB    : in out Gade.GB.GB_Type;
+      Value :    out Word);
+
+   procedure Adjust_HL_Auto
+     (GB     : in out Gade.GB.GB_Type;
+      Source :        Byte_Source_Kind);
+
+   procedure Adjust_HL_Auto
+     (GB     : in out Gade.GB.GB_Type;
+      Target :        Byte_Target_Kind);
+
+
    generic
       Operation : ALU_A_Op_Kind;
       Source    : Byte_Source_Kind;
    procedure Execute_ALU_A_Source
      (GB : in out Gade.GB.GB_Type);
 
-   generic
-      Operation : Bit_Op_Kind;
-      Index     : Bit_Index;
-      Target    : Byte_Source_Kind;
-   procedure Execute_Bit_Source
-     (GB : in out Gade.GB.GB_Type);
 
-   generic
-      Dest   : Byte_Target_Kind;
-      Source : Byte_Source_Kind;
-   procedure Execute_LD_Byte
-     (GB : in out Gade.GB.GB_Type);
 
-   generic
-      Dest   : Word_Register_Kind;
-      Source : Word_Source_Kind;
-   procedure Execute_LD_Word
-     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_LD_Addr_Imm16_SP
-     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_LD_HL_SP_Plus_Imm8
-     (GB : in out Gade.GB.GB_Type);
 
-   generic
-      Operation : Inc_Dec_Op_Kind;
-      Target    : Byte_Target_Kind;
-   procedure Execute_Inc_Dec_Byte
-     (GB : in out Gade.GB.GB_Type);
-
-   generic
-      Operation : Inc_Dec_Op_Kind;
-      Target    : Word_Register_Kind;
-   procedure Execute_Inc_Dec_Word
-     (GB : in out Gade.GB.GB_Type);
-
-   generic
-      Operation    : Rotate_Shift_Op_Kind;
-      Target       : Byte_Target_Kind;
-      Adjust_Flags : Boolean := True;
-   procedure Execute_Rotate_Shift
-     (GB : in out Gade.GB.GB_Type);
-
-   generic
-      Source : Word_Register_Kind;
-   procedure Execute_Push
-     (GB : in out Gade.GB.GB_Type);
-
-   generic
-      Dest : Word_Register_Kind;
-   procedure Execute_Pop
-     (GB : in out Gade.GB.GB_Type);
-
-   generic
-      Operation : Flow_Op_Kind;
-      Condition : Jump_Condition_Kind := JCOND_None;
-      Target    : Jump_Target_Kind := JTARGET_Imm16;
-      Vector    : Word := 0;
-   procedure Execute_Flow
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_NOP
-     (GB : in out Gade.GB.GB_Type);
-
-   generic
-      Source : Word_Register_Kind;
-   procedure Execute_Add_HL
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_Add_SP_Imm8
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_DAA
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_CPL
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_SCF
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_CCF
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_HALT
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_STOP
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_DI
-     (GB : in out Gade.GB.GB_Type);
-
-   procedure Execute_EI
-     (GB : in out Gade.GB.GB_Type);
 
 end Gade.Dev.CPU.Instructions;

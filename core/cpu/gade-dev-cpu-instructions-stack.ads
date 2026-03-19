@@ -1,28 +1,38 @@
 package Gade.Dev.CPU.Instructions.Stack is
    package Instructions renames Gade.Dev.CPU.Instructions;
 
-   procedure Execute_PUSH_BC is new Instructions.Execute_Push
-     (Source => Instructions.REG_BC);
+   generic
+      Source : Instructions.Word_Register_Kind;
+   procedure Execute_Push
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_PUSH_DE is new Instructions.Execute_Push
-     (Source => Instructions.REG_DE);
+   generic
+      Dest : Instructions.Word_Register_Kind;
+   procedure Execute_Pop
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_PUSH_HL is new Instructions.Execute_Push
-     (Source => Instructions.REG_HL);
+   procedure Execute_PUSH_BC
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_PUSH_AF is new Instructions.Execute_Push
-     (Source => Instructions.REG_AF);
+   procedure Execute_PUSH_DE
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_POP_BC is new Instructions.Execute_Pop
-     (Dest => Instructions.REG_BC);
+   procedure Execute_PUSH_HL
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_POP_DE is new Instructions.Execute_Pop
-     (Dest => Instructions.REG_DE);
+   procedure Execute_PUSH_AF
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_POP_HL is new Instructions.Execute_Pop
-     (Dest => Instructions.REG_HL);
+   procedure Execute_POP_BC
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_POP_AF is new Instructions.Execute_Pop
-     (Dest => Instructions.REG_AF);
+   procedure Execute_POP_DE
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_POP_HL
+     (GB : in out Gade.GB.GB_Type);
+
+   procedure Execute_POP_AF
+     (GB : in out Gade.GB.GB_Type);
 
 end Gade.Dev.CPU.Instructions.Stack;

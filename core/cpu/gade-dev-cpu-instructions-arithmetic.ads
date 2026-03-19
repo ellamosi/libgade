@@ -49,6 +49,23 @@ package Gade.Dev.CPU.Instructions.Arithmetic is
    procedure Do_Daa
      (CPU : in out CPU_Context);
 
+   generic
+      Operation : Instructions.Inc_Dec_Op_Kind;
+      Target    : Instructions.Byte_Target_Kind;
+   procedure Execute_Inc_Dec_Byte
+     (GB : in out Gade.GB.GB_Type);
+
+   generic
+      Operation : Instructions.Inc_Dec_Op_Kind;
+      Target    : Instructions.Word_Register_Kind;
+   procedure Execute_Inc_Dec_Word
+     (GB : in out Gade.GB.GB_Type);
+
+   generic
+      Source : Instructions.Word_Register_Kind;
+   procedure Execute_Add_HL
+     (GB : in out Gade.GB.GB_Type);
+
    procedure Execute_ADD_A_B is new Instructions.Execute_ALU_A_Source
      (Operation => Instructions.ALU_ADD,
       Source    => Instructions.SRC_B);
@@ -69,20 +86,20 @@ package Gade.Dev.CPU.Instructions.Arithmetic is
      (Operation => Instructions.ALU_SBC,
       Source    => Instructions.SRC_E);
 
-   procedure Execute_ADD_HL_BC is new Instructions.Execute_Add_HL
-     (Source => Instructions.REG_BC);
+   procedure Execute_ADD_HL_BC
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_ADD_HL_DE is new Instructions.Execute_Add_HL
-     (Source => Instructions.REG_DE);
+   procedure Execute_ADD_HL_DE
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_ADD_HL_HL is new Instructions.Execute_Add_HL
-     (Source => Instructions.REG_HL);
+   procedure Execute_ADD_HL_HL
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_ADD_HL_SP is new Instructions.Execute_Add_HL
-     (Source => Instructions.REG_SP);
+   procedure Execute_ADD_HL_SP
+     (GB : in out Gade.GB.GB_Type);
 
    procedure Execute_ADD_SP_Imm8
-     (GB : in out Gade.GB.GB_Type) renames Instructions.Execute_Add_SP_Imm8;
+     (GB : in out Gade.GB.GB_Type);
 
    procedure Execute_ADD_A_C is new Instructions.Execute_ALU_A_Source
      (Operation => Instructions.ALU_ADD,
@@ -208,104 +225,80 @@ package Gade.Dev.CPU.Instructions.Arithmetic is
      (Operation => Instructions.ALU_SBC,
       Source    => Instructions.SRC_Imm8);
 
-   procedure Execute_INC_BC is new Instructions.Execute_Inc_Dec_Word
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.REG_BC);
+   procedure Execute_INC_BC
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_B is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.DST_B);
+   procedure Execute_INC_B
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_B is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.DST_B);
+   procedure Execute_DEC_B
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_BC is new Instructions.Execute_Inc_Dec_Word
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.REG_BC);
+   procedure Execute_DEC_BC
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_C is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.DST_C);
+   procedure Execute_INC_C
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_C is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.DST_C);
+   procedure Execute_DEC_C
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_DE is new Instructions.Execute_Inc_Dec_Word
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.REG_DE);
+   procedure Execute_INC_DE
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_D is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.DST_D);
+   procedure Execute_INC_D
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_D is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.DST_D);
+   procedure Execute_DEC_D
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_DE is new Instructions.Execute_Inc_Dec_Word
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.REG_DE);
+   procedure Execute_DEC_DE
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_E is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.DST_E);
+   procedure Execute_INC_E
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_E is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.DST_E);
+   procedure Execute_DEC_E
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_H is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.DST_H);
+   procedure Execute_INC_H
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_H is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.DST_H);
+   procedure Execute_DEC_H
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_L is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.DST_L);
+   procedure Execute_INC_L
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_L is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.DST_L);
+   procedure Execute_DEC_L
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_SP is new Instructions.Execute_Inc_Dec_Word
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.REG_SP);
+   procedure Execute_INC_SP
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_Addr_HL is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.DST_Addr_HL);
+   procedure Execute_INC_Addr_HL
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_Addr_HL is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.DST_Addr_HL);
+   procedure Execute_DEC_Addr_HL
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_HL is new Instructions.Execute_Inc_Dec_Word
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.REG_HL);
+   procedure Execute_INC_HL
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_HL is new Instructions.Execute_Inc_Dec_Word
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.REG_HL);
+   procedure Execute_DEC_HL
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_SP is new Instructions.Execute_Inc_Dec_Word
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.REG_SP);
+   procedure Execute_DEC_SP
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_INC_A is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_INC,
-      Target    => Instructions.DST_A);
+   procedure Execute_INC_A
+     (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DEC_A is new Instructions.Execute_Inc_Dec_Byte
-     (Operation => Instructions.OP_DEC,
-      Target    => Instructions.DST_A);
+   procedure Execute_DEC_A
+     (GB : in out Gade.GB.GB_Type);
 
    procedure Execute_DAA
-     (GB : in out Gade.GB.GB_Type) renames Instructions.Execute_DAA;
+     (GB : in out Gade.GB.GB_Type);
 
 private
 
