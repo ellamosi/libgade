@@ -15,16 +15,19 @@ package Gade.Dev.CPU.Instructions.Arithmetic is
       Value  :        Byte;
       Result :    out Byte;
       Carry  :        Carry_Type);
+   --  8 bit add
 
    procedure Do_Add
      (CPU    : in out CPU_Context;
       Value  :        Word;
       Result :    out Word);
+   --  16 Bit add
 
    procedure Do_Add
      (CPU    : in out CPU_Context;
       Reg    : in out Word;
       Value  :        Byte);
+   --  16 Bit add
 
    procedure Do_Sub
      (CPU    : in out CPU_Context;
