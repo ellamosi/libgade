@@ -1,4 +1,3 @@
-with Gade.Dev.CPU.Cycle_Steps;
 with Gade.Dev.CPU.Instructions.Arithmetic;
 with Gade.Dev.CPU.Instructions.Logic;
 with Gade.GB.Memory_Map;      use Gade.GB.Memory_Map;
@@ -9,7 +8,7 @@ package body Gade.Dev.CPU.Instructions is
      (GB      : in out Gade.GB.GB_Type;
       Address :        Word) return Byte is
    begin
-      Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
+      GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       return Read_Byte (GB, Address);
    end Bus_Read_Byte;
 
@@ -18,14 +17,14 @@ package body Gade.Dev.CPU.Instructions is
       Address :        Word;
       Value   :        Byte) is
    begin
-      Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
+      GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Write_Byte (GB, Address, Value);
    end Bus_Write_Byte;
 
    procedure Internal_Cycle
      (GB : in out Gade.GB.GB_Type) is
    begin
-      Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
+      GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
    end Internal_Cycle;
 
    function Fetch_Source
