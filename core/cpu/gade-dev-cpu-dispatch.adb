@@ -1,4 +1,3 @@
-with Gade.Dev.CPU.Decode;     use Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Cycle_Steps;
 with Gade.Dev.CPU.Instructions.ALU;
 with Gade.Dev.CPU.Instructions.Loads;
@@ -11,6 +10,8 @@ with Gade.Dev.CPU.Instructions.Control;
 with Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Dispatch is
+   type Opcode_Prefix is (Main, CB);
+
    package ALU renames Gade.Dev.CPU.Instructions.ALU;
    package Loads renames Gade.Dev.CPU.Instructions.Loads;
    package Bitwise renames Gade.Dev.CPU.Instructions.Bitwise;
@@ -31,7 +32,7 @@ package body Gade.Dev.CPU.Dispatch is
 
    function Hex_Word (Value : Word) return String;
 
-   function Prefix_Image (Prefix : Prefix_Kind) return String;
+   function Prefix_Image (Prefix : Opcode_Prefix) return String;
 
 
    function Build_Main_Table return Handler_Table is
@@ -567,7 +568,7 @@ package body Gade.Dev.CPU.Dispatch is
      (GB : in out Gade.GB.GB_Type) is
       Handler : Instruction_Handler;
       Opcode  : Byte;
-      Prefix  : Prefix_Kind := Main;
+      Prefix  : Opcode_Prefix := Main;
    begin
       Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC);
       Gade.Dev.CPU.Cycle_Steps.Step_M_Cycle (GB.CPU);
@@ -639,7 +640,7 @@ package body Gade.Dev.CPU.Dispatch is
          4 => Hex_Digit (Raw mod 16)];
    end Hex_Word;
 
-   function Prefix_Image (Prefix : Prefix_Kind) return String is
+   function Prefix_Image (Prefix : Opcode_Prefix) return String is
    begin
       case Prefix is
          when Main =>
