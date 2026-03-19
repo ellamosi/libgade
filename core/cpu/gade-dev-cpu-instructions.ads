@@ -1,4 +1,3 @@
-with Gade.Dev.CPU.Bitwise;
 with Gade.GB;
 
 package Gade.Dev.CPU.Instructions is
@@ -50,6 +49,8 @@ package Gade.Dev.CPU.Instructions is
 
    type Bit_Op_Kind is (BIT_Test, BIT_Set, BIT_Reset);
 
+   subtype Bit_Index is Natural range 0 .. 7;
+
    type Inc_Dec_Op_Kind is (OP_INC, OP_DEC);
 
    type Word_Register_Kind is (REG_AF, REG_BC, REG_DE, REG_HL, REG_SP);
@@ -96,7 +97,7 @@ package Gade.Dev.CPU.Instructions is
 
    generic
       Operation : Bit_Op_Kind;
-      Index     : Gade.Dev.CPU.Bitwise.Bit_Index;
+      Index     : Bit_Index;
       Target    : Byte_Source_Kind;
    procedure Execute_Bit_Source
      (GB : in out Gade.GB.GB_Type);

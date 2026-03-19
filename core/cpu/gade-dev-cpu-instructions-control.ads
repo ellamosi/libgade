@@ -6,9 +6,6 @@ package Gade.Dev.CPU.Instructions.Control is
    procedure Execute_NOP
      (GB : in out Gade.GB.GB_Type) renames Instructions.Execute_NOP;
 
-   procedure Execute_DAA
-     (GB : in out Gade.GB.GB_Type) renames Instructions.Execute_DAA;
-
    procedure Execute_CPL
      (GB : in out Gade.GB.GB_Type) renames Instructions.Execute_CPL;
 

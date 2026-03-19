@@ -1,7 +1,7 @@
-with Gade.Dev.CPU.Arithmetic; use Gade.Dev.CPU.Arithmetic;
-with Gade.Dev.CPU.Bitwise;    use Gade.Dev.CPU.Bitwise;
 with Gade.Dev.CPU.Cycle_Steps;
-with Gade.Dev.CPU.Logic;      use Gade.Dev.CPU.Logic;
+with Gade.Dev.CPU.Instructions.Arithmetic;
+with Gade.Dev.CPU.Instructions.Bitwise;
+with Gade.Dev.CPU.Instructions.Logic;
 with Gade.GB.Memory_Map;      use Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Instructions is
@@ -350,21 +350,26 @@ package body Gade.Dev.CPU.Instructions is
    begin
       case Operation is
          when ALU_ADD =>
-            Do_Add (GB.CPU, Value, GB.CPU.Regs.A, ADD_Carry);
+            Gade.Dev.CPU.Instructions.Arithmetic.Do_Add
+              (GB.CPU, Value, GB.CPU.Regs.A, Gade.Dev.CPU.Instructions.Arithmetic.ADD_Carry);
          when ALU_ADC =>
-            Do_Add (GB.CPU, Value, GB.CPU.Regs.A, ADC_Carry);
+            Gade.Dev.CPU.Instructions.Arithmetic.Do_Add
+              (GB.CPU, Value, GB.CPU.Regs.A, Gade.Dev.CPU.Instructions.Arithmetic.ADC_Carry);
          when ALU_SUB =>
-            Do_Sub (GB.CPU, Value, GB.CPU.Regs.A, SUB_Carry);
+            Gade.Dev.CPU.Instructions.Arithmetic.Do_Sub
+              (GB.CPU, Value, GB.CPU.Regs.A, Gade.Dev.CPU.Instructions.Arithmetic.SUB_Carry);
          when ALU_SBC =>
-            Do_Sub (GB.CPU, Value, GB.CPU.Regs.A, SBC_Carry);
+            Gade.Dev.CPU.Instructions.Arithmetic.Do_Sub
+              (GB.CPU, Value, GB.CPU.Regs.A, Gade.Dev.CPU.Instructions.Arithmetic.SBC_Carry);
          when ALU_AND =>
-            Do_AND (GB.CPU, Value);
+            Gade.Dev.CPU.Instructions.Logic.Do_AND (GB.CPU, Value);
          when ALU_XOR =>
-            Do_XOR (GB.CPU, Value);
+            Gade.Dev.CPU.Instructions.Logic.Do_XOR (GB.CPU, Value);
          when ALU_OR =>
-            Do_OR (GB.CPU, Value);
+            Gade.Dev.CPU.Instructions.Logic.Do_OR (GB.CPU, Value);
          when ALU_CP =>
-            Do_Sub (GB.CPU, Value, Dummy, SUB_Carry);
+            Gade.Dev.CPU.Instructions.Arithmetic.Do_Sub
+              (GB.CPU, Value, Dummy, Gade.Dev.CPU.Instructions.Arithmetic.SUB_Carry);
       end case;
    end Execute_ALU_A_Source;
 
@@ -375,12 +380,14 @@ package body Gade.Dev.CPU.Instructions is
    begin
       case Operation is
          when BIT_Test =>
-            Do_Bit (GB.CPU, Index, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_Bit (GB.CPU, Index, Value);
          when BIT_Set =>
-            Do_Set_Bit (GB.CPU, SR_SET, Index, Value, Result);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_Set_Bit
+              (GB.CPU, Gade.Dev.CPU.Instructions.Bitwise.SR_SET, Index, Value, Result);
             Store_Target (GB, Byte_Target_Kind'Val (Byte_Source_Kind'Pos (Target)), Result);
          when BIT_Reset =>
-            Do_Set_Bit (GB.CPU, SR_RES, Index, Value, Result);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_Set_Bit
+              (GB.CPU, Gade.Dev.CPU.Instructions.Bitwise.SR_RES, Index, Value, Result);
             Store_Target (GB, Byte_Target_Kind'Val (Byte_Source_Kind'Pos (Target)), Result);
       end case;
    end Execute_Bit_Source;
@@ -420,7 +427,7 @@ package body Gade.Dev.CPU.Instructions is
      (GB : in out Gade.GB.GB_Type) is
       Value : Word := GB.CPU.Regs.SP;
    begin
-      Do_Add (GB.CPU, Value, Fetch_Imm8 (GB));
+      Gade.Dev.CPU.Instructions.Arithmetic.Do_Add (GB.CPU, Value, Fetch_Imm8 (GB));
       Internal_Cycle (GB);
       GB.CPU.Regs.HL := Value;
    end Execute_LD_HL_SP_Plus_Imm8;
@@ -429,9 +436,11 @@ package body Gade.Dev.CPU.Instructions is
      (GB : in out Gade.GB.GB_Type) is
       Value : Byte := Load_Target (GB, Target);
    begin
-      Do_Inc_Dec
+      Gade.Dev.CPU.Instructions.Arithmetic.Do_Inc_Dec
         (GB.CPU,
-         (if Operation = OP_INC then INC else DEC),
+         (if Operation = OP_INC
+          then Gade.Dev.CPU.Instructions.Arithmetic.INC
+          else Gade.Dev.CPU.Instructions.Arithmetic.DEC),
          Value,
          Value);
       Store_Target (GB, Target, Value);
@@ -456,21 +465,24 @@ package body Gade.Dev.CPU.Instructions is
    begin
       case Operation is
          when ROT_RLC =>
-            Do_RLC (GB.CPU, Adjust_Flags, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_RLC (GB.CPU, Adjust_Flags, Value);
          when ROT_RRC =>
-            Do_RRC (GB.CPU, Adjust_Flags, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_RRC (GB.CPU, Adjust_Flags, Value);
          when ROT_RL =>
-            Do_RL (GB.CPU, Adjust_Flags, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_RL (GB.CPU, Adjust_Flags, Value);
          when ROT_RR =>
-            Do_RR (GB.CPU, Adjust_Flags, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_RR (GB.CPU, Adjust_Flags, Value);
          when ROT_SLA =>
-            Do_SL (GB.CPU, S_A, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_SL
+              (GB.CPU, Gade.Dev.CPU.Instructions.Bitwise.S_A, Value);
          when ROT_SRA =>
-            Do_SR (GB.CPU, S_A, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_SR
+              (GB.CPU, Gade.Dev.CPU.Instructions.Bitwise.S_A, Value);
          when ROT_SWAP =>
-            Do_Swap (GB.CPU, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_Swap (GB.CPU, Value);
          when ROT_SRL =>
-            Do_SR (GB.CPU, S_L, Value);
+            Gade.Dev.CPU.Instructions.Bitwise.Do_SR
+              (GB.CPU, Gade.Dev.CPU.Instructions.Bitwise.S_L, Value);
       end case;
       Store_Target (GB, Target, Value);
    end Execute_Rotate_Shift;
@@ -518,7 +530,8 @@ package body Gade.Dev.CPU.Instructions is
             if Check_Condition (GB.CPU, Condition) then
                GB.CPU.Branch_Taken := Condition /= JCOND_None;
                Internal_Cycle (GB);
-               Add_Offset (GB.CPU, GB.CPU.PC, Offset, False);
+               Gade.Dev.CPU.Instructions.Arithmetic.Add_Offset
+                 (GB.CPU, GB.CPU.PC, Offset, False);
             end if;
 
          when FLOW_JP =>
@@ -562,7 +575,8 @@ package body Gade.Dev.CPU.Instructions is
      (GB : in out Gade.GB.GB_Type) is
       Value : Word := GB.CPU.Regs.HL;
    begin
-      Do_Add (GB.CPU, Read_Word_Register (GB, Source), Value);
+      Gade.Dev.CPU.Instructions.Arithmetic.Do_Add
+        (GB.CPU, Read_Word_Register (GB, Source), Value);
       Internal_Cycle (GB);
       GB.CPU.Regs.HL := Value;
    end Execute_Add_HL;
@@ -570,7 +584,7 @@ package body Gade.Dev.CPU.Instructions is
    procedure Execute_Add_SP_Imm8
      (GB : in out Gade.GB.GB_Type) is
    begin
-      Do_Add (GB.CPU, GB.CPU.Regs.SP, Fetch_Imm8 (GB));
+      Gade.Dev.CPU.Instructions.Arithmetic.Do_Add (GB.CPU, GB.CPU.Regs.SP, Fetch_Imm8 (GB));
       Internal_Cycle (GB);
       Internal_Cycle (GB);
    end Execute_Add_SP_Imm8;
@@ -578,7 +592,7 @@ package body Gade.Dev.CPU.Instructions is
    procedure Execute_DAA
      (GB : in out Gade.GB.GB_Type) is
    begin
-      Do_Daa (GB.CPU);
+      Gade.Dev.CPU.Instructions.Arithmetic.Do_Daa (GB.CPU);
    end Execute_DAA;
 
    procedure Execute_CPL
