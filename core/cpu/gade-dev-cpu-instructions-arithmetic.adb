@@ -207,7 +207,6 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       Do_Daa (GB.CPU);
    end Execute_DAA;
 
-
    procedure Execute_Inc_Dec_Byte
      (GB : in out Gade.GB.GB_Type) is
       Value : Byte := Instructions.Load_Target (GB, Target);
