@@ -260,7 +260,6 @@ package body Gade.Dev.CPU.Instructions is
       end case;
    end Adjust_HL_Auto;
 
-
    procedure Execute_ALU_A_Source
      (GB : in out Gade.GB.GB_Type) is
       Value : constant Byte := Fetch_Source (GB, Source);
@@ -290,11 +289,5 @@ package body Gade.Dev.CPU.Instructions is
               (GB.CPU, Value, Dummy, Gade.Dev.CPU.Instructions.Arithmetic.SUB_Carry);
       end case;
    end Execute_ALU_A_Source;
-
-
-
-
-
-
 
 end Gade.Dev.CPU.Instructions;

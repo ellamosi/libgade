@@ -149,17 +149,10 @@ package Gade.Dev.CPU.Instructions is
      (GB     : in out Gade.GB.GB_Type;
       Target :        Byte_Target_Kind);
 
-
    generic
       Operation : ALU_A_Op_Kind;
       Source    : Byte_Source_Kind;
    procedure Execute_ALU_A_Source
      (GB : in out Gade.GB.GB_Type);
-
-
-
-
-
-
 
 end Gade.Dev.CPU.Instructions;

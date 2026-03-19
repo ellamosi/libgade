@@ -2,7 +2,6 @@ with Gade.Dev.CPU.Instructions.Arithmetic;
 
 package body Gade.Dev.CPU.Instructions.Flow is
 
-
    function Check_Condition
      (CPU       : CPU_Context;
       Condition : Instructions.Jump_Condition_Kind) return Boolean is
@@ -20,7 +19,6 @@ package body Gade.Dev.CPU.Instructions.Flow is
             return Gade.Dev.CPU.Check_Condition (CPU, C_C);
       end case;
    end Check_Condition;
-
 
    procedure Execute_Flow
      (GB : in out Gade.GB.GB_Type) is
