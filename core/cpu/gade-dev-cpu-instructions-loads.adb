@@ -59,10 +59,6 @@ package body Gade.Dev.CPU.Instructions.Loads is
      (Dest   => Instructions.REG_SP,
       Source => Instructions.WSRC_Imm16);
 
-   procedure Execute_LD_SP_HL_Impl is new Execute_LD_Word
-     (Dest   => Instructions.REG_SP,
-      Source => Instructions.WSRC_HL);
-
    procedure Execute_LD_Addr_BC_A_Impl is new Execute_LD_Byte
      (Dest   => Instructions.DST_Addr_BC,
       Source => Instructions.SRC_A);
@@ -399,6 +395,10 @@ package body Gade.Dev.CPU.Instructions.Loads is
      (Dest   => Instructions.DST_A,
       Source => Instructions.SRC_High_Addr_C);
 
+   procedure Execute_LD_SP_HL_Impl is new Execute_LD_Word
+     (Dest   => Instructions.REG_SP,
+      Source => Instructions.WSRC_HL);
+
    procedure Execute_LD_A_Addr_Imm16_Impl is new Execute_LD_Byte
      (Dest   => Instructions.DST_A,
       Source => Instructions.SRC_Addr_Imm16);
@@ -411,8 +411,6 @@ package body Gade.Dev.CPU.Instructions.Loads is
      (GB : in out Gade.GB.GB_Type) renames Execute_LD_HL_Imm16_Impl;
    procedure Execute_LD_SP_Imm16
      (GB : in out Gade.GB.GB_Type) renames Execute_LD_SP_Imm16_Impl;
-   procedure Execute_LD_SP_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_LD_SP_HL_Impl;
    procedure Execute_LD_Addr_BC_A
      (GB : in out Gade.GB.GB_Type) renames Execute_LD_Addr_BC_A_Impl;
    procedure Execute_LD_A_Addr_BC
@@ -581,6 +579,8 @@ package body Gade.Dev.CPU.Instructions.Loads is
      (GB : in out Gade.GB.GB_Type) renames Execute_LD_A_High_Addr_Imm8_Impl;
    procedure Execute_LD_A_High_Addr_C
      (GB : in out Gade.GB.GB_Type) renames Execute_LD_A_High_Addr_C_Impl;
+   procedure Execute_LD_SP_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_LD_SP_HL_Impl;
    procedure Execute_LD_A_Addr_Imm16
      (GB : in out Gade.GB.GB_Type) renames Execute_LD_A_Addr_Imm16_Impl;
 

@@ -166,6 +166,26 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Instructions.Store_Target (GB, Target, Value);
    end Execute_Rotate_Shift;
 
+
+   procedure Execute_Bit_Source
+     (GB : in out Gade.GB.GB_Type) is
+      Value  : constant Byte := Instructions.Fetch_Source (GB, Target);
+      Result : Byte;
+   begin
+      case Operation is
+         when Instructions.BIT_Test =>
+            Do_Bit (GB.CPU, Index, Value);
+         when Instructions.BIT_Set =>
+            Do_Set_Bit (GB.CPU, SR_SET, Index, Value, Result);
+            Instructions.Store_Target
+              (GB, Instructions.Byte_Target_Kind'Val (Instructions.Byte_Source_Kind'Pos (Target)), Result);
+         when Instructions.BIT_Reset =>
+            Do_Set_Bit (GB.CPU, SR_RES, Index, Value, Result);
+            Instructions.Store_Target
+              (GB, Instructions.Byte_Target_Kind'Val (Instructions.Byte_Source_Kind'Pos (Target)), Result);
+      end case;
+   end Execute_Bit_Source;
+
    procedure Execute_RLCA_Impl is new Execute_Rotate_Shift
      (Operation    => Instructions.ROT_RLC,
       Target       => Instructions.DST_A,
@@ -441,163 +461,6 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
    procedure Execute_SRL_A_Impl is new Execute_Rotate_Shift
      (Operation => Instructions.ROT_SRL,
       Target    => Instructions.DST_A);
-
-   procedure Execute_RLCA
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLCA_Impl;
-   procedure Execute_RLA
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLA_Impl;
-   procedure Execute_RRCA
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRCA_Impl;
-   procedure Execute_RRA
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRA_Impl;
-   procedure Execute_RLC_B
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_B_Impl;
-   procedure Execute_RLC_C
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_C_Impl;
-   procedure Execute_RLC_D
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_D_Impl;
-   procedure Execute_RLC_E
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_E_Impl;
-   procedure Execute_RLC_H
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_H_Impl;
-   procedure Execute_RLC_L
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_L_Impl;
-   procedure Execute_RLC_Addr_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_Addr_HL_Impl;
-   procedure Execute_RLC_A
-     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_A_Impl;
-   procedure Execute_RRC_B
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_B_Impl;
-   procedure Execute_RRC_C
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_C_Impl;
-   procedure Execute_RRC_D
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_D_Impl;
-   procedure Execute_RRC_E
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_E_Impl;
-   procedure Execute_RRC_H
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_H_Impl;
-   procedure Execute_RRC_L
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_L_Impl;
-   procedure Execute_RL_C
-     (GB : in out Gade.GB.GB_Type) renames Execute_RL_C_Impl;
-   procedure Execute_RRC_A
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_A_Impl;
-   procedure Execute_RRC_Addr_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_Addr_HL_Impl;
-   procedure Execute_RL_B
-     (GB : in out Gade.GB.GB_Type) renames Execute_RL_B_Impl;
-   procedure Execute_RL_D
-     (GB : in out Gade.GB.GB_Type) renames Execute_RL_D_Impl;
-   procedure Execute_RL_E
-     (GB : in out Gade.GB.GB_Type) renames Execute_RL_E_Impl;
-   procedure Execute_RL_H
-     (GB : in out Gade.GB.GB_Type) renames Execute_RL_H_Impl;
-   procedure Execute_RL_L
-     (GB : in out Gade.GB.GB_Type) renames Execute_RL_L_Impl;
-   procedure Execute_RL_Addr_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_RL_Addr_HL_Impl;
-   procedure Execute_RL_A
-     (GB : in out Gade.GB.GB_Type) renames Execute_RL_A_Impl;
-   procedure Execute_RR_B
-     (GB : in out Gade.GB.GB_Type) renames Execute_RR_B_Impl;
-   procedure Execute_RR_C
-     (GB : in out Gade.GB.GB_Type) renames Execute_RR_C_Impl;
-   procedure Execute_RR_D
-     (GB : in out Gade.GB.GB_Type) renames Execute_RR_D_Impl;
-   procedure Execute_RR_E
-     (GB : in out Gade.GB.GB_Type) renames Execute_RR_E_Impl;
-   procedure Execute_RR_H
-     (GB : in out Gade.GB.GB_Type) renames Execute_RR_H_Impl;
-   procedure Execute_RR_L
-     (GB : in out Gade.GB.GB_Type) renames Execute_RR_L_Impl;
-   procedure Execute_RR_Addr_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_RR_Addr_HL_Impl;
-   procedure Execute_RR_A
-     (GB : in out Gade.GB.GB_Type) renames Execute_RR_A_Impl;
-   procedure Execute_SLA_B
-     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_B_Impl;
-   procedure Execute_SLA_C
-     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_C_Impl;
-   procedure Execute_SLA_D
-     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_D_Impl;
-   procedure Execute_SLA_E
-     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_E_Impl;
-   procedure Execute_SLA_H
-     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_H_Impl;
-   procedure Execute_SLA_L
-     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_L_Impl;
-   procedure Execute_SLA_Addr_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_Addr_HL_Impl;
-   procedure Execute_SLA_A
-     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_A_Impl;
-   procedure Execute_SRA_B
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_B_Impl;
-   procedure Execute_SRA_C
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_C_Impl;
-   procedure Execute_SRA_D
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_D_Impl;
-   procedure Execute_SRA_E
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_E_Impl;
-   procedure Execute_SRA_H
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_H_Impl;
-   procedure Execute_SRA_L
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_L_Impl;
-   procedure Execute_SRA_Addr_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_Addr_HL_Impl;
-   procedure Execute_SRA_A
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_A_Impl;
-   procedure Execute_SWAP_B
-     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_B_Impl;
-   procedure Execute_SWAP_C
-     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_C_Impl;
-   procedure Execute_SWAP_D
-     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_D_Impl;
-   procedure Execute_SWAP_E
-     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_E_Impl;
-   procedure Execute_SWAP_H
-     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_H_Impl;
-   procedure Execute_SWAP_L
-     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_L_Impl;
-   procedure Execute_SWAP_Addr_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_Addr_HL_Impl;
-   procedure Execute_SWAP_A
-     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_A_Impl;
-   procedure Execute_SRL_B
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_B_Impl;
-   procedure Execute_SRL_C
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_C_Impl;
-   procedure Execute_SRL_D
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_D_Impl;
-   procedure Execute_SRL_E
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_E_Impl;
-   procedure Execute_SRL_H
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_H_Impl;
-   procedure Execute_SRL_L
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_L_Impl;
-   procedure Execute_SRL_Addr_HL
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_Addr_HL_Impl;
-   procedure Execute_SRL_A
-     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_A_Impl;
-
-
-   procedure Execute_Bit_Source
-     (GB : in out Gade.GB.GB_Type) is
-      Value  : constant Byte := Instructions.Fetch_Source (GB, Target);
-      Result : Byte;
-   begin
-      case Operation is
-         when Instructions.BIT_Test =>
-            Do_Bit (GB.CPU, Index, Value);
-         when Instructions.BIT_Set =>
-            Do_Set_Bit (GB.CPU, SR_SET, Index, Value, Result);
-            Instructions.Store_Target
-              (GB, Instructions.Byte_Target_Kind'Val (Instructions.Byte_Source_Kind'Pos (Target)), Result);
-         when Instructions.BIT_Reset =>
-            Do_Set_Bit (GB.CPU, SR_RES, Index, Value, Result);
-            Instructions.Store_Target
-              (GB, Instructions.Byte_Target_Kind'Val (Instructions.Byte_Source_Kind'Pos (Target)), Result);
-      end case;
-   end Execute_Bit_Source;
 
    procedure Execute_BIT_0_B_Impl is new Execute_Bit_Source
      (Operation => Instructions.BIT_Test,
@@ -1179,6 +1042,142 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
    procedure Execute_BIT_7_A_Impl is new Execute_Bit_Source
      (Operation => Instructions.BIT_Test, Index => 7, Target => Instructions.SRC_A);
 
+   procedure Execute_RLCA
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLCA_Impl;
+   procedure Execute_RLA
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLA_Impl;
+   procedure Execute_RRCA
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRCA_Impl;
+   procedure Execute_RRA
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRA_Impl;
+   procedure Execute_RLC_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_B_Impl;
+   procedure Execute_RLC_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_C_Impl;
+   procedure Execute_RLC_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_D_Impl;
+   procedure Execute_RLC_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_E_Impl;
+   procedure Execute_RLC_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_H_Impl;
+   procedure Execute_RLC_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_L_Impl;
+   procedure Execute_RLC_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_Addr_HL_Impl;
+   procedure Execute_RLC_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_RLC_A_Impl;
+   procedure Execute_RRC_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_B_Impl;
+   procedure Execute_RRC_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_C_Impl;
+   procedure Execute_RRC_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_D_Impl;
+   procedure Execute_RRC_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_E_Impl;
+   procedure Execute_RRC_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_H_Impl;
+   procedure Execute_RRC_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_L_Impl;
+   procedure Execute_RL_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_RL_C_Impl;
+   procedure Execute_RRC_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_A_Impl;
+   procedure Execute_RRC_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_RRC_Addr_HL_Impl;
+   procedure Execute_RL_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_RL_B_Impl;
+   procedure Execute_RL_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_RL_D_Impl;
+   procedure Execute_RL_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_RL_E_Impl;
+   procedure Execute_RL_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_RL_H_Impl;
+   procedure Execute_RL_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_RL_L_Impl;
+   procedure Execute_RL_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_RL_Addr_HL_Impl;
+   procedure Execute_RL_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_RL_A_Impl;
+   procedure Execute_RR_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_RR_B_Impl;
+   procedure Execute_RR_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_RR_C_Impl;
+   procedure Execute_RR_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_RR_D_Impl;
+   procedure Execute_RR_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_RR_E_Impl;
+   procedure Execute_RR_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_RR_H_Impl;
+   procedure Execute_RR_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_RR_L_Impl;
+   procedure Execute_RR_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_RR_Addr_HL_Impl;
+   procedure Execute_RR_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_RR_A_Impl;
+   procedure Execute_SLA_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_B_Impl;
+   procedure Execute_SLA_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_C_Impl;
+   procedure Execute_SLA_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_D_Impl;
+   procedure Execute_SLA_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_E_Impl;
+   procedure Execute_SLA_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_H_Impl;
+   procedure Execute_SLA_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_L_Impl;
+   procedure Execute_SLA_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_Addr_HL_Impl;
+   procedure Execute_SLA_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_SLA_A_Impl;
+   procedure Execute_SRA_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_B_Impl;
+   procedure Execute_SRA_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_C_Impl;
+   procedure Execute_SRA_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_D_Impl;
+   procedure Execute_SRA_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_E_Impl;
+   procedure Execute_SRA_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_H_Impl;
+   procedure Execute_SRA_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_L_Impl;
+   procedure Execute_SRA_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_Addr_HL_Impl;
+   procedure Execute_SRA_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRA_A_Impl;
+   procedure Execute_SWAP_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_B_Impl;
+   procedure Execute_SWAP_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_C_Impl;
+   procedure Execute_SWAP_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_D_Impl;
+   procedure Execute_SWAP_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_E_Impl;
+   procedure Execute_SWAP_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_H_Impl;
+   procedure Execute_SWAP_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_L_Impl;
+   procedure Execute_SWAP_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_Addr_HL_Impl;
+   procedure Execute_SWAP_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_SWAP_A_Impl;
+   procedure Execute_SRL_B
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_B_Impl;
+   procedure Execute_SRL_C
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_C_Impl;
+   procedure Execute_SRL_D
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_D_Impl;
+   procedure Execute_SRL_E
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_E_Impl;
+   procedure Execute_SRL_H
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_H_Impl;
+   procedure Execute_SRL_L
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_L_Impl;
+   procedure Execute_SRL_Addr_HL
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_Addr_HL_Impl;
+   procedure Execute_SRL_A
+     (GB : in out Gade.GB.GB_Type) renames Execute_SRL_A_Impl;
    procedure Execute_BIT_0_B
      (GB : in out Gade.GB.GB_Type) renames Execute_BIT_0_B_Impl;
    procedure Execute_BIT_3_Addr_HL

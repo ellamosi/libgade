@@ -1,22 +1,23 @@
 with Gade.Dev.CPU.Cycle_Steps;
-with Gade.Dev.CPU.Instructions.Arithmetic;
-with Gade.Dev.CPU.Instructions.Loads;
-with Gade.Dev.CPU.Instructions.Bitwise;
-with Gade.Dev.CPU.Instructions.Logic;
+with Gade.Dev.CPU.Instructions.Arithmetic.Instances;
+with Gade.Dev.CPU.Instructions.Loads.Instances;
+with Gade.Dev.CPU.Instructions.Bitwise.Instances;
+with Gade.Dev.CPU.Instructions.Logic.Instances;
 with Gade.Dev.CPU.Instructions.Stack;
-with Gade.Dev.CPU.Instructions.Flow;
+with Gade.Dev.CPU.Instructions.Stack.Instances;
+with Gade.Dev.CPU.Instructions.Flow.Instances;
 with Gade.Dev.CPU.Instructions.Control;
 with Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Dispatch is
    type Opcode_Prefix is (Main, CB);
 
-      package Arithmetic renames Gade.Dev.CPU.Instructions.Arithmetic;
-   package Loads renames Gade.Dev.CPU.Instructions.Loads;
-   package Bitwise renames Gade.Dev.CPU.Instructions.Bitwise;
-   package Logic renames Gade.Dev.CPU.Instructions.Logic;
-   package Stack renames Gade.Dev.CPU.Instructions.Stack;
-   package Flow renames Gade.Dev.CPU.Instructions.Flow;
+   package Arithmetic renames Gade.Dev.CPU.Instructions.Arithmetic.Instances;
+   package Loads renames Gade.Dev.CPU.Instructions.Loads.Instances;
+   package Bitwise renames Gade.Dev.CPU.Instructions.Bitwise.Instances;
+   package Logic renames Gade.Dev.CPU.Instructions.Logic.Instances;
+   package Stack renames Gade.Dev.CPU.Instructions.Stack.Instances;
+   package Flow renames Gade.Dev.CPU.Instructions.Flow.Instances;
    package Control renames Gade.Dev.CPU.Instructions.Control;
    type Handler_Table is array (Byte) of Instruction_Handler;
 

@@ -66,217 +66,146 @@ package Gade.Dev.CPU.Instructions.Bitwise is
       Adjust_Flags : Boolean := True;
    procedure Execute_Rotate_Shift
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLCA
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLA
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRCA
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRA
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLC_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLC_C
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLC_D
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLC_E
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLC_H
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLC_L
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLC_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RLC_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRC_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRC_C
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRC_D
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRC_E
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRC_H
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRC_L
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RL_C
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRC_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RRC_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RL_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RL_D
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RL_E
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RL_H
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RL_L
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RL_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RL_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RR_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RR_C
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RR_D
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RR_E
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RR_H
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RR_L
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RR_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RR_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SLA_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SLA_C
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SLA_D
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SLA_E
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SLA_H
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SLA_L
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SLA_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SLA_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRA_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRA_C
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRA_D
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRA_E
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRA_H
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRA_L
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRA_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRA_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SWAP_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SWAP_C
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SWAP_D
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SWAP_E
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SWAP_H
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SWAP_L
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SWAP_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SWAP_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRL_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRL_C
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRL_D
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRL_E
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRL_H
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRL_L
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRL_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_SRL_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_BIT_0_B
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_BIT_3_Addr_HL
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_RES_0_B
      (GB : in out Gade.GB.GB_Type);
    procedure Execute_RES_0_C
@@ -533,7 +462,6 @@ package Gade.Dev.CPU.Instructions.Bitwise is
      (GB : in out Gade.GB.GB_Type);
    procedure Execute_SET_7_A
      (GB : in out Gade.GB.GB_Type);
-
    procedure Execute_BIT_0_C
      (GB : in out Gade.GB.GB_Type);
    procedure Execute_BIT_0_D
