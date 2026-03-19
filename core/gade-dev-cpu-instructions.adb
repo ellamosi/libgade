@@ -4,7 +4,7 @@ with Gade.Dev.CPU.Cycle_Steps;
 with Gade.Dev.CPU.Logic;      use Gade.Dev.CPU.Logic;
 with Gade.GB.Memory_Map;      use Gade.GB.Memory_Map;
 
-package body Gade.Dev.CPU.Generic_Handlers is
+package body Gade.Dev.CPU.Instructions is
 
    function Bus_Read_Byte
      (GB      : in out Gade.GB.GB_Type;
@@ -632,4 +632,4 @@ package body Gade.Dev.CPU.Generic_Handlers is
       GB.CPU.IFF := IE_EI;
    end Execute_EI;
 
-end Gade.Dev.CPU.Generic_Handlers;
+end Gade.Dev.CPU.Instructions;

@@ -1,7 +1,7 @@
 with Gade.Dev.CPU.Bitwise;
 with Gade.GB;
 
-package Gade.Dev.CPU.Generic_Handlers is
+package Gade.Dev.CPU.Instructions is
 
    type Byte_Source_Kind is
      (SRC_A,
@@ -191,4 +191,4 @@ package Gade.Dev.CPU.Generic_Handlers is
    procedure Execute_EI
      (GB : in out Gade.GB.GB_Type);
 
-end Gade.Dev.CPU.Generic_Handlers;
+end Gade.Dev.CPU.Instructions;

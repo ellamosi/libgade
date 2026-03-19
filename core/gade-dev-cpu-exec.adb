@@ -1,4 +1,4 @@
-with Gade.Dev.CPU.Generic_Dispatch_Prototype;
+with Gade.Dev.CPU.Dispatch;
 with Gade.Dev.CPU.Cycle_Steps;
 with Gade.Dev.CPU.Decode; use Gade.Dev.CPU.Decode;
 with Gade.Dev.CPU.Timing;
@@ -46,7 +46,7 @@ package body Gade.Dev.CPU.Exec is
       end if;
 
       Gade.Dev.CPU.Cycle_Steps.Reset (GB.CPU);
-      Gade.Dev.CPU.Generic_Dispatch_Prototype.Execute (GB);
+      Gade.Dev.CPU.Dispatch.Execute (GB);
       Cycles := Gade.Dev.CPU.Cycle_Steps.Consumed_Cycles (GB.CPU);
       Expected_Cycles :=
         Gade.Dev.CPU.Timing.Total_Cycles (Prefix, Opcode, GB.CPU.Branch_Taken);
