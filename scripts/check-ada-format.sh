@@ -7,4 +7,4 @@ cd "$repo_root"
 
 gnatformat -P gade.gpr -U --check
 gnatformat -P gade_cpp.gpr -U --check
-gnatformat -P tests/harness/gade_testd.gpr -U --check
+alr -C tests exec -- gnatformat -P harness/gade_testd.gpr -U --check
