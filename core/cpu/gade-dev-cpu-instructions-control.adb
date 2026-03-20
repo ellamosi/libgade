@@ -1,61 +1,61 @@
 package body Gade.Dev.CPU.Instructions.Control is
 
-   procedure Execute_NOP
+   procedure NOP
      (GB : in out Gade.GB.GB_Type) is
       pragma Unreferenced (GB);
    begin
       null;
-   end Execute_NOP;
+   end NOP;
 
-   procedure Execute_CPL
+   procedure CPL
      (GB : in out Gade.GB.GB_Type) is
    begin
       GB.CPU.Regs.A := not GB.CPU.Regs.A;
       Set (GB.CPU.Regs.F.H);
       Set (GB.CPU.Regs.F.N);
-   end Execute_CPL;
+   end CPL;
 
-   procedure Execute_SCF
+   procedure SCF
      (GB : in out Gade.GB.GB_Type) is
    begin
       Reset (GB.CPU.Regs.F.N);
       Reset (GB.CPU.Regs.F.H);
       Set (GB.CPU.Regs.F.C);
-   end Execute_SCF;
+   end SCF;
 
-   procedure Execute_CCF
+   procedure CCF
      (GB : in out Gade.GB.GB_Type) is
    begin
       Reset (GB.CPU.Regs.F.N);
       Reset (GB.CPU.Regs.F.H);
       Set_Value (GB.CPU.Regs.F.C, not Is_Set (GB.CPU.Regs.F.C));
-   end Execute_CCF;
+   end CCF;
 
-   procedure Execute_HALT
+   procedure HALT
      (GB : in out Gade.GB.GB_Type) is
    begin
       GB.CPU.Halted := True;
-   end Execute_HALT;
+   end HALT;
 
-   procedure Execute_STOP
+   procedure STOP
      (GB : in out Gade.GB.GB_Type) is
    begin
       GB.CPU.PC := GB.CPU.PC + 1;
       if GB.CPU.IFF = IE_EI then
          GB.CPU.Halted := True;
       end if;
-   end Execute_STOP;
+   end STOP;
 
-   procedure Execute_DI
+   procedure DI
      (GB : in out Gade.GB.GB_Type) is
    begin
       GB.CPU.IFF := IE_DI;
-   end Execute_DI;
+   end DI;
 
-   procedure Execute_EI
+   procedure EI
      (GB : in out Gade.GB.GB_Type) is
    begin
       GB.CPU.IFF := IE_EI;
-   end Execute_EI;
+   end EI;
 
 end Gade.Dev.CPU.Instructions.Control;

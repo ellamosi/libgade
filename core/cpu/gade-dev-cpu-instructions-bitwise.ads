@@ -1,22 +1,22 @@
 package Gade.Dev.CPU.Instructions.Bitwise is
    package Instructions renames Gade.Dev.CPU.Instructions;
 
-   procedure Do_RLC
+   procedure RLC
      (CPU          : in out CPU_Context;
       Adjust_Flags :        Boolean;
       Value        : in out Byte);
 
-   procedure Do_RL
+   procedure RL
      (CPU          : in out CPU_Context;
       Adjust_Flags :        Boolean;
       Value        : in out Byte);
 
-   procedure Do_RRC
+   procedure RRC
      (CPU          : in out CPU_Context;
       Adjust_Flags :        Boolean;
       Value        : in out Byte);
 
-   procedure Do_RR
+   procedure RR
      (CPU          : in out CPU_Context;
       Adjust_Flags :        Boolean;
       Value        : in out Byte);
@@ -24,14 +24,14 @@ package Gade.Dev.CPU.Instructions.Bitwise is
    SR_SET : constant Bit := 1;
    SR_RES : constant Bit := 0;
 
-   procedure Do_Set_Bit
+   procedure Set_Bit
      (CPU       : in out CPU_Context;
       Bit_Value :        Bit;
       Index     :        Instructions.Bit_Index;
       Value     :        Byte;
       Result    :    out Byte);
 
-   procedure Do_Bit
+   procedure Test_Bit
      (CPU   : in out CPU_Context;
       Index :        Instructions.Bit_Index;
       Value :        Byte);
@@ -39,17 +39,17 @@ package Gade.Dev.CPU.Instructions.Bitwise is
    S_L : constant Boolean := False;
    S_A : constant Boolean := True;
 
-   procedure Do_SL
+   procedure Shift_Left
      (CPU        : in out CPU_Context;
       Arithmetic :        Boolean;
       Value      : in out Byte);
 
-   procedure Do_SR
+   procedure Shift_Right
      (CPU        : in out CPU_Context;
       Arithmetic :        Boolean;
       Value      : in out Byte);
 
-   procedure Do_Swap
+   procedure Swap
      (CPU   : in out CPU_Context;
       Value : in out Byte);
 
@@ -57,14 +57,14 @@ package Gade.Dev.CPU.Instructions.Bitwise is
       Operation : Instructions.Bit_Op_Kind;
       Index     : Instructions.Bit_Index;
       Target    : Instructions.Byte_Source_Kind;
-   procedure Execute_Bit_Source
+   procedure Bit_Source
      (GB : in out Gade.GB.GB_Type);
 
    generic
       Operation    : Instructions.Rotate_Shift_Op_Kind;
       Target       : Instructions.Byte_Target_Kind;
       Adjust_Flags : Boolean := True;
-   procedure Execute_Rotate_Shift
+   procedure Rotate_Shift
      (GB : in out Gade.GB.GB_Type);
 
 end Gade.Dev.CPU.Instructions.Bitwise;

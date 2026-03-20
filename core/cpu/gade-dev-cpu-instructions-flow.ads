@@ -8,7 +8,7 @@ package Gade.Dev.CPU.Instructions.Flow is
       Condition : Instructions.Jump_Condition_Kind := Instructions.JCOND_None;
       Target    : Instructions.Jump_Target_Kind := Instructions.JTARGET_Imm16;
       Vector    : Word := 0;
-   procedure Execute_Flow
+   procedure Flow_Op
      (GB : in out Gade.GB.GB_Type);
 
 end Gade.Dev.CPU.Instructions.Flow;

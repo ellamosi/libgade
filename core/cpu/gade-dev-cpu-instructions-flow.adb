@@ -20,7 +20,7 @@ package body Gade.Dev.CPU.Instructions.Flow is
       end case;
    end Check_Condition;
 
-   procedure Execute_Flow
+   procedure Flow_Op
      (GB : in out Gade.GB.GB_Type) is
       Destination : Word;
       Offset      : Byte;
@@ -80,6 +80,6 @@ package body Gade.Dev.CPU.Instructions.Flow is
             Instructions.Push_Word (GB, GB.CPU.PC);
             GB.CPU.PC := Vector;
       end case;
-   end Execute_Flow;
+   end Flow_Op;
 
 end Gade.Dev.CPU.Instructions.Flow;

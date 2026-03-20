@@ -1,15 +1,15 @@
 package Gade.Dev.CPU.Instructions.Logic is
    package Instructions renames Gade.Dev.CPU.Instructions;
 
-   procedure Do_AND
+   procedure Logic_AND
      (CPU   : in out CPU_Context;
       Value :        Byte);
 
-   procedure Do_OR
+   procedure Logic_OR
      (CPU   : in out CPU_Context;
       Value :        Byte);
 
-   procedure Do_XOR
+   procedure Logic_XOR
      (CPU   : in out CPU_Context;
       Value :        Byte);
 

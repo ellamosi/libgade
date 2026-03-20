@@ -1,28 +1,28 @@
 with Gade.GB;
 
 package Gade.Dev.CPU.Instructions.Control is
-   procedure Execute_NOP
+   procedure NOP
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_CPL
+   procedure CPL
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_SCF
+   procedure SCF
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_CCF
+   procedure CCF
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_HALT
+   procedure HALT
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_STOP
+   procedure STOP
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DI
+   procedure DI
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_EI
+   procedure EI
      (GB : in out Gade.GB.GB_Type);
 
 end Gade.Dev.CPU.Instructions.Control;

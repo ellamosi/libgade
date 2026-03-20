@@ -1,6 +1,6 @@
 package body Gade.Dev.CPU.Instructions.Bitwise is
 
-   procedure Do_RLC
+   procedure RLC
      (CPU          : in out CPU_Context;
       Adjust_Flags :        Boolean;
       Value        : in out Byte) is
@@ -11,9 +11,9 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Reset (CPU.Regs.F.H);
       Reset (CPU.Regs.F.N);
       Set_Value (CPU.Regs.F.Z, Adjust_Flags and Value = 0);
-   end Do_RLC;
+   end RLC;
 
-   procedure Do_RL
+   procedure RL
      (CPU          : in out CPU_Context;
       Adjust_Flags :        Boolean;
       Value        : in out Byte) is
@@ -25,9 +25,9 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Reset (CPU.Regs.F.H);
       Reset (CPU.Regs.F.N);
       Set_Value (CPU.Regs.F.Z, Adjust_Flags and Value = 0);
-   end Do_RL;
+   end RL;
 
-   procedure Do_RRC
+   procedure RRC
      (CPU          : in out CPU_Context;
       Adjust_Flags :        Boolean;
       Value        : in out Byte) is
@@ -37,9 +37,9 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Reset (CPU.Regs.F.H);
       Reset (CPU.Regs.F.N);
       Set_Value (CPU.Regs.F.Z, Adjust_Flags and Value = 0);
-   end Do_RRC;
+   end RRC;
 
-   procedure Do_RR
+   procedure RR
      (CPU          : in out CPU_Context;
       Adjust_Flags :        Boolean;
       Value        : in out Byte) is
@@ -53,9 +53,9 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Reset (CPU.Regs.F.H);
       Reset (CPU.Regs.F.N);
       Set_Value (CPU.Regs.F.Z, Adjust_Flags and Value = 0);
-   end Do_RR;
+   end RR;
 
-   procedure Do_SL
+   procedure Shift_Left
      (CPU        : in out CPU_Context;
       Arithmetic :        Boolean;
       Value      : in out Byte) is
@@ -73,9 +73,9 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Reset (CPU.Regs.F.N);
 
       Value := Byte (Value_Native and 16#FF#);
-   end Do_SL;
+   end Shift_Left;
 
-   procedure Do_SR
+   procedure Shift_Right
      (CPU        : in out CPU_Context;
       Arithmetic :        Boolean;
       Value      : in out Byte) is
@@ -94,9 +94,9 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Reset (CPU.Regs.F.N);
 
       Value := Byte (Value_Native and 16#FF#);
-   end Do_SR;
+   end Shift_Right;
 
-   procedure Do_Set_Bit
+   procedure Set_Bit
      (CPU       : in out CPU_Context;
       Bit_Value :        Bit;
       Index     :        Instructions.Bit_Index;
@@ -111,9 +111,9 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
          when 1 =>
             Result := Value or Mask;
       end case;
-   end Do_Set_Bit;
+   end Set_Bit;
 
-   procedure Do_Bit
+   procedure Test_Bit
      (CPU   : in out CPU_Context;
       Index :        Instructions.Bit_Index;
       Value :        Byte) is
@@ -122,9 +122,9 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Reset (CPU.Regs.F.N);
       Set (CPU.Regs.F.H);
       Set_Value (CPU.Regs.F.Z, (Mask and Value) = 0);
-   end Do_Bit;
+   end Test_Bit;
 
-   procedure Do_Swap
+   procedure Swap
      (CPU   : in out CPU_Context;
       Value : in out Byte) is
       Value_Native  : constant Native_Unsigned := Native_Unsigned (Value);
@@ -137,51 +137,51 @@ package body Gade.Dev.CPU.Instructions.Bitwise is
       Reset (CPU.Regs.F.H);
       Reset (CPU.Regs.F.C);
       Value := Byte (Result_Native);
-   end Do_Swap;
+   end Swap;
 
-   procedure Execute_Rotate_Shift
+   procedure Rotate_Shift
      (GB : in out Gade.GB.GB_Type) is
       Value : Byte := Instructions.Load_Target (GB, Target);
    begin
       case Operation is
          when Instructions.ROT_RLC =>
-            Do_RLC (GB.CPU, Adjust_Flags, Value);
+            RLC (GB.CPU, Adjust_Flags, Value);
          when Instructions.ROT_RRC =>
-            Do_RRC (GB.CPU, Adjust_Flags, Value);
+            RRC (GB.CPU, Adjust_Flags, Value);
          when Instructions.ROT_RL =>
-            Do_RL (GB.CPU, Adjust_Flags, Value);
+            RL (GB.CPU, Adjust_Flags, Value);
          when Instructions.ROT_RR =>
-            Do_RR (GB.CPU, Adjust_Flags, Value);
+            RR (GB.CPU, Adjust_Flags, Value);
          when Instructions.ROT_SLA =>
-            Do_SL (GB.CPU, S_A, Value);
+            Shift_Left (GB.CPU, S_A, Value);
          when Instructions.ROT_SRA =>
-            Do_SR (GB.CPU, S_A, Value);
+            Shift_Right (GB.CPU, S_A, Value);
          when Instructions.ROT_SWAP =>
-            Do_Swap (GB.CPU, Value);
+            Swap (GB.CPU, Value);
          when Instructions.ROT_SRL =>
-            Do_SR (GB.CPU, S_L, Value);
+            Shift_Right (GB.CPU, S_L, Value);
       end case;
 
       Instructions.Store_Target (GB, Target, Value);
-   end Execute_Rotate_Shift;
+   end Rotate_Shift;
 
-   procedure Execute_Bit_Source
+   procedure Bit_Source
      (GB : in out Gade.GB.GB_Type) is
       Value  : constant Byte := Instructions.Fetch_Source (GB, Target);
       Result : Byte;
    begin
       case Operation is
          when Instructions.BIT_Test =>
-            Do_Bit (GB.CPU, Index, Value);
+            Test_Bit (GB.CPU, Index, Value);
          when Instructions.BIT_Set =>
-            Do_Set_Bit (GB.CPU, SR_SET, Index, Value, Result);
+            Set_Bit (GB.CPU, SR_SET, Index, Value, Result);
             Instructions.Store_Target
               (GB, Instructions.Byte_Target_Kind'Val (Instructions.Byte_Source_Kind'Pos (Target)), Result);
          when Instructions.BIT_Reset =>
-            Do_Set_Bit (GB.CPU, SR_RES, Index, Value, Result);
+            Set_Bit (GB.CPU, SR_RES, Index, Value, Result);
             Instructions.Store_Target
               (GB, Instructions.Byte_Target_Kind'Val (Instructions.Byte_Source_Kind'Pos (Target)), Result);
       end case;
-   end Execute_Bit_Source;
+   end Bit_Source;
 
 end Gade.Dev.CPU.Instructions.Bitwise;

@@ -10,26 +10,26 @@ package Gade.Dev.CPU.Instructions.Arithmetic is
    SUB_Carry : constant Carry_Type;
    SBC_Carry : constant Carry_Type;
 
-   procedure Do_Add
+   procedure Add
      (CPU    : in out CPU_Context;
       Value  :        Byte;
       Result :    out Byte;
       Carry  :        Carry_Type);
    --  8 bit add
 
-   procedure Do_Add
+   procedure Add
      (CPU    : in out CPU_Context;
       Value  :        Word;
       Result :    out Word);
    --  16 Bit add
 
-   procedure Do_Add
+   procedure Add
      (CPU    : in out CPU_Context;
       Reg    : in out Word;
       Value  :        Byte);
    --  16 Bit add
 
-   procedure Do_Sub
+   procedure Sub
      (CPU    : in out CPU_Context;
       Value  :        Byte;
       Result :    out Byte;
@@ -43,36 +43,36 @@ package Gade.Dev.CPU.Instructions.Arithmetic is
 
    type Inc_Dec_Type is (INC, DEC);
 
-   procedure Do_Inc_Dec
+   procedure Inc_Dec
      (CPU     : in out CPU_Context;
       Inc_Dec :        Inc_Dec_Type;
       Value   :        Byte;
       Result  :    out Byte);
 
-   procedure Do_Daa
+   procedure Adjust_DAA
      (CPU : in out CPU_Context);
 
    generic
       Operation : Instructions.Inc_Dec_Op_Kind;
       Target    : Instructions.Byte_Target_Kind;
-   procedure Execute_Inc_Dec_Byte
+   procedure Inc_Dec_Byte
      (GB : in out Gade.GB.GB_Type);
 
    generic
       Operation : Instructions.Inc_Dec_Op_Kind;
       Target    : Instructions.Word_Register_Kind;
-   procedure Execute_Inc_Dec_Word
+   procedure Inc_Dec_Word
      (GB : in out Gade.GB.GB_Type);
 
    generic
       Source : Instructions.Word_Register_Kind;
-   procedure Execute_Add_HL
+   procedure Add_HL
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_ADD_SP_Imm8
+   procedure ADD_SP_Imm8
      (GB : in out Gade.GB.GB_Type);
 
-   procedure Execute_DAA
+   procedure DAA
      (GB : in out Gade.GB.GB_Type);
 
 private

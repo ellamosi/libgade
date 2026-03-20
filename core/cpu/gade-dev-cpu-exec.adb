@@ -54,7 +54,7 @@ package body Gade.Dev.CPU.Exec is
          4 => Hex_Digit (Raw mod 16)];
    end Hex_Word;
 
-   procedure Execute_Invalid_Main_Opcode
+   procedure Invalid_Main_Opcode
      (GB : in out Gade.GB.GB_Type) is
       Opcode : constant Byte := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC - 1);
    begin
@@ -63,9 +63,9 @@ package body Gade.Dev.CPU.Exec is
         & Hex_Byte (Opcode)
         & " at PC=0x"
         & Hex_Word (GB.CPU.PC - 1);
-   end Execute_Invalid_Main_Opcode;
+   end Invalid_Main_Opcode;
 
-   procedure Execute_Main_CB_Prefix
+   procedure Main_CB_Prefix
      (GB : in out Gade.GB.GB_Type) is
       Handler : Instruction_Handler;
       Opcode  : Byte;
@@ -75,6 +75,6 @@ package body Gade.Dev.CPU.Exec is
       Handler := CB_Table (Opcode);
       GB.CPU.PC := GB.CPU.PC + 1;
       Handler.all (GB);
-   end Execute_Main_CB_Prefix;
+   end Main_CB_Prefix;
 
 end Gade.Dev.CPU.Exec;

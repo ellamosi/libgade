@@ -259,34 +259,34 @@ package body Gade.Dev.CPU.Instructions is
       end case;
    end Adjust_HL_Auto;
 
-   procedure Execute_ALU_A_Source
+   procedure ALU_A_Source
      (GB : in out Gade.GB.GB_Type) is
       Value : constant Byte := Fetch_Source (GB, Source);
       Dummy : Byte;
    begin
       case Operation is
          when ALU_ADD =>
-            Gade.Dev.CPU.Instructions.Arithmetic.Do_Add
+            Gade.Dev.CPU.Instructions.Arithmetic.Add
               (GB.CPU, Value, GB.CPU.Regs.A, Gade.Dev.CPU.Instructions.Arithmetic.ADD_Carry);
          when ALU_ADC =>
-            Gade.Dev.CPU.Instructions.Arithmetic.Do_Add
+            Gade.Dev.CPU.Instructions.Arithmetic.Add
               (GB.CPU, Value, GB.CPU.Regs.A, Gade.Dev.CPU.Instructions.Arithmetic.ADC_Carry);
          when ALU_SUB =>
-            Gade.Dev.CPU.Instructions.Arithmetic.Do_Sub
+            Gade.Dev.CPU.Instructions.Arithmetic.Sub
               (GB.CPU, Value, GB.CPU.Regs.A, Gade.Dev.CPU.Instructions.Arithmetic.SUB_Carry);
          when ALU_SBC =>
-            Gade.Dev.CPU.Instructions.Arithmetic.Do_Sub
+            Gade.Dev.CPU.Instructions.Arithmetic.Sub
               (GB.CPU, Value, GB.CPU.Regs.A, Gade.Dev.CPU.Instructions.Arithmetic.SBC_Carry);
          when ALU_AND =>
-            Gade.Dev.CPU.Instructions.Logic.Do_AND (GB.CPU, Value);
+            Gade.Dev.CPU.Instructions.Logic.Logic_AND (GB.CPU, Value);
          when ALU_XOR =>
-            Gade.Dev.CPU.Instructions.Logic.Do_XOR (GB.CPU, Value);
+            Gade.Dev.CPU.Instructions.Logic.Logic_XOR (GB.CPU, Value);
          when ALU_OR =>
-            Gade.Dev.CPU.Instructions.Logic.Do_OR (GB.CPU, Value);
+            Gade.Dev.CPU.Instructions.Logic.Logic_OR (GB.CPU, Value);
          when ALU_CP =>
-            Gade.Dev.CPU.Instructions.Arithmetic.Do_Sub
+            Gade.Dev.CPU.Instructions.Arithmetic.Sub
               (GB.CPU, Value, Dummy, Gade.Dev.CPU.Instructions.Arithmetic.SUB_Carry);
       end case;
-   end Execute_ALU_A_Source;
+   end ALU_A_Source;
 
 end Gade.Dev.CPU.Instructions;
