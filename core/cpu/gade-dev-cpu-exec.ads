@@ -5,7 +5,7 @@ with Gade.Dev.CPU.Instructions.Bitwise.Instances;
 with Gade.Dev.CPU.Instructions.Logic.Instances;
 with Gade.Dev.CPU.Instructions.Stack.Instances;
 with Gade.Dev.CPU.Instructions.Flow.Instances;
-with Gade.Dev.CPU.Instructions.Control;
+with Gade.Dev.CPU.Instructions.Control.Instances;
 
 package Gade.Dev.CPU.Exec is
 
@@ -23,7 +23,7 @@ private
    package Logic renames Gade.Dev.CPU.Instructions.Logic.Instances;
    package Stack renames Gade.Dev.CPU.Instructions.Stack.Instances;
    package Flow renames Gade.Dev.CPU.Instructions.Flow.Instances;
-   package Control renames Gade.Dev.CPU.Instructions.Control;
+   package Control renames Gade.Dev.CPU.Instructions.Control.Instances;
 
    type Handler_Table is array (Byte) of Instruction_Handler;
 
