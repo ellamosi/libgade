@@ -67,7 +67,7 @@ Ada sources can be formatted locally with:
 ./scripts/format-ada.sh
 ```
 
-Install `gnatpp` separately with `alr install libadalang_tools`, and ensure
+Install `gnatformat` separately with `alr install gnatformat`, and ensure
 `$HOME/.alire/bin` is on your `PATH`.
 
 ### Scenario Variables

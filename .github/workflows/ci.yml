@@ -17,8 +17,8 @@ jobs:
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
 
-      - name: Install gnatpp
-        run: alr install libadalang_tools
+      - name: Install gnatformat
+        run: alr install gnatformat
 
       - name: Check Ada formatting
         run: ./scripts/check-ada-format.sh
