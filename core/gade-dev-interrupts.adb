@@ -15,7 +15,8 @@ package body Gade.Dev.Interrupts is
      (Interrupt_Flag : in out Interrupt_Flag_Type;
       GB             : in out Gade.GB.GB_Type;
       Address        : Word;
-      Value          : out Byte) is
+      Value          : out Byte)
+   is
       pragma Unreferenced (GB, Address);
    begin
       Value := Interrupt_Flag.Map.Reg;
@@ -26,7 +27,8 @@ package body Gade.Dev.Interrupts is
      (Interrupt_Flag : in out Interrupt_Flag_Type;
       GB             : in out Gade.GB.GB_Type;
       Address        : Word;
-      Value          : Byte) is
+      Value          : Byte)
+   is
       pragma Unreferenced (GB, Address);
    begin
       Interrupt_Flag.Map.Reg := Value and Interrupt_Enable_Mask;
@@ -43,7 +45,8 @@ package body Gade.Dev.Interrupts is
      (Interrupt_Enable : in out Interrupt_Enable_Type;
       GB               : in out Gade.GB.GB_Type;
       Address          : Word;
-      Value            : out Byte) is
+      Value            : out Byte)
+   is
       pragma Unreferenced (GB, Address);
    begin
       Value := Interrupt_Enable.Map.Reg;
@@ -54,15 +57,14 @@ package body Gade.Dev.Interrupts is
      (Interrupt_Enable : in out Interrupt_Enable_Type;
       GB               : in out Gade.GB.GB_Type;
       Address          : Word;
-      Value            : Byte) is
+      Value            : Byte)
+   is
       pragma Unreferenced (GB, Address);
    begin
       Interrupt_Enable.Map.Reg := Value and Interrupt_Enable_Mask;
    end Write;
 
-   procedure Set_Interrupt
-     (GB        : in out Gade.GB.GB_Type;
-      Interrupt : Interrupt_Type) is
+   procedure Set_Interrupt (GB : in out Gade.GB.GB_Type; Interrupt : Interrupt_Type) is
    begin
       GB.Interrupt_Flag.Map.Flags (Interrupt) := True;
       if GB.Interrupt_Enable.Map.Flags (Interrupt) then
@@ -77,10 +79,10 @@ package body Gade.Dev.Interrupts is
       return Interrupt_Flag.Reg /= 0;
    end Interrupt_Requested;
 
-   procedure Service_Interrupts (GB     : in out Gade.GB.GB_Type;
-                                 Cycles : out M_Cycle_Count) is
+   procedure Service_Interrupts (GB : in out Gade.GB.GB_Type; Cycles : out M_Cycle_Count)
+   is
       Interrupt_Enable : Interrupt_Flag_Register_Type;
-      Interrupt_Flags : Interrupt_Flag_Register_Type;
+      Interrupt_Flags  : Interrupt_Flag_Register_Type;
    begin
       if GB.CPU.IFF = IE_EI then
          Interrupt_Enable := GB.Interrupt_Enable.Map;

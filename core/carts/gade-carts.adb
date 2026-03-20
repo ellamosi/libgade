@@ -13,26 +13,18 @@ package body Gade.Carts is
    package MBC2_Carts renames MBC2.Constructors;
    package MBC3_Carts renames MBC3.Constructors;
 
-   function Get_Header
-     (Content : ROM_Content_Access)
-      return Cart_Header_Access;
+   function Get_Header (Content : ROM_Content_Access) return Cart_Header_Access;
 
    function RAM_Path (ROM_Path : String) return String;
 
-   procedure Read_ROM
-     (C       : in out Cart;
-      Address : External_ROM_IO_Address;
-      V       : out Byte)
+   procedure Read_ROM (C : in out Cart; Address : External_ROM_IO_Address; V : out Byte)
    is
       pragma Unreferenced (C, Address);
    begin
       V := Blank_Value;
    end Read_ROM;
 
-   procedure Read_RAM
-     (C       : in out Cart;
-      Address : External_RAM_IO_Address;
-      V       : out Byte)
+   procedure Read_RAM (C : in out Cart; Address : External_RAM_IO_Address; V : out Byte)
    is
       pragma Unreferenced (C, Address);
    begin
@@ -40,8 +32,7 @@ package body Gade.Carts is
    end Read_RAM;
 
    function Load_ROM
-     (Path   : String;
-      Logger : Gade.Logging.Logger_Access) return Cart_NN_Access
+     (Path : String; Logger : Gade.Logging.Logger_Access) return Cart_NN_Access
    is
       ROM        : ROM_Content_Access;
       Header     : Cart_Header_Access;
@@ -62,13 +53,17 @@ package body Gade.Carts is
       case Controller is
          when Cartridge_Info.None =>
             C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path, Logger));
+
          when Cartridge_Info.MBC1 =>
             C := Cart_Access (MBC1_Carts.Create (ROM, Header.all, Save_Path, Logger));
+
          when Cartridge_Info.MBC2 =>
             C := Cart_Access (MBC2_Carts.Create (ROM, Header.all, Save_Path, Logger));
+
          when Cartridge_Info.MBC3 =>
             C := Cart_Access (MBC3_Carts.Create (ROM, Header.all, Save_Path, Logger));
-         when others =>
+
+         when others              =>
             C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path, Logger));
       end case;
       C.Load_RAM;
@@ -112,26 +107,21 @@ package body Gade.Carts is
       use Ada.Directories;
    begin
       return
-        Compose (Containing_Directory => Containing_Directory (ROM_Path),
-                 Name                 => Base_Name (ROM_Path),
-                 Extension            => "sav");
+        Compose
+          (Containing_Directory => Containing_Directory (ROM_Path),
+           Name                 => Base_Name (ROM_Path),
+           Extension            => "sav");
    end RAM_Path;
 
-   function Get_Header
-     (Content : ROM_Content_Access)
-      return Cart_Header_Access
-   is
+   function Get_Header (Content : ROM_Content_Access) return Cart_Header_Access is
       type Byte_Access is access all Byte;
 
-      pragma Warnings
-        (Off, "possible aliasing problem for type ""Cart_Header_Access""");
+      pragma Warnings (Off, "possible aliasing problem for type ""Cart_Header_Access""");
       --  Allow strict aliasing analysis optimizations as type conversion is for
       --  a read only use.
-      function Convert is new Ada.Unchecked_Conversion
-        (Source => Byte_Access,
-         Target => Cart_Header_Access);
-      pragma Warnings
-        (On, "possible aliasing problem for type ""Cart_Header_Access""");
+      function Convert is new
+        Ada.Unchecked_Conversion (Source => Byte_Access, Target => Cart_Header_Access);
+      pragma Warnings (On, "possible aliasing problem for type ""Cart_Header_Access""");
    begin
       return Convert (Content (0)'Access);
    end Get_Header;

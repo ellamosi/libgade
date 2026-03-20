@@ -6,9 +6,7 @@ package Gade.Carts.Banks.Pools is
 
    type Bank_Pool is private;
 
-   function Select_Bank
-     (Pool : Bank_Pool;
-      I    : Bank_Index) return Bank_NN_Access;
+   function Select_Bank (Pool : Bank_Pool; I : Bank_Index) return Bank_NN_Access;
 
 private
 

@@ -6,19 +6,12 @@ package body Gade.Carts.RTC is
       null;
    end Reset;
 
-   procedure Read
-     (Clk   : in out Clock;
-      Reg   : Register;
-      Value : out Byte) is
+   procedure Read (Clk : in out Clock; Reg : Register; Value : out Byte) is
    begin
       Value := Clk.Registers.Indexed (Reg);
    end Read;
 
-   procedure Write
-     (Clk   : in out Clock;
-      Reg   : Register;
-      Value : Byte)
-   is
+   procedure Write (Clk : in out Clock; Reg : Register; Value : Byte) is
       Regs : Counter_Registers;
    begin
       Regs.Indexed (Reg) := Value;
@@ -31,13 +24,10 @@ package body Gade.Carts.RTC is
       To_Registers (Clk.Latched, Clk.Registers);
    end Latch;
 
-   procedure Report_Cycles
-     (Clk    : in out Clock;
-      Cycles : M_Cycle_Count)
-   is
-      T_Cycles : constant T_Cycle_Count := To_T_Cycles (Cycles);
+   procedure Report_Cycles (Clk : in out Clock; Cycles : M_Cycle_Count) is
+      T_Cycles   : constant T_Cycle_Count := To_T_Cycles (Cycles);
       New_Cycles : T_Cycle_Count;
-      Seconds : Natural;
+      Seconds    : Natural;
    begin
       New_Cycles := Clk.Cycles + T_Cycles;
       Clk.Cycles := New_Cycles mod Cycles_Per_Second;
@@ -47,10 +37,7 @@ package body Gade.Carts.RTC is
       end if;
    end Report_Cycles;
 
-   procedure Increase_Counter
-     (C    : in out Counter;
-      Span : Duration)
-   is
+   procedure Increase_Counter (C : in out Counter; Span : Duration) is
    begin
       C.Span := C.Span + Span;
       while C.Span >= Max_Span loop
@@ -63,27 +50,21 @@ package body Gade.Carts.RTC is
       Seconds : Natural;
    begin
       Seconds :=
-        Natural (Regs.Seconds) +
-        Natural (Regs.Minutes) * 60 +
-        Natural (Regs.Hours)   * 60 * 60 +
-        Natural (Regs.Days)    * 24 * 60 * 60;
+        Natural (Regs.Seconds)
+        + Natural (Regs.Minutes) * 60
+        + Natural (Regs.Hours) * 60 * 60
+        + Natural (Regs.Days) * 24 * 60 * 60;
       return Duration (Seconds);
    end Elapsed;
 
-   procedure To_Counter
-     (C_Regs : Counter_Registers;
-      C      : out Counter)
-   is
+   procedure To_Counter (C_Regs : Counter_Registers; C : out Counter) is
    begin
-      C.Span   := Elapsed (C_Regs);
+      C.Span := Elapsed (C_Regs);
       C.Halted := C_Regs.Halted;
-      C.Carry  := C_Regs.Carry;
+      C.Carry := C_Regs.Carry;
    end To_Counter;
 
-   procedure To_Registers
-     (C      : Counter;
-      C_Regs : out Counter_Registers)
-   is
+   procedure To_Registers (C : Counter; C_Regs : out Counter_Registers) is
       Span_Seconds : constant Natural := Natural (C.Span);
       Span_Minutes : constant Natural := Span_Seconds / 60;
       Span_Hours   : constant Natural := Span_Minutes / 60;
@@ -91,13 +72,13 @@ package body Gade.Carts.RTC is
    begin
       C_Regs.Seconds := Byte (Span_Seconds mod 60);
       C_Regs.Minutes := Byte (Span_Minutes mod 60);
-      C_Regs.Hours   := Byte (Span_Hours   mod 24);
+      C_Regs.Hours := Byte (Span_Hours mod 24);
 
       --  Clear unused bits (clear value not really known)
       C_Regs.Indexed (Days_High) := 0;
 
-      C_Regs.Days   := Day_Count (Span_Days mod Day_Count_Cardinality);
-      C_Regs.Carry  := C.Carry;
+      C_Regs.Days := Day_Count (Span_Days mod Day_Count_Cardinality);
+      C_Regs.Carry := C.Carry;
       C_Regs.Halted := C.Halted;
    end To_Registers;
 

@@ -2,9 +2,7 @@ with Gade.Carts.Blank;
 
 package body Gade.GB is
 
-   procedure Create
-     (GB     : out GB_Type;
-      Logger : Gade.Logging.Logger_Access) is
+   procedure Create (GB : out GB_Type; Logger : Gade.Logging.Logger_Access) is
       use type Gade.Logging.Logger_Access;
    begin
       GB.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
@@ -42,10 +40,7 @@ package body Gade.GB is
    end Report_Cycles;
 
    procedure Report_Frame
-     (GB     : in out GB_Type;
-      Audio  : Audio_Buffer_Access;
-      Cycles : M_Cycle_Count)
-   is
+     (GB : in out GB_Type; Audio : Audio_Buffer_Access; Cycles : M_Cycle_Count) is
    begin
       GB.Cart.Report_Cycles (Cycles);
       Flush_Frame (GB.Audio, Audio, Cycles);

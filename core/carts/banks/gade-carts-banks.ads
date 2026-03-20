@@ -9,10 +9,7 @@ package Gade.Carts.Banks is
    type Bank_Access is access all Bank'Class;
    subtype Bank_NN_Access is not null Bank_Access;
 
-   procedure Read
-     (B       : in out Bank;
-      Address : Bank_Address;
-      V       : out Byte) is abstract;
+   procedure Read (B : in out Bank; Address : Bank_Address; V : out Byte) is abstract;
 
    procedure Write (B : in out Bank; Address : Bank_Address; V : Byte) is null;
 
@@ -35,20 +32,12 @@ private
       end record;
 
       procedure Initialize
-        (B       : out Memory_Bank'Class;
-         Content : Content_NN_Access;
-         Offset  : Address);
+        (B : out Memory_Bank'Class; Content : Content_NN_Access; Offset : Address);
 
       overriding
-      procedure Read
-        (B    : in out Memory_Bank;
-         Addr : Bank_Address;
-         V    : out Byte);
+      procedure Read (B : in out Memory_Bank; Addr : Bank_Address; V : out Byte);
 
-      function Decode
-        (B    : Memory_Bank'Class;
-         Addr : Bank_Address)
-         return Address;
+      function Decode (B : Memory_Bank'Class; Addr : Bank_Address) return Address;
 
    private
 

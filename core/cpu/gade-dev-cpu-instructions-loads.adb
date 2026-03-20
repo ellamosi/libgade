@@ -2,8 +2,7 @@ with Gade.Dev.CPU.Instructions.Arithmetic;
 
 package body Gade.Dev.CPU.Instructions.Loads is
 
-   procedure LD_Addr_Imm16_SP
-     (GB : in out Gade.GB.GB_Type) is
+   procedure LD_Addr_Imm16_SP (GB : in out Gade.GB.GB_Type) is
    begin
       declare
          Address : constant Word := Instructions.Fetch_Imm16 (GB);
@@ -13,8 +12,7 @@ package body Gade.Dev.CPU.Instructions.Loads is
       end;
    end LD_Addr_Imm16_SP;
 
-   procedure LD_HL_SP_Plus_Imm8
-     (GB : in out Gade.GB.GB_Type) is
+   procedure LD_HL_SP_Plus_Imm8 (GB : in out Gade.GB.GB_Type) is
       Value : Word := GB.CPU.Regs.SP;
    begin
       Gade.Dev.CPU.Instructions.Arithmetic.Add
@@ -23,8 +21,7 @@ package body Gade.Dev.CPU.Instructions.Loads is
       GB.CPU.Regs.HL := Value;
    end LD_HL_SP_Plus_Imm8;
 
-   procedure LD_Byte
-     (GB : in out Gade.GB.GB_Type) is
+   procedure LD_Byte (GB : in out Gade.GB.GB_Type) is
       Value : constant Byte := Instructions.Fetch_Source (GB, Source);
    begin
       Instructions.Store_Target (GB, Dest, Value);
@@ -32,10 +29,10 @@ package body Gade.Dev.CPU.Instructions.Loads is
       Instructions.Adjust_HL_Auto (GB, Dest);
    end LD_Byte;
 
-   procedure LD_Word
-     (GB : in out Gade.GB.GB_Type) is
+   procedure LD_Word (GB : in out Gade.GB.GB_Type) is
    begin
-      Instructions.Write_Word_Register (GB, Dest, Instructions.Read_Word_Source (GB, Source));
+      Instructions.Write_Word_Register
+        (GB, Dest, Instructions.Read_Word_Source (GB, Source));
 
       if Dest = Instructions.REG_SP and then Source = Instructions.WSRC_HL then
          Instructions.Internal_Cycle (GB);

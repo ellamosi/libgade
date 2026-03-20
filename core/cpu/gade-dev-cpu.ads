@@ -31,23 +31,25 @@ package Gade.Dev.CPU is
       SP : Word;
       case Width is
          when Half =>
-            F : CPU_Flags;
+            F                   : CPU_Flags;
             A, C, B, E, D, L, H : Byte;
+
          when Full =>
             AF, BC, DE, HL : Word;
       end case;
-   end record with Unchecked_Union;
+   end record
+   with Unchecked_Union;
 
    type Interrupt_Enable is (IE_DI, IE_EI);
 
    type CPU_Context is tagged record
-      Regs  : CPU_Registers;
+      Regs           : CPU_Registers;
       --  Flags : CPU_Flags;
-      PC    : Word;
-      IFF   : Interrupt_Enable; -- Interrupt Flipflops
-      Halted : Boolean;
+      PC             : Word;
+      IFF            : Interrupt_Enable; -- Interrupt Flipflops
+      Halted         : Boolean;
       --  Mem   : Memory_Map_Type;
-      Branch_Taken : Boolean;
+      Branch_Taken   : Boolean;
       Stepped_Cycles : Gade.Timing.M_Cycle_Count := 0;
    end record;
 
@@ -69,20 +71,19 @@ package Gade.Dev.CPU is
 
    type Condition_Type is (C_Z, C_NZ, C_C, C_NC);
 
-   function Check_Condition
-      (CPU  : CPU_Context;
-       cond : Condition_Type) return Boolean;
+   function Check_Condition (CPU : CPU_Context; cond : Condition_Type) return Boolean;
 
    function Get_Flags_String (CPU : CPU_Context) return String;
 
 private
 
-   for CPU_Flags use record
-      Z at 0 range 7 .. 7;
-      N at 0 range 6 .. 6;
-      H at 0 range 5 .. 5;
-      C at 0 range 4 .. 4;
-   end record;
+   for CPU_Flags use
+     record
+       Z at 0 range 7 .. 7;
+       N at 0 range 6 .. 6;
+       H at 0 range 5 .. 5;
+       C at 0 range 4 .. 4;
+     end record;
    for CPU_Flags'Size use Byte'Size;
 
 end Gade.Dev.CPU;

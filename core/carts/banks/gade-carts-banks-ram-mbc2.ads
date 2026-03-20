@@ -8,16 +8,10 @@ package Gade.Carts.Banks.RAM.MBC2 is
    subtype MBC2_RAM_Bank_NN_Access is not null MBC2_RAM_Bank_Access;
 
    overriding
-   procedure Read
-     (B       : in out MBC2_RAM_Bank;
-      Address : Bank_Address;
-      V       : out Byte);
+   procedure Read (B : in out MBC2_RAM_Bank; Address : Bank_Address; V : out Byte);
 
    overriding
-   procedure Write
-     (B       : in out MBC2_RAM_Bank;
-      Address : Bank_Address;
-      V       : Byte);
+   procedure Write (B : in out MBC2_RAM_Bank; Address : Bank_Address; V : Byte);
 
 private
 

@@ -35,15 +35,16 @@ private
       Carry    : Boolean;
       Halted   : Boolean;
    end record;
-   for Counter_Data use record
-      Seconds  at  0 range 0 .. 31;
-      Minutes  at  4 range 0 .. 31;
-      Hours    at  8 range 0 .. 31;
-      Days_Low at 12 range 0 .. 31;
-      Days_Top at 16 range 0 .. 0;
-      Halted   at 16 range 6 .. 6;
-      Carry    at 16 range 7 .. 7;
-   end record;
+   for Counter_Data use
+     record
+       Seconds at 0 range 0 .. 31;
+       Minutes at 4 range 0 .. 31;
+       Hours at 8 range 0 .. 31;
+       Days_Low at 12 range 0 .. 31;
+       Days_Top at 16 range 0 .. 0;
+       Halted at 16 range 6 .. 6;
+       Carry at 16 range 7 .. 7;
+     end record;
    for Counter_Data'Size use Counter_Data_Size * 8;
 
    --  There are two versions for the VBA-M RTC save format, one using a 32 bit
@@ -68,53 +69,46 @@ private
    --  enforce the rerpresentation clauses by treating it as just a byte array.
    type Clock_Data
      (Access_Type    : Clock_Data_Access_Type := Named;
-      Timestamp_Size : Timestamp_Size_Type    := TS_Size_32)
+      Timestamp_Size : Timestamp_Size_Type := TS_Size_32)
    is record
       case Access_Type is
          when Named =>
             Time, Latched : Counter_Data;
             Saved_At      : Integer_64;
+
          when Plain =>
             case Timestamp_Size is
-               when TS_Size_32 => Content_32 : Clock_Data_32_Buffer;
-               when TS_Size_64 => Content_64 : Clock_Data_64_Buffer;
+               when TS_Size_32 =>
+                  Content_32 : Clock_Data_32_Buffer;
+
+               when TS_Size_64 =>
+                  Content_64 : Clock_Data_64_Buffer;
             end case;
       end case;
-   end record with Unchecked_Union;
-   for Clock_Data use record
-      Time       at  0 range 0 .. 20 * 8 - 1;
-      Latched    at 20 range 0 .. 20 * 8 - 1;
-      Saved_At   at 40 range 0 .. 63;
-      Content_32 at  0 range 0 .. Clock_Data_32_Size * 8 - 1;
-      Content_64 at  0 range 0 .. Clock_Data_64_Size * 8 - 1;
-   end record;
+   end record
+   with Unchecked_Union;
+   for Clock_Data use
+     record
+       Time at 0 range 0 .. 20 * 8 - 1;
+       Latched at 20 range 0 .. 20 * 8 - 1;
+       Saved_At at 40 range 0 .. 63;
+       Content_32 at 0 range 0 .. Clock_Data_32_Size * 8 - 1;
+       Content_64 at 0 range 0 .. Clock_Data_64_Size * 8 - 1;
+     end record;
    for Clock_Data'Size use Clock_Data_64_Size * 8;
    for Clock_Data'Bit_Order use System.Low_Order_First;
    for Clock_Data'Scalar_Storage_Order use System.Low_Order_First;
 
    procedure Read (File : File_Type; Clk_Data : out Clock_Data);
 
-   procedure To_Clock
-     (Clk_Data  : Clock_Data;
-      Loaded_At : Time;
-      Clk       : out Clock);
-   procedure To_Clock_Data
-     (Clk      : Clock;
-      Saved_At : Time;
-      Clk_Data : out Clock_Data);
+   procedure To_Clock (Clk_Data : Clock_Data; Loaded_At : Time; Clk : out Clock);
+   procedure To_Clock_Data (Clk : Clock; Saved_At : Time; Clk_Data : out Clock_Data);
 
-   procedure To_Counter_Data
-     (Registers : Counter_Registers;
-      C_Data    : out Counter_Data);
-   procedure To_Counter_Data
-     (C      : Counter;
-      C_Data : out Counter_Data);
+   procedure To_Counter_Data (Registers : Counter_Registers; C_Data : out Counter_Data);
+   procedure To_Counter_Data (C : Counter; C_Data : out Counter_Data);
 
    procedure To_Counter_Registers
-     (C_Data    : Counter_Data;
-      Registers : out Counter_Registers);
-   procedure To_Counter
-     (C_Data : Counter_Data;
-      C      : out Counter);
+     (C_Data : Counter_Data; Registers : out Counter_Registers);
+   procedure To_Counter (C_Data : Counter_Data; C : out Counter);
 
 end Gade.Carts.RTC.File_IO;

@@ -10,9 +10,7 @@ package Gade.Carts.MBC2 is
 
    overriding
    procedure Write_ROM
-     (C       : in out MBC2_Cart;
-      Address : External_ROM_IO_Address;
-      Value   : Byte);
+     (C : in out MBC2_Cart; Address : External_ROM_IO_Address; Value : Byte);
 
 private
 
@@ -29,19 +27,17 @@ private
    RAM_Enable_Mask        : constant Byte := 16#0F#;
    RAM_Enable_Value       : constant Byte := 16#0A#;
 
-   subtype Lower_ROM_IO_Address is
-     External_ROM_IO_Address range 16#0000# .. 16#3FFF#;
+   subtype Lower_ROM_IO_Address is External_ROM_IO_Address range 16#0000# .. 16#3FFF#;
 
-   package MBC_Mixin is new Gade.Carts.Mixins.MBC
-     (Base_Cart => Cart,
-      ROM_Banks => ROM_Bank_Count,
-      RAM_Banks => RAM_Bank_Count);
+   package MBC_Mixin is new
+     Gade.Carts.Mixins.MBC
+       (Base_Cart => Cart,
+        ROM_Banks => ROM_Bank_Count,
+        RAM_Banks => RAM_Bank_Count);
    use MBC_Mixin;
 
    type MBC2_Cart is new MBC_Cart with null record;
 
-   procedure Select_Bank
-     (C     : in out MBC2_Cart;
-      Value : Byte);
+   procedure Select_Bank (C : in out MBC2_Cart; Value : Byte);
 
 end Gade.Carts.MBC2;

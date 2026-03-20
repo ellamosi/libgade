@@ -1,9 +1,6 @@
 package body Gade.Carts.Banks.Pools.Constructors is
 
-   procedure Initialize
-     (Pool : out Bank_Pool;
-      BF   : in out Bank_Factory'Class)
-   is
+   procedure Initialize (Pool : out Bank_Pool; BF : in out Bank_Factory'Class) is
    begin
       for I in Bank_Index'Range loop
          Pool.Banks (I) := BF.Create_Bank (I);
@@ -13,9 +10,7 @@ package body Gade.Carts.Banks.Pools.Constructors is
    package body Default_Bank_Factories is
 
       procedure Initialize
-        (Bank_Factory : out Default_Bank_Factory'Class;
-         Content      : Content_Access)
-      is
+        (Bank_Factory : out Default_Bank_Factory'Class; Content : Content_Access) is
       begin
          Bank_Factory.Content := Content;
          Bank_Factory.Banks := [others => null];
@@ -25,15 +20,14 @@ package body Gade.Carts.Banks.Pools.Constructors is
             Bank_Factory.Banks (0) := Bank_Access (Blank_Banks.Singleton);
          else
             --  Count the actual (non mirrored) memory banks
-            Bank_Factory.N_Banks := Bank_Count'Max
-              (Bank_Count (Content'Length / Size), 1);
+            Bank_Factory.N_Banks :=
+              Bank_Count'Max (Bank_Count (Content'Length / Size), 1);
          end if;
       end Initialize;
 
       overriding
       function Create_Bank
-        (F : in out Default_Bank_Factory;
-         I : Bank_Index) return Bank_NN_Access
+        (F : in out Default_Bank_Factory; I : Bank_Index) return Bank_NN_Access
       is
          Offset         : Address;
          Original_Index : Bank_Index;

@@ -2,9 +2,9 @@ with Gade.Audio_Buffer; use Gade.Audio_Buffer;
 with Gade.Video_Buffer; use Gade.Video_Buffer;
 
 with System;
-with Interfaces.C; use Interfaces.C;
+with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
-with Gade.Input; use Gade.Input;
+with Gade.Input;           use Gade.Input;
 
 package Gade.Interfaces.C is
 
@@ -19,9 +19,7 @@ package Gade.Interfaces.C is
    procedure Reset (This : Gade_Type);
    pragma Export (C, Reset, "gadeReset");
 
-   procedure Load_ROM
-     (This     : Gade_Type;
-      ROM_File : chars_ptr);
+   procedure Load_ROM (This : Gade_Type; ROM_File : chars_ptr);
    pragma Export (C, Load_ROM, "gadeLoad");
 
    procedure Run_For
@@ -33,16 +31,13 @@ package Gade.Interfaces.C is
       Frame_Finished    : out unsigned_char);
    pragma Export (C, Run_For, "gadeRunFor");
 
-   procedure Next_Frame
-     (This  : Gade_Type;
-      Video : RGB32_Display_Buffer_Access);
+   procedure Next_Frame (This : Gade_Type; Video : RGB32_Display_Buffer_Access);
    pragma Export (C, Next_Frame, "gadeNextFrame");
 
    type Input_Reader_Class_Access is private;
 
    procedure Set_Input_Reader
-     (This         : in out Gade_Type;
-      Input_Reader : Input_Reader_Class_Access);
+     (This : in out Gade_Type; Input_Reader : Input_Reader_Class_Access);
    pragma Export (C, Set_Input_Reader, "gadeSetInputReader");
 
 private

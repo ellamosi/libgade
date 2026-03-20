@@ -2,10 +2,7 @@ package body Gade.Carts.Mem is
 
    package body Common is
 
-      procedure Load
-        (Mem  : out Content;
-         File : File_Type)
-      is
+      procedure Load (Mem : out Content; File : File_Type) is
          Input_Stream : Stream_Access;
       begin
          Input_Stream := Ada.Streams.Stream_IO.Stream (File);

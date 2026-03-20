@@ -10,8 +10,8 @@ package Testd.Sessions is
    type Session is limited record
       Dev_Null : Ada.Text_IO.File_Type;
 
-      G : Gade.Interfaces.Gade_Type;
-      G_Created : Boolean := False;
+      G          : Gade.Interfaces.Gade_Type;
+      G_Created  : Boolean := False;
       ROM_Loaded : Boolean := False;
 
       V_Buff : aliased Gade.Video_Buffer.RGB32_Display_Buffer;
@@ -27,8 +27,7 @@ package Testd.Sessions is
 
    --  Process one protocol line. Returns True when caller should terminate.
    function Process_Line
-     (S        : in out Session;
-      Raw_Line : String) return Boolean;
+     (S : in out Session; Raw_Line : String) return Boolean;
 
    procedure Reply_OK (Payload : String := "");
    procedure Reply_ERR (Code : String; Message : String);

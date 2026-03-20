@@ -6,15 +6,16 @@ with Gade.Carts.Banks.RAM.MBC2;
 
 generic
    type Base_Cart is abstract new Cart with private;
-   Banks              : in Positive;
+   Banks : in Positive;
    Enabled_By_Default : in Boolean := False;
 package Gade.Carts.Mixins.Banked.RAM is
 
-   package Banked_RAM_Spaces is new Banked_Spaces
-     (Banks            => Banks,
-      Accessible_Banks => 1,
-      Address_Space    => External_RAM_IO_Address,
-      Content_Size     => RAM_Content_Size);
+   package Banked_RAM_Spaces is new
+     Banked_Spaces
+       (Banks            => Banks,
+        Accessible_Banks => 1,
+        Address_Space    => External_RAM_IO_Address,
+        Content_Size     => RAM_Content_Size);
    use Banked_RAM_Spaces;
 
    --  Make bank package instances visible so specialized factories do not
@@ -31,19 +32,13 @@ package Gade.Carts.Mixins.Banked.RAM is
 
    overriding
    procedure Read_RAM
-     (C       : in out Banked_RAM_Cart;
-      Address : External_RAM_IO_Address;
-      V       : out Byte);
+     (C : in out Banked_RAM_Cart; Address : External_RAM_IO_Address; V : out Byte);
 
    overriding
    procedure Write_RAM
-     (C       : in out Banked_RAM_Cart;
-      Address : External_RAM_IO_Address;
-      V       : Byte);
+     (C : in out Banked_RAM_Cart; Address : External_RAM_IO_Address; V : Byte);
 
-   procedure Select_RAM_Bank
-     (C : in out Banked_RAM_Cart;
-      I : Bank_Index);
+   procedure Select_RAM_Bank (C : in out Banked_RAM_Cart; I : Bank_Index);
 
    procedure Enable_RAM (C : in out Banked_RAM_Cart; Enable : Boolean);
 
@@ -54,9 +49,8 @@ private
 
    Enabled_Default : constant Boolean := Enabled_By_Default;
 
-   package RAM_Space_Carts is new Banked_Space_Carts
-     (Base_Cart => Base_Cart,
-      BS        => Banked_RAM_Spaces);
+   package RAM_Space_Carts is new
+     Banked_Space_Carts (Base_Cart => Base_Cart, BS => Banked_RAM_Spaces);
    use RAM_Space_Carts;
 
    type Banked_RAM_Cart is abstract new Banked_Space_Cart with record
@@ -68,13 +62,11 @@ private
 
    overriding
    procedure Load_RAM_File
-     (C    : in out Banked_RAM_Cart;
-      File : Ada.Streams.Stream_IO.File_Type);
+     (C : in out Banked_RAM_Cart; File : Ada.Streams.Stream_IO.File_Type);
 
    overriding
    procedure Save_RAM_File
-     (C    : in out Banked_RAM_Cart;
-      File : Ada.Streams.Stream_IO.File_Type);
+     (C : in out Banked_RAM_Cart; File : Ada.Streams.Stream_IO.File_Type);
 
    function Decode (Address : External_RAM_IO_Address) return Bank_Address;
    pragma Inline (Decode);

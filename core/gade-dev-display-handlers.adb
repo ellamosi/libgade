@@ -7,18 +7,15 @@ package body Gade.Dev.Display.Handlers is
    package Display_Modes renames Gade.Dev.Display;
 
    procedure Setup
-     (Mode_Handler          : in out Mode_Handler_Type;
-      Display_Handler       : Display_Handler_Access;
-      Dev                   : access Display_Type)
-   is
+     (Mode_Handler    : in out Mode_Handler_Type;
+      Display_Handler : Display_Handler_Access;
+      Dev             : access Display_Type) is
    begin
       Mode_Handler.Display_Handler := Display_Handler;
-      Mode_Handler.Dev             := Dev;
+      Mode_Handler.Dev := Dev;
    end Setup;
 
-   procedure Reset
-     (Mode_Handler : in out Mode_Handler_Type)
-   is
+   procedure Reset (Mode_Handler : in out Mode_Handler_Type) is
    begin
       Mode_Handler.Finished := False;
    end Reset;
@@ -58,18 +55,14 @@ package body Gade.Dev.Display.Handlers is
    end Report_Cycles;
 
    procedure Mode_Finished
-     (Mode_Handler : in out Mode_Handler_Type;
-      GB           : in out Gade.GB.GB_Type)
-   is
+     (Mode_Handler : in out Mode_Handler_Type; GB : in out Gade.GB.GB_Type) is
    begin
       --  Meant to trigger in-mode events at the end of the mode such as line
       --  changes
       null;
    end Mode_Finished;
 
-   function Is_Mode_Finished
-     (Mode_Handler : Mode_Handler_Type) return Boolean
-   is
+   function Is_Mode_Finished (Mode_Handler : Mode_Handler_Type) return Boolean is
    begin
       return Mode_Handler.Finished;
    end Is_Mode_Finished;
@@ -77,18 +70,15 @@ package body Gade.Dev.Display.Handlers is
    procedure Line_Changed
      (Handler  : in out Display_Handler_Type;
       GB       : in out Gade.GB.GB_Type;
-      New_Line : Line_Count_Type)
-   is
+      New_Line : Line_Count_Type) is
    begin
       Handler.Current_Line := New_Line;
       Line_Changed (Handler.Dev.all, GB, New_Line);
    end Line_Changed;
 
    function Create (Dev : Display_Access) return Display_Handler_Access is
-      HBlank_Handler      : constant HBlank_Handler_Access :=
-        new HBlank_Handler_Type;
-      VBlank_Handler      : constant VBlank_Handler_Access :=
-        new VBlank_Handler_Type;
+      HBlank_Handler      : constant HBlank_Handler_Access := new HBlank_Handler_Type;
+      VBlank_Handler      : constant VBlank_Handler_Access := new VBlank_Handler_Type;
       OAM_Access_Handler  : constant OAM_Access_Handler_Access :=
         new OAM_Access_Handler_Type;
       VRAM_Access_Handler : constant VRAM_Access_Handler_Access :=
@@ -112,9 +102,7 @@ package body Gade.Dev.Display.Handlers is
       return Handler;
    end Create;
 
-   procedure Reset
-     (Handler : in out Display_Handler_Type)
-   is
+   procedure Reset (Handler : in out Display_Handler_Type) is
    begin
       Handler.Current_Mode_Handler := Handler.Mode_Handlers (Starting_Mode);
       Handler.Current_Line := Starting_Line;

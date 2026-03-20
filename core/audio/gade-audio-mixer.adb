@@ -3,12 +3,13 @@ with Ada.Exceptions; use Ada.Exceptions;
 package body Gade.Audio.Mixer is
    use type Gade.Logging.Logger_Access;
 
-   procedure Create (Mixer    : out Audio_Mixer;
-                     Square_1 : not null Sweeping_Square_Channel_Access;
-                     Square_2 : not null Square_Channel_Access;
-                     Wave     : not null Wave_Channel_Access;
-                     Noise    : not null Noise_Channel_Access;
-                     Logger   : Gade.Logging.Logger_Access) is
+   procedure Create
+     (Mixer    : out Audio_Mixer;
+      Square_1 : not null Sweeping_Square_Channel_Access;
+      Square_2 : not null Square_Channel_Access;
+      Wave     : not null Wave_Channel_Access;
+      Noise    : not null Noise_Channel_Access;
+      Logger   : Gade.Logging.Logger_Access) is
    begin
       Mixer.Square_1 := Square_1;
       Mixer.Square_2 := Square_2;
@@ -59,9 +60,10 @@ package body Gade.Audio.Mixer is
 
       Output := (0, 0);
       for Ch in Channel_Id loop
-         Output := Output +
-           (Samples (Ch) * (if Output_Control.Left (Ch) then 1 else 0),
-            Samples (Ch) * (if Output_Control.Right (Ch) then 1 else 0));
+         Output :=
+           Output
+           + (Samples (Ch) * (if Output_Control.Left (Ch) then 1 else 0),
+              Samples (Ch) * (if Output_Control.Right (Ch) then 1 else 0));
       end loop;
 
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Mixer

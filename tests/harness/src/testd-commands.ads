@@ -10,11 +10,11 @@ private
    use Gade.Video_Buffer;
    use Testd.Sessions;
 
-   function To_Image (Buffer : RGB32_Display_Buffer) return Image_IO.Image_Data;
+   function To_Image
+     (Buffer : RGB32_Display_Buffer) return Image_IO.Image_Data;
 
    function Image_Equal
-     (Left  : Image_IO.Image_Data;
-      Right : Image_IO.Image_Data) return Boolean;
+     (Left : Image_IO.Image_Data; Right : Image_IO.Image_Data) return Boolean;
 
    procedure Ensure_Engine (S : in out Session);
 

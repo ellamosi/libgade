@@ -25,12 +25,13 @@ private package Gade.Audio.Mixer is
 
    type Audio_Mixer is tagged private;
 
-   procedure Create (Mixer    : out Audio_Mixer;
-                     Square_1 : not null Sweeping_Square_Channel_Access;
-                     Square_2 : not null Square_Channel_Access;
-                     Wave     : not null Wave_Channel_Access;
-                     Noise    : not null Noise_Channel_Access;
-                     Logger   : Gade.Logging.Logger_Access);
+   procedure Create
+     (Mixer    : out Audio_Mixer;
+      Square_1 : not null Sweeping_Square_Channel_Access;
+      Square_2 : not null Square_Channel_Access;
+      Wave     : not null Wave_Channel_Access;
+      Noise    : not null Noise_Channel_Access;
+      Logger   : Gade.Logging.Logger_Access);
 
    procedure Reset (Mixer : in out Audio_Mixer);
 
@@ -55,21 +56,20 @@ private
 
    type Channel_Samples is array (Channel_Id) of Sample;
 
-   type Output_Volume is mod 2 ** 3;
+   type Output_Volume is mod 2**3;
 
    --  Used to multiply the internal output values for the dynamic range to more
    --  closely match the range of the output in the interface.
    Max_Unmultipled_Output : constant Sample :=
      Channel_Sample'Last * Channel_Count * Output_Volume'Range_Length;
    --  32767 / (15 * 4 * 8) = 32767 / 480 = ~68.26
-   Sample_Multiplier : constant Sample := Sample'Last / Max_Unmultipled_Output;
+   Sample_Multiplier      : constant Sample := Sample'Last / Max_Unmultipled_Output;
 
    function "+" (S1, S2 : Stereo_Sample) return Stereo_Sample;
    pragma Inline ("+");
 
    function "*" (S1, S2 : Stereo_Sample) return Stereo_Sample;
    pragma Inline ("*");
-
 
    type Volume_Output_Control (S : Audio_Access_Type := Named) is record
       case S is
@@ -78,35 +78,39 @@ private
             Vin_Right_Enable : Boolean;
             Left_Volume      : Output_Volume;
             Vin_Left_Enable  : Boolean;
-         when Address =>
-            Space            : Byte;
-      end case;
-   end record with Unchecked_Union;
-   for Volume_Output_Control use record
-      Right_Volume     at 0 range 0 .. 2;
-      Vin_Right_Enable at 0 range 3 .. 3;
-      Left_Volume      at 0 range 4 .. 6;
-      Vin_Left_Enable  at 0 range 7 .. 7;
-      Space            at 0 range 0 .. 7;
-   end record;
-   for Volume_Output_Control'Size use Byte'Size;
 
+         when Address =>
+            Space : Byte;
+      end case;
+   end record
+   with Unchecked_Union;
+   for Volume_Output_Control use
+     record
+       Right_Volume at 0 range 0 .. 2;
+       Vin_Right_Enable at 0 range 3 .. 3;
+       Left_Volume at 0 range 4 .. 6;
+       Vin_Left_Enable at 0 range 7 .. 7;
+       Space at 0 range 0 .. 7;
+     end record;
+   for Volume_Output_Control'Size use Byte'Size;
 
    type Channel_Output_Control (S : Audio_Access_Type := Named) is record
       case S is
          when Named =>
             Right, Left : Channel_Flags;
-         when Address =>
-            Space       : Byte;
-      end case;
-   end record with Unchecked_Union;
-   for Channel_Output_Control use record
-      Right at 0 range 0 .. 3;
-      Left  at 0 range 4 .. 7;
-      Space at 0 range 0 .. 7;
-   end record;
-   for Channel_Output_Control'Size use Byte'Size;
 
+         when Address =>
+            Space : Byte;
+      end case;
+   end record
+   with Unchecked_Union;
+   for Channel_Output_Control use
+     record
+       Right at 0 range 0 .. 3;
+       Left at 0 range 4 .. 7;
+       Space at 0 range 0 .. 7;
+     end record;
+   for Channel_Output_Control'Size use Byte'Size;
 
    type Audio_Mixer is tagged record
       Square_1 : Sweeping_Square_Channel_Access;

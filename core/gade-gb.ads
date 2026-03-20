@@ -47,9 +47,7 @@ private package Gade.GB is
 
    type GB_Type is new GB_Public_Type with private;
 
-   procedure Create
-     (GB     : out GB_Type;
-      Logger : Gade.Logging.Logger_Access);
+   procedure Create (GB : out GB_Type; Logger : Gade.Logging.Logger_Access);
 
    procedure Reset (GB : in out GB_Type);
 
@@ -61,9 +59,7 @@ private package Gade.GB is
       Cycles : M_Cycle_Count);
 
    procedure Report_Frame
-     (GB     : in out GB_Type;
-      Audio  : Audio_Buffer_Access;
-      Cycles : M_Cycle_Count);
+     (GB : in out GB_Type; Audio : Audio_Buffer_Access; Cycles : M_Cycle_Count);
 
 private
 

@@ -1,6 +1,6 @@
 with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Text_IO;
-with GNAT.OS_Lib; use GNAT.OS_Lib;
+with GNAT.OS_Lib;      use GNAT.OS_Lib;
 
 procedure Run_Tests is
    Python_Exec : String_Access := Locate_Exec_On_Path ("python3");
@@ -9,7 +9,8 @@ procedure Run_Tests is
 begin
    if Python_Exec = null then
       Ada.Text_IO.Put_Line
-        (Ada.Text_IO.Standard_Error, "error: could not find 'python3' in PATH");
+        (Ada.Text_IO.Standard_Error,
+         "error: could not find 'python3' in PATH");
       Set_Exit_Status (Failure);
       return;
    end if;

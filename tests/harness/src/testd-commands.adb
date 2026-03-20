@@ -3,9 +3,10 @@ with Gade.Logging;
 
 package body Testd.Commands is
 
-   function To_Image (Buffer : RGB32_Display_Buffer) return Image_IO.Image_Data is
-      Result : Image_IO.Image_Data
-        (0 .. Display_Height - 1, 0 .. Display_Width - 1);
+   function To_Image (Buffer : RGB32_Display_Buffer) return Image_IO.Image_Data
+   is
+      Result :
+        Image_IO.Image_Data (0 .. Display_Height - 1, 0 .. Display_Width - 1);
    begin
       for Y in 0 .. Display_Height - 1 loop
          for X in 0 .. Display_Width - 1 loop
@@ -19,8 +20,7 @@ package body Testd.Commands is
    end To_Image;
 
    function Image_Equal
-     (Left  : Image_IO.Image_Data;
-      Right : Image_IO.Image_Data) return Boolean
+     (Left : Image_IO.Image_Data; Right : Image_IO.Image_Data) return Boolean
    is
    begin
       if Left'Length (1) /= Right'Length (1)
@@ -44,9 +44,7 @@ package body Testd.Commands is
    begin
       if not S.G_Created then
          Create
-           (S.G,
-            S.Input_Reader'Unchecked_Access,
-            Gade.Logging.Default_Logger);
+           (S.G, S.Input_Reader'Unchecked_Access, Gade.Logging.Default_Logger);
          S.G_Created := True;
          S.ROM_Loaded := False;
          S.Frame_Count := 0;
@@ -59,9 +57,13 @@ package body Testd.Commands is
       Frame_Finished    : Boolean := False;
    begin
       while not Frame_Finished loop
-         Run_For (S.G, Requested_Samples, Generated_Samples,
-                  S.V_Buff'Unchecked_Access, S.A_Buff'Unchecked_Access,
-                  Frame_Finished);
+         Run_For
+           (S.G,
+            Requested_Samples,
+            Generated_Samples,
+            S.V_Buff'Unchecked_Access,
+            S.A_Buff'Unchecked_Access,
+            Frame_Finished);
       end loop;
       S.Frame_Count := S.Frame_Count + 1;
    end Run_Frame;

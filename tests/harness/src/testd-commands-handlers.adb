@@ -1,8 +1,8 @@
-with Ada.Exceptions; use Ada.Exceptions;
+with Ada.Exceptions;          use Ada.Exceptions;
 with Ada.Characters.Handling; use Ada.Characters.Handling;
-with Ada.Strings; use Ada.Strings;
-with Ada.Strings.Fixed; use Ada.Strings.Fixed;
-with Interfaces; use Interfaces;
+with Ada.Strings;             use Ada.Strings;
+with Ada.Strings.Fixed;       use Ada.Strings.Fixed;
+with Interfaces;              use Interfaces;
 
 with Image_IO.Holders;
 with Image_IO.Operations;
@@ -23,11 +23,7 @@ package body Testd.Commands.Handlers is
       Reply_OK;
    end Reset;
 
-   procedure Load
-     (S    : in out Session;
-      Line : String;
-      Pos  : in out Positive)
-   is
+   procedure Load (S : in out Session; Line : String; Pos : in out Positive) is
       Rom_Path : constant String := Testd.Protocol.Next_Token (Line, Pos);
    begin
       if Rom_Path = "" then
@@ -66,9 +62,7 @@ package body Testd.Commands.Handlers is
    end Press_Release;
 
    procedure Set_Input
-     (S    : in out Session;
-      Line : String;
-      Pos  : in out Positive)
+     (S : in out Session; Line : String; Pos : in out Positive)
    is
       Mask_Text : constant String := Testd.Protocol.Next_Token (Line, Pos);
       Mask      : Unsigned_8;
@@ -81,11 +75,7 @@ package body Testd.Commands.Handlers is
       end if;
    end Set_Input;
 
-   procedure Run
-     (S    : in out Session;
-      Line : String;
-      Pos  : in out Positive)
-   is
+   procedure Run (S : in out Session; Line : String; Pos : in out Positive) is
       Frames_Text : constant String := Testd.Protocol.Next_Token (Line, Pos);
       Frames      : Natural;
    begin
@@ -102,9 +92,7 @@ package body Testd.Commands.Handlers is
    end Run;
 
    procedure Save_Frame
-     (S    : in out Session;
-      Line : String;
-      Pos  : in out Positive)
+     (S : in out Session; Line : String; Pos : in out Positive)
    is
       Output_Path : constant String := Testd.Protocol.Next_Token (Line, Pos);
       Lower_Path  : String := Output_Path;
@@ -119,7 +107,8 @@ package body Testd.Commands.Handlers is
          end loop;
 
          if Lower_Path'Length >= 4
-           and then Lower_Path (Lower_Path'Last - 3 .. Lower_Path'Last) = ".png"
+           and then Lower_Path (Lower_Path'Last - 3 .. Lower_Path'Last)
+                    = ".png"
          then
             Image_IO.Operations.Write_PNG (Output_Path, To_Image (S.V_Buff));
          else
@@ -133,9 +122,7 @@ package body Testd.Commands.Handlers is
    end Save_Frame;
 
    procedure Match_Frame
-     (S    : in out Session;
-      Line : String;
-      Pos  : in out Positive)
+     (S : in out Session; Line : String; Pos : in out Positive)
    is
       Ref_Path : constant String := Testd.Protocol.Next_Token (Line, Pos);
       Ref      : Image_IO.Holders.Handle;
@@ -150,8 +137,8 @@ package body Testd.Commands.Handlers is
          if Image_IO.Holders.Is_Empty (Ref) then
             Reply_ERR ("IMAGE", "Unable to read reference image");
          else
-            Match := Image_Equal
-              (To_Image (S.V_Buff), Image_IO.Holders.Value (Ref));
+            Match :=
+              Image_Equal (To_Image (S.V_Buff), Image_IO.Holders.Value (Ref));
             if Match then
                Reply_OK ("1");
             else
@@ -165,12 +152,12 @@ package body Testd.Commands.Handlers is
    end Match_Frame;
 
    procedure Find_Match
-     (S    : in out Session;
-      Line : String;
-      Pos  : in out Positive)
+     (S : in out Session; Line : String; Pos : in out Positive)
    is
-      Ref_Path       : constant String := Testd.Protocol.Next_Token (Line, Pos);
-      Max_Frames_Str : constant String := Testd.Protocol.Next_Token (Line, Pos);
+      Ref_Path       : constant String :=
+        Testd.Protocol.Next_Token (Line, Pos);
+      Max_Frames_Str : constant String :=
+        Testd.Protocol.Next_Token (Line, Pos);
       Max_Frames     : Natural;
       Ref            : Image_IO.Holders.Handle;
       Found_At       : Integer := -1;
@@ -186,15 +173,14 @@ package body Testd.Commands.Handlers is
          if Image_IO.Holders.Is_Empty (Ref) then
             Reply_ERR ("IMAGE", "Unable to read reference image");
          else
-            if Image_Equal
-              (To_Image (S.V_Buff), Image_IO.Holders.Value (Ref))
+            if Image_Equal (To_Image (S.V_Buff), Image_IO.Holders.Value (Ref))
             then
                Found_At := 0;
             else
                for I in 1 .. Max_Frames loop
                   Run_Frame (S);
                   if Image_Equal
-                    (To_Image (S.V_Buff), Image_IO.Holders.Value (Ref))
+                       (To_Image (S.V_Buff), Image_IO.Holders.Value (Ref))
                   then
                      Found_At := Integer (I);
                      exit;

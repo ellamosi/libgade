@@ -8,8 +8,7 @@ package body Gade.Dev.Timer is
    begin
       Timer.Map.Space := [others => 0];
       Timer.Ticks := 0;
-      Timer.Modulo_Ticks :=
-        TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);
+      Timer.Modulo_Ticks := TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);
       Timer.DIV_Ticks := 0;
    end Reset;
 
@@ -18,7 +17,8 @@ package body Gade.Dev.Timer is
      (Timer   : in out Timer_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : out Byte) is
+      Value   : out Byte)
+   is
       pragma Unreferenced (GB);
    begin
       if Address = DIV then
@@ -33,14 +33,14 @@ package body Gade.Dev.Timer is
      (Timer   : in out Timer_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : Byte) is
+      Value   : Byte)
+   is
       pragma Unreferenced (GB);
    begin
       Timer.Map.Space (Address) := Value;
       if Address = TAC then
          --  Might need to reset internal ticks too, needs research
-         Timer.Modulo_Ticks :=
-           TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);
+         Timer.Modulo_Ticks := TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);
       elsif Address = DIV then
          --  This will preserve the internal DIV timing
          Timer.DIV_Ticks := Timer.DIV_Ticks mod 256;
@@ -54,14 +54,12 @@ package body Gade.Dev.Timer is
 
    overriding
    procedure Report_Cycles
-     (Timer  : in out Timer_Type;
-      GB     : in out Gade.GB.GB_Type;
-      Cycles : M_Cycle_Count)
+     (Timer : in out Timer_Type; GB : in out Gade.GB.GB_Type; Cycles : M_Cycle_Count)
    is
       --  Timer edge detection remains T-cycle based even though the emulator
       --  scheduler now reports time in M-cycles.
-      T_Cycles : constant T_Cycle_Count := To_T_Cycles (Cycles);
-      New_Ticks : T_Cycle_Count;
+      T_Cycles                       : constant T_Cycle_Count := To_T_Cycles (Cycles);
+      New_Ticks                      : T_Cycle_Count;
       New_Counter, Counter_Increment : Integer;
    begin
       if Is_Running (Timer) then
@@ -79,8 +77,8 @@ package body Gade.Dev.Timer is
          end if;
       end if;
       Timer.DIV_Ticks := ((Timer.DIV_Ticks + T_Cycles) mod 256) * 256;
-      --  Put_Line("Ticks" & Timer.Ticks'Img & " Counter" &
-      --  Timer.Map.Timer_Counter'Img & " Modulo" & Timer.Modulo_Ticks'Img);
+   --  Put_Line("Ticks" & Timer.Ticks'Img & " Counter" &
+   --  Timer.Map.Timer_Counter'Img & " Modulo" & Timer.Modulo_Ticks'Img);
    end Report_Cycles;
 
 end Gade.Dev.Timer;

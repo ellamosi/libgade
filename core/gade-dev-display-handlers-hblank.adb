@@ -3,9 +3,7 @@ with Gade.GB; use Gade.GB;
 package body Gade.Dev.Display.Handlers.HBlank is
 
    overriding
-   procedure Reset
-     (Mode_Handler : in out HBlank_Handler_Type)
-   is
+   procedure Reset (Mode_Handler : in out HBlank_Handler_Type) is
    begin
       Mode_Handler_Type (Mode_Handler).Reset;
    end Reset;
@@ -14,8 +12,7 @@ package body Gade.Dev.Display.Handlers.HBlank is
    procedure Start
      (Mode_Handler : in out HBlank_Handler_Type;
       GB           : in out Gade.GB.GB_Type;
-      Video        : RGB32_Display_Buffer_Access)
-   is
+      Video        : RGB32_Display_Buffer_Access) is
    begin
       Mode_Handler_Type (Mode_Handler).Start (GB, Video);
       --  TODO: Use proper names!
@@ -25,8 +22,7 @@ package body Gade.Dev.Display.Handlers.HBlank is
 
    overriding
    procedure Mode_Finished
-     (Mode_Handler : in out HBlank_Handler_Type;
-      GB           : in out Gade.GB.GB_Type)
+     (Mode_Handler : in out HBlank_Handler_Type; GB : in out Gade.GB.GB_Type)
    is
       New_Line : Line_Count_Type;
    begin
@@ -35,8 +31,8 @@ package body Gade.Dev.Display.Handlers.HBlank is
    end Mode_Finished;
 
    overriding
-   function Next_Mode
-     (Mode_Handler : HBlank_Handler_Type) return LCD_Controller_Mode_Type is
+   function Next_Mode (Mode_Handler : HBlank_Handler_Type) return LCD_Controller_Mode_Type
+   is
    begin
       if Mode_Handler.Display_Handler.Current_Line < 144 then
          return Gade.Dev.Display.OAM_Access;

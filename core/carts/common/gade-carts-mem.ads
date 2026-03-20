@@ -11,9 +11,7 @@ private
       type Content_NN_Access is not null access Content;
    package Common is
 
-      procedure Load
-        (Mem  : out Content;
-         File : File_Type);
+      procedure Load (Mem : out Content; File : File_Type);
 
       function Allocate (Size : Content_Size) return Content_NN_Access;
 

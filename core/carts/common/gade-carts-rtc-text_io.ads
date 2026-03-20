@@ -5,9 +5,7 @@ package Gade.Carts.RTC.Text_IO is
 
    --  Debug helpers for RTC state output.
 
-   procedure Print
-     (Logger : Gade.Logging.Logger_Access;
-      Clk    : Clock);
+   procedure Print (Logger : Gade.Logging.Logger_Access; Clk : Clock);
 
 private
    use Ada.Calendar;
