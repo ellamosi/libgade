@@ -67,8 +67,7 @@ Ada sources can be formatted locally with:
 ./scripts/format-ada.sh
 ```
 
-Install `gnatformat` separately with `alr install gnatformat`, and ensure
-`$HOME/.alire/bin` is on your `PATH`.
+Install [`gnatformat`](https://github.com/AdaCore/gnatformat) separately with `alr install gnatformat`.
 
 ### Scenario Variables
 `gade` exposes three GPR scenario variables through `alire.toml`:
