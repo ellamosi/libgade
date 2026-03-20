@@ -3,8 +3,14 @@
 set -eu
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-cd "$repo_root/tests"
+cd "$repo_root"
 
-gnatformat -P ../gade.gpr -U --check
-gnatformat -P ../gade_cpp.gpr -U --check
-gnatformat -P harness/gade_testd.gpr -U --check
+"$repo_root/scripts/format-ada.sh"
+
+if ! git diff --exit-code -- \
+  '*.adb' \
+  '*.ads'
+then
+  echo "Ada formatting check failed. Run scripts/format-ada.sh and commit the result." >&2
+  exit 1
+fi
