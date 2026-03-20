@@ -43,7 +43,6 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
      (CPU   : in out CPU_Context;
       Reg   : in out Word;
       Value : Byte) is
-      --  Might be able to re-use the Add_Offset method for this
       Reg_Native    : Native_Unsigned;
       Value_Native  : Native_Unsigned;
       Result_Native : Native_Unsigned;
@@ -104,7 +103,6 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       --  C : Set if carry from bit 15; reset otherwise
       Set_Value (CPU.Regs.F.C, (Result_Native and 16#10000#) /= 0);
    end Add;
-
 
    procedure Sub
      (CPU    : in out CPU_Context;

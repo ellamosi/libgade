@@ -1,6 +1,6 @@
 with Gade.GB; use Gade.GB;
 
-package Gade.Dev.CPU.Instructions.Arithmetic.Instances is
+package Gade.Dev.CPU.Instructions.Arithmetic.Handlers is
    package Arithmetic renames Gade.Dev.CPU.Instructions.Arithmetic;
 
    --  ADD
@@ -89,4 +89,4 @@ package Gade.Dev.CPU.Instructions.Arithmetic.Instances is
    procedure ADD_SP_Imm8 (GB : in out GB_Type) renames Arithmetic.ADD_SP_Imm8;
    procedure DAA (GB : in out GB_Type) renames Arithmetic.DAA;
 
-end Gade.Dev.CPU.Instructions.Arithmetic.Instances;
+end Gade.Dev.CPU.Instructions.Arithmetic.Handlers;

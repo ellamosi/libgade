@@ -1,6 +1,6 @@
 with Gade.GB; use Gade.GB;
 
-package Gade.Dev.CPU.Instructions.Loads.Instances is
+package Gade.Dev.CPU.Instructions.Loads.Handlers is
    package Loads renames Gade.Dev.CPU.Instructions.Loads;
 
    --  Word loads
@@ -117,4 +117,4 @@ package Gade.Dev.CPU.Instructions.Loads.Instances is
    procedure LD_Addr_Imm16_SP (GB : in out GB_Type) renames Loads.LD_Addr_Imm16_SP;
    procedure LD_HL_SP_Plus_Imm8 (GB : in out GB_Type) renames Loads.LD_HL_SP_Plus_Imm8;
 
-end Gade.Dev.CPU.Instructions.Loads.Instances;
+end Gade.Dev.CPU.Instructions.Loads.Handlers;

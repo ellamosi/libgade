@@ -1,11 +1,11 @@
 with Gade.GB;
-with Gade.Dev.CPU.Instructions.Arithmetic.Instances;
-with Gade.Dev.CPU.Instructions.Loads.Instances;
-with Gade.Dev.CPU.Instructions.Bitwise.Instances;
-with Gade.Dev.CPU.Instructions.Logic.Instances;
-with Gade.Dev.CPU.Instructions.Stack.Instances;
-with Gade.Dev.CPU.Instructions.Flow.Instances;
-with Gade.Dev.CPU.Instructions.Control.Instances;
+with Gade.Dev.CPU.Instructions.Arithmetic.Handlers;
+with Gade.Dev.CPU.Instructions.Loads.Handlers;
+with Gade.Dev.CPU.Instructions.Bitwise.Handlers;
+with Gade.Dev.CPU.Instructions.Logic.Handlers;
+with Gade.Dev.CPU.Instructions.Stack.Handlers;
+with Gade.Dev.CPU.Instructions.Flow.Handlers;
+with Gade.Dev.CPU.Instructions.Control.Handlers;
 
 package Gade.Dev.CPU.Exec is
 
@@ -17,13 +17,13 @@ package Gade.Dev.CPU.Exec is
       Cycles : out M_Cycle_Count);
 
 private
-   package Arithmetic renames Gade.Dev.CPU.Instructions.Arithmetic.Instances;
-   package Loads renames Gade.Dev.CPU.Instructions.Loads.Instances;
-   package Bitwise renames Gade.Dev.CPU.Instructions.Bitwise.Instances;
-   package Logic renames Gade.Dev.CPU.Instructions.Logic.Instances;
-   package Stack renames Gade.Dev.CPU.Instructions.Stack.Instances;
-   package Flow renames Gade.Dev.CPU.Instructions.Flow.Instances;
-   package Control renames Gade.Dev.CPU.Instructions.Control.Instances;
+   package Arithmetic renames Gade.Dev.CPU.Instructions.Arithmetic.Handlers;
+   package Loads renames Gade.Dev.CPU.Instructions.Loads.Handlers;
+   package Bitwise renames Gade.Dev.CPU.Instructions.Bitwise.Handlers;
+   package Logic renames Gade.Dev.CPU.Instructions.Logic.Handlers;
+   package Stack renames Gade.Dev.CPU.Instructions.Stack.Handlers;
+   package Flow renames Gade.Dev.CPU.Instructions.Flow.Handlers;
+   package Control renames Gade.Dev.CPU.Instructions.Control.Handlers;
 
    type Handler_Table is array (Byte) of Instruction_Handler;
 

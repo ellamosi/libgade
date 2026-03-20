@@ -1,4 +1,4 @@
-package Gade.Dev.CPU.Instructions.Logic.Instances is
+package Gade.Dev.CPU.Instructions.Logic.Handlers is
 
    --  AND
    procedure AND_A_A is new ALU_A_Source (ALU_AND, SRC_A);
@@ -44,4 +44,4 @@ package Gade.Dev.CPU.Instructions.Logic.Instances is
    procedure CP_A_Addr_HL is new ALU_A_Source (ALU_CP, SRC_Addr_HL);
    procedure CP_A_Imm8 is new ALU_A_Source (ALU_CP, SRC_Imm8);
 
-end Gade.Dev.CPU.Instructions.Logic.Instances;
+end Gade.Dev.CPU.Instructions.Logic.Handlers;

@@ -1,4 +1,4 @@
-package Gade.Dev.CPU.Instructions.Stack.Instances is
+package Gade.Dev.CPU.Instructions.Stack.Handlers is
 
    --  PUSH
    procedure PUSH_AF is new Push (REG_AF);
@@ -12,4 +12,4 @@ package Gade.Dev.CPU.Instructions.Stack.Instances is
    procedure POP_DE is new Pop (REG_DE);
    procedure POP_HL is new Pop (REG_HL);
 
-end Gade.Dev.CPU.Instructions.Stack.Instances;
+end Gade.Dev.CPU.Instructions.Stack.Handlers;

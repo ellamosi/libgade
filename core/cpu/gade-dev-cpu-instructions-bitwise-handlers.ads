@@ -1,4 +1,4 @@
-package Gade.Dev.CPU.Instructions.Bitwise.Instances is
+package Gade.Dev.CPU.Instructions.Bitwise.Handlers is
 
    --  Accumulator rotates
    procedure RLCA is new Rotate_Shift (ROT_RLC, DST_A, False);
@@ -327,4 +327,4 @@ package Gade.Dev.CPU.Instructions.Bitwise.Instances is
    procedure SET_7_L is new Bit_Source (BIT_Set, 7, SRC_L);
    procedure SET_7_Addr_HL is new Bit_Source (BIT_Set, 7, SRC_Addr_HL);
 
-end Gade.Dev.CPU.Instructions.Bitwise.Instances;
+end Gade.Dev.CPU.Instructions.Bitwise.Handlers;

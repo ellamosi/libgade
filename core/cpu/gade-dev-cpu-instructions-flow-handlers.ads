@@ -1,4 +1,4 @@
-package Gade.Dev.CPU.Instructions.Flow.Instances is
+package Gade.Dev.CPU.Instructions.Flow.Handlers is
 
    --  JR
    procedure JR is new Flow_Op (FLOW_JR);
@@ -44,4 +44,4 @@ package Gade.Dev.CPU.Instructions.Flow.Instances is
    procedure RST_30 is new Flow_Op (FLOW_RST, JCOND_None, JTARGET_Imm16, 16#0030#);
    procedure RST_38 is new Flow_Op (FLOW_RST, JCOND_None, JTARGET_Imm16, 16#0038#);
 
-end Gade.Dev.CPU.Instructions.Flow.Instances;
+end Gade.Dev.CPU.Instructions.Flow.Handlers;
