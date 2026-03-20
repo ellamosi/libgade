@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: gade-ada-format
+        name: Run Ada format check on staged files
+        entry: sh ./scripts/check-ada-format-staged.sh
+        language: system
+        files: ".*\\.ad(b|s)$"
