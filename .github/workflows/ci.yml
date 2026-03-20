@@ -54,7 +54,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ~/.alire
-          key: ${{ steps.gnatformat-cache.outputs.cache-primary-key }}
+          key: ${{ runner.os }}-gnatformat-v1
 
       - name: Check Ada formatting
         run: ./scripts/check-ada-format.sh
