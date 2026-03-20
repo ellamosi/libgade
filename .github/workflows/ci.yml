@@ -17,8 +17,26 @@ jobs:
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
 
+      - name: Restore gnatformat install
+        id: gnatformat-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.alire
+          key: ${{ runner.os }}-gnatformat-v1
+
       - name: Install gnatformat
-        run: alr install gnatformat
+        shell: sh
+        run: |
+          if [ ! -x "${HOME}/.alire/bin/gnatformat" ]; then
+            alr install gnatformat
+          fi
+
+      - name: Save gnatformat install
+        if: steps.gnatformat-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.alire
+          key: ${{ steps.gnatformat-cache.outputs.cache-primary-key }}
 
       - name: Check Ada formatting
         run: ./scripts/check-ada-format.sh
