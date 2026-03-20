@@ -5,6 +5,6 @@ set -eu
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$repo_root"
 
-gnatformat -P gade.gpr
-gnatformat -P gade_cpp.gpr
-alr -C tests exec -- gnatformat -P harness/gade_testd.gpr
+gnatformat -P gade.gpr --no-subprojects
+gnatformat -P gade_cpp.gpr --no-subprojects
+alr -C tests exec -- gnatformat -P harness/gade_testd.gpr --no-subprojects
