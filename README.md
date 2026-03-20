@@ -61,6 +61,15 @@ alr build
 
 For information on how to build and run the tests, see the [tests README](tests/README.md).
 
+Ada sources can be formatted locally with:
+
+```sh
+./scripts/format-ada.sh
+```
+
+Install `gnatformat` separately with `alr install gnatformat`, and ensure
+`$HOME/.alire/bin` is on your `PATH`.
+
 ### Scenario Variables
 `gade` exposes three GPR scenario variables through `alire.toml`:
 

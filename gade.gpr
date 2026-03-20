@@ -98,9 +98,11 @@ library project Gade is
       for Casing use "MixedCase";
    end Naming;
 
-   package Pretty_Printer is
-      for Default_Switches ("Ada") use ("-cl3");
-   end Pretty_Printer;
+   package Format is
+      for Width ("Ada") use "90";
+      for Indentation ("Ada") use "3";
+      for Indentation_Continuation ("Ada") use "2";
+   end Format;
 
    case Gade_Library is
       when "relocatable" =>
