@@ -24,12 +24,30 @@ jobs:
           path: ~/.alire
           key: ${{ runner.os }}-gnatformat-v1
 
+      - name: Debug gnatformat cache
+        shell: sh
+        run: |
+          echo "cache-hit=${{ steps.gnatformat-cache.outputs.cache-hit }}"
+          echo "HOME=${HOME}"
+          ls -la "${HOME}" || true
+          ls -la "${HOME}/.alire" || true
+          ls -la "${HOME}/.alire/bin" || true
+          command -v gnatformat || true
+
       - name: Install gnatformat
         shell: sh
         run: |
           if [ ! -x "${HOME}/.alire/bin/gnatformat" ]; then
             alr install gnatformat
           fi
+
+      - name: Debug gnatformat install
+        shell: sh
+        run: |
+          command -v gnatformat || true
+          ls -la "${HOME}/.alire" || true
+          ls -la "${HOME}/.alire/bin" || true
+          find "${HOME}" -maxdepth 3 -name gnatformat 2>/dev/null || true
 
       - name: Save gnatformat install
         if: steps.gnatformat-cache.outputs.cache-hit != 'true'
