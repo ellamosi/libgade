@@ -11,6 +11,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: |
+          ~/.alire
           ~/.cache/alire
           ~/.config/alire
           ~/.local/share/alire
