@@ -19,7 +19,7 @@ This keeps the hot path close to:
 
 ### Alternative approaches considered
 
-This approach was choosen because of clarity and performance. It's not particularly hard to procedurally decode instructions and operands, but it's hard to make readable, as it easily results in long/deeply nested branching.
+This approach was chosen because of clarity and performance. It's not particularly hard to procedurally decode instructions and operands, but it's hard to make readable, as it easily results in long/deeply nested branching.
 
 One could also treat decoding as a decision tree, but while this can result in simple procedural code (and delegating declarations to data), it has a performance impact.
 
