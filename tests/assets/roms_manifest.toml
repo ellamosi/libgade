@@ -20,6 +20,10 @@ type = "http_zip_member"
 url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/instr_timing.zip"
 download_sha256 = "10d11343126aac60986a57e87cf6816b5b05274da15b8c1ca65154a2853c2f5b"
 
+[sources.blargg_mem_timing]
+type = "http_zip_member"
+url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/mem_timing.zip"
+
 [[roms]]
 id = "blargg/cpu_instrs"
 target = "assets/roms/blargg/cpu_instrs.gb"
@@ -173,6 +177,13 @@ target = "assets/roms/blargg/instr_timing.gb"
 sha256 = "646067b3d6c79fda810e9c3f1cb7c0efd5abb0a7ac06437c54e65720c15d9925"
 source_id = "blargg_instr_timing"
 member = "instr_timing/instr_timing.gb"
+
+[[roms]]
+id = "blargg/mem_timing"
+target = "assets/roms/blargg/mem_timing.gb"
+source_id = "blargg_mem_timing"
+member = "mem_timing/mem_timing.gb"
+sha256 = "791cb418fd054b482a6ada5017e2405b96c2373a0f3914c6b23afeee76fa98ce"
 
 [[roms]]
 id = "misc/lcd_lyc"
