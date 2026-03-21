@@ -9,4 +9,7 @@ package Testd.Protocol is
    function Parse_Hex_U8
      (S : String; Value : out Interfaces.Unsigned_8) return Boolean;
 
+   function Parse_Hex_U16
+     (S : String; Value : out Interfaces.Unsigned_16) return Boolean;
+
 end Testd.Protocol;

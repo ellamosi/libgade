@@ -40,8 +40,14 @@ package body Testd.Commands.Dispatch is
       elsif Command = "RUN" then
          Testd.Commands.Handlers.Run (S, Line, Pos);
 
+      elsif Command = "RUN_CYCLES" then
+         Testd.Commands.Handlers.Run_Cycles (S, Line, Pos);
+
       elsif Command = "FRAME_INDEX" then
          Testd.Sessions.Reply_OK (Trim (Natural'Image (S.Frame_Count), Both));
+
+      elsif Command = "READ8" then
+         Testd.Commands.Handlers.Read8 (S, Line, Pos);
 
       elsif Command = "SAVE_FRAME" then
          Testd.Commands.Handlers.Save_Frame (S, Line, Pos);

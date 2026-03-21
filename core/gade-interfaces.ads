@@ -2,6 +2,7 @@ limited with Gade.Input;
 limited with Gade.Logging;
 limited with Gade.Video_Buffer;
 limited with Gade.Audio_Buffer;
+with Interfaces;
 with Gade.Timing; use Gade.Timing;
 
 package Gade.Interfaces is
@@ -75,6 +76,12 @@ package Gade.Interfaces is
    --  Error behavior:
    --  - File I/O and ROM decoding exceptions propagate to caller.
    procedure Load_ROM (G : Gade_Type; Path : String);
+
+   --  Read a byte through the Game Boy memory map.
+   procedure Read_Byte
+     (G       : Gade_Type;
+      Address : Standard.Interfaces.Unsigned_16;
+      Value   : out Standard.Interfaces.Unsigned_8);
 
    --  Set or replace the input reader used by the joypad device.
    --

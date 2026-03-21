@@ -182,6 +182,13 @@ class GadeTestdClient:
             raise ValueError('frames must be >= 0')
         self._request('RUN', frames)
 
+    def run_cycles(self, cycles):
+        if not isinstance(cycles, int):
+            raise TypeError('cycles must be an int')
+        if cycles < 0:
+            raise ValueError('cycles must be >= 0')
+        self._request('RUN_CYCLES', cycles)
+
     def frame_index(self):
         payload = self._request('FRAME_INDEX')
         try:
@@ -213,6 +220,19 @@ class GadeTestdClient:
         except ValueError as exc:
             raise ProtocolError(
                 'invalid FIND_MATCH payload: {}'.format(payload)
+            ) from exc
+
+    def read8(self, address):
+        if not isinstance(address, int):
+            raise TypeError('address must be an int')
+        if address < 0 or address > 0xFFFF:
+            raise ValueError('address must be in range [0, 65535]')
+        payload = self._request('READ8', '{:04X}'.format(address))
+        try:
+            return int(payload)
+        except ValueError as exc:
+            raise ProtocolError(
+                'invalid READ8 payload: {}'.format(payload)
             ) from exc
 
     def request(self, command, *args):

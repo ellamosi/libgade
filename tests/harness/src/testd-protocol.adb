@@ -90,4 +90,38 @@ package body Testd.Protocol is
       return True;
    end Parse_Hex_U8;
 
+   function Parse_Hex_U16
+     (S : String; Value : out Interfaces.Unsigned_16) return Boolean
+   is
+      Clean : constant String := Trim (S, Both);
+      Acc   : Unsigned_32 := 0;
+      Digit : Unsigned_32;
+   begin
+      if Clean = "" then
+         return False;
+      end if;
+
+      for C of Clean loop
+         if C in '0' .. '9' then
+            Digit := Unsigned_32 (Character'Pos (C) - Character'Pos ('0'));
+         elsif C in 'a' .. 'f' then
+            Digit :=
+              Unsigned_32 (10 + Character'Pos (C) - Character'Pos ('a'));
+         elsif C in 'A' .. 'F' then
+            Digit :=
+              Unsigned_32 (10 + Character'Pos (C) - Character'Pos ('A'));
+         else
+            return False;
+         end if;
+
+         Acc := Shift_Left (Acc, 4) + Digit;
+         if Acc > 16#FFFF# then
+            return False;
+         end if;
+      end loop;
+
+      Value := Unsigned_16 (Acc);
+      return True;
+   end Parse_Hex_U16;
+
 end Testd.Protocol;

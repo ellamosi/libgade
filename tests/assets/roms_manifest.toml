@@ -202,6 +202,14 @@ sha256 = "5a48d5f88c9a8df2e748ed167044e12e6550493dc00ea40c605aa4c89ab67720"
 type = "local_file"
 
 [[roms]]
+id = "misc/timer_loop"
+target = "assets/roms/misc/timer_loop.gb"
+sha256 = "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
 id = "commercial/tetris"
 target = "assets/roms/commercial/Tetris (World) (Rev 1).gb"
 sha256 = "0d6535aef23969c7e5af2b077acaddb4a445b3d0df7bf34c8acef07b51b015c3"

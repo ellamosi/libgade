@@ -13,6 +13,9 @@ package Testd.Commands.Handlers is
    procedure Set_Input
      (S : in out Session; Line : String; Pos : in out Positive);
    procedure Run (S : in out Session; Line : String; Pos : in out Positive);
+   procedure Run_Cycles
+     (S : in out Session; Line : String; Pos : in out Positive);
+   procedure Read8 (S : in out Session; Line : String; Pos : in out Positive);
    procedure Save_Frame
      (S : in out Session; Line : String; Pos : in out Positive);
    procedure Match_Frame

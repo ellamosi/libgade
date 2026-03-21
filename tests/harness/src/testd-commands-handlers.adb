@@ -14,6 +14,52 @@ with Gade.Interfaces; use Gade.Interfaces;
 
 package body Testd.Commands.Handlers is
 
+   procedure Run_Cycles
+     (S : in out Session; Line : String; Pos : in out Positive)
+   is
+      Cycles_Text       : constant String :=
+        Testd.Protocol.Next_Token (Line, Pos);
+      Requested_Samples : Natural;
+      Generated_Samples : Natural;
+      Frame_Finished    : Boolean;
+   begin
+      if not Ensure_ROM_Loaded (S) then
+         return;
+      elsif not Testd.Protocol.Parse_Natural (Cycles_Text, Requested_Samples)
+      then
+         Reply_ERR ("BAD_ARGS", "RUN_CYCLES requires natural cycle count");
+      elsif Requested_Samples = 0 then
+         Reply_OK;
+      else
+         Run_For
+           (S.G,
+            Positive (Requested_Samples),
+            Generated_Samples,
+            S.V_Buff'Access,
+            S.A_Buff'Access,
+            Frame_Finished);
+         if Frame_Finished then
+            S.Frame_Count := S.Frame_Count + 1;
+         end if;
+         Reply_OK;
+      end if;
+   end Run_Cycles;
+
+   procedure Read8 (S : in out Session; Line : String; Pos : in out Positive)
+   is
+      Address_Text : constant String := Testd.Protocol.Next_Token (Line, Pos);
+      Address      : Unsigned_16;
+      Value        : Unsigned_8;
+   begin
+      if not Testd.Protocol.Parse_Hex_U16 (Address_Text, Address) then
+         Reply_ERR ("BAD_ARGS", "READ8 requires 16-bit hex address");
+      else
+         Ensure_Engine (S);
+         Read_Byte (S.G, Address, Value);
+         Reply_OK (Trim (Integer'Image (Integer (Value)), Both));
+      end if;
+   end Read8;
+
    procedure Reset (S : in out Session) is
    begin
       Ensure_Engine (S);

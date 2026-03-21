@@ -1,6 +1,7 @@
 with Ada.Unchecked_Deallocation;
 
 with Gade.GB;             use Gade.GB;
+with Gade.GB.Memory_Map;
 with Gade.Input;          use Gade.Input;
 with Gade.Audio_Buffer;   use Gade.Audio_Buffer;
 with Gade.Video_Buffer;   use Gade.Video_Buffer;
@@ -43,6 +44,17 @@ package body Gade.Interfaces is
    begin
       G.GB.Cart := Gade.Carts.Load_ROM (Path, G.Logger);
    end Load_ROM;
+
+   procedure Read_Byte
+     (G       : Gade_Type;
+      Address : Standard.Interfaces.Unsigned_16;
+      Value   : out Standard.Interfaces.Unsigned_8)
+   is
+      Result : Byte;
+   begin
+      Gade.GB.Memory_Map.Read_Byte (G.GB, Word (Address), Result);
+      Value := Standard.Interfaces.Unsigned_8 (Result);
+   end Read_Byte;
 
    procedure Set_Input_Reader (G : Gade_Type; Reader : Gade.Input.Reader_Access) is
    begin
