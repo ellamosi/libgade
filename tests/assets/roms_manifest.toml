@@ -319,11 +319,3 @@ target = "assets/roms/mooneye/cart_mbc2_rom_512kb.gb"
 sha256 = "4748aeda444bee6520e1bd2268870b53c080a61adc4039c8f32eb101a03df635"
 source_id = "mooneye_public"
 member = "mts-20240926-1737-443f6e1/emulator-only/mbc2/rom_512kb.gb"
-
-[[roms]]
-id = "blargg/mem_timing"
-target = "assets/roms/blargg/mem_timing.gb"
-sha256 = "791cb418fd054b482a6ada5017e2405b96c2373a0f3914c6b23afeee76fa98ce"
-
-[roms.source]
-type = "local_file"
