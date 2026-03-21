@@ -33,29 +33,21 @@ package body Gade.GB is
       Video : RGB32_Display_Buffer_Access;
       Audio : Audio_Buffer_Access) is
    begin
-      GB.Current_Video := Video;
-      GB.Current_Audio := Audio;
+      pragma Assert (Video /= null);
+      pragma Assert (Audio /= null);
+      GB.Run_Context := (Video => Video, Audio => Audio);
    end Set_Run_Context;
 
    procedure Clear_Run_Context (GB : in out GB_Type) is
    begin
-      GB.Current_Video := null;
-      GB.Current_Audio := null;
+      GB.Run_Context := (Video => null, Audio => null);
    end Clear_Run_Context;
 
-   procedure Tick_M_Cycle (GB : in out GB_Type) is
-   begin
-      if GB.Current_Video /= null and then GB.Current_Audio /= null then
-         Report_Cycles (GB, GB.Current_Video, GB.Current_Audio, 1);
-      end if;
-   end Tick_M_Cycle;
-
    procedure Tick_M_Cycles (GB : in out GB_Type; Cycles : M_Cycle_Count) is
+      Video : constant RGB32_Display_Buffer_Access := GB.Run_Context.Video;
+      Audio : constant Audio_Buffer_Access := GB.Run_Context.Audio;
    begin
-      for I in 1 .. Cycles loop
-         pragma Unreferenced (I);
-         Tick_M_Cycle (GB);
-      end loop;
+      Report_Cycles (GB, Video, Audio, Cycles);
    end Tick_M_Cycles;
 
    procedure Report_Cycles

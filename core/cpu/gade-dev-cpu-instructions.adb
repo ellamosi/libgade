@@ -8,7 +8,7 @@ package body Gade.Dev.CPU.Instructions is
       Value : constant Byte := Read_Byte (GB, Address);
    begin
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
-      Gade.GB.Tick_M_Cycle (GB);
+      Gade.GB.Tick_M_Cycles (GB, 1);
       return Value;
    end Bus_Read_Byte;
 
@@ -16,13 +16,13 @@ package body Gade.Dev.CPU.Instructions is
    begin
       Write_Byte (GB, Address, Value);
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
-      Gade.GB.Tick_M_Cycle (GB);
+      Gade.GB.Tick_M_Cycles (GB, 1);
    end Bus_Write_Byte;
 
    procedure Internal_Cycle (GB : in out Gade.GB.GB_Type) is
    begin
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
-      Gade.GB.Tick_M_Cycle (GB);
+      Gade.GB.Tick_M_Cycles (GB, 1);
    end Internal_Cycle;
 
    function Fetch_Source

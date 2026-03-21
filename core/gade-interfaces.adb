@@ -64,6 +64,8 @@ package body Gade.Interfaces is
    begin
       Frame_Finished := False;
       Generated_Samples := 0;
+      pragma Assert (Video /= null);
+      pragma Assert (Audio /= null);
       Set_Run_Context (G.GB, Video, Audio);
       begin
          while not Frame_Finished and Generated_Samples < Requested_Samples loop

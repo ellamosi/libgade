@@ -58,8 +58,6 @@ private package Gade.GB is
 
    procedure Clear_Run_Context (GB : in out GB_Type);
 
-   procedure Tick_M_Cycle (GB : in out GB_Type);
-
    procedure Tick_M_Cycles (GB : in out GB_Type; Cycles : M_Cycle_Count);
 
    procedure Report_Cycles
@@ -78,10 +76,14 @@ private
    type Device_Access is access all Hardware_Device'Class;
    type Device_Array is array (Device_Type) of Device_Access;
 
+   type Run_Context_Type is record
+      Video : RGB32_Display_Buffer_Access := null;
+      Audio : Audio_Buffer_Access := null;
+   end record;
+
    type GB_Type is new GB_Public_Type with record
-      Devices       : Device_Array;
-      Current_Video : RGB32_Display_Buffer_Access := null;
-      Current_Audio : Audio_Buffer_Access := null;
+      Devices     : Device_Array;
+      Run_Context : Run_Context_Type;
    end record;
 
 end Gade.GB;
