@@ -45,6 +45,7 @@ private
 
    DIV_Increment_Freq        : constant Input_Clock_Type := f_16_384;
    DIV_Increment_TIMA_Clocks : constant T_Cycle_Count := TIMA_Clocks (DIV_Increment_Freq);
+   DIV_Counter_Modulus       : constant T_Cycle_Count := DIV_Increment_TIMA_Clocks * 256;
 
    --  Name     - TAC
    --  Contents - Timer Control (R/W)
