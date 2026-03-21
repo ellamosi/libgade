@@ -11,7 +11,10 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 
 ### [Mooneye Test ROMs](https://github.com/Gekkio/mooneye-test-suite)
 - Cart Memory Bank Controllers (`mbc1`, `mbc2`)
-- LCD Timings
+
+### Standalone LCD Test ROMs
+- `lcd_lyc`
+- `dycptest2` by beware
 
 ## Layout
 - `integration/<source>/test_*.py`: pytest test modules grouped by source.

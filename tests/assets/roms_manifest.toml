@@ -189,14 +189,21 @@ sha256 = "ab9daf4c51f417c468ad0a61dab66872cf8b5a50e6eb08d989b581d15f3cf461"
 id = "misc/lcd_lyc"
 target = "assets/roms/misc/lcd_lyc.gb"
 sha256 = "e38f282c0de068f34c125fe3e8bec8102304f126ad2241c6ce24a3e153528925"
+name = "LYCTEST"
+description = "Likely a standalone Game Boy LCD STAT LYC coincidence timing/interrupt test ROM."
 
 [roms.source]
 type = "local_file"
 
 [[roms]]
-id = "misc/lcd_scanline_timing"
-target = "assets/roms/misc/lcd_scanline_timing.gb"
+id = "beware/dycptest2"
+target = "assets/roms/beware/dycptest2.gb"
 sha256 = "5a48d5f88c9a8df2e748ed167044e12e6550493dc00ea40c605aa4c89ab67720"
+name = "DYCP TEST 2"
+author = "beware"
+description = "Standalone Game Boy LCD timing test ROM that draws a staircase by changing the background palette mid-scanline and offsetting the position on each line, with the lower half of the screen showing a reference image for comparison."
+attribution = "Described by Gekkio as a test ROM made by beware that exercises mid-scanline palette changes and per-line offsets."
+attribution_url = "https://blog.gg8.se/wordpress/2012/11/11/gameboy-clone-game-fighter-teardown/"
 
 [roms.source]
 type = "local_file"
