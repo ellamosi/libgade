@@ -20,9 +20,9 @@ type = "http_zip_member"
 url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/instr_timing.zip"
 download_sha256 = "10d11343126aac60986a57e87cf6816b5b05274da15b8c1ca65154a2853c2f5b"
 
-[sources.blargg_mem_timing]
+[sources.blargg_mem_timing_v2]
 type = "http_zip_member"
-url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/mem_timing.zip"
+url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/mem_timing-2.zip"
 
 [[roms]]
 id = "blargg/cpu_instrs"
@@ -179,11 +179,11 @@ source_id = "blargg_instr_timing"
 member = "instr_timing/instr_timing.gb"
 
 [[roms]]
-id = "blargg/mem_timing"
-target = "assets/roms/blargg/mem_timing.gb"
-source_id = "blargg_mem_timing"
-member = "mem_timing/mem_timing.gb"
-sha256 = "791cb418fd054b482a6ada5017e2405b96c2373a0f3914c6b23afeee76fa98ce"
+id = "blargg/mem_timing_v2"
+target = "assets/roms/blargg/mem_timing_v2.gb"
+source_id = "blargg_mem_timing_v2"
+member = "mem_timing-2/mem_timing.gb"
+sha256 = "ab9daf4c51f417c468ad0a61dab66872cf8b5a50e6eb08d989b581d15f3cf461"
 
 [[roms]]
 id = "misc/lcd_lyc"
@@ -319,3 +319,11 @@ target = "assets/roms/mooneye/cart_mbc2_rom_512kb.gb"
 sha256 = "4748aeda444bee6520e1bd2268870b53c080a61adc4039c8f32eb101a03df635"
 source_id = "mooneye_public"
 member = "mts-20240926-1737-443f6e1/emulator-only/mbc2/rom_512kb.gb"
+
+[[roms]]
+id = "blargg/mem_timing"
+target = "assets/roms/blargg/mem_timing.gb"
+sha256 = "791cb418fd054b482a6ada5017e2405b96c2373a0f3914c6b23afeee76fa98ce"
+
+[roms.source]
+type = "local_file"

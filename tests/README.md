@@ -7,7 +7,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 ### [Blargg's Test ROMs](http://gbdev.gg8.se/files/roms/blargg-gb-tests/)
 - CPU Instruction Behavior Test (`cpu_instrs`)
 - Instruction Timing (`instr_timing`)
-- Memory Timing (`mem_timing`)
+- Memory Timing v2 (`mem_timing_v2`, from `mem_timing-2.zip`)
 
 ### [Mooneye Test ROMs](https://github.com/Gekkio/mooneye-test-suite)
 - Cart Memory Bank Controllers (`mbc1`, `mbc2`)
