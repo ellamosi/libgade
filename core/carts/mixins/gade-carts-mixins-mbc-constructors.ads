@@ -9,8 +9,8 @@ package Gade.Carts.Mixins.MBC.Constructors is
    package ROM_Constructors renames ROM_RAM_Constructors.ROM_Constructors;
    package RAM_Constructors renames ROM_RAM_Constructors.RAM_Constructors;
 
-   package RAM_Bank_Pool_Constructors
-   renames ROM_RAM_Constructors.RAM_Bank_Pool_Constructors;
+   package RAM_Bank_Pool_Constructors renames
+     ROM_RAM_Constructors.RAM_Bank_Pool_Constructors;
    use RAM_Bank_Pool_Constructors;
 
    procedure Initialize

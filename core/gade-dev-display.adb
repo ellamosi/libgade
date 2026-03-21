@@ -1,4 +1,4 @@
-with System;              use System;
+with System; use System;
 
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.GB;             use Gade.GB;
@@ -34,7 +34,8 @@ package body Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : out Byte) is
+      Value   : out Byte)
+   is
       pragma Unreferenced (GB);
    begin
       Value := Display.Map.Space (Address);
@@ -45,7 +46,8 @@ package body Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : Byte) is
+      Value   : Byte)
+   is
       pragma Unreferenced (GB);
       Old_Value : LCD_Control;
    begin
@@ -68,14 +70,11 @@ package body Gade.Dev.Display is
       Display.Map.Space (Address) := Value;
    end Write;
 
-   procedure Do_DMA
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type) is
+   procedure Do_DMA (Display : in out Display_Type; GB : in out Gade.GB.GB_Type) is
       B : Byte;
    begin
       if Display.DMA_Target_Address in OAM_IO_Address then
-         Display.DMA_Clocks_Since_Last_Copy :=
-           Display.DMA_Clocks_Since_Last_Copy + 1;
+         Display.DMA_Clocks_Since_Last_Copy := Display.DMA_Clocks_Since_Last_Copy + 1;
          if Display.DMA_Clocks_Since_Last_Copy = 4 then
             Display.DMA_Clocks_Since_Last_Copy := 0;
             Read_Byte (GB, Display.DMA_Source_Address, B);
@@ -92,17 +91,15 @@ package body Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Video   : RGB32_Display_Buffer_Access;
-      Cycles  : M_Cycle_Count) is
+      Cycles  : M_Cycle_Count)
+   is
       --  The public scheduler is normalized to M-cycles, but the LCD mode
       --  handlers still use legacy T-cycle timing tables and caches.
       Handler_Cycles : constant Natural := Natural (To_T_Cycles (Cycles));
    begin
       if Display.Map.LCDC.LCD_Operation then
          Gade.Dev.Display.Handlers.Report_Cycles
-           (Display.Display_Handler.all,
-            GB,
-            Video,
-            Handler_Cycles);
+           (Display.Display_Handler.all, GB, Video, Handler_Cycles);
       elsif not Display.Map.LCDC.LCD_Operation and Display.Frame_Finished then
          --  Blank LCD when disabled, this might need to be revisited
          --  It could likely be implemented in a Disabled handler
@@ -111,36 +108,32 @@ package body Gade.Dev.Display is
       Do_DMA (Display, GB);
    end Report_Cycles;
 
-   procedure Check_Frame_Finished
-     (Display  : in out Display_Type;
-      Finished : out Boolean) is
+   procedure Check_Frame_Finished (Display : in out Display_Type; Finished : out Boolean)
+   is
    begin
       Finished := Display.Frame_Finished;
       Display.Frame_Finished := False;
    end Check_Frame_Finished;
 
    procedure Mode_Changed
-     (Display : in out Display_Type;
-      GB      : in out GB_Type;
-      Mode    : LCD_Controller_Mode_Type) is
+     (Display : in out Display_Type; GB : in out GB_Type; Mode : LCD_Controller_Mode_Type)
+   is
       Mode_Interrupt : Boolean;
    begin
       Display.Map.STAT.LCD_Controller_Mode := Mode;
       Mode_Interrupt :=
         (case Mode is
-            when HBlank     => Display.Map.STAT.Interrupt_HBlank,
-            when VBlank     => Display.Map.STAT.Interrupt_VBlank,
-            when OAM_Access => Display.Map.STAT.Interrupt_OAM_Access,
-            when others     => False);
+           when HBlank     => Display.Map.STAT.Interrupt_HBlank,
+           when VBlank     => Display.Map.STAT.Interrupt_VBlank,
+           when OAM_Access => Display.Map.STAT.Interrupt_OAM_Access,
+           when others     => False);
       if Mode_Interrupt then
          Set_Interrupt (GB, LCDC_Interrupt);
       end if;
    end Mode_Changed;
 
    procedure Line_Changed
-     (Display : in out Display_Type;
-      GB      : in out GB_Type;
-      Line    : Line_Count_Type)
+     (Display : in out Display_Type; GB : in out GB_Type; Line : Line_Count_Type)
    is
       Coincidence : Boolean;
    begin

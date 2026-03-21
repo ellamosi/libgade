@@ -1,19 +1,17 @@
 package body Gade.Audio.Channels.Pulse.Square.Sweeping is
 
    procedure Calculate_New_Frequency
-     (Channel       : in out Sweeping_Square_Channel;
-      New_Frequency : out Integer);
+     (Channel : in out Sweeping_Square_Channel; New_Frequency : out Integer);
 
    procedure Step_Frequency_Sweep (Channel : in out Sweeping_Square_Channel);
 
-   procedure Tick_Notify_Frequency_Sweep_Step is new Tick_Notify
-     (Observer_Type => Sweeping_Square_Channel,
-      Notify        => Step_Frequency_Sweep);
+   procedure Tick_Notify_Frequency_Sweep_Step is new
+     Tick_Notify
+       (Observer_Type => Sweeping_Square_Channel,
+        Notify        => Step_Frequency_Sweep);
 
    overriding
-   procedure Disable (Channel : in out Sweeping_Square_Channel;
-                      Mode    : Disable_Mode)
-   is
+   procedure Disable (Channel : in out Sweeping_Square_Channel; Mode : Disable_Mode) is
       Sweep : Frequency_Sweep_Details renames Channel.Sweep;
    begin
       Parent (Channel).Disable (Mode);
@@ -29,8 +27,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
    end Disable;
 
    procedure Calculate_New_Frequency
-     (Channel       : in out Sweeping_Square_Channel;
-      New_Frequency : out Integer)
+     (Channel : in out Sweeping_Square_Channel; New_Frequency : out Integer)
    is
       Sweep : Frequency_Sweep_Details renames Channel.Sweep;
 
@@ -43,7 +40,7 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
       --  shadow register, shifting it right by sweep shift, optionally
       --  negating the value, and summing this with the frequency shadow
       --  register to produce a new frequency.
-      Shifted := Shadow_Frequency / 2 ** Natural (Sweep.Shift);
+      Shifted := Shadow_Frequency / 2**Natural (Sweep.Shift);
       Shifted := (if Sweep.Negate then -Shifted else Shifted);
 
       New_Frequency := Shadow_Frequency + Shifted;
@@ -118,25 +115,21 @@ package body Gade.Audio.Channels.Pulse.Square.Sweeping is
    end Trigger;
 
    overriding
-   function Read_NRx0
-     (Channel : Sweeping_Square_Channel) return Byte is
+   function Read_NRx0 (Channel : Sweeping_Square_Channel) return Byte is
    begin
       return Channel.NRx0;
    end Read_NRx0;
 
    overriding
-   procedure Write_NRx0 (Channel : in out Sweeping_Square_Channel;
-                         Value   : Byte)
-   is
+   procedure Write_NRx0 (Channel : in out Sweeping_Square_Channel; Value : Byte) is
       Sweep : Frequency_Sweep_Details renames Channel.Sweep;
 
-      NRx0_In : constant NRx0_Frequency_Sweep_IO
-        := To_NRx0_Frequency_Sweep_IO (Value);
+      NRx0_In : constant NRx0_Frequency_Sweep_IO := To_NRx0_Frequency_Sweep_IO (Value);
    begin
       Channel.NRx0 := Value or NRx0_Sweep_Mask;
       Sweep.Period := NRx0_In.Period;
       Sweep.Negate := NRx0_In.Negate;
-      Sweep.Shift  := NRx0_In.Shift;
+      Sweep.Shift := NRx0_In.Shift;
 
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior
       --

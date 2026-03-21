@@ -2,14 +2,14 @@ package body Gade.Dev.CPU is
 
    procedure Reset (ctxt : in out CPU_Context) is
    begin
-      ctxt.Regs.AF  := 16#0000#;
-      ctxt.Regs.BC  := 16#0000#;
-      ctxt.Regs.DE  := 16#0000#;
-      ctxt.Regs.HL  := 16#0000#;
-      ctxt.Regs.SP  := 16#FFFE#;
-      ctxt.PC       := 16#0100#;
+      ctxt.Regs.AF := 16#0000#;
+      ctxt.Regs.BC := 16#0000#;
+      ctxt.Regs.DE := 16#0000#;
+      ctxt.Regs.HL := 16#0000#;
+      ctxt.Regs.SP := 16#FFFE#;
+      ctxt.PC := 16#0100#;
       ctxt.Regs.F.Z := True;
-      ctxt.Halted   := False;
+      ctxt.Halted := False;
    end Reset;
 
    procedure Set (Flag : in out CPU_Flag) is
@@ -32,15 +32,20 @@ package body Gade.Dev.CPU is
       return Boolean (Flag);
    end Is_Set;
 
-   function Check_Condition
-     (CPU  : CPU_Context;
-      cond : Condition_Type) return Boolean is
+   function Check_Condition (CPU : CPU_Context; cond : Condition_Type) return Boolean is
    begin
       case cond is
-      when C_Z  => return Is_Set (CPU.Regs.F.Z);
-      when C_NZ => return not Is_Set (CPU.Regs.F.Z);
-      when C_C  => return Is_Set (CPU.Regs.F.C);
-      when C_NC => return not Is_Set (CPU.Regs.F.C);
+         when C_Z  =>
+            return Is_Set (CPU.Regs.F.Z);
+
+         when C_NZ =>
+            return not Is_Set (CPU.Regs.F.Z);
+
+         when C_C  =>
+            return Is_Set (CPU.Regs.F.C);
+
+         when C_NC =>
+            return not Is_Set (CPU.Regs.F.C);
       end case;
    end Check_Condition;
 

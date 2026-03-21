@@ -9,7 +9,9 @@ package body Gade.Carts.Mem.ROM is
       Pow : ROM_Content_Size;
    begin
       Pow := Min_Size;
-      while ROM_Content_Size (S) > Pow loop Pow := Pow * 2; end loop;
+      while ROM_Content_Size (S) > Pow loop
+         Pow := Pow * 2;
+      end loop;
       return Pow;
    end Encompassing_Size;
 

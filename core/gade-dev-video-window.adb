@@ -1,7 +1,7 @@
-with Gade.Dev.VRAM; use Gade.Dev.VRAM;
-with Gade.Dev.Video.Tile_Map; use Gade.Dev.Video.Tile_Map;
+with Gade.Dev.VRAM;              use Gade.Dev.VRAM;
+with Gade.Dev.Video.Tile_Map;    use Gade.Dev.Video.Tile_Map;
 with Gade.Dev.Video.Tile_Buffer; use Gade.Dev.Video.Tile_Buffer;
-with Gade.Video_Buffer; use Gade.Video_Buffer;
+with Gade.Video_Buffer;          use Gade.Video_Buffer;
 
 package body Gade.Dev.Video.Window is
 
@@ -11,17 +11,16 @@ package body Gade.Dev.Video.Window is
       Tile_Map  : Tile_Map_Access_Type;
       Tile_Data : Tile_Data_Access_Type) return Window_Result_Type
    is
-      Tile_Row : Vertical_Tile_Map_Range;
-      Tile_Col : Horizontal_Tile_Map_Range;
+      Tile_Row                 : Vertical_Tile_Map_Range;
+      Tile_Col                 : Horizontal_Tile_Map_Range;
       Tile_PX_Row, Tile_PX_Col : Natural;
-      Tile_Index : Tile_Index_Type;
-      Result : Window_Result_Type;
-      Window_Col : Integer;
+      Tile_Index               : Tile_Index_Type;
+      Result                   : Window_Result_Type;
+      Window_Col               : Integer;
    begin
       Window_Col := Col + 1;
       Result.Visible :=
-        Row in Display_Vertical_Range and
-        Window_Col in Display_Horizontal_Range;
+        Row in Display_Vertical_Range and Window_Col in Display_Horizontal_Range;
 
       if Result.Visible then
          Tile_Row := Vertical_Tile_Map_Range (Row / 8);
@@ -30,13 +29,9 @@ package body Gade.Dev.Video.Window is
          Tile_PX_Col := Window_Col mod 8;
 
          Tile_Index :=
-           VRAM.Consolidated_Maps (Tile_Map)(Tile_Data).Positional (Tile_Row, Tile_Col);
+           VRAM.Consolidated_Maps (Tile_Map) (Tile_Data).Positional (Tile_Row, Tile_Col);
          Result.Value :=
-           Read_Raster_Tile
-             (VRAM.Tile_Buffer,
-              Tile_Index,
-              Tile_PX_Row,
-              Tile_PX_Col);
+           Read_Raster_Tile (VRAM.Tile_Buffer, Tile_Index, Tile_PX_Row, Tile_PX_Col);
       end if;
 
       return Result;

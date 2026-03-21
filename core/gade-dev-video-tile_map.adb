@@ -11,9 +11,7 @@ package body Gade.Dev.Video.Tile_Map is
    end High_Data_Index;
 
    procedure Consolidate_Tile_Index
-     (Tile_Map : in out Consolidated_Tile_Map_Type;
-      Address  : Word;
-      Value    : Byte)
+     (Tile_Map : in out Consolidated_Tile_Map_Type; Address : Word; Value : Byte)
    is
       Map_Index : Word;
    begin

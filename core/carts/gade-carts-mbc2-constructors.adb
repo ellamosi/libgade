@@ -4,8 +4,7 @@ package body Gade.Carts.MBC2.Constructors is
 
    overriding
    function Create_Bank
-     (F : in out MBC2_RAM_Bank_Factory;
-      I : Bank_Index) return Bank_NN_Access
+     (F : in out MBC2_RAM_Bank_Factory; I : Bank_Index) return Bank_NN_Access
    is
       pragma Unreferenced (I);
    begin
@@ -19,8 +18,7 @@ package body Gade.Carts.MBC2.Constructors is
      (ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
       RAM_Path    : String;
-      Logger      : Gade.Logging.Logger_Access)
-      return MBC2_Cart_NN_Access
+      Logger      : Gade.Logging.Logger_Access) return MBC2_Cart_NN_Access
    is
       Result : constant MBC2_Cart_NN_Access := new MBC2_Cart;
    begin

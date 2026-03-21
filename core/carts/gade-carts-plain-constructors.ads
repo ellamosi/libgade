@@ -8,8 +8,7 @@ package Gade.Carts.Plain.Constructors is
      (Content  : ROM_Content_Access;
       Header   : Cart_Header;
       RAM_Path : String;
-      Logger   : Gade.Logging.Logger_Access)
-      return Plain_Cart_NN_Access;
+      Logger   : Gade.Logging.Logger_Access) return Plain_Cart_NN_Access;
 
 private
 
@@ -24,10 +23,10 @@ private
 
    subtype Plain_RAM_Size_Type is RAM_Size_Type range None .. RAM_64kbit;
 
-   Address_Mask_For_RAM_Size : constant array (Plain_RAM_Size_Type)
-     of Word :=
-       [None        => 16#0000#, -- Unused
-        RAM_16kbit  => 16#07FF#,
-        RAM_64kbit  => 16#1FFF#];
+   Address_Mask_For_RAM_Size : constant array (Plain_RAM_Size_Type) of Word :=
+     [None       => 16#0000#,
+      -- Unused
+      RAM_16kbit => 16#07FF#,
+      RAM_64kbit => 16#1FFF#];
 
 end Gade.Carts.Plain.Constructors;

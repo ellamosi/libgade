@@ -10,12 +10,13 @@ package Gade.Carts.Plain is
 
 private
 
-   package ROM_RAM_Mixin is new Gade.Carts.Mixins.ROM_RAM
-     (Base_Cart              => Cart,
-      ROM_Banks              => 1,
-      RAM_Banks              => 1,
-      Accessible_ROM_Banks   => 1,
-      RAM_Enabled_By_Default => True);
+   package ROM_RAM_Mixin is new
+     Gade.Carts.Mixins.ROM_RAM
+       (Base_Cart              => Cart,
+        ROM_Banks              => 1,
+        RAM_Banks              => 1,
+        Accessible_ROM_Banks   => 1,
+        RAM_Enabled_By_Default => True);
    use ROM_RAM_Mixin;
 
    type Plain_Cart is new ROM_RAM_Cart with null record;

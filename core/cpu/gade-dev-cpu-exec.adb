@@ -8,9 +8,8 @@ package body Gade.Dev.CPU.Exec is
    function Hex_Word (Value : Word) return String;
 
    procedure Execute
-     (CPU    : in out CPU_Context;
-      GB     : in out Gade.GB.GB_Type;
-      Cycles : out M_Cycle_Count) is
+     (CPU : in out CPU_Context; GB : in out Gade.GB.GB_Type; Cycles : out M_Cycle_Count)
+   is
       pragma Unreferenced (CPU);
       Handler : Instruction_Handler;
       Opcode  : Byte;
@@ -39,9 +38,7 @@ package body Gade.Dev.CPU.Exec is
    function Hex_Byte (Value : Byte) return String is
       Raw : constant Natural := Natural (Value);
    begin
-      return
-        [1 => Hex_Digit (Raw / 16),
-         2 => Hex_Digit (Raw mod 16)];
+      return [1 => Hex_Digit (Raw / 16), 2 => Hex_Digit (Raw mod 16)];
    end Hex_Byte;
 
    function Hex_Word (Value : Word) return String is
@@ -54,19 +51,18 @@ package body Gade.Dev.CPU.Exec is
          4 => Hex_Digit (Raw mod 16)];
    end Hex_Word;
 
-   procedure Invalid_Main_Opcode
-     (GB : in out Gade.GB.GB_Type) is
+   procedure Invalid_Main_Opcode (GB : in out Gade.GB.GB_Type) is
       Opcode : constant Byte := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC - 1);
    begin
-      raise Program_Error with
-        "invalid main opcode 0x"
-        & Hex_Byte (Opcode)
-        & " at PC=0x"
-        & Hex_Word (GB.CPU.PC - 1);
+      raise Program_Error
+        with
+          "invalid main opcode 0x"
+          & Hex_Byte (Opcode)
+          & " at PC=0x"
+          & Hex_Word (GB.CPU.PC - 1);
    end Invalid_Main_Opcode;
 
-   procedure Main_CB_Prefix
-     (GB : in out Gade.GB.GB_Type) is
+   procedure Main_CB_Prefix (GB : in out Gade.GB.GB_Type) is
       Handler : Instruction_Handler;
       Opcode  : Byte;
    begin

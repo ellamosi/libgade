@@ -1,2 +1,2 @@
-package Gade.Dev.CPU.Instructions.Control.Handlers
-  renames Gade.Dev.CPU.Instructions.Control;
+package Gade.Dev.CPU.Instructions.Control.Handlers renames
+  Gade.Dev.CPU.Instructions.Control;

@@ -2,8 +2,8 @@ package body Gade.Carts.Mem.RAM is
    use Common;
 
    function Create
-     (Reported_Size : RAM_Size_Type;
-      Max_Size      : RAM_Content_Size) return RAM_Content_Access
+     (Reported_Size : RAM_Size_Type; Max_Size : RAM_Content_Size)
+      return RAM_Content_Access
    is
       Reported_Content_Size, Actual_Size : RAM_Content_Size;
    begin
@@ -27,10 +27,7 @@ package body Gade.Carts.Mem.RAM is
 
    procedure Load (RAM : out RAM_Content; File : File_Type) renames Common.Load;
 
-   procedure Save
-     (RAM  : RAM_Content;
-      File : File_Type)
-   is
+   procedure Save (RAM : RAM_Content; File : File_Type) is
       Output_Stream : Stream_Access;
    begin
       Output_Stream := Ada.Streams.Stream_IO.Stream (File);

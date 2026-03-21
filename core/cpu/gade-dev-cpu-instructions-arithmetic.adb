@@ -1,10 +1,8 @@
 package body Gade.Dev.CPU.Instructions.Arithmetic is
 
    procedure Add
-     (CPU    : in out CPU_Context;
-      Value  : Byte;
-      Result : out Byte;
-      Carry  : Carry_Type) is
+     (CPU : in out CPU_Context; Value : Byte; Result : out Byte; Carry : Carry_Type)
+   is
 
       A_Native      : Native_Unsigned;
       Value_Native  : Native_Unsigned;
@@ -26,8 +24,8 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       --  H : Set if carry from bit 3; reset otherwise
       Set_Value
         (CPU.Regs.F.H,
-         (((A_Native and 16#0F#) + (Value_Native and 16#0F#) + Carry_Value)
-          and 16#10#) /= 0);
+         (((A_Native and 16#0F#) + (Value_Native and 16#0F#) + Carry_Value) and 16#10#)
+         /= 0);
       Result_Native := A_Native + Value_Native + Carry_Value;
 
       --  Set Byte result
@@ -39,10 +37,7 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       Set_Value (CPU.Regs.F.C, (Result_Native and 16#100#) /= 0);
    end Add;
 
-   procedure Add
-     (CPU   : in out CPU_Context;
-      Reg   : in out Word;
-      Value : Byte) is
+   procedure Add (CPU : in out CPU_Context; Reg : in out Word; Value : Byte) is
       Reg_Native    : Native_Unsigned;
       Value_Native  : Native_Unsigned;
       Result_Native : Native_Unsigned;
@@ -57,27 +52,24 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
 
       if (Value_Native and 16#80#) /= 0 then
          Value_Native := Value_Native or 16#FF00#; -- Sign extension
+
       end if;
 
       --  H : Set if carry/borrow from bit 3; reset otherwise
       Set_Value
         (CPU.Regs.F.H,
-         (((Reg_Native and 16#000F#) + (Value_Native and 16#0F#))
-          and 16#10#) /= 0);
+         (((Reg_Native and 16#000F#) + (Value_Native and 16#0F#)) and 16#10#) /= 0);
       Result_Native := Reg_Native + Value_Native;
       --  C : Set if carry/borrow from bit 7; reset otherwise
-      Set_Value (CPU.Regs.F.C,
-                (((Reg_Native and 16#00FF#) + (Value_Native and 16#00FF#))
-                 and 16#100#) /= 0);
+      Set_Value
+        (CPU.Regs.F.C,
+         (((Reg_Native and 16#00FF#) + (Value_Native and 16#00FF#)) and 16#100#) /= 0);
 
       --  Set Word result
       Reg := Word (Result_Native and 16#FFFF#);
    end Add;
 
-   procedure Add
-     (CPU    : in out CPU_Context;
-      Value  : Word;
-      Result : out Word) is
+   procedure Add (CPU : in out CPU_Context; Value : Word; Result : out Word) is
 
       HL_Native     : Native_Unsigned;
       Value_Native  : Native_Unsigned;
@@ -92,8 +84,7 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       --  H : Set if carry from bit 11; reset otherwise
       Set_Value
         (CPU.Regs.F.H,
-         (((HL_Native and 16#0FFF#) + (Value_Native and 16#0FFF#))
-          and 16#1000#) /= 0);
+         (((HL_Native and 16#0FFF#) + (Value_Native and 16#0FFF#)) and 16#1000#) /= 0);
       Result_Native := HL_Native + Value_Native;
 
       --  Set Word result
@@ -105,10 +96,8 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
    end Add;
 
    procedure Sub
-     (CPU    : in out CPU_Context;
-      Value  : Byte;
-      Result : out Byte;
-      Carry  : Carry_Type) is
+     (CPU : in out CPU_Context; Value : Byte; Result : out Byte; Carry : Carry_Type)
+   is
 
       A_Native      : Native_Unsigned;
       Value_Native  : Native_Unsigned;
@@ -130,8 +119,8 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       --  H : Set if borrow from bit 4; reset otherwise
       Set_Value
         (CPU.Regs.F.H,
-         (((A_Native and 16#0F#) - (Value_Native and 16#0F#) - Carry_Value)
-          and 16#10#) /= 0);
+         (((A_Native and 16#0F#) - (Value_Native and 16#0F#) - Carry_Value) and 16#10#)
+         /= 0);
       Result_Native := A_Native - Value_Native - Carry_Value;
 
       --  Set Byte result
@@ -143,17 +132,15 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
    end Sub;
 
    procedure Add_Offset
-     (CPU       : in out CPU_Context;
-      Address   : in out Word;
-      Offset    : Byte;
-      Set_Flags : Boolean) is
+     (CPU : in out CPU_Context; Address : in out Word; Offset : Byte; Set_Flags : Boolean)
+   is
       Result_Native  : Native_Unsigned;
       Address_Native : Native_Unsigned;
       Offset_Native  : Native_Unsigned;
    begin
       Address_Native := Native_Unsigned (Address);
       Offset_Native := Native_Unsigned (Offset);
-      if (Offset_Native and 16#80#) = 0  then
+      if (Offset_Native and 16#80#) = 0 then
          Result_Native := Address_Native + Offset_Native;
          if Set_Flags then
             --  H : Half-Carry is ignored (although some sources state otherwise)
@@ -174,10 +161,8 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
    end Add_Offset;
 
    procedure Inc_Dec
-     (CPU     : in out CPU_Context;
-      Inc_Dec : Inc_Dec_Type;
-      Value   : Byte;
-      Result  : out Byte) is
+     (CPU : in out CPU_Context; Inc_Dec : Inc_Dec_Type; Value : Byte; Result : out Byte)
+   is
    begin
       if Inc_Dec = DEC then
          Result := Value - 1;
@@ -191,10 +176,9 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       Set_Value (CPU.Regs.F.N, Inc_Dec = DEC);
    end Inc_Dec;
 
-   procedure Adjust_DAA
-     (CPU     : in out CPU_Context) is
+   procedure Adjust_DAA (CPU : in out CPU_Context) is
 
-      A_Native  : Native_Unsigned;
+      A_Native : Native_Unsigned;
    begin
       A_Native := Native_Unsigned (CPU.Regs.A);
 
@@ -224,34 +208,27 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       CPU.Regs.A := Byte (A_Native);
    end Adjust_DAA;
 
-   procedure ADD_SP_Imm8
-     (GB : in out Gade.GB.GB_Type) is
+   procedure ADD_SP_Imm8 (GB : in out Gade.GB.GB_Type) is
    begin
       Add (GB.CPU, GB.CPU.Regs.SP, Instructions.Fetch_Imm8 (GB));
       Instructions.Internal_Cycle (GB);
       Instructions.Internal_Cycle (GB);
    end ADD_SP_Imm8;
 
-   procedure DAA
-     (GB : in out Gade.GB.GB_Type) is
+   procedure DAA (GB : in out Gade.GB.GB_Type) is
    begin
       Adjust_DAA (GB.CPU);
    end DAA;
 
-   procedure Inc_Dec_Byte
-     (GB : in out Gade.GB.GB_Type) is
+   procedure Inc_Dec_Byte (GB : in out Gade.GB.GB_Type) is
       Value : Byte := Instructions.Load_Target (GB, Target);
    begin
       Inc_Dec
-        (GB.CPU,
-         (if Operation = Instructions.OP_INC then INC else DEC),
-         Value,
-         Value);
+        (GB.CPU, (if Operation = Instructions.OP_INC then INC else DEC), Value, Value);
       Instructions.Store_Target (GB, Target, Value);
    end Inc_Dec_Byte;
 
-   procedure Inc_Dec_Word
-     (GB : in out Gade.GB.GB_Type) is
+   procedure Inc_Dec_Word (GB : in out Gade.GB.GB_Type) is
       Value : Word := Instructions.Read_Word_Register (GB, Target);
    begin
       if Operation = Instructions.OP_INC then
@@ -263,8 +240,7 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
       Instructions.Write_Word_Register (GB, Target, Value);
    end Inc_Dec_Word;
 
-   procedure Add_HL
-     (GB : in out Gade.GB.GB_Type) is
+   procedure Add_HL (GB : in out Gade.GB.GB_Type) is
       Value : Word := GB.CPU.Regs.HL;
    begin
       Add (GB.CPU, Instructions.Read_Word_Register (GB, Source), Value);

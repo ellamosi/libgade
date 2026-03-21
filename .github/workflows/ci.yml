@@ -7,6 +7,40 @@ on:
     branches: [main, master, 'release-*']
 
 jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
+
+      - name: Restore gnatformat install
+        id: gnatformat-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.alire
+          key: ${{ runner.os }}-gnatformat-v1
+
+      - name: Install gnatformat
+        shell: sh
+        run: |
+          if [ ! -x "${HOME}/.alire/bin/gnatformat" ]; then
+            alr install gnatformat
+          fi
+
+      - name: Save gnatformat install
+        if: steps.gnatformat-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.alire
+          key: ${{ runner.os }}-gnatformat-v1
+
+      - name: Check Ada formatting
+        run: ./scripts/check-ada-format.sh
+
   tests:
     runs-on: ubuntu-latest
 

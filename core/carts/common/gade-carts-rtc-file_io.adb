@@ -1,4 +1,4 @@
-with Ada.Exceptions;             use Ada.Exceptions;
+with Ada.Exceptions; use Ada.Exceptions;
 
 with Gade.Carts.RTC.Text_IO; use Gade.Carts.RTC.Text_IO;
 
@@ -19,64 +19,50 @@ package body Gade.Carts.RTC.File_IO is
    end Time_To_Unix_Seconds;
 
    procedure To_Counter_Registers
-     (C_Data    : Counter_Data;
-      Registers : out Counter_Registers)
+     (C_Data : Counter_Data; Registers : out Counter_Registers)
    is
       pragma Unsuppress (Overflow_Check);
 
       Days_Top : constant Unsigned_32 := Unsigned_32 (C_Data.Days_Top);
-      Days : constant Unsigned_32 :=
+      Days     : constant Unsigned_32 :=
         C_Data.Days_Low + Days_Top * Days_Low_Cardinality;
    begin
       Registers.Seconds := Byte (C_Data.Seconds);
       Registers.Minutes := Byte (C_Data.Minutes);
-      Registers.Hours   := Byte (C_Data.Hours);
+      Registers.Hours := Byte (C_Data.Hours);
 
       Registers.Indexed (Days_High) := 0;
-      Registers.Days   := Day_Count (Days);
+      Registers.Days := Day_Count (Days);
       Registers.Halted := C_Data.Halted;
-      Registers.Carry  := C_Data.Carry;
+      Registers.Carry := C_Data.Carry;
    end To_Counter_Registers;
 
-   procedure To_Counter
-     (C_Data : Counter_Data;
-      C      : out Counter)
-   is
+   procedure To_Counter (C_Data : Counter_Data; C : out Counter) is
       Registers : Counter_Registers;
    begin
       To_Counter_Registers (C_Data, Registers);
       To_Counter (Registers, C);
    end To_Counter;
 
-   procedure To_Counter_Data
-     (Registers : Counter_Registers;
-      C_Data    : out Counter_Data)
-   is
+   procedure To_Counter_Data (Registers : Counter_Registers; C_Data : out Counter_Data) is
    begin
-      C_Data.Seconds  := Unsigned_32 (Registers.Seconds);
-      C_Data.Minutes  := Unsigned_32 (Registers.Minutes);
-      C_Data.Hours    := Unsigned_32 (Registers.Hours);
+      C_Data.Seconds := Unsigned_32 (Registers.Seconds);
+      C_Data.Minutes := Unsigned_32 (Registers.Minutes);
+      C_Data.Hours := Unsigned_32 (Registers.Hours);
       C_Data.Days_Low := Unsigned_32 (Registers.Days mod Days_Low_Cardinality);
       C_Data.Days_Top := Days_Top_Type (Registers.Days / Days_Low_Cardinality);
-      C_Data.Halted   := Registers.Halted;
-      C_Data.Carry    := Registers.Carry;
+      C_Data.Halted := Registers.Halted;
+      C_Data.Carry := Registers.Carry;
    end To_Counter_Data;
 
-   procedure To_Counter_Data
-     (C      : Counter;
-      C_Data : out Counter_Data)
-   is
+   procedure To_Counter_Data (C : Counter; C_Data : out Counter_Data) is
       Registers : Counter_Registers;
    begin
       To_Registers (C, Registers);
       To_Counter_Data (Registers, C_Data);
    end To_Counter_Data;
 
-   procedure To_Clock
-     (Clk_Data  : Clock_Data;
-      Loaded_At : Time;
-      Clk       : out Clock)
-   is
+   procedure To_Clock (Clk_Data : Clock_Data; Loaded_At : Time; Clk : out Clock) is
       Saved_At : Time;
       Elapsed  : Duration;
    begin
@@ -90,11 +76,7 @@ package body Gade.Carts.RTC.File_IO is
       end if;
    end To_Clock;
 
-   procedure To_Clock_Data
-     (Clk      : Clock;
-      Saved_At : Time;
-      Clk_Data : out Clock_Data)
-   is
+   procedure To_Clock_Data (Clk : Clock; Saved_At : Time; Clk_Data : out Clock_Data) is
    begin
       Clk_Data.Content_64 := [others => 0];
       To_Counter_Data (Clk.Elapsed, Clk_Data.Time);

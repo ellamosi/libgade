@@ -4,8 +4,7 @@ private package Gade.Dev.Display.Handlers.VBlank is
    type VBlank_Handler_Access is access VBlank_Handler_Type;
 
    overriding
-   procedure Reset
-     (Mode_Handler : in out VBlank_Handler_Type);
+   procedure Reset (Mode_Handler : in out VBlank_Handler_Type);
 
    overriding
    procedure Start

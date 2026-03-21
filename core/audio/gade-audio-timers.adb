@@ -5,10 +5,7 @@ package body Gade.Audio.Timers is
       T.Remaining := Ticks;
    end Reload;
 
-   procedure Reload
-     (T      : in out Timer_Type;
-      Ticks  : Positive;
-      Enable : Boolean) is
+   procedure Reload (T : in out Timer_Type; Ticks : Positive; Enable : Boolean) is
    begin
       T.Reload (Ticks);
       T.Enable (Enable);
@@ -29,10 +26,7 @@ package body Gade.Audio.Timers is
       T.Enable (False);
    end Disable;
 
-   procedure Tick_Notify
-     (T : in out Timer_Type;
-      Observer : in out Observer_Type)
-   is
+   procedure Tick_Notify (T : in out Timer_Type; Observer : in out Observer_Type) is
    begin
       if not T.Is_Enabled or else T.Has_Finished then
          return;

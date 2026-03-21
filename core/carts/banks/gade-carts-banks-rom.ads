@@ -11,12 +11,13 @@ package Gade.Carts.Banks.ROM is
 
 private
 
-   package ROM_Memory_Banks is new Memory_Bank_Mixin
-     (Base_Bank         => Bank,
-      Address           => ROM_Address,
-      Content           => ROM_Content,
-      Content_Access    => ROM_Content_Access,
-      Content_NN_Access => ROM_Content_NN_Access);
+   package ROM_Memory_Banks is new
+     Memory_Bank_Mixin
+       (Base_Bank         => Bank,
+        Address           => ROM_Address,
+        Content           => ROM_Content,
+        Content_Access    => ROM_Content_Access,
+        Content_NN_Access => ROM_Content_NN_Access);
    use ROM_Memory_Banks;
 
    type ROM_Bank is new Memory_Bank with null record;

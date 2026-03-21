@@ -6,7 +6,7 @@ package Gade.Audio.Channels.Pulse is
 
 private
 
-   type Envelope_Volume is mod 2 ** 4;
+   type Envelope_Volume is mod 2**4;
    type Envelope_Direction is (Down, Up);
    for Envelope_Direction use (Down => 0, Up => 1);
    subtype Envelope_Period is Effect_Period_IO;
@@ -47,24 +47,18 @@ private
    end record;
 
    overriding
-   procedure Disable
-     (Channel : in out Pulse_Channel;
-      Mode    : Disable_Mode);
+   procedure Disable (Channel : in out Pulse_Channel; Mode : Disable_Mode);
 
    overriding
    function Read_NRx2 (Channel : Pulse_Channel) return Byte;
 
    overriding
-   procedure Write_NRx2
-     (Channel : in out Pulse_Channel;
-      Value   : Byte);
+   procedure Write_NRx2 (Channel : in out Pulse_Channel; Value : Byte);
 
    overriding
    procedure Trigger (Channel : in out Pulse_Channel);
 
    --  TODO: Representative Volume Type
-   procedure Set_Volume
-     (Channel : in out Pulse_Channel;
-      Volume  : Natural);
+   procedure Set_Volume (Channel : in out Pulse_Channel; Volume : Natural);
 
 end Gade.Audio.Channels.Pulse;

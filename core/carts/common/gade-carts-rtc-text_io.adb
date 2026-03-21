@@ -2,9 +2,7 @@ with Ada.Calendar.Formatting; use Ada.Calendar.Formatting;
 
 package body Gade.Carts.RTC.Text_IO is
 
-   procedure Print
-     (Logger : Gade.Logging.Logger_Access;
-      Clk    : Clock) is
+   procedure Print (Logger : Gade.Logging.Logger_Access; Clk : Clock) is
    begin
       Gade.Logging.Debug (Logger, "  Elapsed:    " & Counter_Image (Clk.Elapsed));
       Gade.Logging.Debug (Logger, "  Latched:    " & Counter_Image (Clk.Latched));
@@ -29,16 +27,14 @@ package body Gade.Carts.RTC.Text_IO is
    function Duration_Image (D : Duration) return String is
       Days_Img : constant String := Days (D)'Img;
    begin
-      return
-        Days_Img (Days_Img'First + 1 .. Days_Img'Last) &
-        "d " & Image (Truncate (D));
+      return Days_Img (Days_Img'First + 1 .. Days_Img'Last) & "d " & Image (Truncate (D));
    end Duration_Image;
 
    function Counter_Image (C : Counter) return String is
       Halted    : String := "H: ";
       Overflown : String := "O: ";
    begin
-      Halted (Halted'Last)       := (if C.Halted then 't' else 'f');
+      Halted (Halted'Last) := (if C.Halted then 't' else 'f');
       Overflown (Overflown'Last) := (if C.Carry then 't' else 'f');
       return Duration_Image (C.Span) & ' ' & Overflown & ' ' & Halted;
    end Counter_Image;

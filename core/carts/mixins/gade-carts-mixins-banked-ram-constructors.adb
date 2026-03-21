@@ -1,18 +1,14 @@
 package body Gade.Carts.Mixins.Banked.RAM.Constructors is
 
    function Create_Offset_Bank
-     (Content : RAM_Content_Access;
-      Offset  : RAM_Address)
-      return Bank_NN_Access
+     (Content : RAM_Content_Access; Offset : RAM_Address) return Bank_NN_Access
    is
       use RAM_Bank_Constructors;
    begin
       return Bank_Access (Create (Content, Offset));
    end Create_Offset_Bank;
 
-   procedure Initialize
-     (C       : in out Banked_RAM_Cart'Class;
-      Content : RAM_Content_Access)
+   procedure Initialize (C : in out Banked_RAM_Cart'Class; Content : RAM_Content_Access)
    is
       use RAM_Bank_Factories;
 
@@ -25,8 +21,7 @@ package body Gade.Carts.Mixins.Banked.RAM.Constructors is
    procedure Initialize
      (C       : in out Banked_RAM_Cart'Class;
       Content : RAM_Content_Access;
-      BF      : in out Bank_Factory'Class)
-   is
+      BF      : in out Bank_Factory'Class) is
    begin
       C.Content := Content;
       Initialize (C.Banks, BF);

@@ -7,31 +7,26 @@ package body Gade.Audio.Channels.Pulse is
       Direction : Envelope_Direction;
       Period    : Envelope_Period;
    end record;
-   for NRx2_Volume_Envelope_IO use record
-      Volume    at 0 range 4 .. 7;
-      Direction at 0 range 3 .. 3;
-      Period    at 0 range 0 .. 2;
-   end record;
+   for NRx2_Volume_Envelope_IO use
+     record
+       Volume at 0 range 4 .. 7;
+       Direction at 0 range 3 .. 3;
+       Period at 0 range 0 .. 2;
+     end record;
    for NRx2_Volume_Envelope_IO'Size use Byte'Size;
 
-   function To_NRx2_Volume_Envelope_IO is new Ada.Unchecked_Conversion
-     (Source => Byte,
-      Target => NRx2_Volume_Envelope_IO);
-
+   function To_NRx2_Volume_Envelope_IO is new
+     Ada.Unchecked_Conversion (Source => Byte, Target => NRx2_Volume_Envelope_IO);
 
    procedure Step_Volume_Envelope (Channel : in out Pulse_Channel);
 
    function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean;
 
-   procedure Tick_Notify_Volume_Envelope_Step is new Tick_Notify
-     (Observer_Type => Pulse_Channel,
-      Notify        => Step_Volume_Envelope);
-
+   procedure Tick_Notify_Volume_Envelope_Step is new
+     Tick_Notify (Observer_Type => Pulse_Channel, Notify => Step_Volume_Envelope);
 
    overriding
-   procedure Disable (Channel : in out Pulse_Channel;
-                      Mode    : Disable_Mode)
-   is
+   procedure Disable (Channel : in out Pulse_Channel; Mode : Disable_Mode) is
       Envelope : Volume_Envelope_Details renames Channel.Volume_Envelope;
    begin
       Parent (Channel).Disable (Mode);
@@ -71,7 +66,7 @@ package body Gade.Audio.Channels.Pulse is
    end Set_Volume;
 
    procedure Step_Volume_Envelope (Channel : in out Pulse_Channel) is
-      Envelope : Volume_Envelope_Details renames Channel.Volume_Envelope;
+      Envelope     : Volume_Envelope_Details renames Channel.Volume_Envelope;
       Final_Volume : constant Natural := Final_Volumes (Envelope.Direction);
    begin
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Volume_Envelope
@@ -104,16 +99,15 @@ package body Gade.Audio.Channels.Pulse is
 
    overriding
    procedure Write_NRx2 (Channel : in out Pulse_Channel; Value : Byte) is
-      NRx2_In : constant NRx2_Volume_Envelope_IO :=
-        To_NRx2_Volume_Envelope_IO (Value);
+      NRx2_In  : constant NRx2_Volume_Envelope_IO := To_NRx2_Volume_Envelope_IO (Value);
       Envelope : Volume_Envelope_Details renames Channel.Volume_Envelope;
    begin
       Channel.NRx2 := Value or NRx2_Volume_Envelope_Mask;
 
       Envelope.Initial_Volume := Natural (NRx2_In.Volume);
-      Envelope.Direction      := NRx2_In.Direction;
-      Envelope.Step           := Steps (Envelope.Direction);
-      Envelope.Period         := NRx2_In.Period;
+      Envelope.Direction := NRx2_In.Direction;
+      Envelope.Step := Steps (Envelope.Direction);
+      Envelope.Period := NRx2_In.Period;
 
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Channel_DAC
       --
@@ -124,17 +118,16 @@ package body Gade.Audio.Channels.Pulse is
       --  enable the channel).
       Channel.Update_DAC_Power_State (Powers_DAC (NRx2_In));
 
-      --  TODO: Investigate how/if volume should be set here. It's a bit wonky
-      --  and probably complex. Prehistorik Man's intro audio probably relies
-      --  on this being accurately implemented. Zombie mode maybe?
-      --
-      --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior
+   --  TODO: Investigate how/if volume should be set here. It's a bit wonky
+   --  and probably complex. Prehistorik Man's intro audio probably relies
+   --  on this being accurately implemented. Zombie mode maybe?
+   --
+   --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Obscure_Behavior
    end Write_NRx2;
 
    function Powers_DAC (NRx2_In : NRx2_Volume_Envelope_IO) return Boolean is
    begin
-      return
-        NRx2_In.Volume /= 0 or NRx2_In.Direction /= Envelope_Direction'Val (0);
+      return NRx2_In.Volume /= 0 or NRx2_In.Direction /= Envelope_Direction'Val (0);
    end Powers_DAC;
 
 end Gade.Audio.Channels.Pulse;

@@ -12,21 +12,13 @@ package Gade.Carts.RTC is
 
    procedure Reset (Clk : in out Clock);
 
-   procedure Read
-     (Clk   : in out Clock;
-      Reg   : Register;
-      Value : out Byte);
+   procedure Read (Clk : in out Clock; Reg : Register; Value : out Byte);
 
-   procedure Write
-     (Clk   : in out Clock;
-      Reg   : Register;
-      Value : Byte);
+   procedure Write (Clk : in out Clock; Reg : Register; Value : Byte);
 
    procedure Latch (Clk : in out Clock);
 
-   procedure Report_Cycles
-     (Clk    : in out Clock;
-      Cycles : M_Cycle_Count);
+   procedure Report_Cycles (Clk : in out Clock; Cycles : M_Cycle_Count);
 
 private
 
@@ -45,8 +37,7 @@ private
    type Day_Count is mod Day_Count_Cardinality;
 
    type Registers_Access_Type is (Named, Indexable);
-   type Counter_Registers (Access_Type : Registers_Access_Type := Named)
-   is record
+   type Counter_Registers (Access_Type : Registers_Access_Type := Named) is record
       case Access_Type is
          when Named =>
             Seconds : Byte;
@@ -55,19 +46,22 @@ private
             Days    : Day_Count;
             Carry   : Boolean;
             Halted  : Boolean;
+
          when Indexable =>
             Indexed : Plain_Counter_Registers;
       end case;
-   end record with Unchecked_Union;
-   for Counter_Registers use record
-      Seconds at 0 range 0 .. 7;
-      Minutes at 1 range 0 .. 7;
-      Hours   at 2 range 0 .. 7;
-      Days    at 3 range 0 .. 8;
-      Halted  at 4 range 6 .. 6;
-      Carry   at 4 range 7 .. 7;
-      Indexed at 0 range 0 .. 39;
-   end record;
+   end record
+   with Unchecked_Union;
+   for Counter_Registers use
+     record
+       Seconds at 0 range 0 .. 7;
+       Minutes at 1 range 0 .. 7;
+       Hours at 2 range 0 .. 7;
+       Days at 3 range 0 .. 8;
+       Halted at 4 range 6 .. 6;
+       Carry at 4 range 7 .. 7;
+       Indexed at 0 range 0 .. 39;
+     end record;
    for Counter_Registers'Size use 5 * 8;
    for Counter_Registers'Bit_Order use System.Low_Order_First;
 
@@ -78,22 +72,15 @@ private
       Cycles    : T_Cycle_Count;
    end record;
 
-   Max_Span : constant Duration :=
-     Duration (Day_Count_Cardinality * 24 * 60 * 60);
+   Max_Span : constant Duration := Duration (Day_Count_Cardinality * 24 * 60 * 60);
 
    Seconds_Day : constant Duration := Duration (24 * 60 * 60);
 
-   procedure Increase_Counter
-     (C    : in out Counter;
-      Span : Duration);
+   procedure Increase_Counter (C : in out Counter; Span : Duration);
 
    function Elapsed (Regs : Counter_Registers) return Duration;
 
-   procedure To_Counter
-     (C_Regs : Counter_Registers;
-      C      : out Counter);
-   procedure To_Registers
-     (C      : Counter;
-      C_Regs : out Counter_Registers);
+   procedure To_Counter (C_Regs : Counter_Registers; C : out Counter);
+   procedure To_Registers (C : Counter; C_Regs : out Counter_Registers);
 
 end Gade.Carts.RTC;

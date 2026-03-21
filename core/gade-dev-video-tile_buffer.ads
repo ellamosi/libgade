@@ -13,15 +13,12 @@ package Gade.Dev.Video.Tile_Buffer is
    procedure Reset (Buffer : out Tile_Buffer_Type);
 
    function Read_Raster_Tile
-     (Buffer     : Tile_Buffer_Type;
-      Tile_Index : Tile_Index_Type;
-      Row, Col   : Natural) return Color_Value;
+     (Buffer : Tile_Buffer_Type; Tile_Index : Tile_Index_Type; Row, Col : Natural)
+      return Color_Value;
 
    --  Rasterizes the tile belonging to the given address
    procedure Rasterize_Tile
-     (Buffer  : in out Tile_Buffer_Type;
-      VRAM    : Gade.Dev.VRAM.VRAM_Type;
-      Address : Word);
+     (Buffer : in out Tile_Buffer_Type; VRAM : Gade.Dev.VRAM.VRAM_Type; Address : Word);
 
 private
 
@@ -33,16 +30,14 @@ private
 
    type Tile_Buffer_Type is array (Tile_Index_Type) of Raster_Tile_Type;
 
-   Half_Color_Lookup_Table : constant
-     array (Byte range 0 .. 1, Byte range 0 .. 1) of Color_Value :=
-     [[0, 2], [1, 3]];
+   Half_Color_Lookup_Table :
+     constant array (Byte range 0 .. 1, Byte range 0 .. 1) of Color_Value :=
+       [[0, 2], [1, 3]];
 
    procedure Rasterize_Line
-     (Raster : in out Raster_Tile_Line;
-      Actual : Gade.Dev.VRAM.Tile_Line_Type);
+     (Raster : in out Raster_Tile_Line; Actual : Gade.Dev.VRAM.Tile_Line_Type);
 
    procedure Rasterize_Tile
-     (Raster : in out Raster_Tile_Type;
-      Actual : Gade.Dev.VRAM.Tile_Type);
+     (Raster : in out Raster_Tile_Type; Actual : Gade.Dev.VRAM.Tile_Type);
 
 end Gade.Dev.Video.Tile_Buffer;

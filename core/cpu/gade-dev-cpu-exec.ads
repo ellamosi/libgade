@@ -12,9 +12,7 @@ package Gade.Dev.CPU.Exec is
    type Instruction_Handler is access procedure (GB : in out Gade.GB.GB_Type);
 
    procedure Execute
-     (CPU    : in out CPU_Context;
-      GB     : in out Gade.GB.GB_Type;
-      Cycles : out M_Cycle_Count);
+     (CPU : in out CPU_Context; GB : in out Gade.GB.GB_Type; Cycles : out M_Cycle_Count);
 
 private
    use Gade.Dev.CPU.Instructions.Arithmetic.Handlers;
@@ -27,15 +25,12 @@ private
 
    type Handler_Table is array (Byte) of Instruction_Handler;
 
-   procedure Invalid_Main_Opcode
-     (GB : in out Gade.GB.GB_Type);
+   procedure Invalid_Main_Opcode (GB : in out Gade.GB.GB_Type);
 
-   procedure Main_CB_Prefix
-     (GB : in out Gade.GB.GB_Type);
+   procedure Main_CB_Prefix (GB : in out Gade.GB.GB_Type);
 
    Main_Table : constant Handler_Table :=
-     [
-      16#00# => NOP'Access,
+     [16#00# => NOP'Access,
       16#01# => LD_BC_Imm16'Access,
       16#02# => LD_Addr_BC_A'Access,
       16#03# => INC_BC'Access,
@@ -305,12 +300,10 @@ private
       16#FC# => Invalid_Main_Opcode'Access,
       16#FD# => Invalid_Main_Opcode'Access,
       16#FE# => CP_A_Imm8'Access,
-      16#FF# => RST_38'Access
-     ];
+      16#FF# => RST_38'Access];
 
    CB_Table : constant Handler_Table :=
-     [
-      16#00# => RLC_B'Access,
+     [16#00# => RLC_B'Access,
       16#01# => RLC_C'Access,
       16#02# => RLC_D'Access,
       16#03# => RLC_E'Access,
@@ -580,7 +573,6 @@ private
       16#FC# => SET_7_H'Access,
       16#FD# => SET_7_L'Access,
       16#FE# => SET_7_Addr_HL'Access,
-      16#FF# => SET_7_A'Access
-     ];
+      16#FF# => SET_7_A'Access];
 
 end Gade.Dev.CPU.Exec;
