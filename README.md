@@ -79,9 +79,10 @@ python3 -m pip install -r requirements-dev.txt
 pre-commit install
 ```
 
-The hook checks only staged Ada files. The checked-in
+The hook formats only staged Ada files. The checked-in
 `./scripts/check-ada-format.sh` script still performs the full project-level
-check used by CI.
+check used by CI. The pre-commit hook formats staged Ada files in place, so if
+it rewrites files you should `git add` them and re-run the commit.
 
 ### Scenario Variables
 `gade` exposes three GPR scenario variables through `alire.toml`:
