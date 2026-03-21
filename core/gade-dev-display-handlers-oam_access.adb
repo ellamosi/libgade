@@ -45,7 +45,7 @@ package body Gade.Dev.Display.Handlers.OAM_Access is
       pragma Unreferenced (Sprite_Edge_Counts);
    begin
       for PX in Mode_Handler.Display_Handler.Timing_Cache'Range loop
-         Mode_Handler.Display_Handler.Timing_Cache (PX) := PX + 3;
+         Mode_Handler.Display_Handler.Timing_Cache (PX) := PX + 11;
       end loop;
    end Find_VRAM_Access_Timings;
 

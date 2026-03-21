@@ -64,26 +64,38 @@ package body Gade.Interfaces is
    begin
       Frame_Finished := False;
       Generated_Samples := 0;
-      while not Frame_Finished and Generated_Samples < Requested_Samples loop
-         Instruction_Cycles := CPU_M_Cycles_Per_Audio_Sample;
-         if not G.GB.CPU.Halted then
-            Gade.Dev.CPU.Exec.Execute (G.GB.CPU, G.GB, Instruction_Cycles);
-         end if;
-         Report_Cycles (G.GB, Video, Audio, Instruction_Cycles);
-         Gade.Dev.Interrupts.Service_Interrupts (G.GB, Interrupt_Cycles);
-         if Interrupt_Cycles > 0 then
-            Report_Cycles (G.GB, Video, Audio, Interrupt_Cycles);
-         end if;
+      pragma Assert (Video /= null);
+      pragma Assert (Audio /= null);
+      Set_Run_Context (G.GB, Video, Audio);
+      begin
+         while not Frame_Finished and Generated_Samples < Requested_Samples loop
+            Instruction_Cycles := CPU_M_Cycles_Per_Audio_Sample;
+            if not G.GB.CPU.Halted then
+               Gade.Dev.CPU.Exec.Execute (G.GB.CPU, G.GB, Instruction_Cycles);
+            else
+               Tick_M_Cycles (G.GB, Instruction_Cycles);
+            end if;
+            Gade.Dev.Interrupts.Service_Interrupts (G.GB, Interrupt_Cycles);
+            if Interrupt_Cycles > 0 then
+               Tick_M_Cycles (G.GB, Interrupt_Cycles);
+            end if;
 
-         --  Keep both units explicit: T-cycles for frame/accounting paths and
-         --  audio samples for the frontend-facing output contract.
-         Iteration_Cycles := Instruction_Cycles + Interrupt_Cycles;
-         Iteration_Samples := Natural (Iteration_Cycles / CPU_M_Cycles_Per_Audio_Sample);
+            --  Keep both units explicit: T-cycles for frame/accounting paths and
+            --  audio samples for the frontend-facing output contract.
+            Iteration_Cycles := Instruction_Cycles + Interrupt_Cycles;
+            Iteration_Samples :=
+              Natural (Iteration_Cycles / CPU_M_Cycles_Per_Audio_Sample);
 
-         Generated_Cycles := Generated_Cycles + Iteration_Cycles;
-         Generated_Samples := Generated_Samples + Iteration_Samples;
-         Gade.Dev.Display.Check_Frame_Finished (G.GB.Display, Frame_Finished);
-      end loop;
+            Generated_Cycles := Generated_Cycles + Iteration_Cycles;
+            Generated_Samples := Generated_Samples + Iteration_Samples;
+            Gade.Dev.Display.Check_Frame_Finished (G.GB.Display, Frame_Finished);
+         end loop;
+      exception
+         when others =>
+            Clear_Run_Context (G.GB);
+            raise;
+      end;
+      Clear_Run_Context (G.GB);
       --  Should really figure out when/how to flush things...
       --  Report_Frame still expects elapsed CPU cycles, not audio samples.
       Report_Frame (G.GB, Audio, Generated_Cycles);

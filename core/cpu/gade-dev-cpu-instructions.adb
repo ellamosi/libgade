@@ -5,20 +5,24 @@ with Gade.GB.Memory_Map; use Gade.GB.Memory_Map;
 package body Gade.Dev.CPU.Instructions is
 
    function Bus_Read_Byte (GB : in out Gade.GB.GB_Type; Address : Word) return Byte is
+      Value : constant Byte := Read_Byte (GB, Address);
    begin
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
-      return Read_Byte (GB, Address);
+      Gade.GB.Tick_M_Cycles (GB, 1);
+      return Value;
    end Bus_Read_Byte;
 
    procedure Bus_Write_Byte (GB : in out Gade.GB.GB_Type; Address : Word; Value : Byte) is
    begin
-      GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Write_Byte (GB, Address, Value);
+      GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
+      Gade.GB.Tick_M_Cycles (GB, 1);
    end Bus_Write_Byte;
 
    procedure Internal_Cycle (GB : in out Gade.GB.GB_Type) is
    begin
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
+      Gade.GB.Tick_M_Cycles (GB, 1);
    end Internal_Cycle;
 
    function Fetch_Source

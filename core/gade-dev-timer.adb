@@ -76,7 +76,8 @@ package body Gade.Dev.Timer is
             Timer.Map.Timer_Counter := Byte (New_Counter mod 256);
          end if;
       end if;
-      Timer.DIV_Ticks := ((Timer.DIV_Ticks + T_Cycles) mod 256) * 256;
+      --  DIV exposes the upper byte of a free-running 16-bit divider.
+      Timer.DIV_Ticks := (Timer.DIV_Ticks + T_Cycles) mod DIV_Counter_Modulus;
    --  Put_Line("Ticks" & Timer.Ticks'Img & " Counter" &
    --  Timer.Map.Timer_Counter'Img & " Modulo" & Timer.Modulo_Ticks'Img);
    end Report_Cycles;

@@ -36,6 +36,7 @@ SOUND_AND_TIMING_CASES = [
         id="dmg_sound_11-regs after power",
     ),
     pytest.param("instr_timing", 65, 300, id="instr_timing"),
+    pytest.param("mem_timing_v2", 65, 300, id="mem_timing_v2"),
 ]
 
 
