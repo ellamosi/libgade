@@ -5,7 +5,7 @@ import pytest
 from integration.helpers import case_paths, run_case_with_artifact_on_failure
 
 
-SOUND_AND_TIMING_CASES = [
+SOUND_CASES = [
     pytest.param("dmg_sound_01-registers", 100, 300, id="dmg_sound_01-registers"),
     pytest.param("dmg_sound_02-len ctr", 600, 300, id="dmg_sound_02-len ctr"),
     pytest.param("dmg_sound_03-trigger", 1100, 300, id="dmg_sound_03-trigger"),
@@ -35,15 +35,11 @@ SOUND_AND_TIMING_CASES = [
         300,
         id="dmg_sound_11-regs after power",
     ),
-    pytest.param("instr_timing", 65, 300, id="instr_timing"),
-    pytest.param("mem_timing_v2", 65, 300, id="mem_timing_v2"),
 ]
 
 
-@pytest.mark.parametrize("case_name,pre_frames,max_frames", SOUND_AND_TIMING_CASES)
-def test_blargg_sound_and_timing_case(
-    client, tests_root, case_name, pre_frames, max_frames
-):
+@pytest.mark.parametrize("case_name,pre_frames,max_frames", SOUND_CASES)
+def test_blargg_sound_case(client, tests_root, case_name, pre_frames, max_frames):
     paths = case_paths(tests_root, source="blargg", case_name=case_name)
     run_case_with_artifact_on_failure(
         client=client,
