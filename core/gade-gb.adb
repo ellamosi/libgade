@@ -25,7 +25,38 @@ package body Gade.GB is
       Reset (GB.Interrupt_Flag);
       Reset (GB.Interrupt_Enable);
       GB.Content := [others => 0];
+      Clear_Run_Context (GB);
    end Reset;
+
+   procedure Set_Run_Context
+     (GB    : in out GB_Type;
+      Video : RGB32_Display_Buffer_Access;
+      Audio : Audio_Buffer_Access) is
+   begin
+      GB.Current_Video := Video;
+      GB.Current_Audio := Audio;
+   end Set_Run_Context;
+
+   procedure Clear_Run_Context (GB : in out GB_Type) is
+   begin
+      GB.Current_Video := null;
+      GB.Current_Audio := null;
+   end Clear_Run_Context;
+
+   procedure Tick_M_Cycle (GB : in out GB_Type) is
+   begin
+      if GB.Current_Video /= null and then GB.Current_Audio /= null then
+         Report_Cycles (GB, GB.Current_Video, GB.Current_Audio, 1);
+      end if;
+   end Tick_M_Cycle;
+
+   procedure Tick_M_Cycles (GB : in out GB_Type; Cycles : M_Cycle_Count) is
+   begin
+      for I in 1 .. Cycles loop
+         pragma Unreferenced (I);
+         Tick_M_Cycle (GB);
+      end loop;
+   end Tick_M_Cycles;
 
    procedure Report_Cycles
      (GB     : in out GB_Type;
