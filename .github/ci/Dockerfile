@@ -14,8 +14,6 @@ RUN apt-get update \
         g++ \
         gcc \
         git \
-        gnat \
-        gprbuild \
         jq \
         lcov \
         libgmp-dev \
