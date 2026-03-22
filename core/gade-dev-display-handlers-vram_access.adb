@@ -109,6 +109,14 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       Window : Window_Result_Type;
       Result : Color_Value;
    begin
+      Window.Visible := False;
+      if GB.Display.Map.LCDC.Window_Display then
+         Window := Read_Window_Pixel (GB, X, Y);
+         if Window.Visible then
+            GB.Display.Display_Handler.Window_Line_Active := True;
+         end if;
+      end if;
+
       if GB.Display.Map.LCDC.Sprite_Display then
          Sprite := GB.Display.Display_Handler.Sprite_Cache (X);
       else
@@ -118,11 +126,6 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       if (Sprite.Value = Sprite_Transparent_Color
           or (Sprite.Value /= Sprite_Transparent_Color and Sprite.Priority = Behind_BG))
       then
-         Window.Visible := False;
-         if GB.Display.Map.LCDC.Window_Display then
-            Window := Read_Window_Pixel (GB, X, Y);
-         end if;
-
          if not Window.Visible and GB.Display.Map.LCDC.Background_Display then
             BG := Read_Background_Pixel (Mode_Handler, GB, X, Y);
          elsif Window.Visible then
@@ -153,8 +156,14 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
      (GB : Gade.GB.GB_Type; X, Y : Natural) return Window_Result_Type
    is
       Window_Row, Window_Col : Integer;
+      Result                 : Window_Result_Type;
    begin
-      Window_Row := Y - Natural (GB.Display.Map.WNDPOSY);
+      if Y < Natural (GB.Display.Map.WNDPOSY) then
+         Result.Visible := False;
+         return Result;
+      end if;
+
+      Window_Row := Integer (GB.Display.Display_Handler.Window_Line_Counter);
       Window_Col := X - Natural (GB.Display.Map.WNDPOSX) + 6;
 
       return

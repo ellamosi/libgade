@@ -106,6 +106,8 @@ package body Gade.Dev.Display.Handlers is
    begin
       Handler.Current_Mode_Handler := Handler.Mode_Handlers (Starting_Mode);
       Handler.Current_Line := Starting_Line;
+      Handler.Window_Line_Counter := 0;
+      Handler.Window_Line_Active := False;
       Handler.Current_Mode_Handler.Reset;
       Handler.Mode := Display_Modes.OAM_Access;
    end Reset;
