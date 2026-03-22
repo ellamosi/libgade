@@ -64,6 +64,16 @@ def assert_find_match_with_artifact(client, ref, max_frames, artifact):
     return found
 
 
+def assert_match_frame_with_artifact(client, ref, artifact):
+    if client.match_frame(str(ref)):
+        return
+
+    artifact_path = save_frame(client, artifact)
+    raise AssertionError(
+        "current frame does not match {} (saved {})".format(ref, artifact_path)
+    )
+
+
 def run_case(client, rom, pre_frames, ref, output, max_frames=300):
     load_and_run(client, rom=rom, frames=pre_frames)
     found_at = assert_find_match(client, ref=ref, max_frames=max_frames)
