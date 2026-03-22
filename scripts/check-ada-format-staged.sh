@@ -19,8 +19,7 @@ for path in "$@"; do
 
   case "$path" in
     tests/harness/*)
-      rel_path=${path#tests/}
-      if ! alr -C tests exec -- gnatformat -P harness/gade_testd.gpr --no-subprojects "$rel_path"; then
+      if ! gnatformat "$path"; then
         status=1
       fi
       ;;
