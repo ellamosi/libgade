@@ -134,9 +134,12 @@ package body Gade.Dev.Video.Sprites is
       Tile_Row   : constant Natural := Y_Flip_Lookup (Size, Y_Flip, Sprite_Row);
       Tile_Col   : Natural;
 
+      Base_Tile_Index : constant Tile_Index_Type :=
+        (case Size is
+           when Single => Tile_Index_Type (Sprite.Pattern),
+           when Double => Tile_Index_Type (Sprite.Pattern and 16#FE#));
       Tile_Index      : constant Tile_Index_Type :=
-        Tile_Index_Type (Sprite.Pattern)
-        + Sprite_Index_Add_Lookup (Size, Y_Flip, Sprite_Row);
+        Base_Tile_Index + Sprite_Index_Add_Lookup (Size, Y_Flip, Sprite_Row);
       --  Extremes to be drawn within the line for the sprite
       Left            : constant Display_Horizontal_Range :=
         Sprite_Horizontal_Range'Max
