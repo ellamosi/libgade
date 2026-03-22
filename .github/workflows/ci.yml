@@ -1,5 +1,9 @@
 name: CI
 
+env:
+  GNATFORMAT_BUNDLE_TAG: gnatformat-bundle-v1
+  GNATFORMAT_BUNDLE_ASSET: gnatformat-ubuntu.tar.zst
+
 on:
   push:
     branches: [main, master]
@@ -9,6 +13,8 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
@@ -17,12 +23,23 @@ jobs:
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
 
-      - name: Restore gnatformat install
-        id: gnatformat-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.alire
-          key: ${{ runner.os }}-gnatformat-v1
+      - name: Restore pinned gnatformat bundle
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: sh
+        run: |
+          set -eu
+          bundle_path="${RUNNER_TEMP}/${GNATFORMAT_BUNDLE_ASSET}"
+          if gh release download "${GNATFORMAT_BUNDLE_TAG}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --pattern "${GNATFORMAT_BUNDLE_ASSET}" \
+              --output "${bundle_path}"; then
+            rm -rf "${HOME}/.alire"
+            mkdir -p "${HOME}"
+            tar --zstd -xf "${bundle_path}" -C "${HOME}"
+          else
+            echo "Pinned gnatformat bundle ${GNATFORMAT_BUNDLE_TAG}/${GNATFORMAT_BUNDLE_ASSET} not available; falling back to local install."
+          fi
 
       - name: Install gnatformat
         shell: sh
@@ -30,13 +47,6 @@ jobs:
           if [ ! -x "${HOME}/.alire/bin/gnatformat" ]; then
             alr install gnatformat
           fi
-
-      - name: Save gnatformat install
-        if: steps.gnatformat-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: ~/.alire
-          key: ${{ runner.os }}-gnatformat-v1
 
       - name: Check Ada formatting
         run: ./scripts/check-ada-format.sh
