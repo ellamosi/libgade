@@ -23,8 +23,6 @@ private package Gade.Dev.Display.Handlers is
 
 private
 
-   Display_Write_Apply_Delay : constant := 3;
-
    type Pending_Display_Write is record
       Active  : Boolean := False;
       Phase   : Natural := 0;

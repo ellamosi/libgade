@@ -2,7 +2,7 @@ with Gade.GB; use Gade.GB;
 
 package body Gade.Dev.Display.Handlers.OAM_Access is
 
-   First_Pixel_Base_Cycles : constant := 12;
+   First_Pixel_Base_Cycles : constant := 11;
    Sprite_Fetch_Penalty    : constant := 6;
    Window_Start_Penalty    : constant := 6;
 

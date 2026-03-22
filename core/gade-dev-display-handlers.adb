@@ -7,20 +7,26 @@ package body Gade.Dev.Display.Handlers is
    package Display_Modes renames Gade.Dev.Display;
 
    function Is_Delayed_Display_Write (Address : Word) return Boolean;
+   function Display_Write_Apply_Delay (Address : Word) return Natural;
 
    function Is_Delayed_Display_Write (Address : Word) return Boolean is
    begin
-      return
-        Address
-        in 16#FF40#
-         | 16#FF42#
-         | 16#FF43#
-         | 16#FF47#
-         | 16#FF48#
-         | 16#FF49#
-         | 16#FF4A#
-         | 16#FF4B#;
+      return Address = 16#FF40# or else Address = 16#FF47#;
    end Is_Delayed_Display_Write;
+
+   function Display_Write_Apply_Delay (Address : Word) return Natural is
+   begin
+      case Address is
+         when 16#FF40# =>
+            return 4;
+
+         when 16#FF47# =>
+            return 2;
+
+         when others   =>
+            return 0;
+      end case;
+   end Display_Write_Apply_Delay;
 
    procedure Setup
      (Mode_Handler    : in out Mode_Handler_Type;
@@ -157,7 +163,12 @@ package body Gade.Dev.Display.Handlers is
    procedure Notify_Display_Write
      (Handler : in out Display_Handler_Type; Address : Word; Value : Byte) is
    begin
+      if Address not in Display_IO_Address then
+         return;
+      end if;
+
       if not Is_Delayed_Display_Write (Address) then
+         Handler.Latched_Map.Space (Display_IO_Address (Address)) := Value;
          return;
       end if;
 
@@ -170,7 +181,8 @@ package body Gade.Dev.Display.Handlers is
          if not Handler.Pending_Writes (I).Active then
             Handler.Pending_Writes (I) :=
               (Active  => True,
-               Phase   => Handler.VRAM_Access_Cycles + Display_Write_Apply_Delay,
+               Phase   =>
+                 Handler.VRAM_Access_Cycles + Display_Write_Apply_Delay (Address),
                Address => Display_IO_Address (Address),
                Value   => Value);
             return;
