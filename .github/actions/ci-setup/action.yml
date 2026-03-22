@@ -1,16 +1,9 @@
 name: CI Setup
-description: Setup Alire and restore CI caches.
+description: Restore mutable CI caches.
 
 runs:
   using: composite
   steps:
-    - name: Setup Alire
-      uses: alire-project/setup-alire@v5
-
-    - name: Add Alire install prefix to PATH
-      shell: sh
-      run: echo "${HOME}/.alire/bin" >> "${GITHUB_PATH}"
-
     - name: Cache Alire dependencies
       uses: actions/cache@v4
       with:
