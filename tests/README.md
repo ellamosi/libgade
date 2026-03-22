@@ -15,7 +15,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 ### Standalone LCD Test ROMs
 - `lcd_lyc`
 - `dycptest2` by beware
-- `dmg-acid2` by Matt Currie
+- `mattcurrie/dmg-acid2` by Matt Currie
 
 ## Layout
 - `integration/<source>/test_*.py`: pytest test modules grouped by source.

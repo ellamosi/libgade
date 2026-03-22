@@ -213,8 +213,8 @@ description = "Likely a standalone Game Boy LCD STAT LYC coincidence timing/inte
 type = "local_file"
 
 [[roms]]
-id = "acid/dmg-acid2"
-target = "assets/roms/acid/dmg-acid2.gb"
+id = "mattcurrie/dmg-acid2"
+target = "assets/roms/mattcurrie/dmg-acid2.gb"
 sha256 = "464e14b7d42e7feea0b7ede42be7071dc88913f75b9ffa444299424b63d1dff1"
 name = "dmg-acid2"
 author = "Matt Currie"
