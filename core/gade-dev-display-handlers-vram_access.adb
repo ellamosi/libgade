@@ -12,7 +12,7 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
    begin
       for I in Display_Handler.Pending_Writes'Range loop
          if Display_Handler.Pending_Writes (I).Active
-           and then Display_Handler.Pending_Writes (I).Phase <= Phase
+           and then Display_Handler.Pending_Writes (I).Phase < Phase
          then
             Display_Handler.Latched_Map.Space
               (Display_Handler.Pending_Writes (I).Address) :=
@@ -77,13 +77,13 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       while Display_Handler.VRAM_Access_Cycles < Run_Until_Cycles loop
          Pixel_Cycles := Display_Handler.Timing_Cache (Mode_Handler.Pixel_Cursor);
          if Pixel_Cycles <= Run_Until_Cycles then
-            Apply_Pixel_Display_State (Display_Handler.all, Pixel_Cycles);
             Draw_Pixel
               (Mode_Handler,
                GB,
                Video,
                Display_Handler.Current_Line,
                Mode_Handler.Pixel_Cursor);
+            Apply_Pixel_Display_State (Display_Handler.all, Pixel_Cycles);
             Mode_Handler.Pixel_Cursor := Mode_Handler.Pixel_Cursor + 1;
             Display_Handler.VRAM_Access_Cycles := Pixel_Cycles;
          else
