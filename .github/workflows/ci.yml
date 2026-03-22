@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main, master, 'release-*']
 
+env:
+  HOME: /root
+
 jobs:
   format:
     runs-on: ubuntu-latest
@@ -47,23 +50,23 @@ jobs:
         uses: ./.github/actions/ci-setup
 
       - name: Build library
-        run: alr build
+        run: alr -n build
 
       - name: Build C++ interface library
-        run: alr exec -- gprbuild -j0 -p -q -P gade_cpp.gpr
+        run: alr -n exec -- gprbuild -j0 -p -q -P gade_cpp.gpr
 
       - name: Build C++ interface check
-        run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
+        run: alr -n exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
 
       - name: Build tests
         working-directory: tests
-        run: alr build
+        run: alr -n build
 
       - name: Run tests
         working-directory: tests
         # --skip-build avoids rebuilding run-tests; --no-build prevents pytest
         # fixtures from rebuilding gade-testd with potentially different flags.
-        run: alr run --skip-build --args="--no-build"
+        run: alr -n run --skip-build --args="--no-build"
         env:
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
@@ -90,20 +93,20 @@ jobs:
         uses: ./.github/actions/ci-setup
 
       - name: Build library (coverage)
-        run: alr build
+        run: alr -n build
         env:
           GADE_COVERAGE: "true"
 
       - name: Build tests (coverage)
         working-directory: tests
-        run: alr build
+        run: alr -n build
         env:
           GADE_COVERAGE: "true"
 
       - name: Run tests (coverage)
         working-directory: tests
         # Keep test execution on binaries built in this job (coverage flags).
-        run: alr run --skip-build --args="--no-build"
+        run: alr -n run --skip-build --args="--no-build"
         env:
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
@@ -112,7 +115,7 @@ jobs:
       - name: Generate LCOV report
         run: |
           mkdir -p coverage
-          GCOV_TOOL="$(alr exec -- sh -lc 'command -v gcov')"
+          GCOV_TOOL="$(alr -n exec -- sh -lc 'command -v gcov')"
           # GNAT/GCC can report line hits while some internal blocks remain
           # "unexecuted". Keep line-level coverage stable in CI logs; revisit
           # this if we ever switch to branch/block coverage enforcement.

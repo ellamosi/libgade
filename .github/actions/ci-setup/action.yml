@@ -8,9 +8,9 @@ runs:
       uses: actions/cache@v4
       with:
         path: |
-          ~/.cache/alire
-          ~/.config/alire
-          ~/.local/share/alire
+          /root/.cache/alire
+          /root/.config/alire
+          /root/.local/share/alire
         key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire/alire.lock', 'tests/alire.toml', 'tests/alire/alire.lock') }}
         restore-keys: |
           ${{ runner.os }}-alire-
