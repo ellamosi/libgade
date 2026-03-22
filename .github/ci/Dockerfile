@@ -18,6 +18,7 @@ RUN apt-get update \
         gprbuild \
         jq \
         lcov \
+        libgmp-dev \
         python3 \
         python3-pip \
         unzip \
