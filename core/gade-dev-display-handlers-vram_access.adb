@@ -19,8 +19,17 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
    procedure Start
      (Mode_Handler : in out VRAM_Access_Handler_Type;
       GB           : in out Gade.GB.GB_Type;
-      Video        : RGB32_Display_Buffer_Access) is
+      Video        : RGB32_Display_Buffer_Access)
+   is
+      Sprite_Edge_Counts : Edge_Counts_Type;
    begin
+      Gade.Dev.Video.Sprites.Populate_Line_Cache
+        (GB.Video_RAM,
+         GB.Video_OAM,
+         Mode_Handler.Display_Handler.Sprite_Cache,
+         Sprite_Edge_Counts,
+         Mode_Handler.Display_Handler.Current_Line,
+         GB.Display.Map.LCDC.Sprite_Size);
       Mode_Handler_Type (Mode_Handler).Start (GB, Video);
    end Start;
 
