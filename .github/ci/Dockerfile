@@ -37,4 +37,5 @@ RUN set -eux; \
     rm -f /tmp/alr.zip; \
     alr --version
 
-RUN alr -n install "gnatformat=${GNATFORMAT_VERSION}"
+RUN alr -n install gnat_native gprbuild \
+    && alr -n install "gnatformat=${GNATFORMAT_VERSION}"
