@@ -6,6 +6,22 @@ with Gade.Dev.Display.Handlers.VBlank;      use Gade.Dev.Display.Handlers.VBlank
 package body Gade.Dev.Display.Handlers is
    package Display_Modes renames Gade.Dev.Display;
 
+   function Is_Delayed_Display_Write (Address : Word) return Boolean;
+
+   function Is_Delayed_Display_Write (Address : Word) return Boolean is
+   begin
+      return
+        Address
+        in 16#FF40#
+         | 16#FF42#
+         | 16#FF43#
+         | 16#FF47#
+         | 16#FF48#
+         | 16#FF49#
+         | 16#FF4A#
+         | 16#FF4B#;
+   end Is_Delayed_Display_Write;
+
    procedure Setup
      (Mode_Handler    : in out Mode_Handler_Type;
       Display_Handler : Display_Handler_Access;
@@ -106,6 +122,8 @@ package body Gade.Dev.Display.Handlers is
    begin
       Handler.Current_Mode_Handler := Handler.Mode_Handlers (Starting_Mode);
       Handler.Current_Line := Starting_Line;
+      Handler.Latched_Map := Handler.Dev.Map;
+      Handler.Pending_Writes := [others => (others => <>)];
       Handler.Window_Line_Counter := 0;
       Handler.Window_Line_Active := False;
       Handler.Current_Mode_Handler.Reset;
@@ -135,5 +153,31 @@ package body Gade.Dev.Display.Handlers is
          end if;
       end loop;
    end Report_Cycles;
+
+   procedure Notify_Display_Write
+     (Handler : in out Display_Handler_Type; Address : Word; Value : Byte) is
+   begin
+      if not Is_Delayed_Display_Write (Address) then
+         return;
+      end if;
+
+      if Handler.Mode /= Display_Modes.VRAM_Access then
+         Handler.Latched_Map.Space (Display_IO_Address (Address)) := Value;
+         return;
+      end if;
+
+      for I in Handler.Pending_Writes'Range loop
+         if not Handler.Pending_Writes (I).Active then
+            Handler.Pending_Writes (I) :=
+              (Active  => True,
+               Phase   => Handler.VRAM_Access_Cycles + Display_Write_Apply_Delay,
+               Address => Display_IO_Address (Address),
+               Value   => Value);
+            return;
+         end if;
+      end loop;
+
+      Handler.Latched_Map.Space (Display_IO_Address (Address)) := Value;
+   end Notify_Display_Write;
 
 end Gade.Dev.Display.Handlers;
