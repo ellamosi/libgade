@@ -7,4 +7,4 @@ cd "$repo_root"
 
 gnatformat -P gade.gpr --no-subprojects --check
 gnatformat -P gade_cpp.gpr --no-subprojects --check
-alr -C tests exec -- gnatformat -P harness/gade_testd.gpr --no-subprojects --check
+alr -n -C tests exec -- gnatformat -P harness/gade_testd.gpr --no-subprojects --check
