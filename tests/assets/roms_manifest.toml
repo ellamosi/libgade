@@ -29,6 +29,11 @@ download_sha256 = "23fb8a4ddf3b1b000a62735641dee7c8eafb203d5f5ff35ac9cf239b29fe6
 type = "http_zip_member"
 url = "https://gbdev.gg8.se/files/roms/blargg-gb-tests/mem_timing-2.zip"
 
+[sources.dmg_acid2]
+type = "http_file"
+url = "https://github.com/mattcurrie/dmg-acid2/releases/download/v1.0/dmg-acid2.gb"
+download_sha256 = "464e14b7d42e7feea0b7ede42be7071dc88913f75b9ffa444299424b63d1dff1"
+
 [[roms]]
 id = "blargg/cpu_instrs"
 target = "assets/roms/blargg/cpu_instrs.gb"
@@ -206,6 +211,17 @@ description = "Likely a standalone Game Boy LCD STAT LYC coincidence timing/inte
 
 [roms.source]
 type = "local_file"
+
+[[roms]]
+id = "acid/dmg-acid2"
+target = "assets/roms/acid/dmg-acid2.gb"
+sha256 = "464e14b7d42e7feea0b7ede42be7071dc88913f75b9ffa444299424b63d1dff1"
+name = "dmg-acid2"
+author = "Matt Currie"
+description = "Game Boy PPU compliance test ROM covering background, window, sprite priority, sprite size, tile selection, and the 10-objects-per-line limit."
+attribution = "Official dmg-acid2 release asset from the mattcurrie/dmg-acid2 repository."
+attribution_url = "https://github.com/mattcurrie/dmg-acid2"
+source_id = "dmg_acid2"
 
 [[roms]]
 id = "beware/dycptest2"
