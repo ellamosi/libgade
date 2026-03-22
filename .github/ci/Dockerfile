@@ -28,8 +28,8 @@ RUN set -eux; \
     test -n "${asset_url}"; \
     curl -fsSL "${asset_url}" -o /tmp/alr.zip; \
     unzip -q /tmp/alr.zip -d /opt/alire; \
+    chmod +x /opt/alire/bin/alr; \
     rm -f /tmp/alr.zip; \
     alr --version
 
 RUN alr -n install "gnatformat=${GNATFORMAT_VERSION}"
-
