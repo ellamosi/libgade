@@ -13,10 +13,8 @@ package body Gade.Dev.CPU.Instructions is
    end Wait_For_CPU_Bus;
 
    function Bus_Read_Byte (GB : in out Gade.GB.GB_Type; Address : Word) return Byte is
-      Value : Byte;
+      Value : constant Byte := CPU_Read_Byte (GB, Address);
    begin
-      Wait_For_CPU_Bus (GB, Address);
-      Value := CPU_Read_Byte (GB, Address);
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Gade.GB.Tick_M_Cycles (GB, 1);
       return Value;
@@ -24,7 +22,6 @@ package body Gade.Dev.CPU.Instructions is
 
    procedure Bus_Write_Byte (GB : in out Gade.GB.GB_Type; Address : Word; Value : Byte) is
    begin
-      Wait_For_CPU_Bus (GB, Address);
       CPU_Write_Byte (GB, Address, Value);
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Gade.GB.Tick_M_Cycles (GB, 1);
@@ -181,8 +178,12 @@ package body Gade.Dev.CPU.Instructions is
    end Load_Target;
 
    function Fetch_Imm8 (GB : in out Gade.GB.GB_Type) return Byte is
-      Value : constant Byte := Bus_Read_Byte (GB, GB.CPU.PC);
+      Value : Byte;
    begin
+      Wait_For_CPU_Bus (GB, GB.CPU.PC);
+      Value := CPU_Read_Byte (GB, GB.CPU.PC);
+      GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
+      Gade.GB.Tick_M_Cycles (GB, 1);
       GB.CPU.PC := GB.CPU.PC + 1;
       return Value;
    end Fetch_Imm8;

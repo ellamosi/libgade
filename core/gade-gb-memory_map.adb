@@ -74,7 +74,11 @@ package body Gade.GB.Memory_Map is
 
    procedure CPU_Read_Byte (GB : in out GB_Type; Address : Word; Value : out Byte) is
    begin
-      Read_Byte (GB, Address, Value);
+      if CPU_Bus_Blocked (GB, Address) then
+         Value := 16#FF#;
+      else
+         Read_Byte (GB, Address, Value);
+      end if;
    end CPU_Read_Byte;
 
    function CPU_Read_Byte (GB : in out GB_Type; Address : Word) return Byte is
@@ -127,7 +131,9 @@ package body Gade.GB.Memory_Map is
 
    procedure CPU_Write_Byte (GB : in out GB_Type; Address : Word; Value : Byte) is
    begin
-      Write_Byte (GB, Address, Value);
+      if not CPU_Bus_Blocked (GB, Address) then
+         Write_Byte (GB, Address, Value);
+      end if;
    end CPU_Write_Byte;
 
    procedure Read_Word (GB : in out GB_Type; Address : Word; Value : out Word) is
