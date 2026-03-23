@@ -1,3 +1,5 @@
+with Gade.Dev.Display; use Gade.Dev.Display;
+
 package body Gade.GB.Memory_Map is
 
    --  0000: 16kB ROM bank #0 | 32kB Cartridge (First Half)
@@ -15,6 +17,12 @@ package body Gade.GB.Memory_Map is
 
    --  TODO: Have a proper internal RAM package
    subtype Internal_RAM_Echo_IO_Address is Word range 16#E000# .. 16#FDFF#;
+   subtype High_RAM_IO_Address is Word range 16#FF80# .. 16#FFFE#;
+
+   function CPU_Bus_Blocked (GB : GB_Type; Address : Word) return Boolean is
+   begin
+      return DMA_Active (GB.Display) and then Address not in High_RAM_IO_Address;
+   end CPU_Bus_Blocked;
 
    procedure Read_Byte (GB : in out GB_Type; Address : Word; Value : out Byte) is
    begin
@@ -64,6 +72,18 @@ package body Gade.GB.Memory_Map is
       return Result;
    end Read_Byte;
 
+   procedure CPU_Read_Byte (GB : in out GB_Type; Address : Word; Value : out Byte) is
+   begin
+      Read_Byte (GB, Address, Value);
+   end CPU_Read_Byte;
+
+   function CPU_Read_Byte (GB : in out GB_Type; Address : Word) return Byte is
+      Result : Byte;
+   begin
+      CPU_Read_Byte (GB, Address, Result);
+      return Result;
+   end CPU_Read_Byte;
+
    procedure Write_Byte (GB : in out GB_Type; Address : Word; Value : Byte) is
    begin
       case Address is
@@ -104,6 +124,11 @@ package body Gade.GB.Memory_Map is
             GB.Content (Address) := Value;
       end case;
    end Write_Byte;
+
+   procedure CPU_Write_Byte (GB : in out GB_Type; Address : Word; Value : Byte) is
+   begin
+      Write_Byte (GB, Address, Value);
+   end CPU_Write_Byte;
 
    procedure Read_Word (GB : in out GB_Type; Address : Word; Value : out Word) is
       Byte_Value : Byte;

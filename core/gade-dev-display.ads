@@ -36,6 +36,8 @@ package Gade.Dev.Display is
 
    procedure Check_Frame_Finished (Display : in out Display_Type; Finished : out Boolean);
 
+   function DMA_Active (Display : Display_Type) return Boolean;
+
    type Palette_Type is array (Color_Value'Range) of Color_Value;
    pragma Pack (Palette_Type);
    for Palette_Type'Size use 8;

@@ -7,6 +7,16 @@ package body Gade.Dev.CPU.Exec is
 
    function Hex_Word (Value : Word) return String;
 
+   procedure Wait_For_CPU_Bus (GB : in out Gade.GB.GB_Type; Address : Word);
+
+   procedure Wait_For_CPU_Bus (GB : in out Gade.GB.GB_Type; Address : Word) is
+   begin
+      while Gade.GB.Memory_Map.CPU_Bus_Blocked (GB, Address) loop
+         GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
+         Gade.GB.Tick_M_Cycles (GB, 1);
+      end loop;
+   end Wait_For_CPU_Bus;
+
    procedure Execute
      (CPU : in out CPU_Context; GB : in out Gade.GB.GB_Type; Cycles : out M_Cycle_Count)
    is
@@ -15,7 +25,8 @@ package body Gade.Dev.CPU.Exec is
       Opcode  : Byte;
    begin
       GB.CPU.Stepped_Cycles := 0;
-      Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC);
+      Wait_For_CPU_Bus (GB, GB.CPU.PC);
+      Opcode := Gade.GB.Memory_Map.CPU_Read_Byte (GB, GB.CPU.PC);
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Gade.GB.Tick_M_Cycles (GB, 1);
 
@@ -67,7 +78,8 @@ package body Gade.Dev.CPU.Exec is
       Handler : Instruction_Handler;
       Opcode  : Byte;
    begin
-      Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC);
+      Wait_For_CPU_Bus (GB, GB.CPU.PC);
+      Opcode := Gade.GB.Memory_Map.CPU_Read_Byte (GB, GB.CPU.PC);
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Gade.GB.Tick_M_Cycles (GB, 1);
       Handler := CB_Table (Opcode);

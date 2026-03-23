@@ -117,6 +117,11 @@ package body Gade.Dev.Display is
       Display.Frame_Finished := False;
    end Check_Frame_Finished;
 
+   function DMA_Active (Display : Display_Type) return Boolean is
+   begin
+      return Display.DMA_Target_Address in OAM_IO_Address;
+   end DMA_Active;
+
    procedure Mode_Changed
      (Display : in out Display_Type; GB : in out GB_Type; Mode : LCD_Controller_Mode_Type)
    is
