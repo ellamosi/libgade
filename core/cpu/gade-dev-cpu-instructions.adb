@@ -4,14 +4,6 @@ with Gade.GB.Memory_Map; use Gade.GB.Memory_Map;
 
 package body Gade.Dev.CPU.Instructions is
 
-   procedure Wait_For_CPU_Bus (GB : in out Gade.GB.GB_Type; Address : Word) is
-   begin
-      while CPU_Bus_Blocked (GB, Address) loop
-         GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
-         Gade.GB.Tick_M_Cycles (GB, 1);
-      end loop;
-   end Wait_For_CPU_Bus;
-
    function Bus_Read_Byte (GB : in out Gade.GB.GB_Type; Address : Word) return Byte is
       Value : constant Byte := CPU_Read_Byte (GB, Address);
    begin
@@ -178,10 +170,8 @@ package body Gade.Dev.CPU.Instructions is
    end Load_Target;
 
    function Fetch_Imm8 (GB : in out Gade.GB.GB_Type) return Byte is
-      Value : Byte;
+      Value : constant Byte := CPU_Read_Byte (GB, GB.CPU.PC);
    begin
-      Wait_For_CPU_Bus (GB, GB.CPU.PC);
-      Value := CPU_Read_Byte (GB, GB.CPU.PC);
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Gade.GB.Tick_M_Cycles (GB, 1);
       GB.CPU.PC := GB.CPU.PC + 1;
