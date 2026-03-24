@@ -47,13 +47,19 @@ package body Gade.Dev.Display.Handlers.OAM_Access is
       Sprite_Edge_Counts : Edge_Counts_Type;
    begin
       Mode_Handler.Display_Handler.Window_Line_Active := False;
-      Gade.Dev.Video.Sprites.Populate_Line_Cache
-        (GB.Video_RAM,
-         GB.Video_OAM,
-         Mode_Handler.Display_Handler.Sprite_Cache,
-         Sprite_Edge_Counts,
-         Mode_Handler.Display_Handler.Current_Line,
-         GB.Display.Map.LCDC.Sprite_Size);
+      if GB.Display.Map.LCDC.Sprite_Display then
+         Gade.Dev.Video.Sprites.Populate_Line_Cache
+           (GB.Video_RAM,
+            GB.Video_OAM,
+            Mode_Handler.Display_Handler.Sprite_Cache,
+            Sprite_Edge_Counts,
+            Mode_Handler.Display_Handler.Current_Line,
+            GB.Display.Map.LCDC.Sprite_Size);
+      else
+         --  With OBJ rendering disabled there are no sprite fetch stalls to
+         --  fold into the mode-3 timing cache for this line.
+         Sprite_Edge_Counts := [others => 0];
+      end if;
 
       Find_VRAM_Access_Timings (Mode_Handler, Sprite_Edge_Counts);
       Mode_Handler_Type (Mode_Handler).Start (GB, Video);
