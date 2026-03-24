@@ -364,3 +364,18 @@ sha256 = "1e27305df67500fae49376cdf33b7cf052442e3ef5c910f96047b2cf63afe797"
 type = "http_zip_member"
 url = "https://files.scene.org/get/demos/groups/snorpung/pocket.zip"
 member = "pocket.gb"
+
+[[roms]]
+id = "snorpung/gejmboj"
+target = "assets/roms/snorpung/gejmboj.gb"
+sha256 = "f14c6d66a662123ffd5f0e8990dfa2e74eff831e9326e76262745574228a0632"
+name = "gejmboj"
+author = "Snorpung"
+description = "Demo ROM with a twisting three-column scene that relies on per-line SCY updates via LCD STAT/LYC timing."
+
+[roms.source]
+type = "http_zip_member"
+url = "https://files.scene.org/view/demos/groups/snorpung/gejmboj.zip"
+member = "gejmboj.gb"
+filename = "gejmboj.zip"
+optional = true
