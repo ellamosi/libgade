@@ -1,3 +1,5 @@
+with Gade.GB.Memory_Map; use Gade.GB.Memory_Map;
+
 package body Gade.Dev.CPU.Instructions.Control is
 
    procedure NOP (GB : in out GB_Type) is
@@ -28,8 +30,13 @@ package body Gade.Dev.CPU.Instructions.Control is
    end CCF;
 
    procedure HALT (GB : in out GB_Type) is
+      Pending_Interrupts : constant Byte :=
+        (Read_Byte (GB, 16#FF0F#) and Read_Byte (GB, 16#FFFF#)) and 16#1F#;
    begin
-      GB.CPU.Halted := True;
+      --  With per-M-cycle ticking, an interrupt can become pending during the
+      --  HALT opcode fetch. In that case the CPU must resume from the next
+      --  instruction instead of staying halted.
+      GB.CPU.Halted := Pending_Interrupts = 0;
    end HALT;
 
    procedure STOP (GB : in out GB_Type) is
