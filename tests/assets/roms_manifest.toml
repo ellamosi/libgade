@@ -366,6 +366,21 @@ url = "https://files.scene.org/get/demos/groups/snorpung/pocket.zip"
 member = "pocket.gb"
 
 [[roms]]
+id = "snorpung/gejmboj"
+target = "assets/roms/snorpung/gejmboj.gb"
+sha256 = "f14c6d66a662123ffd5f0e8990dfa2e74eff831e9326e76262745574228a0632"
+name = "gejmboj"
+author = "Snorpung"
+description = "Demo ROM with a twisting three-column scene that relies on per-line SCY updates via LCD STAT/LYC timing."
+
+[roms.source]
+type = "http_zip_member"
+url = "https://files.scene.org/view/demos/groups/snorpung/gejmboj.zip"
+member = "gejmboj.gb"
+filename = "gejmboj.zip"
+optional = true
+
+[[roms]]
 id = "snorpung/oh"
 target = "assets/roms/snorpung/oh.gb"
 sha256 = "7b58248d68c4c9bc257f84bdcbdf8712cb3bd6c1fdf04073c4d0b2b5e5f108b1"
@@ -384,13 +399,3 @@ sha256 = "69db4cd94071c5cdfb57057ffc9945857a056f5aa0f09d774e5b064ecebf0f9c"
 type = "http_zip_member"
 url = "https://files.scene.org/get/demos/groups/snorpung/20y.zip"
 member = "20y.gb"
-
-[[roms]]
-id = "snorpung/gejmboj"
-target = "assets/roms/snorpung/gejmboj.gb"
-sha256 = "f14c6d66a662123ffd5f0e8990dfa2e74eff831e9326e76262745574228a0632"
-
-[roms.source]
-type = "http_zip_member"
-url = "https://files.scene.org/get/demos/groups/snorpung/gejmboj.zip"
-member = "gejmboj.gb"
