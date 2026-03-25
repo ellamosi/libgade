@@ -42,13 +42,6 @@ POCKET_SAMPLES = (
     sample_at(7920),
     sample_at(8160),
     sample_at(8880),
-    sample_at(9360),
-    sample_at(9840),
-    sample_at(10320),
-    sample_at(11280),
-    sample_at(12240),
-    sample_at(13440),
-    sample_at(14160),
 )
 
 

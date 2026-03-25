@@ -19,6 +19,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 
 ### Demoscene Test ROMs
 - `Is That a Demo in Your Pocket?` by Snorpung
+- `OH!` by Snorpung
 
 ## Layout
 - `integration/<source>/test_*.py`: pytest test modules grouped by source.
@@ -151,4 +152,11 @@ Snorpung pocket demo reference generation:
 ```sh
 cd tests
 python3 integration/snorpung/generate_pocket_refs.py
+```
+
+Snorpung OH! demo reference generation:
+
+```sh
+cd tests
+python3 integration/snorpung/generate_oh_refs.py
 ```
