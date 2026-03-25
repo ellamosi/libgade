@@ -15,7 +15,10 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 ### Standalone LCD Test ROMs
 - `lcd_lyc`
 - `dycptest2` by beware
-- `mattcurrie/dmg-acid2` by Matt Currie
+- `dmg-acid2` by Matt Currie
+
+### Demoscene Test ROMs
+- `Is That a Demo in Your Pocket?` by Snorpung
 
 ## Layout
 - `integration/<source>/test_*.py`: pytest test modules grouped by source.
@@ -141,4 +144,11 @@ Commercial Tetris reference generation:
 ```sh
 cd tests
 python3 integration/commercial/generate_tetris_refs.py
+```
+
+Snorpung pocket demo reference generation:
+
+```sh
+cd tests
+python3 integration/snorpung/generate_pocket_refs.py
 ```

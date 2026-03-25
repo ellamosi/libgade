@@ -2,6 +2,35 @@ with Gade.GB; use Gade.GB;
 
 package body Gade.Dev.Display.Handlers.OAM_Access is
 
+   First_Pixel_Base_Cycles : constant := 11;
+   Sprite_Fetch_Penalty    : constant := 6;
+   Window_Start_Penalty    : constant := 6;
+
+   function Is_Window_Visible_On_Line
+     (Mode_Handler : OAM_Access_Handler_Type) return Boolean;
+
+   function Window_Start_Column (Mode_Handler : OAM_Access_Handler_Type) return Integer;
+
+   function Is_Window_Visible_On_Line
+     (Mode_Handler : OAM_Access_Handler_Type) return Boolean
+   is
+      Current_Line : constant Natural := Mode_Handler.Display_Handler.Current_Line;
+   begin
+      return
+        Mode_Handler.Dev.Map.LCDC.Window_Display
+        and then Current_Line >= Natural (Mode_Handler.Dev.Map.WNDPOSY)
+        and then Natural (Mode_Handler.Dev.Map.WNDPOSX) <= 166;
+   end Is_Window_Visible_On_Line;
+
+   function Window_Start_Column (Mode_Handler : OAM_Access_Handler_Type) return Integer is
+   begin
+      if not Is_Window_Visible_On_Line (Mode_Handler) then
+         return Integer'Last;
+      end if;
+
+      return Integer (Mode_Handler.Dev.Map.WNDPOSX) - 7;
+   end Window_Start_Column;
+
    overriding
    procedure Reset (Mode_Handler : in out OAM_Access_Handler_Type) is
    begin
@@ -43,10 +72,34 @@ package body Gade.Dev.Display.Handlers.OAM_Access is
      (Mode_Handler       : in out OAM_Access_Handler_Type;
       Sprite_Edge_Counts : Edge_Counts_Type)
    is
-      pragma Unreferenced (Sprite_Edge_Counts);
+      Display_Handler        : constant Display_Handler_Access :=
+        Mode_Handler.Display_Handler;
+      Scroll_Discard_Cycles  : constant Natural :=
+        Natural (Mode_Handler.Dev.Map.SCROLLX mod 8);
+      First_Window_Column    : constant Integer := Window_Start_Column (Mode_Handler);
+      Window_Penalty_Applied : Boolean := First_Window_Column < 0;
+      Cycles                 : Natural := First_Pixel_Base_Cycles + Scroll_Discard_Cycles;
    begin
+      if Window_Penalty_Applied then
+         Cycles := Cycles + Window_Start_Penalty;
+      end if;
+
+      --  Sprite fetch stalls that occur before the first visible pixel still
+      --  delay mode 3 startup and therefore need to be folded into the
+      --  initial warmup.
+      for Edge in Sprite_Edge_Counts'First .. -1 loop
+         Cycles := Cycles + (Sprite_Fetch_Penalty * Sprite_Edge_Counts (Edge));
+      end loop;
+
       for PX in Mode_Handler.Display_Handler.Timing_Cache'Range loop
-         Mode_Handler.Display_Handler.Timing_Cache (PX) := PX + 11;
+         if not Window_Penalty_Applied and then PX = First_Window_Column then
+            Cycles := Cycles + Window_Start_Penalty;
+            Window_Penalty_Applied := True;
+         end if;
+
+         Cycles := Cycles + 1;
+         Cycles := Cycles + (Sprite_Fetch_Penalty * Sprite_Edge_Counts (PX));
+         Display_Handler.Timing_Cache (PX) := Cycles;
       end loop;
    end Find_VRAM_Access_Timings;
 

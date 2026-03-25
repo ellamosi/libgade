@@ -18,7 +18,21 @@ private package Gade.Dev.Display.Handlers is
       Video   : RGB32_Display_Buffer_Access;
       Cycles  : Natural);
 
+   procedure Notify_Display_Write
+     (Handler : in out Display_Handler_Type; Address : Word; Value : Byte);
+
 private
+
+   type Pending_Display_Write is record
+      Active  : Boolean := False;
+      Phase   : Natural := 0;
+      Address : Display_IO_Address := Display_IO_Address'First;
+      Value   : Byte := 0;
+   end record;
+
+   subtype Pending_Display_Write_Index is Positive range 1 .. 8;
+   type Pending_Display_Write_Array is
+     array (Pending_Display_Write_Index) of Pending_Display_Write;
 
    type Mode_Handler_Type is abstract tagged;
    type Mode_Handler_Access is access all Mode_Handler_Type'Class;
@@ -36,6 +50,8 @@ private
       Sprite_Cache         : Sprite_Line_Cache;
       Timing_Cache         : Line_Buffer_Type;
       VRAM_Access_Cycles   : Natural;
+      Latched_Map          : LCD_Map_Type;
+      Pending_Writes       : Pending_Display_Write_Array;
       Window_Line_Counter  : Natural;
       Window_Line_Active   : Boolean;
    end record;

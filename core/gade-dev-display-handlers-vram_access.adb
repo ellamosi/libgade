@@ -4,12 +4,43 @@ with Gade.Dev.Video.Background_Buffer; use Gade.Dev.Video.Background_Buffer;
 
 package body Gade.Dev.Display.Handlers.VRAM_Access is
 
+   procedure Apply_Pixel_Display_State
+     (Display_Handler : in out Display_Handler_Type;
+      Phase           : Natural;
+      Before_Pixel    : Boolean);
+
+   procedure Apply_Pixel_Display_State
+     (Display_Handler : in out Display_Handler_Type;
+      Phase           : Natural;
+      Before_Pixel    : Boolean) is
+   begin
+      for I in Display_Handler.Pending_Writes'Range loop
+         declare
+            Pending : Pending_Display_Write renames Display_Handler.Pending_Writes (I);
+            Apply   : constant Boolean :=
+              Pending.Active
+              and then (if Before_Pixel
+                        then Pending.Address = 16#FF47# and then Pending.Phase <= Phase
+                        else Pending.Address /= 16#FF47# and then Pending.Phase < Phase);
+         begin
+            if not Apply then
+               null;
+            else
+               Display_Handler.Latched_Map.Space (Pending.Address) := Pending.Value;
+               Pending.Active := False;
+            end if;
+         end;
+      end loop;
+   end Apply_Pixel_Display_State;
+
    overriding
    procedure Reset (Mode_Handler : in out VRAM_Access_Handler_Type) is
       Display_Handler : constant Display_Handler_Access := Mode_Handler.Display_Handler;
    begin
       Mode_Handler_Type (Mode_Handler).Reset;
       Display_Handler.VRAM_Access_Cycles := 0;
+      Display_Handler.Latched_Map := Display_Handler.Dev.Map;
+      Display_Handler.Pending_Writes := [others => (others => <>)];
       Mode_Handler.Pixel_Cursor := 0;
       Mode_Handler.Mode_Cycles := Display_Handler.Timing_Cache (160 - 1);
       Mode_Handler.Scroll_X := Natural (Display_Handler.Dev.Map.SCROLLX);
@@ -57,12 +88,16 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       while Display_Handler.VRAM_Access_Cycles < Run_Until_Cycles loop
          Pixel_Cycles := Display_Handler.Timing_Cache (Mode_Handler.Pixel_Cursor);
          if Pixel_Cycles <= Run_Until_Cycles then
+            Apply_Pixel_Display_State
+              (Display_Handler.all, Pixel_Cycles, Before_Pixel => True);
             Draw_Pixel
               (Mode_Handler,
                GB,
                Video,
                Display_Handler.Current_Line,
                Mode_Handler.Pixel_Cursor);
+            Apply_Pixel_Display_State
+              (Display_Handler.all, Pixel_Cycles, Before_Pixel => False);
             Mode_Handler.Pixel_Cursor := Mode_Handler.Pixel_Cursor + 1;
             Display_Handler.VRAM_Access_Cycles := Pixel_Cycles;
          else
@@ -155,7 +190,7 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
                Result := GB.Display.Map.OBJ1PAL (Sprite.Value);
          end case;
       else
-         Result := GB.Display.Map.BGRDPAL (BG);
+         Result := GB.Display.Display_Handler.Latched_Map.BGRDPAL (BG);
       end if;
 
       return Result;
@@ -180,8 +215,8 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
           (GB.Video_RAM,
            Window_Row,
            Window_Col,
-           GB.Display.Map.LCDC.Window_Tile_Table_Addr,
-           GB.Display.Map.LCDC.Tile_Data_Table_Addr);
+           GB.Display.Display_Handler.Latched_Map.LCDC.Window_Tile_Table_Addr,
+           GB.Display.Display_Handler.Latched_Map.LCDC.Tile_Data_Table_Addr);
    end Read_Window_Pixel;
 
    function Read_Background_Pixel
@@ -193,8 +228,8 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
           (GB.Video_RAM,
            (Y + Natural (GB.Display.Map.SCROLLY)) mod 256,
            (X + Mode_Handler.Scroll_X) mod 256,
-           GB.Display.Map.LCDC.Background_Tile_Map_Addr,
-           GB.Display.Map.LCDC.Tile_Data_Table_Addr);
+           GB.Display.Display_Handler.Latched_Map.LCDC.Background_Tile_Map_Addr,
+           GB.Display.Display_Handler.Latched_Map.LCDC.Tile_Data_Table_Addr);
    end Read_Background_Pixel;
 
 end Gade.Dev.Display.Handlers.VRAM_Access;

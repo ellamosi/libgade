@@ -51,6 +51,8 @@ package body Gade.Dev.Display is
       pragma Unreferenced (GB);
       Old_Value : LCD_Control;
    begin
+      Gade.Dev.Display.Handlers.Notify_Display_Write
+        (Display.Display_Handler.all, Address, Value);
       if Display.Map.Space (Address)'Address = Display.Map.LCDC'Address then
          Old_Value := Display.Map.LCDC;
          Display.Map.Space (Address) := Value;
