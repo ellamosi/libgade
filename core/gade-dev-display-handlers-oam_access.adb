@@ -17,6 +17,7 @@ package body Gade.Dev.Display.Handlers.OAM_Access is
    is
       Sprite_Edge_Counts : Edge_Counts_Type;
    begin
+      Mode_Handler.Display_Handler.Window_Line_Active := False;
       Gade.Dev.Video.Sprites.Populate_Line_Cache
         (GB.Video_RAM,
          GB.Video_OAM,

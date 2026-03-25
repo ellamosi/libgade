@@ -58,6 +58,8 @@ package body Gade.Dev.Display.Handlers.VBlank is
                Mode_Handler.Finished := True;
                New_Line := 0;
                Display_Handler.Current_Line := New_Line;
+               Display_Handler.Window_Line_Counter := 0;
+               Display_Handler.Window_Line_Active := False;
             end if;
          else
             --  Not exhausted line cycles

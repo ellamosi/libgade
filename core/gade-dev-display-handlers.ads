@@ -36,6 +36,8 @@ private
       Sprite_Cache         : Sprite_Line_Cache;
       Timing_Cache         : Line_Buffer_Type;
       VRAM_Access_Cycles   : Natural;
+      Window_Line_Counter  : Natural;
+      Window_Line_Active   : Boolean;
    end record;
 
    procedure Line_Changed

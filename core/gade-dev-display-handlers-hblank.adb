@@ -26,6 +26,11 @@ package body Gade.Dev.Display.Handlers.HBlank is
    is
       New_Line : Line_Count_Type;
    begin
+      if Mode_Handler.Display_Handler.Window_Line_Active then
+         Mode_Handler.Display_Handler.Window_Line_Counter := @ + 1;
+      end if;
+      Mode_Handler.Display_Handler.Window_Line_Active := False;
+
       New_Line := Mode_Handler.Display_Handler.Current_Line + 1;
       Mode_Handler.Display_Handler.Line_Changed (GB, New_Line);
    end Mode_Finished;
