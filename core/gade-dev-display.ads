@@ -36,6 +36,8 @@ package Gade.Dev.Display is
 
    procedure Check_Frame_Finished (Display : in out Display_Type; Finished : out Boolean);
 
+   function DMA_Active (Display : Display_Type) return Boolean;
+
    type Palette_Type is array (Color_Value'Range) of Color_Value;
    pragma Pack (Palette_Type);
    for Palette_Type'Size use 8;
@@ -218,7 +220,7 @@ private
       Frame_Finished             : Boolean;
       DMA_Source_Address         : Word;
       DMA_Target_Address         : Word;
-      DMA_Clocks_Since_Last_Copy : Integer; -- 1/4 clocks + 4 clocks setup
+      DMA_Clocks_Since_Last_Copy : Integer; -- startup delay in M-cycles
       DMA_Copy_Ongoing           : Boolean;
       Map                        : LCD_Map_Type;
       Display_Handler            : Display_Handler_Access;

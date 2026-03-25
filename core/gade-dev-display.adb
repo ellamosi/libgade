@@ -64,7 +64,8 @@ package body Gade.Dev.Display is
       elsif Display.Map.Space (Address)'Address = Display.Map.DMA'Address then
          Display.DMA_Source_Address := Word (Value) * 2**8;
          Display.DMA_Target_Address := OAM_IO_Address'First;
-         Display.DMA_Clocks_Since_Last_Copy := -4; -- Setup clocks
+         --  OAM DMA starts on the next M-cycle after the triggering write.
+         Display.DMA_Clocks_Since_Last_Copy := 1;
       elsif Display.Map.Space (Address)'Address = Display.Map.CURLINE'Address then
          --  Reset the scanline rendering ?!
          null;
@@ -76,9 +77,9 @@ package body Gade.Dev.Display is
       B : Byte;
    begin
       if Display.DMA_Target_Address in OAM_IO_Address then
-         Display.DMA_Clocks_Since_Last_Copy := Display.DMA_Clocks_Since_Last_Copy + 1;
-         if Display.DMA_Clocks_Since_Last_Copy = 4 then
-            Display.DMA_Clocks_Since_Last_Copy := 0;
+         if Display.DMA_Clocks_Since_Last_Copy > 0 then
+            Display.DMA_Clocks_Since_Last_Copy := Display.DMA_Clocks_Since_Last_Copy - 1;
+         else
             Read_Byte (GB, Display.DMA_Source_Address, B);
             --  TODO: Optimize this by accessing directly to the OAM buffer?
             --  Will definitely need to do this when implementing VRAM/OAM locks
@@ -116,6 +117,11 @@ package body Gade.Dev.Display is
       Finished := Display.Frame_Finished;
       Display.Frame_Finished := False;
    end Check_Frame_Finished;
+
+   function DMA_Active (Display : Display_Type) return Boolean is
+   begin
+      return Display.DMA_Target_Address in OAM_IO_Address;
+   end DMA_Active;
 
    procedure Mode_Changed
      (Display : in out Display_Type; GB : in out GB_Type; Mode : LCD_Controller_Mode_Type)

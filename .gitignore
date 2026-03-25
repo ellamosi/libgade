@@ -23,8 +23,8 @@ bin/
 tests/obj/
 tests/bin/
 tests/.rom-cache/
-tests/assets/roms/commercial/
 tests/assets/roms/blargg/
+tests/assets/roms/commercial/
 tests/assets/roms/mattcurrie/
 tests/assets/roms/mooneye/
 tests/assets/roms/snorpung/

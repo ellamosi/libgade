@@ -1,4 +1,5 @@
 with Gade.Dev.CPU;       use Gade.Dev.CPU;
+with Gade.Dev.Display;   use Gade.Dev.Display;
 with Gade.GB;            use Gade.GB;
 with Gade.GB.Memory_Map; use Gade.GB.Memory_Map;
 
@@ -84,6 +85,11 @@ package body Gade.Dev.Interrupts is
       Interrupt_Enable : Interrupt_Flag_Register_Type;
       Interrupt_Flags  : Interrupt_Flag_Register_Type;
    begin
+      if DMA_Active (GB.Display) then
+         Cycles := 0;
+         return;
+      end if;
+
       if GB.CPU.IFF = IE_EI then
          Interrupt_Enable := GB.Interrupt_Enable.Map;
          Interrupt_Flags := GB.Interrupt_Flag.Map;

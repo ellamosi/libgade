@@ -15,7 +15,7 @@ package body Gade.Dev.CPU.Exec is
       Opcode  : Byte;
    begin
       GB.CPU.Stepped_Cycles := 0;
-      Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC);
+      Opcode := Gade.GB.Memory_Map.CPU_Read_Byte (GB, GB.CPU.PC);
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Gade.GB.Tick_M_Cycles (GB, 1);
 
@@ -67,7 +67,7 @@ package body Gade.Dev.CPU.Exec is
       Handler : Instruction_Handler;
       Opcode  : Byte;
    begin
-      Opcode := Gade.GB.Memory_Map.Read_Byte (GB, GB.CPU.PC);
+      Opcode := Gade.GB.Memory_Map.CPU_Read_Byte (GB, GB.CPU.PC);
       GB.CPU.Stepped_Cycles := GB.CPU.Stepped_Cycles + 1;
       Gade.GB.Tick_M_Cycles (GB, 1);
       Handler := CB_Table (Opcode);
