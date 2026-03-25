@@ -375,7 +375,7 @@ description = "Demo ROM with a twisting three-column scene that relies on per-li
 
 [roms.source]
 type = "http_zip_member"
-url = "https://files.scene.org/view/demos/groups/snorpung/gejmboj.zip"
+url = "https://files.scene.org/get/demos/groups/snorpung/gejmboj.zip"
 member = "gejmboj.gb"
 filename = "gejmboj.zip"
 optional = true

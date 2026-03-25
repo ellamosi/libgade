@@ -383,16 +383,23 @@ def _extract_zip_member(
             )
         pwd = value.encode("utf-8")
 
-    if pwd and pyzipper is not None:
-        with pyzipper.AESZipFile(zip_path, "r") as zf:
-            resolved = resolve_member_name(zf, member)
-            return zf.read(resolved, pwd=pwd)
+    try:
+        if pwd and pyzipper is not None:
+            with pyzipper.AESZipFile(zip_path, "r") as zf:
+                resolved = resolve_member_name(zf, member)
+                return zf.read(resolved, pwd=pwd)
 
-    with zipfile.ZipFile(zip_path, "r") as zf:
-        if pwd:
-            zf.setpassword(pwd)
-        resolved = resolve_member_name(zf, member)
-        return zf.read(resolved)
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            if pwd:
+                zf.setpassword(pwd)
+            resolved = resolve_member_name(zf, member)
+            return zf.read(resolved)
+    except zipfile.BadZipFile as exc:
+        raise RomAssetError(
+            "downloaded file is not a zip archive for member '{}' ({})".format(
+                member, zip_path
+            )
+        ) from exc
 
 
 def _materialize_rom(entry: RomEntry, source: Dict[str, Any], cache_dir: Path) -> bool:
