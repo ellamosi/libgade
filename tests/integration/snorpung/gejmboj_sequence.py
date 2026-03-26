@@ -14,7 +14,8 @@ def sample_at(frame):
 
 
 # Two representative captures per scene through the end of the first
-# credits cycle at frame 8880. After that the credits continue looping.
+# credits cycle at frame 8880, plus an extra transition capture at
+# frame 1480. After that the credits continue looping.
 GEJMBOJ_SAMPLES = (
     sample_at(240),
     sample_at(480),
@@ -22,6 +23,7 @@ GEJMBOJ_SAMPLES = (
     sample_at(1080),
     sample_at(1200),
     sample_at(1440),
+    sample_at(1480),
     sample_at(1680),
     sample_at(2160),
     sample_at(2400),
