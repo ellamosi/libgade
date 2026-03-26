@@ -18,6 +18,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 - `dmg-acid2` by Matt Currie
 
 ### Demoscene Test ROMs
+- `gejmboj` by Snorpung
 - `Is That a Demo in Your Pocket?` by Snorpung
 - `OH!` by Snorpung
 
@@ -159,4 +160,11 @@ Snorpung OH! demo reference generation:
 ```sh
 cd tests
 python3 integration/snorpung/generate_oh_refs.py
+```
+
+Snorpung gejmboj demo reference generation:
+
+```sh
+cd tests
+python3 integration/snorpung/generate_gejmboj_refs.py
 ```

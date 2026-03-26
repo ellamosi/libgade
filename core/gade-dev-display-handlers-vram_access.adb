@@ -252,16 +252,18 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
    function Read_Window_Pixel
      (GB : Gade.GB.GB_Type; X, Y : Natural) return Window_Result_Type
    is
-      Window_Row, Window_Col : Integer;
-      Result                 : Window_Result_Type;
+      Window_Row       : Integer;
+      Window_Start_Col : constant Integer := Integer (GB.Display.Map.WNDPOSX) - 7;
+      Window_Col       : Integer;
+      Result           : Window_Result_Type;
    begin
-      if Y < Natural (GB.Display.Map.WNDPOSY) then
+      if Y < Natural (GB.Display.Map.WNDPOSY) or else Integer (X) < Window_Start_Col then
          Result.Visible := False;
          return Result;
       end if;
 
       Window_Row := Integer (GB.Display.Display_Handler.Window_Line_Counter);
-      Window_Col := X - Natural (GB.Display.Map.WNDPOSX) + 6;
+      Window_Col := Integer (X) - Window_Start_Col;
 
       return
         Gade.Dev.Video.Window.Read
