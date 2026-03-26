@@ -399,3 +399,11 @@ sha256 = "69db4cd94071c5cdfb57057ffc9945857a056f5aa0f09d774e5b064ecebf0f9c"
 type = "http_zip_member"
 url = "https://files.scene.org/get/demos/groups/snorpung/20y.zip"
 member = "20y.gb"
+
+[[roms]]
+id = "commercial/Pinball Fantasies (USA, Europe)"
+target = "assets/roms/commercial/Pinball Fantasies (USA, Europe).gb"
+sha256 = "f8553970aa60e1645a5e4044f342e723247800a9835a7e066318229c478c6441"
+
+[roms.source]
+type = "local_file"

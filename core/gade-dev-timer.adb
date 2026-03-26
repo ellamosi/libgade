@@ -66,14 +66,21 @@ package body Gade.Dev.Timer is
          New_Ticks := Timer.Ticks + T_Cycles;
          Timer.Ticks := New_Ticks mod Timer.Modulo_Ticks;
          if New_Ticks >= Timer.Modulo_Ticks then
-            --  Put_Line("Counter" & Timer.Map.Timer_Counter'Img);
             Counter_Increment := Integer (New_Ticks / Timer.Modulo_Ticks);
-            New_Counter := Integer (Timer.Map.Timer_Counter) + Counter_Increment;
-            if New_Counter >= 256 then
-               Timer.Map.Timer_Counter := Timer.Map.Timer_Modulo;
-               Set_Interrupt (GB, Timer_Interrupt);
-            end if;
-            Timer.Map.Timer_Counter := Byte (New_Counter mod 256);
+            New_Counter := Integer (Timer.Map.Timer_Counter);
+            for I in 1 .. Counter_Increment loop
+               pragma Unreferenced (I);
+               if New_Counter = 255 then
+                  --  Reload TMA on overflow instead of wrapping to 0. Games
+                  --  that program periodic timer IRQs depend on that shorter
+                  --  post-overflow period.
+                  New_Counter := Integer (Timer.Map.Timer_Modulo);
+                  Set_Interrupt (GB, Timer_Interrupt);
+               else
+                  New_Counter := New_Counter + 1;
+               end if;
+            end loop;
+            Timer.Map.Timer_Counter := Byte (New_Counter);
          end if;
       end if;
       --  DIV exposes the upper byte of a free-running 16-bit divider.
