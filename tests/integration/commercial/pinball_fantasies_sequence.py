@@ -10,14 +10,25 @@ class Stage:
 
 
 # Baseline sequence for the current emulator behavior:
-# - wait through the intro and title cycle into the board-selection screen
-# - start the default table
-# - capture the stable corrupted in-game output
+# - wait through each intro logo, the title screen, and the board-selection
+#   screen without input
+# - start the default table and capture a stable in-game frame
+# - pull the plunger with DOWN, release it, and capture gameplay two seconds
+#   later
 PINBALL_FANTASIES_STAGES = (
-    Stage("pinball_fantasies_01_board_selection", (("run", 2040),)),
+    Stage("pinball_fantasies_01_intro_logo_01", (("run", 240),)),
+    Stage("pinball_fantasies_02_intro_logo_02", (("run", 180),)),
+    Stage("pinball_fantasies_03_intro_logo_03", (("run", 420),)),
+    Stage("pinball_fantasies_04_intro_logo_04", (("run", 360),)),
+    Stage("pinball_fantasies_05_title_screen", (("run", 480),)),
+    Stage("pinball_fantasies_06_board_selection", (("run", 360),)),
     Stage(
-        "pinball_fantasies_02_broken_ingame",
+        "pinball_fantasies_07_ingame_ready",
         (("press", "START"), ("run", 8), ("release", "START"), ("run", 300)),
+    ),
+    Stage(
+        "pinball_fantasies_08_ingame_post_launch",
+        (("press", "DOWN"), ("run", 120), ("release", "DOWN"), ("run", 120)),
     ),
 )
 
