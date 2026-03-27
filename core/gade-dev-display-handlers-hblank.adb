@@ -26,20 +26,23 @@ package body Gade.Dev.Display.Handlers.HBlank is
    is
       New_Line : Line_Count_Type;
    begin
+      pragma Unreferenced (GB);
+
       if Mode_Handler.Display_Handler.Window_Line_Active then
          Mode_Handler.Display_Handler.Window_Line_Counter := @ + 1;
       end if;
       Mode_Handler.Display_Handler.Window_Line_Active := False;
 
       New_Line := Mode_Handler.Display_Handler.Current_Line + 1;
-      Mode_Handler.Display_Handler.Line_Changed (GB, New_Line);
+      Mode_Handler.Display_Handler.Pending_Line := New_Line;
+      Mode_Handler.Display_Handler.Pending_Line_Valid := True;
    end Mode_Finished;
 
    overriding
    function Next_Mode (Mode_Handler : HBlank_Handler_Type) return LCD_Controller_Mode_Type
    is
    begin
-      if Mode_Handler.Display_Handler.Current_Line < 144 then
+      if Mode_Handler.Display_Handler.Current_Line < 143 then
          return Gade.Dev.Display.OAM_Access;
       else
          return Gade.Dev.Display.VBlank;

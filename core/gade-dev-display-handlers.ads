@@ -52,6 +52,8 @@ private
       VRAM_Access_Cycles   : Natural;
       Latched_Map          : LCD_Map_Type;
       Pending_Writes       : Pending_Display_Write_Array;
+      Pending_Line         : Line_Count_Type := 0;
+      Pending_Line_Valid   : Boolean := False;
       Window_Line_Counter  : Natural;
       Window_Line_Active   : Boolean;
    end record;
