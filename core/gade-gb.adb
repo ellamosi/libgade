@@ -24,7 +24,6 @@ package body Gade.GB is
       Reset (GB.Timer);
       Reset (GB.Interrupt_Flag);
       Reset (GB.Interrupt_Enable);
-      GB.Interrupt_Service_Counts := [others => 0];
       GB.Content := [others => 0];
       Clear_Run_Context (GB);
    end Reset;

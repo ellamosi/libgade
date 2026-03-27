@@ -191,9 +191,6 @@ class GadeTestdClient:
                 'invalid FRAME_INDEX payload: {}'.format(payload)
             ) from exc
 
-    def state(self):
-        return self._request('STATE')
-
     def save_frame(self, out_path):
         self._request('SAVE_FRAME', out_path)
 

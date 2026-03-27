@@ -196,13 +196,4 @@ package body Testd.Commands.Handlers is
          Reply_ERR ("IMAGE", Exception_Message (E));
    end Find_Match;
 
-   procedure State (S : in out Session) is
-   begin
-      if not Ensure_ROM_Loaded (S) then
-         return;
-      end if;
-
-      Reply_OK (Debug_State (S.G));
-   end State;
-
 end Testd.Commands.Handlers;

@@ -153,7 +153,6 @@ package body Gade.Dev.Interrupts is
       else
          Interrupt := Highest_Priority_Interrupt (Final_Pending);
          GB.Interrupt_Flag.Map.Flags (Interrupt) := False;
-         GB.Interrupt_Service_Counts (Interrupt) := @ + 1;
          GB.CPU.PC := Interrupt_Handlers (Interrupt);
       end if;
 

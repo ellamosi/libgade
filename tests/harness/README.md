@@ -86,12 +86,6 @@ Response format:
 - Args: none
 - Response: `OK <natural>`
 
-`STATE`
-- Args: none
-- Response: `OK <diagnostic>`
-- Effect: returns a compact CPU/interrupt/LCD diagnostic snapshot for debugging
-  harness-driven failures.
-
 `SAVE_FRAME <output_path>`
 - Args: output image path (for example PNG)
 - Response: `OK` or `ERR BAD_STATE ...` / `ERR BAD_ARGS ...` / `ERR IMAGE ...`

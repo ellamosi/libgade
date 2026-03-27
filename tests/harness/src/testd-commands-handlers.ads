@@ -19,6 +19,5 @@ package Testd.Commands.Handlers is
      (S : in out Session; Line : String; Pos : in out Positive);
    procedure Find_Match
      (S : in out Session; Line : String; Pos : in out Positive);
-   procedure State (S : in out Session);
 
 end Testd.Commands.Handlers;
