@@ -125,6 +125,8 @@ package Gade.Interfaces is
       Audio             : Gade.Audio_Buffer.Audio_Buffer_Access;
       Frame_Finished    : out Boolean);
 
+   function Debug_State (G : Gade_Type) return String;
+
    --  Persist cartridge RAM (when applicable) and release emulator resources.
    --
    --  Preconditions:

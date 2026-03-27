@@ -40,7 +40,7 @@ package Gade.Dev.CPU is
    end record
    with Unchecked_Union;
 
-   type Interrupt_Enable is (IE_DI, IE_EI);
+   type Interrupt_Enable is (IE_DI, IE_EI_Pending, IE_EI);
 
    type CPU_Context is tagged record
       Regs           : CPU_Registers;
@@ -48,6 +48,7 @@ package Gade.Dev.CPU is
       PC             : Word;
       IFF            : Interrupt_Enable; -- Interrupt Flipflops
       Halted         : Boolean;
+      Halt_Bug       : Boolean := False;
       --  Mem   : Memory_Map_Type;
       Branch_Taken   : Boolean;
       Stepped_Cycles : Gade.Timing.M_Cycle_Count := 0;

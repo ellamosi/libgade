@@ -222,6 +222,7 @@ private
       DMA_Target_Address         : Word;
       DMA_Clocks_Since_Last_Copy : Integer; -- startup delay in M-cycles
       DMA_Copy_Ongoing           : Boolean;
+      STAT_Interrupt_Line        : Boolean;
       Map                        : LCD_Map_Type;
       Display_Handler            : Display_Handler_Access;
    end record;
@@ -250,6 +251,11 @@ private
      [(255, 255, 255), (171, 171, 171), (85, 85, 85), (0, 0, 0)];
 
    procedure Do_DMA (Display : in out Display_Type; GB : in out Gade.GB.GB_Type);
+
+   function STAT_Interrupt_Line_Active (Display : Display_Type) return Boolean;
+
+   procedure Update_STAT_Interrupt_Line
+     (Display : in out Display_Type; GB : in out Gade.GB.GB_Type);
 
    procedure Line_Changed
      (Display : in out Display_Type; GB : in out Gade.GB.GB_Type; Line : Line_Count_Type);

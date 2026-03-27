@@ -1,9 +1,39 @@
-with Gade.Dev.CPU;       use Gade.Dev.CPU;
-with Gade.Dev.Display;   use Gade.Dev.Display;
-with Gade.GB;            use Gade.GB;
-with Gade.GB.Memory_Map; use Gade.GB.Memory_Map;
+with Gade.Dev.CPU;     use Gade.Dev.CPU;
+with Gade.Dev.CPU.Instructions;
+with Gade.Dev.Display; use Gade.Dev.Display;
+with Gade.GB;          use Gade.GB;
 
 package body Gade.Dev.Interrupts is
+
+   Interrupt_Register_Read_Mask : constant Byte := 16#E0#;
+
+   Interrupt_Bits : constant array (Interrupt_Type) of Byte :=
+     [VBlank_Interrupt => 2#0000_0001#,
+      LCDC_Interrupt   => 2#0000_0010#,
+      Timer_Interrupt  => 2#0000_0100#,
+      Serial_Interrupt => 2#0000_1000#,
+      Joypad_Interrupt => 2#0001_0000#];
+
+   function Pending_Interrupt_Mask (GB : Gade.GB.GB_Type) return Byte;
+
+   function Highest_Priority_Interrupt (Mask : Byte) return Interrupt_Type;
+
+   function Pending_Interrupt_Mask (GB : Gade.GB.GB_Type) return Byte is
+   begin
+      return
+        (GB.Interrupt_Enable.Map.Reg and GB.Interrupt_Flag.Map.Reg)
+        and Interrupt_Enable_Mask;
+   end Pending_Interrupt_Mask;
+
+   function Highest_Priority_Interrupt (Mask : Byte) return Interrupt_Type is
+   begin
+      for I in Interrupt_Type'Range loop
+         if (Mask and Interrupt_Bits (I)) /= 0 then
+            return I;
+         end if;
+      end loop;
+      raise Program_Error with "no interrupt set in mask";
+   end Highest_Priority_Interrupt;
 
    overriding
    procedure Reset (Interrupt_Flag : in out Interrupt_Flag_Type) is
@@ -20,7 +50,7 @@ package body Gade.Dev.Interrupts is
    is
       pragma Unreferenced (GB, Address);
    begin
-      Value := Interrupt_Flag.Map.Reg;
+      Value := Interrupt_Flag.Map.Reg or Interrupt_Register_Read_Mask;
    end Read;
 
    overriding
@@ -50,7 +80,7 @@ package body Gade.Dev.Interrupts is
    is
       pragma Unreferenced (GB, Address);
    begin
-      Value := Interrupt_Enable.Map.Reg;
+      Value := Interrupt_Enable.Map.Reg or Interrupt_Register_Read_Mask;
    end Read;
 
    overriding
@@ -82,37 +112,52 @@ package body Gade.Dev.Interrupts is
 
    procedure Service_Interrupts (GB : in out Gade.GB.GB_Type; Cycles : out M_Cycle_Count)
    is
-      Interrupt_Enable : Interrupt_Flag_Register_Type;
-      Interrupt_Flags  : Interrupt_Flag_Register_Type;
+      Initial_Pending : Byte;
+      Final_Pending   : Byte;
+      Interrupt       : Interrupt_Type;
    begin
       if DMA_Active (GB.Display) then
          Cycles := 0;
          return;
       end if;
 
-      if GB.CPU.IFF = IE_EI then
-         Interrupt_Enable := GB.Interrupt_Enable.Map;
-         Interrupt_Flags := GB.Interrupt_Flag.Map;
-         for I in Interrupt_Type'Range loop
-            --  Only the interrupt with highest priority gets attended
-            if Interrupt_Flags.Flags (I) and Interrupt_Enable.Flags (I) then
-               --  Reset interrupt flag
-               Interrupt_Flags.Flags (I) := False;
-               --  Disable further interrupts
-               GB.CPU.IFF := IE_DI;
-               --  Save current PC into the stack
-               Push (GB, GB.CPU.PC);
-               --  Jump to handler
-               GB.CPU.PC := Interrupt_Handlers (I);
-               --  Save reset interrupt flags
-               GB.Interrupt_Flag.Map := Interrupt_Flags;
-               --  Set interrupt servicing delay
-               Cycles := 5;
-               return;
-            end if;
-         end loop;
+      if GB.CPU.IFF /= IE_EI then
+         Cycles := 0;
+         return;
       end if;
-      Cycles := 0;
+
+      Initial_Pending := Pending_Interrupt_Mask (GB);
+      if Initial_Pending = 0 then
+         Cycles := 0;
+         return;
+      end if;
+
+      GB.CPU.Halted := False;
+      GB.CPU.IFF := IE_DI;
+
+      Gade.Dev.CPU.Instructions.Internal_Cycle (GB);
+      Gade.Dev.CPU.Instructions.Internal_Cycle (GB);
+
+      GB.CPU.Regs.SP := GB.CPU.Regs.SP - 1;
+      Gade.Dev.CPU.Instructions.Bus_Write_Byte
+        (GB, GB.CPU.Regs.SP, Byte (GB.CPU.PC / 2**8));
+
+      GB.CPU.Regs.SP := GB.CPU.Regs.SP - 1;
+      Gade.Dev.CPU.Instructions.Bus_Write_Byte
+        (GB, GB.CPU.Regs.SP, Byte (GB.CPU.PC and 16#00FF#));
+
+      Final_Pending := Pending_Interrupt_Mask (GB);
+
+      if Final_Pending = 0 then
+         GB.CPU.PC := 16#0000#;
+      else
+         Interrupt := Highest_Priority_Interrupt (Final_Pending);
+         GB.Interrupt_Flag.Map.Flags (Interrupt) := False;
+         GB.Interrupt_Service_Counts (Interrupt) := @ + 1;
+         GB.CPU.PC := Interrupt_Handlers (Interrupt);
+      end if;
+
+      Cycles := 4;
    end Service_Interrupts;
 
 end Gade.Dev.Interrupts;

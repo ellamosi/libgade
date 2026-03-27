@@ -26,6 +26,7 @@ package body Gade.Dev.Display is
       Display.Map.SCROLLX := 0;
       Display.Map.SCROLLY := 0;
       Display.DMA_Copy_Ongoing := False;
+      Display.STAT_Interrupt_Line := False;
       Display.Display_Handler.Reset;
    end Reset;
 
@@ -38,7 +39,11 @@ package body Gade.Dev.Display is
    is
       pragma Unreferenced (GB);
    begin
-      Value := Display.Map.Space (Address);
+      if Display.Map.Space (Address)'Address = Display.Map.STAT'Address then
+         Value := Display.Map.Space (Address) or 16#80#;
+      else
+         Value := Display.Map.Space (Address);
+      end if;
    end Read;
 
    overriding
@@ -48,8 +53,8 @@ package body Gade.Dev.Display is
       Address : Word;
       Value   : Byte)
    is
-      pragma Unreferenced (GB);
-      Old_Value : LCD_Control;
+      Old_Value   : LCD_Control;
+      Coincidence : Boolean;
    begin
       Gade.Dev.Display.Handlers.Notify_Display_Write
         (Display.Display_Handler.all, Address, Value);
@@ -66,9 +71,23 @@ package body Gade.Dev.Display is
          Display.DMA_Target_Address := OAM_IO_Address'First;
          --  OAM DMA starts on the next M-cycle after the triggering write.
          Display.DMA_Clocks_Since_Last_Copy := 1;
+      elsif Display.Map.Space (Address)'Address = Display.Map.STAT'Address then
+         Display.Map.Space (Address) :=
+           (Display.Map.Space (Address) and 2#0000_0111#) or (Value and 2#0111_1000#);
+         Update_STAT_Interrupt_Line (Display, GB);
+         return;
       elsif Display.Map.Space (Address)'Address = Display.Map.CURLINE'Address then
-         --  Reset the scanline rendering ?!
-         null;
+         Display.Map.CURLINE := 0;
+         Coincidence := Display.Map.CURLINE = Natural (Display.Map.CMPLINE);
+         Display.Map.STAT.Scanline_Coincidence := Coincidence;
+         Update_STAT_Interrupt_Line (Display, GB);
+         return;
+      elsif Display.Map.Space (Address)'Address = Display.Map.CMPLINE'Address then
+         Display.Map.Space (Address) := Value;
+         Coincidence := Display.Map.CURLINE = Natural (Display.Map.CMPLINE);
+         Display.Map.STAT.Scanline_Coincidence := Coincidence;
+         Update_STAT_Interrupt_Line (Display, GB);
+         return;
       end if;
       Display.Map.Space (Address) := Value;
    end Write;
@@ -123,21 +142,37 @@ package body Gade.Dev.Display is
       return Display.DMA_Target_Address in OAM_IO_Address;
    end DMA_Active;
 
+   function STAT_Interrupt_Line_Active (Display : Display_Type) return Boolean is
+      Mode_Interrupt : constant Boolean :=
+        (case Display.Map.STAT.LCD_Controller_Mode is
+           when HBlank      => Display.Map.STAT.Interrupt_HBlank,
+           when VBlank      => Display.Map.STAT.Interrupt_VBlank,
+           when OAM_Access  => Display.Map.STAT.Interrupt_OAM_Access,
+           when VRAM_Access => False);
+   begin
+      return
+        Mode_Interrupt
+        or else (Display.Map.STAT.Scanline_Coincidence
+                 and Display.Map.STAT.Interrupt_Scanline_Coincidence);
+   end STAT_Interrupt_Line_Active;
+
+   procedure Update_STAT_Interrupt_Line
+     (Display : in out Display_Type; GB : in out Gade.GB.GB_Type)
+   is
+      Active : constant Boolean := STAT_Interrupt_Line_Active (Display);
+   begin
+      if Active and not Display.STAT_Interrupt_Line then
+         Set_Interrupt (GB, LCDC_Interrupt);
+      end if;
+      Display.STAT_Interrupt_Line := Active;
+   end Update_STAT_Interrupt_Line;
+
    procedure Mode_Changed
      (Display : in out Display_Type; GB : in out GB_Type; Mode : LCD_Controller_Mode_Type)
    is
-      Mode_Interrupt : Boolean;
    begin
       Display.Map.STAT.LCD_Controller_Mode := Mode;
-      Mode_Interrupt :=
-        (case Mode is
-           when HBlank     => Display.Map.STAT.Interrupt_HBlank,
-           when VBlank     => Display.Map.STAT.Interrupt_VBlank,
-           when OAM_Access => Display.Map.STAT.Interrupt_OAM_Access,
-           when others     => False);
-      if Mode_Interrupt then
-         Set_Interrupt (GB, LCDC_Interrupt);
-      end if;
+      Update_STAT_Interrupt_Line (Display, GB);
    end Mode_Changed;
 
    procedure Line_Changed
@@ -150,9 +185,7 @@ package body Gade.Dev.Display is
       Display.Map.CURLINE := Line;
       Coincidence := Line = Natural (Display.Map.CMPLINE);
       Display.Map.STAT.Scanline_Coincidence := Coincidence;
-      if Coincidence and Display.Map.STAT.Interrupt_Scanline_Coincidence then
-         Set_Interrupt (GB, LCDC_Interrupt);
-      end if;
+      Update_STAT_Interrupt_Line (Display, GB);
    end Line_Changed;
 
 end Gade.Dev.Display;

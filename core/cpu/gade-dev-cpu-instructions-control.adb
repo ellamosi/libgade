@@ -33,10 +33,14 @@ package body Gade.Dev.CPU.Instructions.Control is
       Pending_Interrupts : constant Byte :=
         (Read_Byte (GB, 16#FF0F#) and Read_Byte (GB, 16#FFFF#)) and 16#1F#;
    begin
-      --  With per-M-cycle ticking, an interrupt can become pending during the
-      --  HALT opcode fetch. In that case the CPU must resume from the next
-      --  instruction instead of staying halted.
-      GB.CPU.Halted := Pending_Interrupts = 0;
+      if Pending_Interrupts = 0 then
+         GB.CPU.Halted := True;
+      elsif GB.CPU.IFF = IE_EI then
+         GB.CPU.Halted := False;
+      else
+         GB.CPU.Halted := False;
+         GB.CPU.Halt_Bug := True;
+      end if;
    end HALT;
 
    procedure STOP (GB : in out GB_Type) is
@@ -54,7 +58,7 @@ package body Gade.Dev.CPU.Instructions.Control is
 
    procedure EI (GB : in out GB_Type) is
    begin
-      GB.CPU.IFF := IE_EI;
+      GB.CPU.IFF := IE_EI_Pending;
    end EI;
 
 end Gade.Dev.CPU.Instructions.Control;

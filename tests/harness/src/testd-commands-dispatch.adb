@@ -43,6 +43,9 @@ package body Testd.Commands.Dispatch is
       elsif Command = "FRAME_INDEX" then
          Testd.Sessions.Reply_OK (Trim (Natural'Image (S.Frame_Count), Both));
 
+      elsif Command = "STATE" then
+         Testd.Commands.Handlers.State (S);
+
       elsif Command = "SAVE_FRAME" then
          Testd.Commands.Handlers.Save_Frame (S, Line, Pos);
 

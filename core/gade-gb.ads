@@ -29,20 +29,22 @@ private package Gade.GB is
    --  FFFF: Interrupt Enable Register
 
    type Memory_Bytes is array (Word'Range) of Byte;
+   type Interrupt_Service_Count_Array is array (Interrupt_Type) of Natural;
 
    type GB_Public_Type is abstract tagged limited record
-      CPU              : aliased CPU_Context;
-      Logger           : Gade.Logging.Logger_Access;
-      Cart             : Carts.Cart_Access := null;
-      Video_RAM        : aliased VRAM_Type;
-      Content          : Memory_Bytes;
-      Video_OAM        : aliased OAM_Type;
-      Interrupt_Flag   : aliased Interrupt_Flag_Type;
-      Joypad           : aliased Joypad_Type;
-      Timer            : aliased Timer_Type;
-      Display          : aliased Display_Type;
-      Audio            : aliased Audio_Type;
-      Interrupt_Enable : aliased Interrupt_Enable_Type;
+      CPU                      : aliased CPU_Context;
+      Logger                   : Gade.Logging.Logger_Access;
+      Cart                     : Carts.Cart_Access := null;
+      Video_RAM                : aliased VRAM_Type;
+      Content                  : Memory_Bytes;
+      Video_OAM                : aliased OAM_Type;
+      Interrupt_Flag           : aliased Interrupt_Flag_Type;
+      Joypad                   : aliased Joypad_Type;
+      Timer                    : aliased Timer_Type;
+      Display                  : aliased Display_Type;
+      Audio                    : aliased Audio_Type;
+      Interrupt_Enable         : aliased Interrupt_Enable_Type;
+      Interrupt_Service_Counts : Interrupt_Service_Count_Array := [others => 0];
    end record;
 
    type GB_Type is new GB_Public_Type with private;
