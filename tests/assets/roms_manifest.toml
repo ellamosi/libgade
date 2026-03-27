@@ -251,6 +251,20 @@ cache_key = "commercial-roms"
 optional = true
 
 [[roms]]
+id = "mooneye/di_timing-GS"
+target = "assets/roms/mooneye/di_timing-GS.gb"
+sha256 = "618dd8f765c71c0f299cd124d8596d12da9ef987e800a45ac5c4b98fd240c54d"
+source_id = "mooneye_public"
+member = "mts-20240926-1737-443f6e1/acceptance/di_timing-GS.gb"
+
+[[roms]]
+id = "mooneye/intr_1_2_timing-GS"
+target = "assets/roms/mooneye/intr_1_2_timing-GS.gb"
+sha256 = "3bac47fc79ce514fd7f6bbe0d87f1160b91a5292be27fee7bc3bcea6bc171ee9"
+source_id = "mooneye_public"
+member = "mts-20240926-1737-443f6e1/acceptance/ppu/intr_1_2_timing-GS.gb"
+
+[[roms]]
 id = "mooneye/cart_mbc1_ram_256kb"
 target = "assets/roms/mooneye/cart_mbc1_ram_256kb.gb"
 sha256 = "c6fdd46418adb4b23356740a8e2bc849c65e4a19605d290f07c49e73048a8037"
@@ -394,3 +408,11 @@ sha256 = "f14c6d66a662123ffd5f0e8990dfa2e74eff831e9326e76262745574228a0632"
 type = "http_zip_member"
 url = "https://files.scene.org/get/demos/groups/snorpung/gejmboj.zip"
 member = "gejmboj.gb"
+
+[[roms]]
+id = "commercial/Pinball Fantasies (USA, Europe)"
+target = "assets/roms/commercial/Pinball Fantasies (USA, Europe).gb"
+sha256 = "f8553970aa60e1645a5e4044f342e723247800a9835a7e066318229c478c6441"
+
+[roms.source]
+type = "local_file"
