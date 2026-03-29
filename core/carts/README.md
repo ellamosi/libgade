@@ -35,8 +35,11 @@ Ues [BGB's 512 Byte file format spec](http://bgb.bircd.org/mbc2save.html) for fi
 #### MBC3 (Max 2MB ROM / 64kB RAM or 128kB RAM for MBC30 / RTC)
 Fully supported including its MBC30 (up to 8 RAM banks instead of 4) variant and the RTC (Real Time Clock). It uses [BGB's file format spec](http://bgb.bircd.org/rtcsave.html) to save RAM and RTC data. It's able to read both 32 and 64 bit RTC file formats, although saves will always be performed in 64 bit. The state is synchronized with the CPU clock once per frame, so if emulation does not happen in realtime that's accurately reflected in the RTC behavior.
 
+#### MBC5 (Max 8MB ROM / 128kB RAM / Rumble bit)
+Supports MBC5 ROM/RAM banking and RAM saves. Rumble cart register writes are decoded so the RAM bank bits behave correctly, but the emulator does not currently expose a rumble device.
+
 ### Unsupported
-The following cartridge types are currently unsupported: MBC5, MBC6, GB Camera, HuC1, HuC3, MM01, MBC1 based multicarts. Aside from MBC5, all of these are very rare and not a priority to implement. MBC5 is used by most GB Color carts and should be trivial to add support for with the current architecture.
+The following cartridge types are currently unsupported: MBC6, GB Camera, HuC1, HuC3, MM01, MBC1 based multicarts. Aside from some edge cases, these are all fairly rare and not a priority to implement.
 
 ## Mixins
 Mixins allow the concrete cartrige implementations to pick and choose which components to support without having to re-define the implementation of the Cart's interface methods.

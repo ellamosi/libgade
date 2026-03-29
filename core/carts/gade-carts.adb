@@ -5,6 +5,7 @@ with Gade.Carts.Plain.Constructors; use Gade.Carts.Plain.Constructors;
 with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
 with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
 with Gade.Carts.MBC3.Constructors;  use Gade.Carts.MBC3.Constructors;
+with Gade.Carts.MBC5.Constructors;  use Gade.Carts.MBC5.Constructors;
 
 package body Gade.Carts is
 
@@ -12,6 +13,7 @@ package body Gade.Carts is
    package MBC1_Carts renames MBC1.Constructors;
    package MBC2_Carts renames MBC2.Constructors;
    package MBC3_Carts renames MBC3.Constructors;
+   package MBC5_Carts renames MBC5.Constructors;
 
    function Get_Header (Content : ROM_Content_Access) return Cart_Header_Access;
 
@@ -62,6 +64,9 @@ package body Gade.Carts is
 
          when Cartridge_Info.MBC3 =>
             C := Cart_Access (MBC3_Carts.Create (ROM, Header.all, Save_Path, Logger));
+
+         when Cartridge_Info.MBC5 =>
+            C := Cart_Access (MBC5_Carts.Create (ROM, Header.all, Save_Path, Logger));
 
          when others              =>
             C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path, Logger));
