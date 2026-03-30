@@ -407,3 +407,83 @@ sha256 = "f8553970aa60e1645a5e4044f342e723247800a9835a7e066318229c478c6441"
 
 [roms.source]
 type = "local_file"
+
+[[roms]]
+id = "mooneye/cart_mbc5_rom_16mb"
+target = "assets/roms/mooneye/cart_mbc5_rom_16mb.gb"
+sha256 = "315ac9d9d7a3adda80f5fa8dee5826912bd99961e9539bd39ca8b440464ae794"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/cart_mbc5_rom_1mb"
+target = "assets/roms/mooneye/cart_mbc5_rom_1mb.gb"
+sha256 = "5170771b8183f7e5e10c2f40d7b3e18d170657b5906305caf111776e2277b425"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/cart_mbc5_rom_2mb"
+target = "assets/roms/mooneye/cart_mbc5_rom_2mb.gb"
+sha256 = "e93c53a71292b0066cba749a46fde2119b8733580b403189d3987e922588f0ca"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/cart_mbc5_rom_32mb"
+target = "assets/roms/mooneye/cart_mbc5_rom_32mb.gb"
+sha256 = "665b18d5e876f527e2c05579f7166641539fe895522711906c468f75bd00ec90"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/cart_mbc5_rom_4mb"
+target = "assets/roms/mooneye/cart_mbc5_rom_4mb.gb"
+sha256 = "188410388f84a5569c2a9f9d6c6e9e269f40d831ea4b718c0ae251d518ecf8c3"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/cart_mbc5_rom_512kb"
+target = "assets/roms/mooneye/cart_mbc5_rom_512kb.gb"
+sha256 = "6aad3b6b80f5b7308e79ef1acda4a045febe1eddf5021cecc3873d63c3e734ff"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/cart_mbc5_rom_64mb"
+target = "assets/roms/mooneye/cart_mbc5_rom_64mb.gb"
+sha256 = "e02ff0175932f76e01421a11b202a3840eb4dad70d735819b7dca45aedefe3c5"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/cart_mbc5_rom_8mb"
+target = "assets/roms/mooneye/cart_mbc5_rom_8mb.gb"
+sha256 = "81e32dc0cfe3940f3be759b1206ac5c46ca42acc64b7848e7de586ec1aa1973e"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/di_timing-GS"
+target = "assets/roms/mooneye/di_timing-GS.gb"
+sha256 = "618dd8f765c71c0f299cd124d8596d12da9ef987e800a45ac5c4b98fd240c54d"
+
+[roms.source]
+type = "local_file"
+
+[[roms]]
+id = "mooneye/intr_1_2_timing-GS"
+target = "assets/roms/mooneye/intr_1_2_timing-GS.gb"
+sha256 = "3bac47fc79ce514fd7f6bbe0d87f1160b91a5292be27fee7bc3bcea6bc171ee9"
+
+[roms.source]
+type = "local_file"
