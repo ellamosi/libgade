@@ -95,7 +95,7 @@ it rewrites files you should `git add` them and re-run the commit.
 
 ### What works
 - Full CPU emulation (Passes Blargg's CPU instruction tests)
-- Plain, MBC1, MBC2, MBC3 cartridge types with saves and MBC3 RTC support
+- Plain, MBC1, MBC2, MBC3 and Pocket Camera cartridge types with saves and MBC3 RTC support
 - Joypad
 - Timer
 - Background Layer

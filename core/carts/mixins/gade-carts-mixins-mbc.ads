@@ -68,7 +68,7 @@ package Gade.Carts.Mixins.MBC is
    overriding
    procedure Write_ROM (C : in out MBC_Cart; Address : External_ROM_IO_Address; V : Byte);
 
-   procedure Enable_RAM (C : in out MBC_Cart; V : Byte);
+   procedure Enable_RAM (C : in out MBC_Cart'Class; V : Byte);
 
    procedure Select_Bank
      (C : in out MBC_Cart; Address : Bank_Select_Address; Value : Byte)

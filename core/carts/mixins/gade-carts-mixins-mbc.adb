@@ -16,7 +16,7 @@ package body Gade.Carts.Mixins.MBC is
       end case;
    end Write_ROM;
 
-   procedure Enable_RAM (C : in out MBC_Cart; V : Byte) is
+   procedure Enable_RAM (C : in out MBC_Cart'Class; V : Byte) is
    begin
       case V and RAM_Enable_Mask is
          when RAM_Enable_Value =>

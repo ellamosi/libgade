@@ -1,13 +1,15 @@
 with Ada.Directories;
 
-with Gade.Carts.Mem.ROM;            use Gade.Carts.Mem.ROM;
-with Gade.Carts.Plain.Constructors; use Gade.Carts.Plain.Constructors;
-with Gade.Carts.MBC1.Constructors;  use Gade.Carts.MBC1.Constructors;
-with Gade.Carts.MBC2.Constructors;  use Gade.Carts.MBC2.Constructors;
-with Gade.Carts.MBC3.Constructors;  use Gade.Carts.MBC3.Constructors;
+with Gade.Carts.Mem.ROM;             use Gade.Carts.Mem.ROM;
+with Gade.Carts.Camera.Constructors; use Gade.Carts.Camera.Constructors;
+with Gade.Carts.Plain.Constructors;  use Gade.Carts.Plain.Constructors;
+with Gade.Carts.MBC1.Constructors;   use Gade.Carts.MBC1.Constructors;
+with Gade.Carts.MBC2.Constructors;   use Gade.Carts.MBC2.Constructors;
+with Gade.Carts.MBC3.Constructors;   use Gade.Carts.MBC3.Constructors;
 
 package body Gade.Carts is
 
+   package Camera_Carts renames Camera.Constructors;
    package Plain_Carts renames Plain.Constructors;
    package MBC1_Carts renames MBC1.Constructors;
    package MBC2_Carts renames MBC2.Constructors;
@@ -51,19 +53,22 @@ package body Gade.Carts is
       Gade.Logging.Info (Logger, "Controller type: " & Controller'Img);
 
       case Controller is
-         when Cartridge_Info.None =>
+         when Cartridge_Info.None          =>
             C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path, Logger));
 
-         when Cartridge_Info.MBC1 =>
+         when Cartridge_Info.MBC1          =>
             C := Cart_Access (MBC1_Carts.Create (ROM, Header.all, Save_Path, Logger));
 
-         when Cartridge_Info.MBC2 =>
+         when Cartridge_Info.MBC2          =>
             C := Cart_Access (MBC2_Carts.Create (ROM, Header.all, Save_Path, Logger));
 
-         when Cartridge_Info.MBC3 =>
+         when Cartridge_Info.MBC3          =>
             C := Cart_Access (MBC3_Carts.Create (ROM, Header.all, Save_Path, Logger));
 
-         when others              =>
+         when Cartridge_Info.Pocket_Camera =>
+            C := Cart_Access (Camera_Carts.Create (ROM, Header.all, Save_Path, Logger));
+
+         when others                       =>
             C := Cart_Access (Plain_Carts.Create (ROM, Header.all, Save_Path, Logger));
       end case;
       C.Load_RAM;
