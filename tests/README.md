@@ -10,7 +10,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 - Memory Timing v2 (`mem_timing_v2`, from `mem_timing-2.zip`)
 
 ### [Mooneye Test ROMs](https://github.com/Gekkio/mooneye-test-suite)
-- Cart Memory Bank Controllers (`mbc1`, `mbc2`)
+- Cart Memory Bank Controllers (`mbc1`, `mbc2`, `mbc5`)
 
 ### Standalone LCD Test ROMs
 - `lcd_lyc`
