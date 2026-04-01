@@ -9,11 +9,56 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       Phase           : Natural;
       Before_Pixel    : Boolean);
 
+   procedure Recompute_Pending_Write_State
+     (Display_Handler : in out Display_Handler_Type);
+
+   procedure Recompute_Pending_Write_State (Display_Handler : in out Display_Handler_Type)
+   is
+      Next_Before_Phase : Natural := Natural'Last;
+      Next_After_Phase  : Natural := Natural'Last;
+      Pending_Count     : Natural := 0;
+   begin
+      for I in Display_Handler.Pending_Writes'Range loop
+         declare
+            Pending : Pending_Display_Write renames Display_Handler.Pending_Writes (I);
+         begin
+            if not Pending.Active then
+               null;
+            else
+               Pending_Count := Pending_Count + 1;
+               if Pending.Address = 16#FF47# then
+                  Next_Before_Phase := Natural'Min (Next_Before_Phase, Pending.Phase);
+               else
+                  Next_After_Phase := Natural'Min (Next_After_Phase, Pending.Phase);
+               end if;
+            end if;
+         end;
+      end loop;
+
+      Display_Handler.Pending_Write_Count := Pending_Count;
+      Display_Handler.Next_Before_Phase := Next_Before_Phase;
+      Display_Handler.Next_After_Phase := Next_After_Phase;
+   end Recompute_Pending_Write_State;
+
    procedure Apply_Pixel_Display_State
      (Display_Handler : in out Display_Handler_Type;
       Phase           : Natural;
-      Before_Pixel    : Boolean) is
+      Before_Pixel    : Boolean)
+   is
+      Applied_Any : Boolean := False;
    begin
+      if Display_Handler.Pending_Write_Count = 0 then
+         return;
+      end if;
+
+      if Before_Pixel and then Display_Handler.Next_Before_Phase > Phase then
+         return;
+      end if;
+
+      if not Before_Pixel and then Display_Handler.Next_After_Phase >= Phase then
+         return;
+      end if;
+
       for I in Display_Handler.Pending_Writes'Range loop
          declare
             Pending : Pending_Display_Write renames Display_Handler.Pending_Writes (I);
@@ -28,9 +73,14 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
             else
                Display_Handler.Latched_Map.Space (Pending.Address) := Pending.Value;
                Pending.Active := False;
+               Applied_Any := True;
             end if;
          end;
       end loop;
+
+      if Applied_Any then
+         Recompute_Pending_Write_State (Display_Handler);
+      end if;
    end Apply_Pixel_Display_State;
 
    overriding
@@ -41,6 +91,9 @@ package body Gade.Dev.Display.Handlers.VRAM_Access is
       Display_Handler.VRAM_Access_Cycles := 0;
       Display_Handler.Latched_Map := Display_Handler.Dev.Map;
       Display_Handler.Pending_Writes := [others => (others => <>)];
+      Display_Handler.Pending_Write_Count := 0;
+      Display_Handler.Next_Before_Phase := Natural'Last;
+      Display_Handler.Next_After_Phase := Natural'Last;
       Mode_Handler.Pixel_Cursor := 0;
       Mode_Handler.Mode_Cycles := Display_Handler.Timing_Cache (160 - 1);
       Mode_Handler.Scroll_X := Natural (Display_Handler.Dev.Map.SCROLLX);

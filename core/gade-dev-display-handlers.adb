@@ -130,6 +130,9 @@ package body Gade.Dev.Display.Handlers is
       Handler.Current_Line := Starting_Line;
       Handler.Latched_Map := Handler.Dev.Map;
       Handler.Pending_Writes := [others => (others => <>)];
+      Handler.Pending_Write_Count := 0;
+      Handler.Next_Before_Phase := Natural'Last;
+      Handler.Next_After_Phase := Natural'Last;
       Handler.Window_Line_Counter := 0;
       Handler.Window_Line_Active := False;
       Handler.Current_Mode_Handler.Reset;
@@ -185,6 +188,15 @@ package body Gade.Dev.Display.Handlers is
                  Handler.VRAM_Access_Cycles + Display_Write_Apply_Delay (Address),
                Address => Display_IO_Address (Address),
                Value   => Value);
+            Handler.Pending_Write_Count := Handler.Pending_Write_Count + 1;
+            if Address = 16#FF47# then
+               Handler.Next_Before_Phase :=
+                 Natural'Min
+                   (Handler.Next_Before_Phase, Handler.Pending_Writes (I).Phase);
+            else
+               Handler.Next_After_Phase :=
+                 Natural'Min (Handler.Next_After_Phase, Handler.Pending_Writes (I).Phase);
+            end if;
             return;
          end if;
       end loop;
