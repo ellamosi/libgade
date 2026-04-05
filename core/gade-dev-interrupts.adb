@@ -7,14 +7,9 @@ package body Gade.Dev.Interrupts is
 
    Interrupt_Register_Read_Mask : constant Byte := 16#E0#;
 
-   Interrupt_Bits : constant array (Interrupt_Type) of Byte :=
-     [VBlank_Interrupt => 2#0000_0001#,
-      LCDC_Interrupt   => 2#0000_0010#,
-      Timer_Interrupt  => 2#0000_0100#,
-      Serial_Interrupt => 2#0000_1000#,
-      Joypad_Interrupt => 2#0001_0000#];
-
    function Pending_Interrupt_Mask (GB : Gade.GB.GB_Type) return Byte;
+
+   function Interrupt_Set (Mask : Byte; Interrupt : Interrupt_Type) return Boolean;
 
    function Highest_Priority_Interrupt (Mask : Byte) return Interrupt_Type;
 
@@ -25,10 +20,23 @@ package body Gade.Dev.Interrupts is
         and Interrupt_Enable_Mask;
    end Pending_Interrupt_Mask;
 
+   function Interrupt_Set (Mask : Byte; Interrupt : Interrupt_Type) return Boolean is
+      Register : constant Interrupt_Flag_Register_Type :=
+        (Access_Type => Address, Reg => Mask);
+   begin
+      return
+        (case Interrupt is
+           when VBlank_Interrupt => Register.VBLANK,
+           when LCDC_Interrupt   => Register.LCDC,
+           when Timer_Interrupt  => Register.Timer,
+           when Serial_Interrupt => Register.Serial,
+           when Joypad_Interrupt => Register.Joypad);
+   end Interrupt_Set;
+
    function Highest_Priority_Interrupt (Mask : Byte) return Interrupt_Type is
    begin
       for I in Interrupt_Type'Range loop
-         if (Mask and Interrupt_Bits (I)) /= 0 then
+         if Interrupt_Set (Mask, I) then
             return I;
          end if;
       end loop;
