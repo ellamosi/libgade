@@ -25,6 +25,14 @@ package body Gade.Dev.CPU.Instructions is
       Gade.GB.Tick_M_Cycles (GB, 1);
    end Internal_Cycle;
 
+   procedure Internal_Cycles (GB : in out Gade.GB.GB_Type; Count : Positive) is
+   begin
+      for I in 1 .. Count loop
+         pragma Unreferenced (I);
+         Internal_Cycle (GB);
+      end loop;
+   end Internal_Cycles;
+
    function Fetch_Source
      (GB : in out Gade.GB.GB_Type; Source : Byte_Source_Kind) return Byte is
    begin

@@ -65,6 +65,8 @@ package Gade.Dev.CPU.Instructions is
 
    procedure Internal_Cycle (GB : in out Gade.GB.GB_Type);
 
+   procedure Internal_Cycles (GB : in out Gade.GB.GB_Type; Count : Positive);
+
    function Fetch_Source
      (GB : in out Gade.GB.GB_Type; Source : Byte_Source_Kind) return Byte;
 

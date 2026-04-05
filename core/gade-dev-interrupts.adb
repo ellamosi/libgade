@@ -135,8 +135,7 @@ package body Gade.Dev.Interrupts is
       GB.CPU.Halted := False;
       GB.CPU.IFF := IE_DI;
 
-      Gade.Dev.CPU.Instructions.Internal_Cycle (GB);
-      Gade.Dev.CPU.Instructions.Internal_Cycle (GB);
+      Gade.Dev.CPU.Instructions.Internal_Cycles (GB, 2);
 
       GB.CPU.Regs.SP := GB.CPU.Regs.SP - 1;
       Gade.Dev.CPU.Instructions.Bus_Write_Byte
