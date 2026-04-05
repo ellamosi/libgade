@@ -124,19 +124,20 @@ package body Gade.Dev.Interrupts is
       Final_Pending   : Byte;
       Interrupt       : Interrupt_Type;
    begin
+      Cycles := 0;
+
+      --  Pan Docs recommends preventing interrupts during DMG OAM DMA; defer
+      --  servicing here because interrupt entry needs non-HRAM memory accesses.
       if DMA_Active (GB.Display) then
-         Cycles := 0;
          return;
       end if;
 
       if GB.CPU.IFF /= IE_EI then
-         Cycles := 0;
          return;
       end if;
 
       Initial_Pending := Pending_Interrupt_Mask (GB);
       if Initial_Pending = 0 then
-         Cycles := 0;
          return;
       end if;
 
@@ -155,13 +156,23 @@ package body Gade.Dev.Interrupts is
 
       Final_Pending := Pending_Interrupt_Mask (GB);
 
+      --  Interrupt dispatch canceling
+      --  From: https://mgba-emu.github.io/gbdoc/#interrupt-dispatch-canceling
+
+      --  Interrupt dispatch is not atomic. If the value of IE AND IF changes
+      --  between the first M cycle and when the vector is loaded, the value
+      --  of the vector may change. This can happen if IE or IF is altered in
+      --  some way, either by a higher priority IRQ asserting, or by another
+      --  memory write (e.g. the first stack push overwriting IE or IF).
+
+      --  - If a higher priority IRQ is asserted, it effectively steals the
+      --    interrupt dispatch
+      --  - If IE AND IF becomes zero, no interrupt vector can be located and
+      --    instead $0000 is loaded into the program counter.
+
       if Final_Pending = 0 then
-         --  Interrupt lines were withdrawn during acknowledge; follow the
-         --  current fallback path until the dispatch behavior is revisited.
          GB.CPU.PC := 16#0000#;
       else
-         --  Only the highest-priority interrupt that remains pending after the
-         --  acknowledge sequence gets serviced.
          Interrupt := Highest_Priority_Interrupt (Final_Pending);
          --  Reset the serviced interrupt flag before entering its handler.
          GB.Interrupt_Flag.Map.Flags (Interrupt) := False;

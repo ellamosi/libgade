@@ -40,6 +40,8 @@ package Gade.Dev.CPU is
    end record
    with Unchecked_Union;
 
+   --  EI does not enable IME immediately; this transient state records that
+   --  IME must become active after the current instruction completes.
    type Interrupt_Enable is (IE_DI, IE_EI_Pending, IE_EI);
 
    type CPU_Context is tagged record
