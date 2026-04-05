@@ -35,7 +35,7 @@ package body Gade.Dev.CPU.Instructions.Control is
    begin
       if Pending_Interrupts = 0 then
          GB.CPU.Halted := True;
-      elsif GB.CPU.IFF = IE_EI then
+      elsif GB.CPU.IFF = IME_Enabled then
          GB.CPU.Halted := False;
       else
          GB.CPU.Halted := False;
@@ -46,19 +46,19 @@ package body Gade.Dev.CPU.Instructions.Control is
    procedure STOP (GB : in out GB_Type) is
    begin
       GB.CPU.PC := GB.CPU.PC + 1;
-      if GB.CPU.IFF = IE_EI then
+      if GB.CPU.IFF = IME_Enabled then
          GB.CPU.Halted := True;
       end if;
    end STOP;
 
    procedure DI (GB : in out GB_Type) is
    begin
-      GB.CPU.IFF := IE_DI;
+      GB.CPU.IFF := IME_Disabled;
    end DI;
 
    procedure EI (GB : in out GB_Type) is
    begin
-      GB.CPU.IFF := IE_EI_Pending;
+      GB.CPU.IFF := IME_Enable_Pending;
    end EI;
 
 end Gade.Dev.CPU.Instructions.Control;

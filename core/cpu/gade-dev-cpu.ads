@@ -42,13 +42,13 @@ package Gade.Dev.CPU is
 
    --  EI does not enable IME immediately; this transient state records that
    --  IME must become active after the current instruction completes.
-   type Interrupt_Enable is (IE_DI, IE_EI_Pending, IE_EI);
+   type Interrupt_Master_Enable_State is (IME_Disabled, IME_Enable_Pending, IME_Enabled);
 
    type CPU_Context is tagged record
       Regs           : CPU_Registers;
       --  Flags : CPU_Flags;
       PC             : Word;
-      IFF            : Interrupt_Enable; -- Interrupt Flipflops
+      IFF            : Interrupt_Master_Enable_State; -- Interrupt Flipflops
       Halted         : Boolean;
       Halt_Bug       : Boolean := False;
       --  Mem   : Memory_Map_Type;

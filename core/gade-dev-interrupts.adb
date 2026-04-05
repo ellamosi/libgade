@@ -132,7 +132,7 @@ package body Gade.Dev.Interrupts is
          return;
       end if;
 
-      if GB.CPU.IFF /= IE_EI then
+      if GB.CPU.IFF /= IME_Enabled then
          return;
       end if;
 
@@ -144,7 +144,7 @@ package body Gade.Dev.Interrupts is
       --  Accept the interrupt and disable further servicing until the handler
       --  explicitly re-enables IME.
       GB.CPU.Halted := False;
-      GB.CPU.IFF := IE_DI;
+      GB.CPU.IFF := IME_Disabled;
 
       --  Interrupt entry consumes two internal M-cycles before the stack
       --  writes.

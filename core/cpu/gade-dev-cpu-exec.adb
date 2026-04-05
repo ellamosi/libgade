@@ -11,7 +11,7 @@ package body Gade.Dev.CPU.Exec is
      (CPU : in out CPU_Context; GB : in out Gade.GB.GB_Type; Cycles : out M_Cycle_Count)
    is
       pragma Unreferenced (CPU);
-      Enable_IME_After_Instruction : constant Boolean := GB.CPU.IFF = IE_EI_Pending;
+      Enable_IME_After_Instruction : constant Boolean := GB.CPU.IFF = IME_Enable_Pending;
       Skip_PC_Increment            : constant Boolean := GB.CPU.Halt_Bug;
       Handler                      : Instruction_Handler;
       Opcode                       : Byte;
@@ -30,8 +30,8 @@ package body Gade.Dev.CPU.Exec is
       end if;
 
       Handler.all (GB);
-      if Enable_IME_After_Instruction and then GB.CPU.IFF = IE_EI_Pending then
-         GB.CPU.IFF := IE_EI;
+      if Enable_IME_After_Instruction and then GB.CPU.IFF = IME_Enable_Pending then
+         GB.CPU.IFF := IME_Enabled;
       end if;
       Cycles := GB.CPU.Stepped_Cycles;
    end Execute;
