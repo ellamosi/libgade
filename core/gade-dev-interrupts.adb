@@ -140,29 +140,36 @@ package body Gade.Dev.Interrupts is
          return;
       end if;
 
+      --  Accept the interrupt and disable further servicing until the handler
+      --  explicitly re-enables IME.
       GB.CPU.Halted := False;
       GB.CPU.IFF := IE_DI;
 
+      --  Interrupt entry consumes two internal M-cycles before the stack
+      --  writes.
       Gade.Dev.CPU.Instructions.Internal_Cycles (GB, 2);
 
-      GB.CPU.Regs.SP := GB.CPU.Regs.SP - 1;
-      Gade.Dev.CPU.Instructions.Bus_Write_Byte
-        (GB, GB.CPU.Regs.SP, Byte (GB.CPU.PC / 2**8));
-
-      GB.CPU.Regs.SP := GB.CPU.Regs.SP - 1;
-      Gade.Dev.CPU.Instructions.Bus_Write_Byte
-        (GB, GB.CPU.Regs.SP, Byte (GB.CPU.PC and 16#00FF#));
+      --  Save the current PC on the stack, high byte first, while keeping the
+      --  device state ticking one M-cycle at a time.
+      Gade.Dev.CPU.Instructions.Push_Word (GB, GB.CPU.PC);
 
       Final_Pending := Pending_Interrupt_Mask (GB);
 
       if Final_Pending = 0 then
+         --  Interrupt lines were withdrawn during acknowledge; follow the
+         --  current fallback path until the dispatch behavior is revisited.
          GB.CPU.PC := 16#0000#;
       else
+         --  Only the highest-priority interrupt that remains pending after the
+         --  acknowledge sequence gets serviced.
          Interrupt := Highest_Priority_Interrupt (Final_Pending);
+         --  Reset the serviced interrupt flag before entering its handler.
          GB.Interrupt_Flag.Map.Flags (Interrupt) := False;
          GB.CPU.PC := Interrupt_Handlers (Interrupt);
       end if;
 
+      --  Report the interrupt service cost for Run_For accounting only; the
+      --  per-M-cycle state advancement already happened above.
       Cycles := 4;
    end Service_Interrupts;
 
