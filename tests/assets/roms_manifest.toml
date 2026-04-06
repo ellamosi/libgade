@@ -406,4 +406,10 @@ target = "assets/roms/commercial/Pinball Fantasies (USA, Europe).gb"
 sha256 = "f8553970aa60e1645a5e4044f342e723247800a9835a7e066318229c478c6441"
 
 [roms.source]
-type = "local_file"
+type = "http_encrypted_zip_member"
+url_env = "GADE_COMMERCIAL_ROMS_URL"
+zip_password_env = "GADE_COMMERCIAL_ROMS_PASSWORD"
+member = "nointro.gb/Pinball Fantasies (USA, Europe).gb"
+encrypted = true
+cache_key = "commercial-roms"
+optional = true
