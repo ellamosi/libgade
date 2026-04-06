@@ -25,13 +25,18 @@ package body Gade.Dev.CPU.Exec is
       GB.CPU.Branch_Taken := False;
       Handler := Main_Table (Opcode);
       if Skip_PC_Increment then
+         --  Consume the latched HALT bug: execute the next opcode without the
+         --  usual pre-dispatch PC increment, then return to normal execution.
          GB.CPU.Execution_State := Running;
       else
+         --  Normal fetch path: advance PC past the opcode before running its
+         --  handler.
          GB.CPU.PC := GB.CPU.PC + 1;
       end if;
 
       Handler.all (GB);
       if Enable_IME_After_Instruction and then GB.CPU.IFF = IME_Enable_Pending then
+         --  EI takes effect only after the following instruction completes.
          GB.CPU.IFF := IME_Enabled;
       end if;
       Cycles := GB.CPU.Stepped_Cycles;
