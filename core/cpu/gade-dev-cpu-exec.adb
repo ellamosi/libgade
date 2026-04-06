@@ -12,7 +12,8 @@ package body Gade.Dev.CPU.Exec is
    is
       pragma Unreferenced (CPU);
       Enable_IME_After_Instruction : constant Boolean := GB.CPU.IFF = IME_Enable_Pending;
-      Skip_PC_Increment            : constant Boolean := GB.CPU.Halt_Bug;
+      Skip_PC_Increment            : constant Boolean :=
+        GB.CPU.Execution_State = Halt_Bug_Pending;
       Handler                      : Instruction_Handler;
       Opcode                       : Byte;
    begin
@@ -24,7 +25,7 @@ package body Gade.Dev.CPU.Exec is
       GB.CPU.Branch_Taken := False;
       Handler := Main_Table (Opcode);
       if Skip_PC_Increment then
-         GB.CPU.Halt_Bug := False;
+         GB.CPU.Execution_State := Running;
       else
          GB.CPU.PC := GB.CPU.PC + 1;
       end if;

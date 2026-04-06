@@ -44,16 +44,18 @@ package Gade.Dev.CPU is
    --  IME must become active after the current instruction completes.
    type Interrupt_Master_Enable_State is (IME_Disabled, IME_Enable_Pending, IME_Enabled);
 
+   --  Running covers normal execution, Halted stalls the CPU until an enabled
+   --  interrupt wakes it, and Halt_Bug_Pending latches the one-fetch PC
+   --  suppression caused by the classic HALT bug.
+   type CPU_Execution_State is (Running, Halted, Halt_Bug_Pending);
+
    type CPU_Context is tagged record
-      Regs           : CPU_Registers;
-      --  Flags : CPU_Flags;
-      PC             : Word;
-      IFF            : Interrupt_Master_Enable_State; -- Interrupt Flipflops
-      Halted         : Boolean;
-      Halt_Bug       : Boolean := False;
-      --  Mem   : Memory_Map_Type;
-      Branch_Taken   : Boolean;
-      Stepped_Cycles : Gade.Timing.M_Cycle_Count := 0;
+      Regs            : CPU_Registers;
+      PC              : Word;
+      IFF             : Interrupt_Master_Enable_State; -- Interrupt Flipflops
+      Execution_State : CPU_Execution_State := Running;
+      Branch_Taken    : Boolean;
+      Stepped_Cycles  : Gade.Timing.M_Cycle_Count := 0;
    end record;
 
    type P_CPU_Context is access CPU_Context;

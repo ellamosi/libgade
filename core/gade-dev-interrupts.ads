@@ -51,6 +51,8 @@ package Gade.Dev.Interrupts is
       Serial_Interrupt,
       Joypad_Interrupt);
 
+   function Has_Pending_Enabled_Interrupt (GB : Gade.GB.GB_Type) return Boolean;
+
    procedure Set_Interrupt (GB : in out Gade.GB.GB_Type; Interrupt : Interrupt_Type);
 
    procedure Service_Interrupts (GB : in out Gade.GB.GB_Type; Cycles : out M_Cycle_Count);

@@ -10,8 +10,7 @@ package body Gade.Dev.CPU is
       ctxt.PC := 16#0100#;
       ctxt.Regs.F.Z := True;
       ctxt.IFF := IME_Disabled;
-      ctxt.Halted := False;
-      ctxt.Halt_Bug := False;
+      ctxt.Execution_State := Running;
    end Reset;
 
    procedure Set (Flag : in out CPU_Flag) is

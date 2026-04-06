@@ -4,6 +4,7 @@ with Gade.GB;             use Gade.GB;
 with Gade.Input;          use Gade.Input;
 with Gade.Audio_Buffer;   use Gade.Audio_Buffer;
 with Gade.Video_Buffer;   use Gade.Video_Buffer;
+with Gade.Dev.CPU;
 with Gade.Dev.CPU.Exec;   use Gade.Dev.CPU.Exec;
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.Dev.Display;
@@ -12,6 +13,7 @@ with Gade.Logging;
 
 package body Gade.Interfaces is
    use type Gade.Logging.Logger_Access;
+   use type Gade.Dev.CPU.CPU_Execution_State;
 
    type Opaque_Gade_Type is record
       GB     : Gade.GB.GB_Type;
@@ -70,7 +72,7 @@ package body Gade.Interfaces is
       begin
          while not Frame_Finished and Generated_Samples < Requested_Samples loop
             Instruction_Cycles := CPU_M_Cycles_Per_Audio_Sample;
-            if not G.GB.CPU.Halted then
+            if G.GB.CPU.Execution_State /= Gade.Dev.CPU.Halted then
                Gade.Dev.CPU.Exec.Execute (G.GB.CPU, G.GB, Instruction_Cycles);
             else
                Tick_M_Cycles (G.GB, Instruction_Cycles);

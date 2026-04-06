@@ -20,6 +20,11 @@ package body Gade.Dev.Interrupts is
         and Interrupt_Enable_Mask;
    end Pending_Interrupt_Mask;
 
+   function Has_Pending_Enabled_Interrupt (GB : Gade.GB.GB_Type) return Boolean is
+   begin
+      return Pending_Interrupt_Mask (GB) /= 0;
+   end Has_Pending_Enabled_Interrupt;
+
    function Interrupt_Set (Mask : Byte; Interrupt : Interrupt_Type) return Boolean is
       Register : constant Interrupt_Flag_Register_Type :=
         (Access_Type => Address, Reg => Mask);
@@ -108,7 +113,7 @@ package body Gade.Dev.Interrupts is
       GB.Interrupt_Flag.Map.Flags (Interrupt) := True;
       if GB.Interrupt_Enable.Map.Flags (Interrupt) then
          --  TODO: Handle CPU stopped with Joypad interrupt
-         GB.CPU.Halted := False;
+         GB.CPU.Execution_State := Running;
       end if;
    end Set_Interrupt;
 
@@ -143,7 +148,7 @@ package body Gade.Dev.Interrupts is
 
       --  Accept the interrupt and disable further servicing until the handler
       --  explicitly re-enables IME.
-      GB.CPU.Halted := False;
+      GB.CPU.Execution_State := Running;
       GB.CPU.IFF := IME_Disabled;
 
       --  Interrupt entry consumes two internal M-cycles before the stack
