@@ -1,12 +1,12 @@
 # Change Log
 
-## 0.2.0 - 2026-04-06
+## 0.2.0 - 2026-04-07
 
 `0.2.0` is an accuracy focused release; it mainly makes the existing CPU, timer, DMA, interrupt, and PPU behavior much more accurate and better covered by regression tests.
 
 ### Added
 
-- Expanded automated regression coverage with new or improved tests for Blargg's timing ROMs, `dmg-acid2`, Snorpung demos (`pocket.gb`, `oh.gb`, `gejmboj`), and `Pinball Fantasies` (`#53`, `#54`, `#65`, `#66`, `#67`, `#69`, `#72`).
+- Expanded automated regression coverage with new or improved tests for Blargg's timing ROMs, Mooneye interrupt timing (`di_timing-GS`, `intr_1_2_timing-GS`), `dmg-acid2`, Snorpung demos (`pocket.gb`, `oh.gb`, `gejmboj`), and `Pinball Fantasies` (`#53`, `#54`, `#65`, `#66`, `#67`, `#69`, `#72`, `#76`).
 - Added contributor tooling for staged Ada formatting checks and a pinned `gnatformat` bundle in CI (`#51`, `#63`).
 
 ### Changed
@@ -35,5 +35,3 @@ Initial Alire release.
 - Core devices and rendering support: joypad, timer, background layer, window layer, sprites, mid-scanline rendering, and audio.
 - Library-first architecture centered on the Ada core, with support for the `gade-testd` harness and the C/C++ interop layer.
 - Alire-based builds with `GADE_BUILD_MODE` and `GADE_LIBRARY_TYPE` scenario variables.
-
-
