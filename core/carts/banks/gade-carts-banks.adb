@@ -3,10 +3,7 @@ package body Gade.Carts.Banks is
    package body Memory_Bank_Mixin is
 
       procedure Initialize
-        (B       : out Memory_Bank'Class;
-         Content : Content_NN_Access;
-         Offset  : Address)
-      is
+        (B : out Memory_Bank'Class; Content : Content_NN_Access; Offset : Address) is
       begin
          B.Content := Content_Access (Content);
          B.Offset := Offset;
@@ -14,20 +11,12 @@ package body Gade.Carts.Banks is
       end Initialize;
 
       overriding
-      procedure Read
-        (B    : in out Memory_Bank;
-         Addr : Bank_Address;
-         V    : out Byte)
-      is
+      procedure Read (B : in out Memory_Bank; Addr : Bank_Address; V : out Byte) is
       begin
          V := B.Content (Decode (B, Addr));
       end Read;
 
-      function Decode
-        (B    : Memory_Bank'Class;
-         Addr : Bank_Address)
-         return Address
-      is
+      function Decode (B : Memory_Bank'Class; Addr : Bank_Address) return Address is
       begin
          return Address (Addr and B.Address_Mask) + B.Offset;
       end Decode;

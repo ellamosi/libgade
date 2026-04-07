@@ -4,8 +4,7 @@ private package Gade.Dev.Display.Handlers.HBlank is
    type HBlank_Handler_Access is access HBlank_Handler_Type;
 
    overriding
-   procedure Reset
-     (Mode_Handler : in out HBlank_Handler_Type);
+   procedure Reset (Mode_Handler : in out HBlank_Handler_Type);
 
    overriding
    procedure Start
@@ -15,8 +14,7 @@ private package Gade.Dev.Display.Handlers.HBlank is
 
    overriding
    procedure Mode_Finished
-     (Mode_Handler : in out HBlank_Handler_Type;
-      GB           : in out Gade.GB.GB_Type);
+     (Mode_Handler : in out HBlank_Handler_Type; GB : in out Gade.GB.GB_Type);
 
    overriding
    function Next_Mode

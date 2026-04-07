@@ -42,9 +42,7 @@ package body Testd.Sessions is
       end if;
    end Finalize;
 
-   function Process_Line
-     (S        : in out Session;
-      Raw_Line : String) return Boolean
+   function Process_Line (S : in out Session; Raw_Line : String) return Boolean
    is
       Line    : constant String := Trim (Raw_Line, Both);
       Pos     : Positive := 1;

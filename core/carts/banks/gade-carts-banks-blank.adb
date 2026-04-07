@@ -1,11 +1,7 @@
 package body Gade.Carts.Banks.Blank is
 
    overriding
-   procedure Read
-     (B       : in out Blank_Bank;
-      Address : Bank_Address;
-      V       : out Byte)
-   is
+   procedure Read (B : in out Blank_Bank; Address : Bank_Address; V : out Byte) is
       pragma Unreferenced (B, Address);
    begin
       V := Blank_Value;

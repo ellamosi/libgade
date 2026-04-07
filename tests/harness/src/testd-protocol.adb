@@ -71,9 +71,11 @@ package body Testd.Protocol is
          if C in '0' .. '9' then
             Digit := Unsigned_16 (Character'Pos (C) - Character'Pos ('0'));
          elsif C in 'a' .. 'f' then
-            Digit := Unsigned_16 (10 + Character'Pos (C) - Character'Pos ('a'));
+            Digit :=
+              Unsigned_16 (10 + Character'Pos (C) - Character'Pos ('a'));
          elsif C in 'A' .. 'F' then
-            Digit := Unsigned_16 (10 + Character'Pos (C) - Character'Pos ('A'));
+            Digit :=
+              Unsigned_16 (10 + Character'Pos (C) - Character'Pos ('A'));
          else
             return False;
          end if;

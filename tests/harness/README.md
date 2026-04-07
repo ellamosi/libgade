@@ -124,7 +124,7 @@ certain number of frames.
 > PING
 < OK
 
-> LOAD assets/roms/mooneye/lcd_lyc.gb
+> LOAD assets/roms/misc/lcd_lyc.gb
 < OK
 
 > RUN 2

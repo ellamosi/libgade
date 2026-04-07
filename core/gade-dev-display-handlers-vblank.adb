@@ -3,9 +3,7 @@ with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 package body Gade.Dev.Display.Handlers.VBlank is
 
    overriding
-   procedure Reset
-     (Mode_Handler : in out VBlank_Handler_Type)
-   is
+   procedure Reset (Mode_Handler : in out VBlank_Handler_Type) is
    begin
       Mode_Handler_Type (Mode_Handler).Reset;
       Mode_Handler.Remaining_Cycles := Mode_Cycles;
@@ -16,8 +14,7 @@ package body Gade.Dev.Display.Handlers.VBlank is
    procedure Start
      (Mode_Handler : in out VBlank_Handler_Type;
       GB           : in out Gade.GB.GB_Type;
-      Video        : RGB32_Display_Buffer_Access)
-   is
+      Video        : RGB32_Display_Buffer_Access) is
    begin
       Mode_Handler_Type (Mode_Handler).Start (GB, Video);
       Mode_Handler.Dev.Frame_Finished := True;
@@ -42,9 +39,9 @@ package body Gade.Dev.Display.Handlers.VBlank is
       while Remaining_Cycles > 0 and not Mode_Handler.Finished loop
          Remaining_Line_Cycles := Mode_Handler.Remaining_Line_Cycles - Remaining_Cycles;
 
-         if Remaining_Line_Cycles <= 440 and
-           Display_Handler.Current_Line = 153 and
-           Display_Handler.Dev.Map.CURLINE = 153
+         if Remaining_Line_Cycles <= 440
+           and Display_Handler.Current_Line = 153
+           and Display_Handler.Dev.Map.CURLINE = 153
          then
             --  Early LY=0/LYC interrupt
             Display_Handler.Dev.Line_Changed (GB, 0);
@@ -61,6 +58,8 @@ package body Gade.Dev.Display.Handlers.VBlank is
                Mode_Handler.Finished := True;
                New_Line := 0;
                Display_Handler.Current_Line := New_Line;
+               Display_Handler.Window_Line_Counter := 0;
+               Display_Handler.Window_Line_Active := False;
             end if;
          else
             --  Not exhausted line cycles
@@ -71,8 +70,8 @@ package body Gade.Dev.Display.Handlers.VBlank is
    end Report_Cycles;
 
    overriding
-   function Next_Mode
-     (Mode_Handler : VBlank_Handler_Type) return LCD_Controller_Mode_Type is
+   function Next_Mode (Mode_Handler : VBlank_Handler_Type) return LCD_Controller_Mode_Type
+   is
       pragma Unreferenced (Mode_Handler);
    begin
       return Gade.Dev.Display.OAM_Access;

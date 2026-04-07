@@ -6,8 +6,8 @@ package body Testd.Input is
    use type Interfaces.Unsigned_8;
 
    overriding
-   function Read_Input
-     (Reader : Manual_Input_Reader) return Gade.Input.State is
+   function Read_Input (Reader : Manual_Input_Reader) return Gade.Input.State
+   is
    begin
       return Reader.State;
    end Read_Input;
@@ -23,31 +23,39 @@ package body Testd.Input is
       Pressed : Boolean) is
    begin
       case Button is
-         when Button_A =>
+         when Button_A      =>
             Reader.State.A := Pressed;
-         when Button_B =>
+
+         when Button_B      =>
             Reader.State.B := Pressed;
+
          when Button_Select =>
             Reader.State.SEL := Pressed;
-         when Button_Start =>
+
+         when Button_Start  =>
             Reader.State.START := Pressed;
-         when Button_Right =>
+
+         when Button_Right  =>
             Reader.State.RIGHT := Pressed;
-         when Button_Left =>
+
+         when Button_Left   =>
             Reader.State.LEFT := Pressed;
-         when Button_Up =>
+
+         when Button_Up     =>
             Reader.State.UP := Pressed;
-         when Button_Down =>
+
+         when Button_Down   =>
             Reader.State.DOWN := Pressed;
       end case;
    end Set_Button;
 
    procedure Set_State_From_Mask
-     (Reader : in out Manual_Input_Reader;
-      Mask   : Interfaces.Unsigned_8) is
+     (Reader : in out Manual_Input_Reader; Mask : Interfaces.Unsigned_8)
+   is
       function Is_Set (Bit : Natural) return Boolean is
       begin
-         return (Mask and Interfaces.Shift_Left (Interfaces.Unsigned_8 (1), Bit))
+         return
+           (Mask and Interfaces.Shift_Left (Interfaces.Unsigned_8 (1), Bit))
            /= 0;
       end Is_Set;
    begin
@@ -62,19 +70,20 @@ package body Testd.Input is
    end Set_State_From_Mask;
 
    function Parse_Button
-     (Name   : String;
-      Button : out Button_Name) return Boolean
+     (Name : String; Button : out Button_Name) return Boolean
    is
       Upper : constant String := To_Upper (Name);
    begin
-      if Upper = "SEL" then -- Alias
+      if Upper = "SEL" then
+         -- Alias
          Button := Button_Select;
       else
          Button := Button_Name'Value ("Button_" & Upper);
       end if;
       return True;
    exception
-      when Constraint_Error => return False;
+      when Constraint_Error =>
+         return False;
    end Parse_Button;
 
 end Testd.Input;

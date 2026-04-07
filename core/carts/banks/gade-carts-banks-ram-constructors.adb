@@ -1,8 +1,7 @@
 package body Gade.Carts.Banks.RAM.Constructors is
 
    function Create
-     (Content : RAM_Content_NN_Access;
-      Offset  : RAM_Address) return RAM_Bank_NN_Access
+     (Content : RAM_Content_NN_Access; Offset : RAM_Address) return RAM_Bank_NN_Access
    is
       Result : constant RAM_Bank_NN_Access := new RAM_Bank;
    begin
@@ -11,10 +10,7 @@ package body Gade.Carts.Banks.RAM.Constructors is
    end Create;
 
    procedure Initialize
-     (B       : out RAM_Bank'Class;
-      Content : RAM_Content_NN_Access;
-      Offset  : RAM_Address)
-   is
+     (B : out RAM_Bank'Class; Content : RAM_Content_NN_Access; Offset : RAM_Address) is
    begin
       RAM_Memory_Banks.Initialize (B, Content, Offset);
    end Initialize;

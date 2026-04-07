@@ -11,8 +11,7 @@ package body Testd.Commands.Dispatch is
      (S       : in out Session;
       Command : String;
       Line    : String;
-      Pos     : in out Positive) return Boolean
-   is
+      Pos     : in out Positive) return Boolean is
    begin
       if Command = "PING" then
          Testd.Sessions.Reply_OK;

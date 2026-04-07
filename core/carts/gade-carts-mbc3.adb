@@ -8,36 +8,35 @@ package body Gade.Carts.MBC3 is
    begin
       MBC_Cart (C).Reset;
       C.Last_Latch_Value := Initial_Latch_Value;
-      if C.RTC /= null then Reset (C.RTC.all); end if;
+      if C.RTC /= null then
+         Reset (C.RTC.all);
+      end if;
    end Reset;
 
    overriding
-   procedure Load_RAM_File
-     (C    : in out MBC3_Cart;
-      File : Ada.Streams.Stream_IO.File_Type)
+   procedure Load_RAM_File (C : in out MBC3_Cart; File : Ada.Streams.Stream_IO.File_Type)
    is
       use Gade.Carts.RTC.File_IO;
    begin
       Banked_RAM_Mixin.Banked_RAM_Cart (C).Load_RAM_File (File);
-      if C.RTC /= null then Load (Logger_Of (C), C.RTC.all, File); end if;
+      if C.RTC /= null then
+         Load (Logger_Of (C), C.RTC.all, File);
+      end if;
    end Load_RAM_File;
 
    overriding
-   procedure Save_RAM_File
-     (C    : in out MBC3_Cart;
-      File : Ada.Streams.Stream_IO.File_Type)
+   procedure Save_RAM_File (C : in out MBC3_Cart; File : Ada.Streams.Stream_IO.File_Type)
    is
       use Gade.Carts.RTC.File_IO;
    begin
       Banked_RAM_Mixin.Banked_RAM_Cart (C).Save_RAM_File (File);
-      if C.RTC /= null then Save (Logger_Of (C), C.RTC.all, File); end if;
+      if C.RTC /= null then
+         Save (Logger_Of (C), C.RTC.all, File);
+      end if;
    end Save_RAM_File;
 
    overriding
-   procedure Write_Special
-     (C       : in out MBC3_Cart;
-      Value   : Byte)
-   is
+   procedure Write_Special (C : in out MBC3_Cart; Value : Byte) is
       Latch_Sequence_Completed : constant Boolean :=
         [C.Last_Latch_Value, Value] = Latch_Sequence;
    begin
@@ -49,10 +48,7 @@ package body Gade.Carts.MBC3 is
 
    overriding
    procedure Select_Bank
-     (C       : in out MBC3_Cart;
-      Address : Bank_Select_Address;
-      Value   : Byte)
-   is
+     (C : in out MBC3_Cart; Address : Bank_Select_Address; Value : Byte) is
    begin
       if Address in ROM_Bank_Select_Address then
          C.Select_ROM_Bank (Value);
@@ -74,12 +70,11 @@ package body Gade.Carts.MBC3 is
    end Select_RAM_Bank;
 
    overriding
-   procedure Report_Cycles
-     (C      : in out MBC3_Cart;
-      Cycles : Positive)
-   is
+   procedure Report_Cycles (C : in out MBC3_Cart; Cycles : M_Cycle_Count) is
    begin
-      if C.RTC /= null then Report_Cycles (C.RTC.all, Cycles); end if;
+      if C.RTC /= null then
+         Report_Cycles (C.RTC.all, Cycles);
+      end if;
    end Report_Cycles;
 
 end Gade.Carts.MBC3;

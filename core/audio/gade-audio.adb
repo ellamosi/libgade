@@ -16,8 +16,7 @@ use Gade.Audio.Channels,
 
 package body Gade.Audio is
 
-   function To_Channel_Register (Address : Audio_IO_Address)
-                                 return Channel_Register;
+   function To_Channel_Register (Address : Audio_IO_Address) return Channel_Register;
 
    type Opaque_Audio_Type is record
       Square_1 : aliased Sweeping_Square_Channel;
@@ -31,14 +30,14 @@ package body Gade.Audio is
       Powered       : Boolean;
       Power_Control : Power_Control_Status;
 
-      Elapsed_Cycles : Natural;
+      --  The APU outer scheduler consumes one sample step per M-cycle.
+      Elapsed_Cycles : M_Cycle_Count;
 
       Clean : Boolean;
    end record;
 
-   procedure Create
-     (Audio  : aliased out Audio_Type;
-      Logger : Gade.Logging.Logger_Access) is
+   procedure Create (Audio : aliased out Audio_Type; Logger : Gade.Logging.Logger_Access)
+   is
    begin
       Audio := new Opaque_Audio_Type;
 
@@ -80,96 +79,95 @@ package body Gade.Audio is
       Audio.Clean := True;
    end Reset;
 
-   function To_Channel_Register (Address : Audio_IO_Address)
-                                 return Channel_Register
-   is
+   function To_Channel_Register (Address : Audio_IO_Address) return Channel_Register is
       Rebased_Address : constant Word := Address - Audio_IO_Address'First;
-      Register_Index : Word;
+      Register_Index  : Word;
    begin
       Register_Index := Rebased_Address mod Channel_Register_Count;
       return Channel_Register'Val (Register_Index);
    end To_Channel_Register;
 
-   procedure Read (Audio   : in out Audio_Type;
-                   Address : Audio_IO_Address;
-                   Value   : out Byte) is
+   procedure Read
+     (Audio : in out Audio_Type; Address : Audio_IO_Address; Value : out Byte) is
    begin
       Value :=
         (case Address is
-            when NR1x_IO_Address =>
-              Audio.Square_1.Read (To_Channel_Register (Address)),
-            when NR2x_IO_Address =>
-              Audio.Square_2.Read (To_Channel_Register (Address)),
-            when NR3x_IO_Address =>
-              Audio.Wave.Read (To_Channel_Register (Address)),
-            when NR4x_IO_Address =>
-              Audio.Noise.Read (To_Channel_Register (Address)),
-            when NR50_IO_Address =>
-              Audio.Mixer.Read_NR50,
-            when NR51_IO_Address =>
-              Audio.Mixer.Read_NR51,
-            when NR52_IO_Address =>
-              Read_Power_Control_Status (Audio),
-            when Wave_Table_IO_Address =>
-              Audio.Wave.Read_Table (Address),
-            when others =>
-              Blank_Value);
---        if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
---          Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
---        then
---           Put ("Read @");
---           Put (Integer (Address), Base => 16, Width => 0);
---           Put (' ');
---           Put (Integer (Value), Base => 16, Width => 0);
---           New_Line;
---        end if;
+           when NR1x_IO_Address       =>
+             Audio.Square_1.Read (To_Channel_Register (Address)),
+           when NR2x_IO_Address       =>
+             Audio.Square_2.Read (To_Channel_Register (Address)),
+           when NR3x_IO_Address       => Audio.Wave.Read (To_Channel_Register (Address)),
+           when NR4x_IO_Address       => Audio.Noise.Read (To_Channel_Register (Address)),
+           when NR50_IO_Address       => Audio.Mixer.Read_NR50,
+           when NR51_IO_Address       => Audio.Mixer.Read_NR51,
+           when NR52_IO_Address       => Read_Power_Control_Status (Audio),
+           when Wave_Table_IO_Address => Audio.Wave.Read_Table (Address),
+           when others                => Blank_Value);
+   --        if Address not in NR2_IO_Address and Address not in NR3_IO_Address and
+   --          Address not in NR4_IO_Address and Address not in Wave_Table_IO_Address
+   --        then
+   --           Put ("Read @");
+   --           Put (Integer (Address), Base => 16, Width => 0);
+   --           Put (' ');
+   --           Put (Integer (Value), Base => 16, Width => 0);
+   --           New_Line;
+   --        end if;
    end Read;
 
-   procedure Write (Audio   : in out Audio_Type;
-                    Address : Audio_IO_Address;
-                    Value   : Byte) is
+   procedure Write (Audio : in out Audio_Type; Address : Audio_IO_Address; Value : Byte)
+   is
    begin
---        if Address not in NR2x_IO_Address and Address not in NR3x_IO_Address and
---          Address not in NR4x_IO_Address and Address not in Wave_Table_IO_Address
---        then
---           Put ("Write @");
---           Put (Integer (Address), Base => 16, Width => 0);
---           Put (' ');
---           Put (Integer (Value), Base => 16, Width => 0);
---           New_Line;
---        end if;
+      --        if Address not in NR2x_IO_Address and Address not in NR3x_IO_Address and
+      --          Address not in NR4x_IO_Address and Address not in Wave_Table_IO_Address
+      --        then
+      --           Put ("Write @");
+      --           Put (Integer (Address), Base => 16, Width => 0);
+      --           Put (' ');
+      --           Put (Integer (Value), Base => 16, Width => 0);
+      --           New_Line;
+      --        end if;
 
       case Address is
-         when NR1x_IO_Address =>
+         when NR1x_IO_Address       =>
             Audio.Square_1.Write (To_Channel_Register (Address), Value);
-         when NR2x_IO_Address =>
+
+         when NR2x_IO_Address       =>
             Audio.Square_2.Write (To_Channel_Register (Address), Value);
-         when NR3x_IO_Address =>
+
+         when NR3x_IO_Address       =>
             Audio.Wave.Write (To_Channel_Register (Address), Value);
-         when NR4x_IO_Address =>
+
+         when NR4x_IO_Address       =>
             Audio.Noise.Write (To_Channel_Register (Address), Value);
-         when NR50_IO_Address =>
+
+         when NR50_IO_Address       =>
             Audio.Mixer.Write_NR50 (Value);
-         when NR51_IO_Address =>
+
+         when NR51_IO_Address       =>
             Audio.Mixer.Write_NR51 (Value);
-         when NR52_IO_Address =>
+
+         when NR52_IO_Address       =>
             Write_Power_Control_Status (Audio, Value);
+
          when Wave_Table_IO_Address =>
             Audio.Wave.Write_Table (Address, Value);
-         when others => null;
+
+         when others                =>
+            null;
       end case;
 
       Audio.Clean := False;
    end Write;
 
-   procedure Report_Cycles (Audio        : in out Audio_Type;
-                            Audio_Buffer : Audio_Buffer_Access;
-                            Cycles       : Positive)
+   procedure Report_Cycles
+     (Audio        : in out Audio_Type;
+      Audio_Buffer : Audio_Buffer_Access;
+      Cycles       : M_Cycle_Count)
    is
-      Target_Cycles : constant Natural := Audio.Elapsed_Cycles + Cycles / 4;
+      Target_Cycles : constant M_Cycle_Count := Audio.Elapsed_Cycles + Cycles;
    begin
       while Audio.Elapsed_Cycles < Target_Cycles loop
-         Audio_Buffer (Audio.Elapsed_Cycles) := Audio.Mixer.Next_Sample;
+         Audio_Buffer (Natural (Audio.Elapsed_Cycles)) := Audio.Mixer.Next_Sample;
 
          Audio.Frame_Sequencer.Tick;
 
@@ -187,9 +185,7 @@ package body Gade.Audio is
       return Audio.Power_Control.Space;
    end Read_Power_Control_Status;
 
-   procedure Write_Power_Control_Status (Audio : in out Audio_Type;
-                                         Value : Byte)
-   is
+   procedure Write_Power_Control_Status (Audio : in out Audio_Type; Value : Byte) is
       New_Power_State : Boolean;
    begin
       Audio.Power_Control.Space := Value or Power_Control_Status_Write_Mask;
@@ -212,9 +208,10 @@ package body Gade.Audio is
       Audio.Powered := New_Power_State;
    end Write_Power_Control_Status;
 
-   procedure Flush_Frame (Audio        : in out Audio_Type;
-                          Audio_Buffer : Audio_Buffer_Access;
-                          Cycles       : Positive)
+   procedure Flush_Frame
+     (Audio        : in out Audio_Type;
+      Audio_Buffer : Audio_Buffer_Access;
+      Cycles       : M_Cycle_Count)
    is
       pragma Unreferenced (Cycles, Audio_Buffer);
    begin
@@ -223,8 +220,7 @@ package body Gade.Audio is
       Audio.Clean := True;
    end Flush_Frame;
 
-   function Frame_Sequencer_State (Audio : Audio_Type)
-                                   return Frame_Sequencer.State is
+   function Frame_Sequencer_State (Audio : Audio_Type) return Frame_Sequencer.State is
    begin
       return Audio.Frame_Sequencer.Current_State;
    end Frame_Sequencer_State;

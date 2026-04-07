@@ -4,6 +4,7 @@
 *.db
 *.db-shm
 *.db-wal
+__pycache__/
 *.ali
 *.o
 *.a
@@ -22,9 +23,13 @@ bin/
 tests/obj/
 tests/bin/
 tests/.rom-cache/
-tests/assets/roms/blargg/
-tests/assets/roms/mooneye/
 tests/assets/roms/commercial/
+tests/assets/roms/commercial/
+tests/assets/roms/blargg/
+tests/assets/roms/mattcurrie/
+tests/assets/roms/mattcurrie/
+tests/assets/roms/mooneye/
+tests/assets/roms/snorpung/
 tests/secrets.env
 lib/
 .vscode/*

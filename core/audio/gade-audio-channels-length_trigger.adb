@@ -3,7 +3,7 @@ with Gade.Audio.Frame_Sequencer; use Gade.Audio.Frame_Sequencer;
 separate (Gade.Audio.Channels)
 package body Length_Trigger is
 
-   Max_Length : constant Natural := 2 ** Length_Bits;
+   Max_Length : constant Natural := 2**Length_Bits;
 
    NRx1_Length_Mask : constant Byte := Byte (Max_Length - 1);
 
@@ -13,28 +13,27 @@ package body Length_Trigger is
       Trigger       : Boolean;
       Length_Enable : Boolean;
    end record;
-   for NRx4_Common_IO use record
-      Trigger       at 0 range 7 .. 7;
-      Length_Enable at 0 range 6 .. 6;
-   end record;
+   for NRx4_Common_IO use
+     record
+       Trigger at 0 range 7 .. 7;
+       Length_Enable at 0 range 6 .. 6;
+     end record;
    for NRx4_Common_IO'Size use 8;
 
-   function To_NRx4_Common_IO is new Ada.Unchecked_Conversion
-     (Source => Byte,
-      Target => NRx4_Common_IO);
+   function To_NRx4_Common_IO is new
+     Ada.Unchecked_Conversion (Source => Byte, Target => NRx4_Common_IO);
 
    procedure Length_Triggered_Disable (Channel : in out Length_Trigger_Channel);
 
    function Last_Step_Triggered_Length (Audio : Audio_Type) return Boolean;
 
-   procedure Tick_Notify_Length_Step is new Tick_Notify
-     (Observer_Type => Length_Trigger_Channel,
-      Notify        => Length_Triggered_Disable);
+   procedure Tick_Notify_Length_Step is new
+     Tick_Notify
+       (Observer_Type => Length_Trigger_Channel,
+        Notify        => Length_Triggered_Disable);
 
    overriding
-   procedure Disable
-     (Channel : in out Length_Trigger_Channel;
-      Mode    : Disable_Mode) is
+   procedure Disable (Channel : in out Length_Trigger_Channel; Mode : Disable_Mode) is
    begin
       --  GNAT 15.2 ICE workaround: prefixed call
       --  "Parent (Channel).Disable (Mode)" crashes the compiler here.
@@ -60,10 +59,7 @@ package body Length_Trigger is
    end Read_NRx4;
 
    overriding
-   procedure Write_NRx1
-     (Channel : in out Length_Trigger_Channel;
-      Value   : Byte)
-   is
+   procedure Write_NRx1 (Channel : in out Length_Trigger_Channel; Value : Byte) is
       Input_Value  : constant Natural := Natural (Value and NRx1_Length_Mask);
       Length_Value : constant Positive := Max_Length - Input_Value;
    begin
@@ -71,10 +67,7 @@ package body Length_Trigger is
    end Write_NRx1;
 
    overriding
-   procedure Write_NRx4
-     (Channel : in out Length_Trigger_Channel;
-      Value   : Byte)
-   is
+   procedure Write_NRx4 (Channel : in out Length_Trigger_Channel; Value : Byte) is
       Length : Length_Details renames Channel.Length;
 
       NRx4_In : constant NRx4_Common_IO := To_NRx4_Common_IO (Value);
@@ -83,8 +76,7 @@ package body Length_Trigger is
       Length_Enable : constant Boolean := NRx4_In.Length_Enable;
 
       Timer_Was_Enabled : constant Boolean := Length.Timer.Is_Enabled;
-      Is_Length_Step    : constant Boolean :=
-        Last_Step_Triggered_Length (Channel.Audio);
+      Is_Length_Step    : constant Boolean := Last_Step_Triggered_Length (Channel.Audio);
 
       --  The timer will stop ticking once it reaches 0, but the length
       --  enable flag will remain on. Need to check timer state and not previous
@@ -134,8 +126,7 @@ package body Length_Trigger is
       end if;
    end Write_NRx4;
 
-   procedure Length_Triggered_Disable
-     (Channel : in out Length_Trigger_Channel) is
+   procedure Length_Triggered_Disable (Channel : in out Length_Trigger_Channel) is
    begin
       Length_Trigger_Channel'Class (Channel).Disable (Self_Disable);
    end Length_Triggered_Disable;

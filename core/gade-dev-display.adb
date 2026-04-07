@@ -1,10 +1,11 @@
-with System;              use System;
+with System; use System;
 
 with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 with Gade.GB;             use Gade.GB;
 with Gade.GB.Memory_Map;  use Gade.GB.Memory_Map;
 with Gade.Dev.OAM;        use Gade.Dev.OAM;
 with Gade.Dev.Display.Handlers;
+with Gade.Timing;         use Gade.Timing;
 
 package body Gade.Dev.Display is
 
@@ -25,6 +26,7 @@ package body Gade.Dev.Display is
       Display.Map.SCROLLX := 0;
       Display.Map.SCROLLY := 0;
       Display.DMA_Copy_Ongoing := False;
+      Display.STAT_Interrupt_Line := False;
       Display.Display_Handler.Reset;
    end Reset;
 
@@ -33,10 +35,15 @@ package body Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : out Byte) is
+      Value   : out Byte)
+   is
       pragma Unreferenced (GB);
    begin
-      Value := Display.Map.Space (Address);
+      if Display.Map.Space (Address)'Address = Display.Map.STAT'Address then
+         Value := Display.Map.Space (Address) or 16#80#;
+      else
+         Value := Display.Map.Space (Address);
+      end if;
    end Read;
 
    overriding
@@ -44,10 +51,13 @@ package body Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : Byte) is
-      pragma Unreferenced (GB);
-      Old_Value : LCD_Control;
+      Value   : Byte)
+   is
+      Old_Value   : LCD_Control;
+      Coincidence : Boolean;
    begin
+      Gade.Dev.Display.Handlers.Notify_Display_Write
+        (Display.Display_Handler.all, Address, Value);
       if Display.Map.Space (Address)'Address = Display.Map.LCDC'Address then
          Old_Value := Display.Map.LCDC;
          Display.Map.Space (Address) := Value;
@@ -59,24 +69,36 @@ package body Gade.Dev.Display is
       elsif Display.Map.Space (Address)'Address = Display.Map.DMA'Address then
          Display.DMA_Source_Address := Word (Value) * 2**8;
          Display.DMA_Target_Address := OAM_IO_Address'First;
-         Display.DMA_Clocks_Since_Last_Copy := -4; -- Setup clocks
+         --  OAM DMA starts on the next M-cycle after the triggering write.
+         Display.DMA_Clocks_Since_Last_Copy := 1;
+      elsif Display.Map.Space (Address)'Address = Display.Map.STAT'Address then
+         Display.Map.Space (Address) :=
+           (Display.Map.Space (Address) and 2#0000_0111#) or (Value and 2#0111_1000#);
+         Update_STAT_Interrupt_Line (Display, GB);
+         return;
       elsif Display.Map.Space (Address)'Address = Display.Map.CURLINE'Address then
-         --  Reset the scanline rendering ?!
-         null;
+         Display.Map.CURLINE := 0;
+         Coincidence := Display.Map.CURLINE = Natural (Display.Map.CMPLINE);
+         Display.Map.STAT.Scanline_Coincidence := Coincidence;
+         Update_STAT_Interrupt_Line (Display, GB);
+         return;
+      elsif Display.Map.Space (Address)'Address = Display.Map.CMPLINE'Address then
+         Display.Map.Space (Address) := Value;
+         Coincidence := Display.Map.CURLINE = Natural (Display.Map.CMPLINE);
+         Display.Map.STAT.Scanline_Coincidence := Coincidence;
+         Update_STAT_Interrupt_Line (Display, GB);
+         return;
       end if;
       Display.Map.Space (Address) := Value;
    end Write;
 
-   procedure Do_DMA
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type) is
+   procedure Do_DMA (Display : in out Display_Type; GB : in out Gade.GB.GB_Type) is
       B : Byte;
    begin
       if Display.DMA_Target_Address in OAM_IO_Address then
-         Display.DMA_Clocks_Since_Last_Copy :=
-           Display.DMA_Clocks_Since_Last_Copy + 1;
-         if Display.DMA_Clocks_Since_Last_Copy = 4 then
-            Display.DMA_Clocks_Since_Last_Copy := 0;
+         if Display.DMA_Clocks_Since_Last_Copy > 0 then
+            Display.DMA_Clocks_Since_Last_Copy := Display.DMA_Clocks_Since_Last_Copy - 1;
+         else
             Read_Byte (GB, Display.DMA_Source_Address, B);
             --  TODO: Optimize this by accessing directly to the OAM buffer?
             --  Will definitely need to do this when implementing VRAM/OAM locks
@@ -91,14 +113,15 @@ package body Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Video   : RGB32_Display_Buffer_Access;
-      Cycles  : Positive) is
+      Cycles  : M_Cycle_Count)
+   is
+      --  The public scheduler is normalized to M-cycles, but the LCD mode
+      --  handlers still use legacy T-cycle timing tables and caches.
+      Handler_Cycles : constant Natural := Natural (To_T_Cycles (Cycles));
    begin
       if Display.Map.LCDC.LCD_Operation then
          Gade.Dev.Display.Handlers.Report_Cycles
-           (Display.Display_Handler.all,
-            GB,
-            Video,
-            Cycles);
+           (Display.Display_Handler.all, GB, Video, Handler_Cycles);
       elsif not Display.Map.LCDC.LCD_Operation and Display.Frame_Finished then
          --  Blank LCD when disabled, this might need to be revisited
          --  It could likely be implemented in a Disabled handler
@@ -107,36 +130,53 @@ package body Gade.Dev.Display is
       Do_DMA (Display, GB);
    end Report_Cycles;
 
-   procedure Check_Frame_Finished
-     (Display  : in out Display_Type;
-      Finished : out Boolean) is
+   procedure Check_Frame_Finished (Display : in out Display_Type; Finished : out Boolean)
+   is
    begin
       Finished := Display.Frame_Finished;
       Display.Frame_Finished := False;
    end Check_Frame_Finished;
 
-   procedure Mode_Changed
-     (Display : in out Display_Type;
-      GB      : in out GB_Type;
-      Mode    : LCD_Controller_Mode_Type) is
-      Mode_Interrupt : Boolean;
+   function DMA_Active (Display : Display_Type) return Boolean is
    begin
-      Display.Map.STAT.LCD_Controller_Mode := Mode;
-      Mode_Interrupt :=
-        (case Mode is
-            when HBlank     => Display.Map.STAT.Interrupt_HBlank,
-            when VBlank     => Display.Map.STAT.Interrupt_VBlank,
-            when OAM_Access => Display.Map.STAT.Interrupt_OAM_Access,
-            when others     => False);
-      if Mode_Interrupt then
+      return Display.DMA_Target_Address in OAM_IO_Address;
+   end DMA_Active;
+
+   function STAT_Interrupt_Line_Active (Display : Display_Type) return Boolean is
+      Mode_Interrupt : constant Boolean :=
+        (case Display.Map.STAT.LCD_Controller_Mode is
+           when HBlank      => Display.Map.STAT.Interrupt_HBlank,
+           when VBlank      => Display.Map.STAT.Interrupt_VBlank,
+           when OAM_Access  => Display.Map.STAT.Interrupt_OAM_Access,
+           when VRAM_Access => False);
+   begin
+      return
+        Mode_Interrupt
+        or else (Display.Map.STAT.Scanline_Coincidence
+                 and Display.Map.STAT.Interrupt_Scanline_Coincidence);
+   end STAT_Interrupt_Line_Active;
+
+   procedure Update_STAT_Interrupt_Line
+     (Display : in out Display_Type; GB : in out Gade.GB.GB_Type)
+   is
+      Active : constant Boolean := STAT_Interrupt_Line_Active (Display);
+   begin
+      if Active and not Display.STAT_Interrupt_Line then
          Set_Interrupt (GB, LCDC_Interrupt);
       end if;
+      Display.STAT_Interrupt_Line := Active;
+   end Update_STAT_Interrupt_Line;
+
+   procedure Mode_Changed
+     (Display : in out Display_Type; GB : in out GB_Type; Mode : LCD_Controller_Mode_Type)
+   is
+   begin
+      Display.Map.STAT.LCD_Controller_Mode := Mode;
+      Update_STAT_Interrupt_Line (Display, GB);
    end Mode_Changed;
 
    procedure Line_Changed
-     (Display : in out Display_Type;
-      GB      : in out GB_Type;
-      Line    : Line_Count_Type)
+     (Display : in out Display_Type; GB : in out GB_Type; Line : Line_Count_Type)
    is
       Coincidence : Boolean;
    begin
@@ -145,9 +185,7 @@ package body Gade.Dev.Display is
       Display.Map.CURLINE := Line;
       Coincidence := Line = Natural (Display.Map.CMPLINE);
       Display.Map.STAT.Scanline_Coincidence := Coincidence;
-      if Coincidence and Display.Map.STAT.Interrupt_Scanline_Coincidence then
-         Set_Interrupt (GB, LCDC_Interrupt);
-      end if;
+      Update_STAT_Interrupt_Line (Display, GB);
    end Line_Changed;
 
 end Gade.Dev.Display;

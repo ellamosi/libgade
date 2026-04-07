@@ -4,7 +4,7 @@ with Gade.Carts.Banks.Pools;
 package Gade.Carts.Mixins.Banked is
 
    generic
-      Banks            : in Positive;
+      Banks : in Positive;
       Accessible_Banks : in Positive;
       type Address_Space is new Word;
       type Content_Size is range <>;
@@ -37,12 +37,13 @@ private
    package Banked_Space_Carts is
       use BS;
 
-      Address_Space_Bit_Size : constant Positive := Bit_Size (Address_Space_Size);
+      Address_Space_Bit_Size         : constant Positive := Bit_Size (Address_Space_Size);
       Accessible_Bank_Index_Bit_Size : constant Natural := Bit_Size (Accessible_Banks);
 
       Space_Address_Mask     : constant Word := Word (Address_Space_Size - 1);
       Bank_Address_Mask      : constant Word := Word (Bank_Size - 1);
-      Accessible_Index_Shift : constant Natural := Address_Space_Bit_Size - Accessible_Bank_Index_Bit_Size;
+      Accessible_Index_Shift : constant Natural :=
+        Address_Space_Bit_Size - Accessible_Bank_Index_Bit_Size;
 
       --  Accessible_Banks / Bank_Access should be defined in a more concrete level
       --  of the implementation, to be able to prevent dispatching when accessing

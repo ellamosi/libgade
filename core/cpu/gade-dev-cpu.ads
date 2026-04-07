@@ -1,0 +1,94 @@
+with Gade.Timing;
+
+package Gade.Dev.CPU is
+
+   type CPU_Flag is new Boolean;
+
+   type CPU_Flags is record
+      C : CPU_Flag;
+      --  Carry Flag
+      N : CPU_Flag;
+      --  Add/Subtract
+      H : CPU_Flag;
+      --  Half_Carry
+      Z : CPU_Flag;
+      --  Zero Flag
+   end record;
+
+   --------------------
+   -- 15..8 --  7..0 --
+   --------------------
+   --   A   --   F   --
+   --   B   --   C   --
+   --   D   --   E   --
+   --   H   --   L   --
+   --       SP       --
+   --       PC       --
+   --------------------
+
+   type Register_Width is (Half, Full);
+   type CPU_Registers (Width : Register_Width := Half) is record
+      SP : Word;
+      case Width is
+         when Half =>
+            F                   : CPU_Flags;
+            A, C, B, E, D, L, H : Byte;
+
+         when Full =>
+            AF, BC, DE, HL : Word;
+      end case;
+   end record
+   with Unchecked_Union;
+
+   --  EI does not enable IME immediately; this transient state records that
+   --  IME must become active after the current instruction completes.
+   type Interrupt_Master_Enable_State is (IME_Disabled, IME_Enable_Pending, IME_Enabled);
+
+   --  Running covers normal execution, Halted stalls the CPU until an enabled
+   --  interrupt wakes it, and Halt_Bug_Pending latches the one-fetch PC
+   --  suppression caused by the classic HALT bug.
+   type CPU_Execution_State is (Running, Halted, Halt_Bug_Pending);
+
+   type CPU_Context is tagged record
+      Regs            : CPU_Registers;
+      PC              : Word;
+      IFF             : Interrupt_Master_Enable_State; -- Interrupt Flipflops
+      Execution_State : CPU_Execution_State := Running;
+      Branch_Taken    : Boolean;
+      Stepped_Cycles  : Gade.Timing.M_Cycle_Count := 0;
+   end record;
+
+   type P_CPU_Context is access CPU_Context;
+
+   procedure Reset (ctxt : in out CPU_Context);
+
+   procedure Set (Flag : in out CPU_Flag);
+   pragma Inline (Set);
+
+   procedure Set_Value (Flag : in out CPU_Flag; Value : in Boolean);
+   pragma Inline (Set_Value);
+
+   procedure Reset (Flag : in out CPU_Flag);
+   pragma Inline (Reset);
+
+   function Is_Set (Flag : CPU_Flag) return Boolean;
+   pragma Inline (Is_Set);
+
+   type Condition_Type is (C_Z, C_NZ, C_C, C_NC);
+
+   function Check_Condition (CPU : CPU_Context; cond : Condition_Type) return Boolean;
+
+   function Get_Flags_String (CPU : CPU_Context) return String;
+
+private
+
+   for CPU_Flags use
+     record
+       Z at 0 range 7 .. 7;
+       N at 0 range 6 .. 6;
+       H at 0 range 5 .. 5;
+       C at 0 range 4 .. 4;
+     end record;
+   for CPU_Flags'Size use Byte'Size;
+
+end Gade.Dev.CPU;

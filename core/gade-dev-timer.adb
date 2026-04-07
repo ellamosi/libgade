@@ -8,8 +8,7 @@ package body Gade.Dev.Timer is
    begin
       Timer.Map.Space := [others => 0];
       Timer.Ticks := 0;
-      Timer.Modulo_Ticks :=
-        TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);
+      Timer.Modulo_Ticks := TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);
       Timer.DIV_Ticks := 0;
    end Reset;
 
@@ -18,7 +17,8 @@ package body Gade.Dev.Timer is
      (Timer   : in out Timer_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : out Byte) is
+      Value   : out Byte)
+   is
       pragma Unreferenced (GB);
    begin
       if Address = DIV then
@@ -33,14 +33,14 @@ package body Gade.Dev.Timer is
      (Timer   : in out Timer_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : Byte) is
+      Value   : Byte)
+   is
       pragma Unreferenced (GB);
    begin
       Timer.Map.Space (Address) := Value;
       if Address = TAC then
          --  Might need to reset internal ticks too, needs research
-         Timer.Modulo_Ticks :=
-           TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);
+         Timer.Modulo_Ticks := TIMA_Clocks (Timer.Map.Timer_Control.Input_Clock_Select);
       elsif Address = DIV then
          --  This will preserve the internal DIV timing
          Timer.DIV_Ticks := Timer.DIV_Ticks mod 256;
@@ -54,29 +54,39 @@ package body Gade.Dev.Timer is
 
    overriding
    procedure Report_Cycles
-     (Timer  : in out Timer_Type;
-      GB     : in out Gade.GB.GB_Type;
-      Cycles : Positive)
+     (Timer : in out Timer_Type; GB : in out Gade.GB.GB_Type; Cycles : M_Cycle_Count)
    is
-      New_Ticks, New_Counter, Counter_Increment : Integer;
+      --  Timer edge detection remains T-cycle based even though the emulator
+      --  scheduler now reports time in M-cycles.
+      T_Cycles                       : constant T_Cycle_Count := To_T_Cycles (Cycles);
+      New_Ticks                      : T_Cycle_Count;
+      New_Counter, Counter_Increment : Integer;
    begin
       if Is_Running (Timer) then
-         New_Ticks := (Timer.Ticks + Cycles);
+         New_Ticks := Timer.Ticks + T_Cycles;
          Timer.Ticks := New_Ticks mod Timer.Modulo_Ticks;
          if New_Ticks >= Timer.Modulo_Ticks then
-            --  Put_Line("Counter" & Timer.Map.Timer_Counter'Img);
-            Counter_Increment := New_Ticks / Timer.Modulo_Ticks;
-            New_Counter := Integer (Timer.Map.Timer_Counter) + Counter_Increment;
-            if New_Counter >= 256 then
-               Timer.Map.Timer_Counter := Timer.Map.Timer_Modulo;
-               Set_Interrupt (GB, Timer_Interrupt);
-            end if;
-            Timer.Map.Timer_Counter := Byte (New_Counter mod 256);
+            Counter_Increment := Integer (New_Ticks / Timer.Modulo_Ticks);
+            New_Counter := Integer (Timer.Map.Timer_Counter);
+            for I in 1 .. Counter_Increment loop
+               pragma Unreferenced (I);
+               if New_Counter = 255 then
+                  --  Reload TMA on overflow instead of wrapping to 0. Games
+                  --  that program periodic timer IRQs depend on that shorter
+                  --  post-overflow period.
+                  New_Counter := Integer (Timer.Map.Timer_Modulo);
+                  Set_Interrupt (GB, Timer_Interrupt);
+               else
+                  New_Counter := New_Counter + 1;
+               end if;
+            end loop;
+            Timer.Map.Timer_Counter := Byte (New_Counter);
          end if;
       end if;
-      Timer.DIV_Ticks := (Timer.DIV_Ticks + Cycles) mod 256 * 256;
-      --  Put_Line("Ticks" & Timer.Ticks'Img & " Counter" &
-      --  Timer.Map.Timer_Counter'Img & " Modulo" & Timer.Modulo_Ticks'Img);
+      --  DIV exposes the upper byte of a free-running 16-bit divider.
+      Timer.DIV_Ticks := (Timer.DIV_Ticks + T_Cycles) mod DIV_Counter_Modulus;
+   --  Put_Line("Ticks" & Timer.Ticks'Img & " Counter" &
+   --  Timer.Map.Timer_Counter'Img & " Modulo" & Timer.Modulo_Ticks'Img);
    end Report_Cycles;
 
 end Gade.Dev.Timer;

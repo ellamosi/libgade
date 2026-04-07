@@ -12,15 +12,16 @@ package Gade.Dev.OAM is
       Y_Flip, X_Flip : Boolean;
       Palette        : Object_Palette_Type;
    end record;
-   for Sprite_Type use record
-      Y        at 0 range 0 .. 7;
-      X        at 1 range 0 .. 7;
-      Pattern  at 2 range 0 .. 7;
-      Palette  at 3 range 4 .. 4;
-      X_Flip   at 3 range 5 .. 5;
-      Y_Flip   at 3 range 6 .. 6;
-      Priority at 3 range 7 .. 7;
-   end record;
+   for Sprite_Type use
+     record
+       Y at 0 range 0 .. 7;
+       X at 1 range 0 .. 7;
+       Pattern at 2 range 0 .. 7;
+       Palette at 3 range 4 .. 4;
+       X_Flip at 3 range 5 .. 5;
+       Y_Flip at 3 range 6 .. 6;
+       Priority at 3 range 7 .. 7;
+     end record;
    for Sprite_Type'Size use 8 * 4;
 
    type Sprite_Index_Type is range 0 .. 39;
@@ -33,10 +34,12 @@ package Gade.Dev.OAM is
       case Access_Type is
          when Named =>
             Sprites : Sprite_Array_Type;
+
          when Address =>
             Space : OAM_Address_Space;
       end case;
-   end record with Unchecked_Union;
+   end record
+   with Unchecked_Union;
 
    type OAM_Type is new Memory_Mapped_Device with record
       Map : OAM_Map_Type;
@@ -44,19 +47,18 @@ package Gade.Dev.OAM is
 
    type OAM_Access is access all OAM_Type;
 
-   overriding procedure Reset
-     (OAM : in out OAM_Type);
+   overriding
+   procedure Reset (OAM : in out OAM_Type);
 
-   overriding procedure Read
+   overriding
+   procedure Read
      (OAM     : in out OAM_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Value   : out Byte);
 
-   overriding procedure Write
-     (OAM     : in out OAM_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Value   : Byte);
+   overriding
+   procedure Write
+     (OAM : in out OAM_Type; GB : in out Gade.GB.GB_Type; Address : Word; Value : Byte);
 
 end Gade.Dev.OAM;

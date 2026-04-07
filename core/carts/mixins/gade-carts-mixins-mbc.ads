@@ -52,36 +52,29 @@ package Gade.Carts.Mixins.MBC is
    --  the instantiation of the ROM_RAM mixin, so it doesn't need to be
    --  re-instantiated for each of the individual MBC cart types.
 
-   subtype RAM_Enable_Address  is Word range 16#0000# .. 16#1FFF#;
+   subtype RAM_Enable_Address is Word range 16#0000# .. 16#1FFF#;
    subtype Bank_Select_Address is Word range 16#2000# .. 16#5FFF#;
-   subtype Special_Address     is Word range 16#6000# .. 16#7FFF#;
+   subtype Special_Address is Word range 16#6000# .. 16#7FFF#;
 
-   package ROM_RAM_Mixin is new Gade.Carts.Mixins.ROM_RAM
-     (Base_Cart => Base_Cart,
-      ROM_Banks => ROM_Banks,
-      RAM_Banks => RAM_Banks);
+   package ROM_RAM_Mixin is new
+     Gade.Carts.Mixins.ROM_RAM
+       (Base_Cart => Base_Cart,
+        ROM_Banks => ROM_Banks,
+        RAM_Banks => RAM_Banks);
    use ROM_RAM_Mixin;
 
    type MBC_Cart is abstract new ROM_RAM_Cart with private;
 
    overriding
-   procedure Write_ROM
-     (C       : in out MBC_Cart;
-      Address : External_ROM_IO_Address;
-      V       : Byte);
+   procedure Write_ROM (C : in out MBC_Cart; Address : External_ROM_IO_Address; V : Byte);
 
-   procedure Enable_RAM
-     (C : in out MBC_Cart;
-      V : Byte);
+   procedure Enable_RAM (C : in out MBC_Cart; V : Byte);
 
    procedure Select_Bank
-     (C       : in out MBC_Cart;
-      Address : Bank_Select_Address;
-      Value   : Byte) is null;
+     (C : in out MBC_Cart; Address : Bank_Select_Address; Value : Byte)
+   is null;
 
-   procedure Write_Special
-     (C     : in out MBC_Cart;
-      Value : Byte) is null;
+   procedure Write_Special (C : in out MBC_Cart; Value : Byte) is null;
 
 private
 

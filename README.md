@@ -61,6 +61,29 @@ alr build
 
 For information on how to build and run the tests, see the [tests README](tests/README.md).
 
+### Formatting
+
+Install [`gnatformat`](https://github.com/AdaCore/gnatformat) with `alr install gnatformat`.
+
+Ada sources can be formatted locally with:
+
+```sh
+./scripts/format-ada.sh
+```
+
+To run the same Ada format check before each commit, install
+[`pre-commit`](https://pre-commit.com/) with:
+
+```sh
+python3 -m pip install -r requirements-dev.txt
+pre-commit install
+```
+
+The hook formats only staged Ada files. The checked-in
+`./scripts/check-ada-format.sh` script still performs the full project-level
+check used by CI. The pre-commit hook formats staged Ada files in place, so if
+it rewrites files you should `git add` them and re-run the commit.
+
 ### Scenario Variables
 `gade` exposes three GPR scenario variables through `alire.toml`:
 
@@ -80,10 +103,6 @@ For information on how to build and run the tests, see the [tests README](tests/
 - Sprites
 - Mid scanline rendering
 - Audio
-
-### What does not work
-- Other cartridge controller types
-- Accurate timings
 
 ### Next steps
 - Performance optimizations (GPU rendering)

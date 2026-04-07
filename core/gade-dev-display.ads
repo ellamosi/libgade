@@ -1,5 +1,5 @@
-with Gade.Video_Buffer; use Gade.Video_Buffer;
-with Gade.Dev.Video; use Gade.Dev.Video;
+with Gade.Video_Buffer;      use Gade.Video_Buffer;
+with Gade.Dev.Video;         use Gade.Dev.Video;
 with Gade.Dev.Video.Sprites; use Gade.Dev.Video.Sprites;
 limited private with Gade.Dev.Display.Handlers;
 
@@ -9,20 +9,20 @@ package Gade.Dev.Display is
 
    type Display_Type is new Memory_Mapped_Device with private;
 
-   procedure Create
-     (Display : aliased out Display_Type);
+   procedure Create (Display : aliased out Display_Type);
 
    overriding
-   procedure Reset
-     (Display : in out Display_Type);
+   procedure Reset (Display : in out Display_Type);
 
-   overriding procedure Read
+   overriding
+   procedure Read
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Value   : out Byte);
 
-   overriding procedure Write
+   overriding
+   procedure Write
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
@@ -32,11 +32,11 @@ package Gade.Dev.Display is
      (Display : in out Display_Type;
       GB      : in out Gade.GB.GB_Type;
       Video   : RGB32_Display_Buffer_Access;
-      Cycles  : Positive);
+      Cycles  : M_Cycle_Count);
 
-   procedure Check_Frame_Finished
-     (Display  : in out Display_Type;
-      Finished : out Boolean);
+   procedure Check_Frame_Finished (Display : in out Display_Type; Finished : out Boolean);
+
+   function DMA_Active (Display : Display_Type) return Boolean;
 
    type Palette_Type is array (Color_Value'Range) of Color_Value;
    pragma Pack (Palette_Type);
@@ -49,7 +49,8 @@ package Gade.Dev.Display is
 
 private
 
-   type Display_Handler_Access is access all Gade.Dev.Display.Handlers.Display_Handler_Type;
+   type Display_Handler_Access is
+     access all Gade.Dev.Display.Handlers.Display_Handler_Type;
 
    --  FF40 - LCDCONT [RW] LCD Control
    --  TODO: Use more fitting types
@@ -71,29 +72,30 @@ private
       --  Bit7  LCD operation                       | ON        | OFF
       LCD_Operation            : Boolean;
    end record;
-   for LCD_Control use record
-      Background_Display         at 0 range 0 .. 0;
-      Sprite_Display             at 0 range 1 .. 1;
-      Sprite_Size                at 0 range 2 .. 2;
-      Background_Tile_Map_Addr   at 0 range 3 .. 3;
-      Tile_Data_Table_Addr       at 0 range 4 .. 4;
-      Window_Display             at 0 range 5 .. 5;
-      Window_Tile_Table_Addr     at 0 range 6 .. 6;
-      LCD_Operation              at 0 range 7 .. 7;
-   end record;
+   for LCD_Control use
+     record
+       Background_Display at 0 range 0 .. 0;
+       Sprite_Display at 0 range 1 .. 1;
+       Sprite_Size at 0 range 2 .. 2;
+       Background_Tile_Map_Addr at 0 range 3 .. 3;
+       Tile_Data_Table_Addr at 0 range 4 .. 4;
+       Window_Display at 0 range 5 .. 5;
+       Window_Tile_Table_Addr at 0 range 6 .. 6;
+       LCD_Operation at 0 range 7 .. 7;
+     end record;
 
    Default_LCD_Control : constant LCD_Control :=
-      (Background_Display         => True,
-       Sprite_Display             => False,
-       Sprite_Size                => Single,
-       Background_Tile_Map_Addr   => Low_Map,
-       Tile_Data_Table_Addr       => Low_Data,
-       Window_Display             => False,
-       Window_Tile_Table_Addr     => Low_Map,
-       LCD_Operation              => True);
+     (Background_Display       => True,
+      Sprite_Display           => False,
+      Sprite_Size              => Single,
+      Background_Tile_Map_Addr => Low_Map,
+      Tile_Data_Table_Addr     => Low_Data,
+      Window_Display           => False,
+      Window_Tile_Table_Addr   => Low_Map,
+      LCD_Operation            => True);
 
-   type LCD_Controller_Mode_Type is (
-      HBlank,
+   type LCD_Controller_Mode_Type is
+     (HBlank,
       --  Horizontal blanking impulse (VRAM 8000-9FFF can be accessed by CPU)
       VBlank,
       --  Vertical blanking impulse (VRAM 8000-9FFF can be accessed by CPU)
@@ -101,12 +103,9 @@ private
       --  OAM FE00-FE90 is accessed by LCD controller
       VRAM_Access
       --  Both OAM FE00-FE90 and VRAM 8000-9FFF are accessed by LCD controller
-   );
+     );
    for LCD_Controller_Mode_Type use
-     (HBlank      => 2#00#,
-      VBlank      => 2#01#,
-      OAM_Access  => 2#10#,
-      VRAM_Access => 2#11#);
+     (HBlank => 2#00#, VBlank => 2#01#, OAM_Access => 2#10#, VRAM_Access => 2#11#);
 
    Starting_Line : constant := 144; -- Start of VBlank, THIS IS MADE UP!
    Starting_Mode : constant LCD_Controller_Mode_Type := VBlank;
@@ -127,24 +126,25 @@ private
       --  Bit6    Interrupt on scanline coincidence (On/Off)
       Interrupt_Scanline_Coincidence : Boolean;
    end record;
-   for LCD_Status use record
-      LCD_Controller_Mode            at 0 range 0 .. 1;
-      Scanline_Coincidence           at 0 range 2 .. 2;
-      Interrupt_HBlank               at 0 range 3 .. 3;
-      Interrupt_VBlank               at 0 range 4 .. 4;
-      Interrupt_OAM_Access           at 0 range 5 .. 5;
-      Interrupt_Scanline_Coincidence at 0 range 6 .. 6;
-      --  Reserved bit
-   end record;
+   for LCD_Status use
+     record
+       LCD_Controller_Mode at 0 range 0 .. 1;
+       Scanline_Coincidence at 0 range 2 .. 2;
+       Interrupt_HBlank at 0 range 3 .. 3;
+       Interrupt_VBlank at 0 range 4 .. 4;
+       Interrupt_OAM_Access at 0 range 5 .. 5;
+       Interrupt_Scanline_Coincidence at 0 range 6 .. 6;
+       --  Reserved bit
+     end record;
    for LCD_Status'Size use 8;
 
    Default_LCD_Status : constant LCD_Status :=
-      (LCD_Controller_Mode            => Starting_Mode,
-       Scanline_Coincidence           => False,
-       Interrupt_HBlank               => False,
-       Interrupt_VBlank               => False,
-       Interrupt_OAM_Access           => False,
-       Interrupt_Scanline_Coincidence => False);
+     (LCD_Controller_Mode            => Starting_Mode,
+      Scanline_Coincidence           => False,
+      Interrupt_HBlank               => False,
+      Interrupt_VBlank               => False,
+      Interrupt_OAM_Access           => False,
+      Interrupt_Scanline_Coincidence => False);
 
    type Color_Palette is mod 2**2;
    --  00 ------- 01 ------- 10 -------> 11
@@ -178,7 +178,7 @@ private
             --  and an interrupt may occur.
             CMPLINE : Byte;
             --  FF46 -- OAM DMA
-            DMA : Byte;
+            DMA     : Byte;
             --  FF47 -- BGRDPAL [W] Background/Window Palette
             BGRDPAL : Palette_Type;
             --  FF48 -- OBJ0PAL [W] Sprite Palette #0
@@ -194,67 +194,71 @@ private
             --  position of the left upper corner of a window on the screen.
             --  The real position is WNDPOSX-7.
             WNDPOSX : Byte;
-         when Address =>
-            Space   : LCD_Address_Space;
-      end case;
-   end record with Unchecked_Union;
-   for LCD_Map_Type use record
-      LCDC    at  0 range 0 .. 7;
-      STAT    at  1 range 0 .. 7;
-      SCROLLY at  2 range 0 .. 7;
-      SCROLLX at  3 range 0 .. 7;
-      CURLINE at  4 range 0 .. 7;
-      CMPLINE at  5 range 0 .. 7;
-      DMA     at  6 range 0 .. 7;
-      BGRDPAL at  7 range 0 .. 7;
-      OBJ0PAL at  8 range 0 .. 7;
-      OBJ1PAL at  9 range 0 .. 7;
-      WNDPOSY at 10 range 0 .. 7;
-      WNDPOSX at 11 range 0 .. 7;
-   end record;
 
-   type Display_Type is
-     new Memory_Mapped_Device with record
-      Frame_Finished : Boolean;
-      DMA_Source_Address : Word;
-      DMA_Target_Address : Word;
-      DMA_Clocks_Since_Last_Copy : Integer; -- 1/4 clocks + 4 clocks setup
-      DMA_Copy_Ongoing : Boolean;
-      Map : LCD_Map_Type;
-      Display_Handler : Display_Handler_Access;
+         when Address =>
+            Space : LCD_Address_Space;
+      end case;
+   end record
+   with Unchecked_Union;
+   for LCD_Map_Type use
+     record
+       LCDC at 0 range 0 .. 7;
+       STAT at 1 range 0 .. 7;
+       SCROLLY at 2 range 0 .. 7;
+       SCROLLX at 3 range 0 .. 7;
+       CURLINE at 4 range 0 .. 7;
+       CMPLINE at 5 range 0 .. 7;
+       DMA at 6 range 0 .. 7;
+       BGRDPAL at 7 range 0 .. 7;
+       OBJ0PAL at 8 range 0 .. 7;
+       OBJ1PAL at 9 range 0 .. 7;
+       WNDPOSY at 10 range 0 .. 7;
+       WNDPOSX at 11 range 0 .. 7;
+     end record;
+
+   type Display_Type is new Memory_Mapped_Device with record
+      Frame_Finished             : Boolean;
+      DMA_Source_Address         : Word;
+      DMA_Target_Address         : Word;
+      DMA_Clocks_Since_Last_Copy : Integer; -- startup delay in M-cycles
+      DMA_Copy_Ongoing           : Boolean;
+      STAT_Interrupt_Line        : Boolean;
+      Map                        : LCD_Map_Type;
+      Display_Handler            : Display_Handler_Access;
    end record;
 
    type Display_Access is access all Display_Type;
 
---  ------------------------------------------------------------------------------
---  FF46 -- DMACONT [W] DMA Transfer Control
---          Writing to this register will cause a DMA transfer into OAM located
---          at FE00-FE9F. The written value determines the source address in a
---          following way: 00 -> 0000, 01 -> 0100, ... , 9A -> 9A00, ...
---          The DMA transfer takes about 160 nanoseconds.
---
---          Example:
---          ; Routine transferring 0400-049F into OAM
---          DI           ; Disable interrupts
---          LD A,04h     ; Transferring data from 0400h
---          LD (FF46h),A ; Start DMA transfer
---    LOOP: LD A,#40     ; Wait
---          DEC A        ;
---          JR NZ,LOOP   ;
---          EI           ; Enable interrupts
---
+   --  ------------------------------------------------------------------------------
+   --  FF46 -- DMACONT [W] DMA Transfer Control
+   --          Writing to this register will cause a DMA transfer into OAM located
+   --          at FE00-FE9F. The written value determines the source address in a
+   --          following way: 00 -> 0000, 01 -> 0100, ... , 9A -> 9A00, ...
+   --          The DMA transfer takes about 160 nanoseconds.
+   --
+   --          Example:
+   --          ; Routine transferring 0400-049F into OAM
+   --          DI           ; Disable interrupts
+   --          LD A,04h     ; Transferring data from 0400h
+   --          LD (FF46h),A ; Start DMA transfer
+   --    LOOP: LD A,#40     ; Wait
+   --          DEC A        ;
+   --          JR NZ,LOOP   ;
+   --          EI           ; Enable interrupts
+   --
 
    Color_Lookup : constant array (Color_Value'Range) of RGB32_Color :=
      [(255, 255, 255), (171, 171, 171), (85, 85, 85), (0, 0, 0)];
 
-   procedure Do_DMA
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type);
+   procedure Do_DMA (Display : in out Display_Type; GB : in out Gade.GB.GB_Type);
+
+   function STAT_Interrupt_Line_Active (Display : Display_Type) return Boolean;
+
+   procedure Update_STAT_Interrupt_Line
+     (Display : in out Display_Type; GB : in out Gade.GB.GB_Type);
 
    procedure Line_Changed
-     (Display : in out Display_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Line    : Line_Count_Type);
+     (Display : in out Display_Type; GB : in out Gade.GB.GB_Type; Line : Line_Count_Type);
 
    procedure Mode_Changed
      (Display : in out Display_Type;

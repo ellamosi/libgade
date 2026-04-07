@@ -10,16 +10,10 @@ package Gade.Carts.Banks.RTC is
    subtype RTC_Bank_NN_Access is not null RTC_Bank_Access;
 
    overriding
-   procedure Read
-     (B       : in out RTC_Bank;
-      Address : Bank_Address;
-      V       : out Byte);
+   procedure Read (B : in out RTC_Bank; Address : Bank_Address; V : out Byte);
 
    overriding
-   procedure Write
-     (B       : in out RTC_Bank;
-      Address : Bank_Address;
-      V       : Byte);
+   procedure Write (B : in out RTC_Bank; Address : Bank_Address; V : Byte);
 
 private
 

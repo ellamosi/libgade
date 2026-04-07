@@ -9,9 +9,7 @@ package body Gade.Dev.VRAM is
       Reset (VRAM.Consolidated_Maps);
    end Reset;
 
-   procedure Reset
-     (Consolidated_Tile_Maps : out Consolidated_Tile_Map_Array)
-   is
+   procedure Reset (Consolidated_Tile_Maps : out Consolidated_Tile_Map_Array) is
    begin
       for Consolidated_Tile_Map of Consolidated_Tile_Maps loop
          Reset (Consolidated_Tile_Map);
@@ -23,7 +21,8 @@ package body Gade.Dev.VRAM is
      (VRAM    : in out VRAM_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
-      Value   : out Byte) is
+      Value   : out Byte)
+   is
       pragma Unreferenced (GB);
    begin
       Value := VRAM.Map.Space (Address);
@@ -31,10 +30,8 @@ package body Gade.Dev.VRAM is
 
    overriding
    procedure Write
-     (VRAM    : in out VRAM_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Value   : Byte) is
+     (VRAM : in out VRAM_Type; GB : in out Gade.GB.GB_Type; Address : Word; Value : Byte)
+   is
       pragma Unreferenced (GB);
    begin
       VRAM.Map.Space (Address) := Value;
@@ -48,15 +45,13 @@ package body Gade.Dev.VRAM is
       end if;
    end Write;
 
-   function Tile_Color
-      (Line   : Tile_Line_Type;
-       Column : Integer) return Color_Value is
+   function Tile_Color (Line : Tile_Line_Type; Column : Integer) return Color_Value is
       Bit_Shift   : Byte;
       Masked_High : Byte;
       Masked_Low  : Byte;
    begin
-      Bit_Shift   := 2 ** (7 - Column);
-      Masked_Low  := (Line.Low / Bit_Shift) and 1;
+      Bit_Shift := 2**(7 - Column);
+      Masked_Low := (Line.Low / Bit_Shift) and 1;
       Masked_High := (Line.High / Bit_Shift) and 1;
       return Half_Color_Lookup_Table (Masked_Low, Masked_High);
    end Tile_Color;

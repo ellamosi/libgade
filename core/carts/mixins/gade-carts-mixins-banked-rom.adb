@@ -12,9 +12,7 @@ package body Gade.Carts.Mixins.Banked.ROM is
 
    overriding
    procedure Read_ROM
-     (C       : in out Banked_ROM_Cart;
-      Address : External_ROM_IO_Address;
-      V       : out Byte)
+     (C : in out Banked_ROM_Cart; Address : External_ROM_IO_Address; V : out Byte)
    is
       Bank_Addr : Bank_Address;
       Bank_Idx  : Accessible_Bank_Index;
@@ -24,10 +22,7 @@ package body Gade.Carts.Mixins.Banked.ROM is
    end Read_ROM;
 
    procedure Select_ROM_Bank
-     (C  : in out Banked_ROM_Cart;
-      AI : Accessible_Bank_Index;
-      I  : Bank_Index)
-   is
+     (C : in out Banked_ROM_Cart; AI : Accessible_Bank_Index; I : Bank_Index) is
    begin
       C.Accessible_Banks (AI) := ROM_Bank_Access (Select_Bank (C.Banks, I));
    end Select_ROM_Bank;
@@ -35,10 +30,9 @@ package body Gade.Carts.Mixins.Banked.ROM is
    procedure Decode
      (Address   : External_ROM_IO_Address;
       Bank_Idx  : out Accessible_Bank_Index;
-      Bank_Addr : out Bank_Address)
-   is
+      Bank_Addr : out Bank_Address) is
    begin
-      Bank_Idx := Accessible_Bank_Index (Address / 2 ** Accessible_Index_Shift);
+      Bank_Idx := Accessible_Bank_Index (Address / 2**Accessible_Index_Shift);
       Bank_Addr := Address and Bank_Address_Mask;
    end Decode;
 

@@ -8,10 +8,7 @@ package Gade.Carts.Banks.Blank is
    subtype Blank_Bank_NN_Access is not null Blank_Bank_Access;
 
    overriding
-   procedure Read
-     (B       : in out Blank_Bank;
-      Address : Bank_Address;
-      V       : out Byte);
+   procedure Read (B : in out Blank_Bank; Address : Bank_Address; V : out Byte);
 
    function Singleton return Blank_Bank_NN_Access;
 

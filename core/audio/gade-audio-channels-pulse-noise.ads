@@ -9,8 +9,8 @@ package Gade.Audio.Channels.Pulse.Noise is
 
 private
 
-   type Clock_Shift_Type is mod 2 ** 4;
-   type Divisor_Code_Type is mod 2 ** 3;
+   type Clock_Shift_Type is mod 2**4;
+   type Divisor_Code_Type is mod 2**3;
 
    --  Divisor values from:
    --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Noise_Channel
@@ -32,8 +32,9 @@ private
    for LFSR_Width_Mode use (Full => 0, Half => 1);
 
    --  Array to take care of LFSR output negation and type conversion
-   Output_Pulse_State : constant array (Shift_Register range 0 .. 1)
-     of Pulse_State_Type := [Pulse_High, Pulse_Low];
+   Output_Pulse_State :
+     constant array (Shift_Register range 0 .. 1) of Pulse_State_Type :=
+       [Pulse_High, Pulse_Low];
 
    subtype Parent is Pulse_Channel;
    type Noise_Channel is new Parent with record
@@ -45,17 +46,16 @@ private
    end record;
 
    overriding
-   procedure Disable
-     (Channel : in out Noise_Channel;
-      Mode    : Disable_Mode);
+   procedure Disable (Channel : in out Noise_Channel; Mode : Disable_Mode);
 
    overriding
    procedure Trigger (Channel : in out Noise_Channel);
 
    overriding
-   procedure Next_Sample_Level (Channel      : in out Noise_Channel;
-                                Sample_Level : out Channel_Sample;
-                                Level_Cycles : out Positive);
+   procedure Next_Sample_Level
+     (Channel      : in out Noise_Channel;
+      Sample_Level : out Channel_Sample;
+      Level_Cycles : out Positive);
 
    overriding
    function Read_NRx3 (Channel : Noise_Channel) return Byte;

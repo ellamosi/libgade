@@ -1,6 +1,6 @@
 with Gade.Dev.Video.Tile_Buffer; use Gade.Dev.Video.Tile_Buffer;
-with Gade.Dev.Video; use Gade.Dev.Video;
-with Gade.Dev.Video.Tile_Map; use Gade.Dev.Video.Tile_Map;
+with Gade.Dev.Video;             use Gade.Dev.Video;
+with Gade.Dev.Video.Tile_Map;    use Gade.Dev.Video.Tile_Map;
 
 package Gade.Dev.VRAM is
 
@@ -11,14 +11,14 @@ package Gade.Dev.VRAM is
    type Tile_Line_Type is record
       Low, High : Byte;
    end record;
-   for Tile_Line_Type use record
-      Low  at 0 range 0 .. 7;
-      High at 1 range 0 .. 7;
-   end record;
+   for Tile_Line_Type use
+     record
+       Low at 0 range 0 .. 7;
+       High at 1 range 0 .. 7;
+     end record;
    for Tile_Line_Type'Size use 16;
 
-   function Tile_Color (Line   : Tile_Line_Type;
-                        Column : Integer) return Color_Value;
+   function Tile_Color (Line : Tile_Line_Type; Column : Integer) return Color_Value;
 
    type Tile_Type is array (0 .. 7) of Tile_Line_Type;
    type Tile_Type_16 is array (0 .. 15) of Tile_Line_Type;
@@ -26,8 +26,9 @@ package Gade.Dev.VRAM is
    type Raster_Tile_Type is array (0 .. 7, 0 .. 7) of Color_Value;
    type Raster_Tile_Type_16 is array (0 .. 15, 0 .. 7) of Color_Value;
 
-   Half_Color_Lookup_Table : constant
-     array (Byte range 0 .. 1, Byte range 0 .. 1) of Color_Value := [[0, 2], [1, 3]];
+   Half_Color_Lookup_Table :
+     constant array (Byte range 0 .. 1, Byte range 0 .. 1) of Color_Value :=
+       [[0, 2], [1, 3]];
 
    type VRAM_Address_Space is array (VRAM_IO_Address) of Byte;
 
@@ -61,54 +62,65 @@ package Gade.Dev.VRAM is
 
    type Raster_Tile_Array_Access_Type is (Any, Low, High, Object_8_8, Object_8_16);
 
-   type Tile_Array_Variant
-      (Tile_Array_Access  : Tile_Array_Access_Type := Low) is record
+   type Tile_Array_Variant (Tile_Array_Access : Tile_Array_Access_Type := Low) is record
       case Tile_Array_Access is
          when Any =>
-            All_Tile_Data    : Full_Tile_Array_Type;
+            All_Tile_Data : Full_Tile_Array_Type;
+
          when Low =>
-            Low_Tile_Data    : Low_Tile_Array_Type;
+            Low_Tile_Data : Low_Tile_Array_Type;
+
          when High =>
-            High_Tile_Data   : High_Tile_Array_Type;
+            High_Tile_Data : High_Tile_Array_Type;
+
          when Object_8_8 =>
-            Sprite_Data_8_8  : Obj_8_8_Array_Type;
+            Sprite_Data_8_8 : Obj_8_8_Array_Type;
+
          when Object_8_16 =>
             Sprite_Data_8_16 : Obj_8_16_Array_Type;
       end case;
-   end record with Unchecked_Union;
-   for Tile_Array_Variant use record
-      All_Tile_Data    at 0       range 0 .. 8 * 16#1800# - 1;
-      Low_Tile_Data    at 0       range 0 .. 8 * 16#1000# - 1;
-      High_Tile_Data   at 16#800# range 0 .. 8 * 16#1000# - 1;
-      Sprite_Data_8_8  at 0       range 0 .. 8 * 16#1000# - 1;
-      Sprite_Data_8_16 at 0       range 0 .. 8 * 16#1000# - 1;
-   end record;
+   end record
+   with Unchecked_Union;
+   for Tile_Array_Variant use
+     record
+       All_Tile_Data at 0 range 0 .. 8 * 16#1800# - 1;
+       Low_Tile_Data at 0 range 0 .. 8 * 16#1000# - 1;
+       High_Tile_Data at 16#800# range 0 .. 8 * 16#1000# - 1;
+       Sprite_Data_8_8 at 0 range 0 .. 8 * 16#1000# - 1;
+       Sprite_Data_8_16 at 0 range 0 .. 8 * 16#1000# - 1;
+     end record;
    for Tile_Array_Variant'Size use 8 * (16#9800# - 16#8000#);
 
    --  TODO: For this a lookup table based implementation might be more portable
    --  as the physical size of Color and its arrays are not defined
-   type Raster_Tile_Buffer
-     (Tile_Array_Access  : Raster_Tile_Array_Access_Type := Any) is record
+   type Raster_Tile_Buffer (Tile_Array_Access : Raster_Tile_Array_Access_Type := Any) is
+   record
       case Tile_Array_Access is
          when Any =>
-            All_Tile_Data    : Full_Raster_Tile_Array_Type;
+            All_Tile_Data : Full_Raster_Tile_Array_Type;
+
          when Low =>
-            Low_Tile_Data    : Low_Raster_Tile_Array_Type;
+            Low_Tile_Data : Low_Raster_Tile_Array_Type;
+
          when High =>
-            High_Tile_Data   : High_Raster_Tile_Array_Type;
+            High_Tile_Data : High_Raster_Tile_Array_Type;
+
          when Object_8_8 =>
-            Sprite_Data_8_8  : Obj_8_8_Raster_Array_Type;
+            Sprite_Data_8_8 : Obj_8_8_Raster_Array_Type;
+
          when Object_8_16 =>
             Sprite_Data_8_16 : Obj_8_16_Raster_Array_Type;
       end case;
-   end record with Unchecked_Union;
-   for Raster_Tile_Buffer use record
-      All_Tile_Data    at 0        range 0 .. 8 * 64 * 384 - 1;
-      Low_Tile_Data    at 0        range 0 .. 8 * 64 * 256 - 1;
-      High_Tile_Data   at 64 * 128 range 0 .. 8 * 64 * 256 - 1;
-      Sprite_Data_8_8  at 0        range 0 .. 8 * 64 * 256 - 1;
-      Sprite_Data_8_16 at 0        range 0 .. 8 * 64 * 256 - 1;
-   end record;
+   end record
+   with Unchecked_Union;
+   for Raster_Tile_Buffer use
+     record
+       All_Tile_Data at 0 range 0 .. 8 * 64 * 384 - 1;
+       Low_Tile_Data at 0 range 0 .. 8 * 64 * 256 - 1;
+       High_Tile_Data at 64 * 128 range 0 .. 8 * 64 * 256 - 1;
+       Sprite_Data_8_8 at 0 range 0 .. 8 * 64 * 256 - 1;
+       Sprite_Data_8_16 at 0 range 0 .. 8 * 64 * 256 - 1;
+     end record;
 
    type Tile_Map_Type is array (0 .. 31, 0 .. 31) of Byte; -- 9800-9BFF or 9C00-9FFF
    for Tile_Map_Type'Size use 8 * 32 * 32;
@@ -121,38 +133,38 @@ package Gade.Dev.VRAM is
             Tile_Data     : Tile_Array_Variant;
             Low_Tile_Map  : Tile_Map_Type;
             High_Tile_Map : Tile_Map_Type;
+
          when Address =>
             Space : VRAM_Address_Space;
       end case;
-   end record with Unchecked_Union;
+   end record
+   with Unchecked_Union;
 
    type Consolidated_Tile_Map_Array is
      array (Tile_Map_Access_Type) of Consolidated_Tile_Map_Type;
 
    type VRAM_Type is new Memory_Mapped_Device with record
-      Map    : VRAM_Map_Type;
-      Raster : Raster_Tile_Buffer;
-      Tile_Buffer : Gade.Dev.Video.Tile_Buffer.Tile_Buffer_Type;
+      Map               : VRAM_Map_Type;
+      Raster            : Raster_Tile_Buffer;
+      Tile_Buffer       : Gade.Dev.Video.Tile_Buffer.Tile_Buffer_Type;
       Consolidated_Maps : Consolidated_Tile_Map_Array;
    end record;
    type VRAM_Access is access all VRAM_Type;
 
-   overriding procedure Reset
-     (VRAM : in out VRAM_Type);
+   overriding
+   procedure Reset (VRAM : in out VRAM_Type);
 
-   overriding procedure Read
+   overriding
+   procedure Read
      (VRAM    : in out VRAM_Type;
       GB      : in out Gade.GB.GB_Type;
       Address : Word;
       Value   : out Byte);
 
-   overriding procedure Write
-     (VRAM    : in out VRAM_Type;
-      GB      : in out Gade.GB.GB_Type;
-      Address : Word;
-      Value   : Byte);
+   overriding
+   procedure Write
+     (VRAM : in out VRAM_Type; GB : in out Gade.GB.GB_Type; Address : Word; Value : Byte);
 
-   procedure Reset
-     (Consolidated_Tile_Maps : out Consolidated_Tile_Map_Array);
+   procedure Reset (Consolidated_Tile_Maps : out Consolidated_Tile_Map_Array);
 
 end Gade.Dev.VRAM;

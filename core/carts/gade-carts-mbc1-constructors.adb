@@ -7,8 +7,7 @@ package body Gade.Carts.MBC1.Constructors is
      (ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
       RAM_Path    : String;
-      Logger      : Gade.Logging.Logger_Access)
-      return MBC1_Cart_NN_Access
+      Logger      : Gade.Logging.Logger_Access) return MBC1_Cart_NN_Access
    is
       Result : constant MBC1_Cart_NN_Access := new MBC1_Cart;
    begin

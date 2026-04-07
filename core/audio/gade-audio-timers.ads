@@ -25,9 +25,7 @@ package Gade.Audio.Timers is
    generic
       type Observer_Type is abstract tagged limited private;
       with procedure Notify (Observer : in out Observer_Type);
-   procedure Tick_Notify
-     (T        : in out Timer_Type;
-      Observer : in out Observer_Type);
+   procedure Tick_Notify (T : in out Timer_Type; Observer : in out Observer_Type);
 
    function Has_Finished (T : Timer_Type) return Boolean;
 
@@ -40,7 +38,7 @@ private
    subtype Tick_Step_Type is Natural range 0 .. 1;
 
    type Timer_Type is tagged record
-      Remaining : Natural        := 0;
+      Remaining : Natural := 0;
       Step      : Tick_Step_Type := 0;
    end record;
 

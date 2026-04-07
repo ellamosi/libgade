@@ -7,8 +7,7 @@ package body Gade.Carts.MBC3.Constructors is
      (ROM_Content : ROM_Content_Access;
       Header      : Cart_Header;
       RAM_Path    : String;
-      Logger      : Gade.Logging.Logger_Access)
-      return MBC3_Cart_NN_Access
+      Logger      : Gade.Logging.Logger_Access) return MBC3_Cart_NN_Access
    is
       Result : constant MBC3_Cart_NN_Access := new MBC3_Cart;
    begin
@@ -32,7 +31,9 @@ package body Gade.Carts.MBC3.Constructors is
       Has_Battery := Cart_Type_Info_For_Cart (Header.Cart_Type).Battery;
       Has_Timer := Cart_Type_Info_For_Cart (Header.Cart_Type).Timer;
       C.RTC := null;
-      if Has_Timer then C.RTC := RTC.Constructors.Create; end if;
+      if Has_Timer then
+         C.RTC := RTC.Constructors.Create;
+      end if;
       RAM_Content := Create (Header.RAM_Size, Max_Content_Size);
       Savable := Has_Battery and (Has_Timer or RAM_Content /= null);
       Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable, Logger);
@@ -44,8 +45,7 @@ package body Gade.Carts.MBC3.Constructors is
    procedure Initialize
      (Bank_Factory : in out MBC3_RAM_Bank_Factory'Class;
       Content      : RAM_Content_Access;
-      RTC          : Clock_Access)
-   is
+      RTC          : Clock_Access) is
    begin
       Default_Bank_Factory (Bank_Factory).Initialize (Content);
       Bank_Factory.RTC := RTC;
@@ -54,8 +54,7 @@ package body Gade.Carts.MBC3.Constructors is
 
    overriding
    function Create_Bank
-     (F : in out MBC3_RAM_Bank_Factory;
-      I : Bank_Index) return Bank_NN_Access
+     (F : in out MBC3_RAM_Bank_Factory; I : Bank_Index) return Bank_NN_Access
    is
       use Banked_RAM_Mixin, RTC_Bank_Constructors;
 
@@ -73,7 +72,8 @@ package body Gade.Carts.MBC3.Constructors is
       elsif I > RTC_Bank_Range'Last then
          --  Unkown behavior for banks past RTC range, set as blank
          Result := Bank_Access (Blank_Banks.Singleton);
-      else --  I < RTC_Bank_Range'First
+      else
+         --  I < RTC_Bank_Range'First
          --  Use standard memory bank factory for banks under RTC range
          Result := Default_Bank_Factory (F).Create_Bank (I);
       end if;

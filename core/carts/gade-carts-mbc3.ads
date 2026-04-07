@@ -13,9 +13,7 @@ package Gade.Carts.MBC3 is
    procedure Reset (C : in out MBC3_Cart);
 
    overriding
-   procedure Report_Cycles
-     (C      : in out MBC3_Cart;
-      Cycles : Positive);
+   procedure Report_Cycles (C : in out MBC3_Cart; Cycles : M_Cycle_Count);
 
 private
    use Gade.Carts.RTC;
@@ -42,10 +40,11 @@ private
 
    Initial_Latch_Value : constant Byte := 16#01#;
 
-   package MBC_Mixin is new Gade.Carts.Mixins.MBC
-     (Base_Cart => Cart,
-      ROM_Banks => ROM_Bank_Count,
-      RAM_Banks => RAM_Bank_Count);
+   package MBC_Mixin is new
+     Gade.Carts.Mixins.MBC
+       (Base_Cart => Cart,
+        ROM_Banks => ROM_Bank_Count,
+        RAM_Banks => RAM_Bank_Count);
    use MBC_Mixin;
 
    type MBC3_Cart is new MBC_Cart with record
@@ -53,32 +52,22 @@ private
       Last_Latch_Value : Byte;
    end record;
 
-   subtype ROM_Bank_Select_Address is
-     Bank_Select_Address range 16#2000# .. 16#3FFF#;
+   subtype ROM_Bank_Select_Address is Bank_Select_Address range 16#2000# .. 16#3FFF#;
 
-   subtype RAM_Bank_Select_Address is
-     Bank_Select_Address range 16#4000# .. 16#5FFF#;
+   subtype RAM_Bank_Select_Address is Bank_Select_Address range 16#4000# .. 16#5FFF#;
 
    overriding
-   procedure Write_Special
-     (C       : in out MBC3_Cart;
-      Value   : Byte);
+   procedure Write_Special (C : in out MBC3_Cart; Value : Byte);
 
    overriding
    procedure Select_Bank
-     (C       : in out MBC3_Cart;
-      Address : Bank_Select_Address;
-      Value   : Byte);
+     (C : in out MBC3_Cart; Address : Bank_Select_Address; Value : Byte);
 
    overriding
-   procedure Load_RAM_File
-     (C    : in out MBC3_Cart;
-      File : Ada.Streams.Stream_IO.File_Type);
+   procedure Load_RAM_File (C : in out MBC3_Cart; File : Ada.Streams.Stream_IO.File_Type);
 
    overriding
-   procedure Save_RAM_File
-     (C    : in out MBC3_Cart;
-      File : Ada.Streams.Stream_IO.File_Type);
+   procedure Save_RAM_File (C : in out MBC3_Cart; File : Ada.Streams.Stream_IO.File_Type);
 
    procedure Select_ROM_Bank (C : in out MBC3_Cart; Value : Byte);
 

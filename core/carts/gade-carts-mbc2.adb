@@ -2,12 +2,10 @@ package body Gade.Carts.MBC2 is
 
    overriding
    procedure Write_ROM
-     (C       : in out MBC2_Cart;
-      Address : External_ROM_IO_Address;
-      Value   : Byte)
+     (C : in out MBC2_Cart; Address : External_ROM_IO_Address; Value : Byte)
    is
       Accepted_Address : constant Boolean := Address in Lower_ROM_IO_Address;
-      RAM_Enable : constant Word := (Address and RAM_Enable_Accept_Mask);
+      RAM_Enable       : constant Word := (Address and RAM_Enable_Accept_Mask);
    begin
       if Accepted_Address and RAM_Enable = 0 then
          C.Enable_RAM (Value);
@@ -16,10 +14,7 @@ package body Gade.Carts.MBC2 is
       end if;
    end Write_ROM;
 
-   procedure Select_Bank
-     (C     : in out MBC2_Cart;
-      Value : Byte)
-   is
+   procedure Select_Bank (C : in out MBC2_Cart; Value : Byte) is
       use MBC_Mixin.ROM_RAM_Mixin.Banked_ROM_Mixin.Banked_ROM_Spaces;
 
       Requested_Index, Actual_Index : Bank_Index;

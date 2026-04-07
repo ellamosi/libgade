@@ -4,8 +4,7 @@ private package Gade.Dev.Display.Handlers.OAM_Access is
    type OAM_Access_Handler_Access is access OAM_Access_Handler_Type;
 
    overriding
-   procedure Reset
-     (Mode_Handler : in out OAM_Access_Handler_Type);
+   procedure Reset (Mode_Handler : in out OAM_Access_Handler_Type);
 
    overriding
    procedure Start

@@ -1,6 +1,7 @@
 private with Gade.Cartridge_Info;
 private with Ada.Streams.Stream_IO;
 with Gade.Logging;
+with Gade.Timing; use Gade.Timing;
 
 private package Gade.Carts is
 
@@ -84,12 +85,7 @@ private package Gade.Carts is
    --  4 -   1MBit = 128kByte = 16 x 8kByte banks (MBC5)
    --  5 - 512kBit =  64kByte =  8 x 8kByte banks (MBC30, MBC5)
    type RAM_Size_Type is
-     (None,
-      RAM_16kbit,
-      RAM_64kbit,
-      RAM_256kbit,
-      RAM_1Mbit,
-      RAM_512kbit);
+     (None, RAM_16kbit, RAM_64kbit, RAM_256kbit, RAM_1Mbit, RAM_512kbit);
 
    --  014A Destination code:
    --  0 - Japanese
@@ -142,36 +138,23 @@ private package Gade.Carts is
    subtype Cart_NN_Access is not null Cart_Access;
 
    function Load_ROM
-     (Path   : String;
-      Logger : Gade.Logging.Logger_Access) return Cart_NN_Access;
+     (Path : String; Logger : Gade.Logging.Logger_Access) return Cart_NN_Access;
 
    procedure Reset (C : in out Cart) is null;
 
-   procedure Read_ROM
-     (C       : in out Cart;
-      Address : External_ROM_IO_Address;
-      V       : out Byte);
-   procedure Write_ROM
-     (C       : in out Cart;
-      Address : External_ROM_IO_Address;
-      V       : Byte) is null;
+   procedure Read_ROM (C : in out Cart; Address : External_ROM_IO_Address; V : out Byte);
+   procedure Write_ROM (C : in out Cart; Address : External_ROM_IO_Address; V : Byte)
+   is null;
 
-   procedure Read_RAM
-     (C       : in out Cart;
-      Address : External_RAM_IO_Address;
-      V       : out Byte);
-   procedure Write_RAM
-     (C       : in out Cart;
-      Address : External_RAM_IO_Address;
-      V       : Byte) is null;
+   procedure Read_RAM (C : in out Cart; Address : External_RAM_IO_Address; V : out Byte);
+   procedure Write_RAM (C : in out Cart; Address : External_RAM_IO_Address; V : Byte)
+   is null;
 
    procedure Load_RAM (C : in out Cart);
    procedure Save_RAM (C : in out Cart);
    function Logger_Of (C : Cart) return Gade.Logging.Logger_Access;
 
-   procedure Report_Cycles
-     (C      : in out Cart;
-     Cycles : Positive) is null;
+   procedure Report_Cycles (C : in out Cart; Cycles : M_Cycle_Count) is null;
 
 private
 
@@ -183,13 +166,11 @@ private
       Logger     : Gade.Logging.Logger_Access := Gade.Logging.Default_Logger;
    end record;
 
-   procedure Load_RAM_File
-     (C    : in out Cart;
-      File : Ada.Streams.Stream_IO.File_Type) is null;
+   procedure Load_RAM_File (C : in out Cart; File : Ada.Streams.Stream_IO.File_Type)
+   is null;
 
-   procedure Save_RAM_File
-     (C    : in out Cart;
-      File : Ada.Streams.Stream_IO.File_Type) is null;
+   procedure Save_RAM_File (C : in out Cart; File : Ada.Streams.Stream_IO.File_Type)
+   is null;
 
    use Gade.Cartridge_Info;
 
@@ -247,53 +228,53 @@ private
 
    for Destination_Type use (Japanese => 0, Non_Japanese => 1);
 
-   for Cart_Header use record
-      Entry_Point        at 16#100# range 0 .. 31;
-      Scrolling_Logo     at 16#104# range 0 .. 8 * 16#30# - 1;
-      Game_Title         at 16#134# range 0 .. 8 * 16#0F# - 1;
-      GB_Color           at 16#143# range 0 .. 7;
-      Licensee_Code_Low  at 16#144# range 0 .. 7;
-      Licensee_Code_High at 16#145# range 0 .. 7;
-      Super_GB           at 16#146# range 0 .. 7;
-      Cart_Type          at 16#147# range 0 .. 7;
-      ROM_Size           at 16#148# range 0 .. 7;
-      RAM_Size           at 16#149# range 0 .. 7;
-      Destination        at 16#14A# range 0 .. 7;
-      Licensee_Code_Old  at 16#14B# range 0 .. 7;
-      Mask_ROM_Version   at 16#14C# range 0 .. 7;
-      Complement_Check   at 16#14D# range 0 .. 7;
-      Checksum           at 16#14E# range 0 .. 15;
-   end record;
+   for Cart_Header use
+     record
+       Entry_Point at 16#100# range 0 .. 31;
+       Scrolling_Logo at 16#104# range 0 .. 8 * 16#30# - 1;
+       Game_Title at 16#134# range 0 .. 8 * 16#0F# - 1;
+       GB_Color at 16#143# range 0 .. 7;
+       Licensee_Code_Low at 16#144# range 0 .. 7;
+       Licensee_Code_High at 16#145# range 0 .. 7;
+       Super_GB at 16#146# range 0 .. 7;
+       Cart_Type at 16#147# range 0 .. 7;
+       ROM_Size at 16#148# range 0 .. 7;
+       RAM_Size at 16#149# range 0 .. 7;
+       Destination at 16#14A# range 0 .. 7;
+       Licensee_Code_Old at 16#14B# range 0 .. 7;
+       Mask_ROM_Version at 16#14C# range 0 .. 7;
+       Complement_Check at 16#14D# range 0 .. 7;
+       Checksum at 16#14E# range 0 .. 15;
+     end record;
    for Cart_Header'Size use 16#150# * 8;
 
-   Controller_Type_For_Cart : constant array (Cart_Type)
-     of Controller_Type :=
-       [ROM_ONLY                  => None,
-        ROM_MBC1                  => MBC1,
-        ROM_MBC1_RAM              => MBC1,
-        ROM_MBC1_RAM_BATT         => MBC1,
-        ROM_MBC2                  => MBC2,
-        ROM_MBC2_BATT             => MBC2,
-        ROM_RAM                   => None,
-        ROM_RAM_BATT              => None,
-        ROM_MM01                  => MM01,
-        ROM_MM01_SRAM             => MM01,
-        ROM_MM01_SRAM_BATT        => MM01,
-        ROM_MBC3_TIMER_BATT       => MBC3,
-        ROM_MBC3_TIMER_RAM_BATT   => MBC3,
-        ROM_MBC3                  => MBC3,
-        ROM_MBC3_RAM              => MBC3,
-        ROM_MBC3_RAM_BATT         => MBC3,
-        ROM_MBC5                  => MBC5,
-        ROM_MBC5_RAM              => MBC5,
-        ROM_MBC5_RAM_BATT         => MBC5,
-        ROM_MBC5_RUMBLE           => MBC5,
-        ROM_MBC5_RUMBLE_SRAM      => MBC5,
-        ROM_MBC5_RUMBLE_SRAM_BATT => MBC5,
-        Pocket_Camera             => Pocket_Camera,
-        Bandai_TAMA5              => Bandai_TAMA5,
-        Huds_on_Huc_3             => Huds_on_Huc_3,
-        Huds_on_Huc_1             => Huds_on_Huc_1];
+   Controller_Type_For_Cart : constant array (Cart_Type) of Controller_Type :=
+     [ROM_ONLY                  => None,
+      ROM_MBC1                  => MBC1,
+      ROM_MBC1_RAM              => MBC1,
+      ROM_MBC1_RAM_BATT         => MBC1,
+      ROM_MBC2                  => MBC2,
+      ROM_MBC2_BATT             => MBC2,
+      ROM_RAM                   => None,
+      ROM_RAM_BATT              => None,
+      ROM_MM01                  => MM01,
+      ROM_MM01_SRAM             => MM01,
+      ROM_MM01_SRAM_BATT        => MM01,
+      ROM_MBC3_TIMER_BATT       => MBC3,
+      ROM_MBC3_TIMER_RAM_BATT   => MBC3,
+      ROM_MBC3                  => MBC3,
+      ROM_MBC3_RAM              => MBC3,
+      ROM_MBC3_RAM_BATT         => MBC3,
+      ROM_MBC5                  => MBC5,
+      ROM_MBC5_RAM              => MBC5,
+      ROM_MBC5_RAM_BATT         => MBC5,
+      ROM_MBC5_RUMBLE           => MBC5,
+      ROM_MBC5_RUMBLE_SRAM      => MBC5,
+      ROM_MBC5_RUMBLE_SRAM_BATT => MBC5,
+      Pocket_Camera             => Pocket_Camera,
+      Bandai_TAMA5              => Bandai_TAMA5,
+      Huds_on_Huc_3             => Huds_on_Huc_3,
+      Huds_on_Huc_1             => Huds_on_Huc_1];
 
    type Cart_Type_Info is record
       Controller : Controller_Type;

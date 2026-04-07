@@ -2,12 +2,21 @@ limited with Gade.Input;
 limited with Gade.Logging;
 limited with Gade.Video_Buffer;
 limited with Gade.Audio_Buffer;
+with Gade.Timing; use Gade.Timing;
 
 package Gade.Interfaces is
 
-   CPU_Clock_Frequency : constant := 4_194_304; -- Hz (T-Cycles)
-   CPU_M_Frequency     : constant := CPU_Clock_Frequency / 4; -- Hz (M-Cycles)
-   CPU_Cycles_Per_Audio_Sample : constant := CPU_Clock_Frequency / CPU_M_Frequency;
+   CPU_Clock_Frequency           : constant := 4_194_304; -- Hz (T-Cycles)
+   CPU_M_Frequency               : constant := CPU_Clock_Frequency / 4; -- Hz (M-Cycles)
+   --  The frontend-facing audio contract is one generated sample per M-cycle.
+   CPU_M_Cycles_Per_Audio_Sample : constant M_Cycle_Count := 1;
+
+   --  Timing normalization follow-up:
+   --  - CPU instruction table already reports M-cycles.
+   --  - APU outer scheduling already runs in M-cycles.
+   --  - Timer and RTC still use T-cycles internally by design.
+   --  - LCD handlers still use T-cycle timings and are converted at the
+   --    display boundary for now.
 
    type Gade_Type is private;
 
@@ -65,9 +74,7 @@ package Gade.Interfaces is
    --
    --  Error behavior:
    --  - File I/O and ROM decoding exceptions propagate to caller.
-   procedure Load_ROM
-     (G    : Gade_Type;
-      Path : String);
+   procedure Load_ROM (G : Gade_Type; Path : String);
 
    --  Set or replace the input reader used by the joypad device.
    --
@@ -85,9 +92,7 @@ package Gade.Interfaces is
    --  Error behavior:
    --  - Invalid handles (for example null/dangling) raise runtime access-check
    --    exceptions.
-   procedure Set_Input_Reader
-     (G      : Gade_Type;
-      Reader : Gade.Input.Reader_Access);
+   procedure Set_Input_Reader (G : Gade_Type; Reader : Gade.Input.Reader_Access);
 
    --  Execute emulation until a frame is completed or Requested_Samples are
    --  generated, whichever happens first.

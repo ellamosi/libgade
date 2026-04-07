@@ -11,6 +11,7 @@ with Gade.Video_Buffer;   use Gade.Video_Buffer;
 with Gade.Audio_Buffer;   use Gade.Audio_Buffer;
 with Gade.Carts;          use Gade.Carts;
 with Gade.Logging;
+with Gade.Timing;         use Gade.Timing;
 
 private package Gade.GB is
 
@@ -28,7 +29,6 @@ private package Gade.GB is
    --  FFFF: Interrupt Enable Register
 
    type Memory_Bytes is array (Word'Range) of Byte;
-
    type GB_Public_Type is abstract tagged limited record
       CPU              : aliased CPU_Context;
       Logger           : Gade.Logging.Logger_Access;
@@ -46,23 +46,27 @@ private package Gade.GB is
 
    type GB_Type is new GB_Public_Type with private;
 
-   procedure Create
-     (GB     : out GB_Type;
-      Logger : Gade.Logging.Logger_Access);
+   procedure Create (GB : out GB_Type; Logger : Gade.Logging.Logger_Access);
 
    procedure Reset (GB : in out GB_Type);
 
-   --  TODO: Revisit how sync components for performance/cleanliness
+   procedure Set_Run_Context
+     (GB    : in out GB_Type;
+      Video : RGB32_Display_Buffer_Access;
+      Audio : Audio_Buffer_Access);
+
+   procedure Clear_Run_Context (GB : in out GB_Type);
+
+   procedure Tick_M_Cycles (GB : in out GB_Type; Cycles : M_Cycle_Count);
+
    procedure Report_Cycles
      (GB     : in out GB_Type;
       Video  : RGB32_Display_Buffer_Access;
       Audio  : Audio_Buffer_Access;
-      Cycles : Positive);
+      Cycles : M_Cycle_Count);
 
    procedure Report_Frame
-     (GB     : in out GB_Type;
-      Audio  : Audio_Buffer_Access;
-      Cycles : Positive);
+     (GB : in out GB_Type; Audio : Audio_Buffer_Access; Cycles : M_Cycle_Count);
 
 private
 
@@ -71,8 +75,14 @@ private
    type Device_Access is access all Hardware_Device'Class;
    type Device_Array is array (Device_Type) of Device_Access;
 
+   type Run_Context_Type is record
+      Video : RGB32_Display_Buffer_Access := null;
+      Audio : Audio_Buffer_Access := null;
+   end record;
+
    type GB_Type is new GB_Public_Type with record
-      Devices : Device_Array;
+      Devices     : Device_Array;
+      Run_Context : Run_Context_Type;
    end record;
 
 end Gade.GB;

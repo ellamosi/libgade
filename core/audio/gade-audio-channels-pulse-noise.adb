@@ -5,21 +5,19 @@ package body Gade.Audio.Channels.Pulse.Noise is
       LFSR_Width   : LFSR_Width_Mode;
       Divisor_Code : Divisor_Code_Type;
    end record;
-   for NRx3_Noise_IO use record
-      Clock_Shift  at 0 range 4 .. 7;
-      LFSR_Width   at 0 range 3 .. 3;
-      Divisor_Code at 0 range 0 .. 2;
-   end record;
+   for NRx3_Noise_IO use
+     record
+       Clock_Shift at 0 range 4 .. 7;
+       LFSR_Width at 0 range 3 .. 3;
+       Divisor_Code at 0 range 0 .. 2;
+     end record;
    for NRx3_Noise_IO'Size use Byte'Size;
 
-   function To_NRx3_Noise_IO is new Ada.Unchecked_Conversion
-     (Source => Byte,
-      Target => NRx3_Noise_IO);
+   function To_NRx3_Noise_IO is new
+     Ada.Unchecked_Conversion (Source => Byte, Target => NRx3_Noise_IO);
 
    overriding
-   procedure Disable
-     (Channel : in out Noise_Channel;
-      Mode    : Disable_Mode) is
+   procedure Disable (Channel : in out Noise_Channel; Mode : Disable_Mode) is
    begin
       Parent (Channel).Disable (Mode);
       if Mode = APU_Power_Off then
@@ -50,9 +48,9 @@ package body Gade.Audio.Channels.Pulse.Noise is
       LFSR : Shift_Register renames Channel.LFSR;
 
       Low_0, Low_1, XORed : Shift_Register;
-      New_Pulse_State : Pulse_State_Type;
+      New_Pulse_State     : Pulse_State_Type;
    begin
-      Level_Cycles := Channel.Clock_Divisor * 2 ** Channel.Clock_Shift;
+      Level_Cycles := Channel.Clock_Divisor * 2**Channel.Clock_Shift;
 
       --  https://gbdev.gg8.se/wiki/articles/Gameboy_sound_hardware#Noise_Channel
       --
@@ -65,9 +63,9 @@ package body Gade.Audio.Channels.Pulse.Noise is
       LFSR := LFSR / 2;
       Low_1 := LFSR and 16#0001#;
       XORed := Low_0 xor Low_1;
-      LFSR := LFSR or (XORed * 2 ** 14);
+      LFSR := LFSR or (XORed * 2**14);
       if Channel.LFSR_Width = Half then
-         LFSR := (LFSR and 16#7FBF#) or (XORed * 2 ** 6);
+         LFSR := (LFSR and 16#7FBF#) or (XORed * 2**6);
       end if;
 
       --  The waveform output is bit 0 of the LFSR, INVERTED.

@@ -7,10 +7,21 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 ### [Blargg's Test ROMs](http://gbdev.gg8.se/files/roms/blargg-gb-tests/)
 - CPU Instruction Behavior Test (`cpu_instrs`)
 - Instruction Timing (`instr_timing`)
+- Memory Timing v2 (`mem_timing_v2`, from `mem_timing-2.zip`)
 
 ### [Mooneye Test ROMs](https://github.com/Gekkio/mooneye-test-suite)
 - Cart Memory Bank Controllers (`mbc1`, `mbc2`)
-- LCD Timings
+- Interrupt timing (`di_timing-GS`, `intr_1_2_timing-GS`)
+
+### Standalone LCD Test ROMs
+- `lcd_lyc`
+- `dycptest2` by beware
+- `dmg-acid2` by Matt Currie
+
+### Demoscene Test ROMs
+- `gejmboj` by Snorpung
+- `Is That a Demo in Your Pocket?` by Snorpung
+- `OH!` by Snorpung
 
 ## Layout
 - `integration/<source>/test_*.py`: pytest test modules grouped by source.
@@ -136,4 +147,25 @@ Commercial Tetris reference generation:
 ```sh
 cd tests
 python3 integration/commercial/generate_tetris_refs.py
+```
+
+Snorpung pocket demo reference generation:
+
+```sh
+cd tests
+python3 integration/snorpung/generate_pocket_refs.py
+```
+
+Snorpung OH! demo reference generation:
+
+```sh
+cd tests
+python3 integration/snorpung/generate_oh_refs.py
+```
+
+Snorpung gejmboj demo reference generation:
+
+```sh
+cd tests
+python3 integration/snorpung/generate_gejmboj_refs.py
 ```
