@@ -356,6 +356,20 @@ source_id = "mooneye_public"
 member = "mts-20240926-1737-443f6e1/emulator-only/mbc2/rom_512kb.gb"
 
 [[roms]]
+id = "mooneye/di_timing-GS"
+target = "assets/roms/mooneye/di_timing-GS.gb"
+sha256 = "618dd8f765c71c0f299cd124d8596d12da9ef987e800a45ac5c4b98fd240c54d"
+source_id = "mooneye_public"
+member = "mts-20240926-1737-443f6e1/acceptance/di_timing-GS.gb"
+
+[[roms]]
+id = "mooneye/intr_1_2_timing-GS"
+target = "assets/roms/mooneye/intr_1_2_timing-GS.gb"
+sha256 = "3bac47fc79ce514fd7f6bbe0d87f1160b91a5292be27fee7bc3bcea6bc171ee9"
+source_id = "mooneye_public"
+member = "mts-20240926-1737-443f6e1/acceptance/ppu/intr_1_2_timing-GS.gb"
+
+[[roms]]
 id = "snorpung/pocket"
 target = "assets/roms/snorpung/pocket.gb"
 sha256 = "1e27305df67500fae49376cdf33b7cf052442e3ef5c910f96047b2cf63afe797"

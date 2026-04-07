@@ -11,6 +11,7 @@ binary. Test cases are regular `pytest` tests under `integration/`.
 
 ### [Mooneye Test ROMs](https://github.com/Gekkio/mooneye-test-suite)
 - Cart Memory Bank Controllers (`mbc1`, `mbc2`)
+- Interrupt timing (`di_timing-GS`, `intr_1_2_timing-GS`)
 
 ### Standalone LCD Test ROMs
 - `lcd_lyc`
