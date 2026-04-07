@@ -11,8 +11,11 @@ package body Gade.Dev.CPU.Exec is
      (CPU : in out CPU_Context; GB : in out Gade.GB.GB_Type; Cycles : out M_Cycle_Count)
    is
       pragma Unreferenced (CPU);
-      Handler : Instruction_Handler;
-      Opcode  : Byte;
+      Enable_IME_After_Instruction : constant Boolean := GB.CPU.IFF = IME_Enable_Pending;
+      Skip_PC_Increment            : constant Boolean :=
+        GB.CPU.Execution_State = Halt_Bug_Pending;
+      Handler                      : Instruction_Handler;
+      Opcode                       : Byte;
    begin
       GB.CPU.Stepped_Cycles := 0;
       Opcode := Gade.GB.Memory_Map.CPU_Read_Byte (GB, GB.CPU.PC);
@@ -21,9 +24,21 @@ package body Gade.Dev.CPU.Exec is
 
       GB.CPU.Branch_Taken := False;
       Handler := Main_Table (Opcode);
-      GB.CPU.PC := GB.CPU.PC + 1;
+      if Skip_PC_Increment then
+         --  Consume the latched HALT bug: execute the next opcode without the
+         --  usual pre-dispatch PC increment, then return to normal execution.
+         GB.CPU.Execution_State := Running;
+      else
+         --  Normal fetch path: advance PC past the opcode before running its
+         --  handler.
+         GB.CPU.PC := GB.CPU.PC + 1;
+      end if;
 
       Handler.all (GB);
+      if Enable_IME_After_Instruction and then GB.CPU.IFF = IME_Enable_Pending then
+         --  EI takes effect only after the following instruction completes.
+         GB.CPU.IFF := IME_Enabled;
+      end if;
       Cycles := GB.CPU.Stepped_Cycles;
    end Execute;
 

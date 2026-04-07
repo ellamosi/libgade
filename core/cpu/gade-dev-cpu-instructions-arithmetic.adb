@@ -211,8 +211,7 @@ package body Gade.Dev.CPU.Instructions.Arithmetic is
    procedure ADD_SP_Imm8 (GB : in out Gade.GB.GB_Type) is
    begin
       Add (GB.CPU, GB.CPU.Regs.SP, Instructions.Fetch_Imm8 (GB));
-      Instructions.Internal_Cycle (GB);
-      Instructions.Internal_Cycle (GB);
+      Instructions.Internal_Cycles (GB, 2);
    end ADD_SP_Imm8;
 
    procedure DAA (GB : in out Gade.GB.GB_Type) is

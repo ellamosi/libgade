@@ -130,6 +130,8 @@ package body Gade.Dev.Display.Handlers is
       Handler.Current_Line := Starting_Line;
       Handler.Latched_Map := Handler.Dev.Map;
       Handler.Pending_Writes := [others => (others => <>)];
+      Handler.Pending_Line := Starting_Line;
+      Handler.Pending_Line_Valid := False;
       Handler.Window_Line_Counter := 0;
       Handler.Window_Line_Active := False;
       Handler.Current_Mode_Handler.Reset;
@@ -144,6 +146,7 @@ package body Gade.Dev.Display.Handlers is
    is
       Requested_Cycles : Natural;
       Remaining_Cycles : Natural := Cycles;
+      Finished_Mode    : LCD_Controller_Mode_Type;
       Next_Mode        : LCD_Controller_Mode_Type;
    begin
       while Remaining_Cycles > 0 loop
@@ -151,10 +154,16 @@ package body Gade.Dev.Display.Handlers is
          Handler.Current_Mode_Handler.Report_Cycles
            (GB, Video, Requested_Cycles, Remaining_Cycles);
          if Handler.Current_Mode_Handler.Is_Mode_Finished then
+            Finished_Mode := Handler.Mode;
             Next_Mode := Handler.Current_Mode_Handler.Next_Mode;
             Handler.Current_Mode_Handler := Handler.Mode_Handlers (Next_Mode);
             Handler.Mode := Next_Mode;
             Mode_Changed (Handler.Dev.all, GB, Next_Mode);
+            if Finished_Mode = Display_Modes.HBlank and then Handler.Pending_Line_Valid
+            then
+               Handler.Line_Changed (GB, Handler.Pending_Line);
+               Handler.Pending_Line_Valid := False;
+            end if;
             Handler.Current_Mode_Handler.Start (GB, Video);
          end if;
       end loop;

@@ -22,8 +22,4 @@ package Gade.GB.Memory_Map is
 
    procedure Write_Word (GB : in out GB_Type; Address : Word; Value : Word);
 
-   procedure Push (GB : in out GB_Type; Value : Word);
-
-   procedure Pop (GB : in out GB_Type; Value : out Word);
-
 end Gade.GB.Memory_Map;

@@ -362,7 +362,7 @@ sha256 = "1e27305df67500fae49376cdf33b7cf052442e3ef5c910f96047b2cf63afe797"
 
 [roms.source]
 type = "http_zip_member"
-url = "https://files.scene.org/get/demos/groups/snorpung/pocket.zip"
+url = "https://archive.scene.org/pub/demos/groups/snorpung/pocket.zip"
 member = "pocket.gb"
 
 [[roms]]
@@ -375,9 +375,8 @@ description = "Multi-scene demo ROM with several animated effects and a looping 
 
 [roms.source]
 type = "http_zip_member"
-url = "https://files.scene.org/get/demos/groups/snorpung/gejmboj.zip"
+url = "https://archive.scene.org/pub/demos/groups/snorpung/gejmboj.zip"
 member = "gejmboj.gb"
-filename = "gejmboj.zip"
 optional = true
 
 [[roms]]
@@ -387,7 +386,7 @@ sha256 = "7b58248d68c4c9bc257f84bdcbdf8712cb3bd6c1fdf04073c4d0b2b5e5f108b1"
 
 [roms.source]
 type = "http_zip_member"
-url = "https://files.scene.org/get/demos/groups/snorpung/oh_2.zip"
+url = "https://archive.scene.org/pub/demos/groups/snorpung/oh_2.zip"
 member = "oh.gb"
 
 [[roms]]
@@ -397,5 +396,19 @@ sha256 = "69db4cd94071c5cdfb57057ffc9945857a056f5aa0f09d774e5b064ecebf0f9c"
 
 [roms.source]
 type = "http_zip_member"
-url = "https://files.scene.org/get/demos/groups/snorpung/20y.zip"
+url = "https://archive.scene.org/pub/demos/groups/snorpung/20y.zip"
 member = "20y.gb"
+
+[[roms]]
+id = "commercial/Pinball Fantasies (USA, Europe)"
+target = "assets/roms/commercial/Pinball Fantasies (USA, Europe).gb"
+sha256 = "f8553970aa60e1645a5e4044f342e723247800a9835a7e066318229c478c6441"
+
+[roms.source]
+type = "http_encrypted_zip_member"
+url_env = "GADE_COMMERCIAL_ROMS_URL"
+zip_password_env = "GADE_COMMERCIAL_ROMS_PASSWORD"
+member = "nointro.gb/Pinball Fantasies (USA, Europe).gb"
+encrypted = true
+cache_key = "commercial-roms"
+optional = true

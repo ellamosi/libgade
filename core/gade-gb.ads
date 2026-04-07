@@ -29,7 +29,6 @@ private package Gade.GB is
    --  FFFF: Interrupt Enable Register
 
    type Memory_Bytes is array (Word'Range) of Byte;
-
    type GB_Public_Type is abstract tagged limited record
       CPU              : aliased CPU_Context;
       Logger           : Gade.Logging.Logger_Access;

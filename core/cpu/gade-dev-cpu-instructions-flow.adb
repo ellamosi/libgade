@@ -43,7 +43,7 @@ package body Gade.Dev.CPU.Instructions.Flow is
          when Instructions.FLOW_RETI =>
             Instructions.Internal_Cycle (GB);
             Instructions.Pop_Word (GB, GB.CPU.PC);
-            GB.CPU.IFF := IE_EI;
+            GB.CPU.IFF := IME_Enabled;
 
          when Instructions.FLOW_JR   =>
             Offset := Instructions.Fetch_Imm8 (GB);

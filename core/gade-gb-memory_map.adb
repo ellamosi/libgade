@@ -158,16 +158,4 @@ package body Gade.GB.Memory_Map is
       Write_Byte (GB, Address + 1, Byte (Value / 2**8));
    end Write_Word;
 
-   procedure Push (GB : in out GB_Type; Value : Word) is
-   begin
-      GB.CPU.Regs.SP := GB.CPU.Regs.SP - 2;
-      Write_Word (GB, GB.CPU.Regs.SP, Value);
-   end Push;
-
-   procedure Pop (GB : in out GB_Type; Value : out Word) is
-   begin
-      Read_Word (GB, GB.CPU.Regs.SP, Value);
-      GB.CPU.Regs.SP := GB.CPU.Regs.SP + 2;
-   end Pop;
-
 end Gade.GB.Memory_Map;

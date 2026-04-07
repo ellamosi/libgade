@@ -1,4 +1,4 @@
-with Gade.GB.Memory_Map; use Gade.GB.Memory_Map;
+with Gade.Dev.Interrupts; use Gade.Dev.Interrupts;
 
 package body Gade.Dev.CPU.Instructions.Control is
 
@@ -30,31 +30,40 @@ package body Gade.Dev.CPU.Instructions.Control is
    end CCF;
 
    procedure HALT (GB : in out GB_Type) is
-      Pending_Interrupts : constant Byte :=
-        (Read_Byte (GB, 16#FF0F#) and Read_Byte (GB, 16#FFFF#)) and 16#1F#;
+      Pending_Enabled_Interrupt : constant Boolean := Has_Pending_Enabled_Interrupt (GB);
    begin
-      --  With per-M-cycle ticking, an interrupt can become pending during the
-      --  HALT opcode fetch. In that case the CPU must resume from the next
-      --  instruction instead of staying halted.
-      GB.CPU.Halted := Pending_Interrupts = 0;
+      if not Pending_Enabled_Interrupt then
+         --  No enabled interrupt is pending, so HALT really enters the halted
+         --  state and waits for one to arrive.
+         GB.CPU.Execution_State := Halted;
+      elsif Pending_Enabled_Interrupt and GB.CPU.IFF = IME_Enabled then
+         --  An enabled interrupt is already pending and IME is on, so HALT is
+         --  immediately broken by normal interrupt servicing.
+         GB.CPU.Execution_State := Running;
+      else
+         --  An enabled interrupt is pending while IME is off, so HALT does not
+         --  stick. Instead, the next instruction fetch reuses the current PC
+         --  once before normal PC incrementing resumes.
+         GB.CPU.Execution_State := Halt_Bug_Pending;
+      end if;
    end HALT;
 
    procedure STOP (GB : in out GB_Type) is
    begin
       GB.CPU.PC := GB.CPU.PC + 1;
-      if GB.CPU.IFF = IE_EI then
-         GB.CPU.Halted := True;
+      if GB.CPU.IFF = IME_Enabled then
+         GB.CPU.Execution_State := Halted;
       end if;
    end STOP;
 
    procedure DI (GB : in out GB_Type) is
    begin
-      GB.CPU.IFF := IE_DI;
+      GB.CPU.IFF := IME_Disabled;
    end DI;
 
    procedure EI (GB : in out GB_Type) is
    begin
-      GB.CPU.IFF := IE_EI;
+      GB.CPU.IFF := IME_Enable_Pending;
    end EI;
 
 end Gade.Dev.CPU.Instructions.Control;
