@@ -104,10 +104,6 @@ it rewrites files you should `git add` them and re-run the commit.
 - Mid scanline rendering
 - Audio
 
-### What does not work
-- Other cartridge controller types
-- Accurate timings
-
 ### Next steps
 - Performance optimizations (GPU rendering)
 - Performance optimizations (CPU interpretation/Interrupt handling)
