@@ -184,9 +184,14 @@ package body Gade.Dev.Interrupts is
          GB.CPU.PC := Interrupt_Handlers (Interrupt);
       end if;
 
+      --  Interrupt dispatch still consumes 5 M-cycles in total. The final
+      --  cycle is a pure delay after the vector has been selected and before
+      --  the handler begins executing.
+      Gade.Dev.CPU.Instructions.Internal_Cycle (GB);
+
       --  Report the interrupt service cost for Run_For accounting only; the
       --  per-M-cycle state advancement already happened above.
-      Cycles := 4;
+      Cycles := 5;
    end Service_Interrupts;
 
 end Gade.Dev.Interrupts;
