@@ -50,6 +50,7 @@ jobs:
 
           rm -rf "${bundle_root}"
           mkdir -p "${bundle_root}/.local/bin"
+          mkdir -p "${lcov_root}"
           mkdir -p "${bundle_root}/.local/share/alire"
           mkdir -p "${bundle_root}/.config"
 
