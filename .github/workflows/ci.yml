@@ -82,7 +82,7 @@ jobs:
       - name: Build C++ interface check
         run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
 
-  tests:
+  test_shards:
     runs-on: ubuntu-latest
     needs: define-test-shards
     strategy:
@@ -129,6 +129,15 @@ jobs:
           name: pytest-shard-${{ matrix.index }}
           path: ${{ runner.temp }}/pytest-shard-${{ matrix.index }}.xml
           if-no-files-found: ignore
+
+  tests:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: test_shards
+
+    steps:
+      - name: Check shard results
+        run: test "${{ needs.test_shards.result }}" = "success"
 
   coverage:
     runs-on: ubuntu-latest
