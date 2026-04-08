@@ -30,7 +30,7 @@ def load_nodeids_file(path):
 
 
 def pytest_argv(args):
-    if shutil.which("alr"):
+    if not args.plain_python and shutil.which("alr"):
         argv = ["alr", "exec", "--", "python3", "-m", "pytest"]
     else:
         argv = [sys.executable, "-m", "pytest"]
@@ -66,7 +66,9 @@ def ensure_pytest_available():
         return
     raise SystemExit(
         "pytest is required. Run setup first:\n"
-        "  alr build"
+        "  alr build\n"
+        "or:\n"
+        "  python3 -m pip install -r requirements.txt"
     )
 
 
@@ -74,6 +76,11 @@ def main():
     parser = argparse.ArgumentParser("Run integration tests via pytest")
     parser.add_argument("--list", action="store_true", help="List discovered tests and exit")
     parser.add_argument("--no-build", action="store_true", help="Skip harness build step")
+    parser.add_argument(
+        "--plain-python",
+        action="store_true",
+        help="Run pytest with the current Python interpreter instead of alr exec",
+    )
     parser.add_argument("--nodeids-file", help="Run exact pytest nodeids listed one per line")
     parser.add_argument("--junitxml", help="Write a JUnit XML report to this path")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose pytest output")

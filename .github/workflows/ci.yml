@@ -71,9 +71,44 @@ jobs:
       - name: Build C++ interface check
         run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
 
+  build-tests:
+    runs-on: ubuntu-latest
+    name: Build Tests
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
+        with:
+          cache-rom-downloads: "false"
+
+      - name: Build tests
+        working-directory: tests
+        run: alr build
+
+      - name: Stage Python test dependencies
+        working-directory: tests
+        run: |
+          rm -rf .python-packages
+          python3 -m pip install --disable-pip-version-check --target .python-packages -r requirements.txt
+
+      - name: Create test runtime archive
+        working-directory: tests
+        run: tar --zstd -cf "${RUNNER_TEMP}/test-runtime.tar.zst" bin .python-packages
+
+      - name: Upload test runtime
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-runtime
+          path: ${{ runner.temp }}/test-runtime.tar.zst
+          compression-level: 0
+          if-no-files-found: error
+
   test-shards:
     runs-on: ubuntu-latest
-    needs: define-test-shards
+    needs: [define-test-shards, build-tests]
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.define-test-shards.outputs.matrix) }}
@@ -86,10 +121,17 @@ jobs:
 
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
+        with:
+          cache-alire-dependencies: "false"
 
-      - name: Build tests
-        working-directory: tests
-        run: alr build
+      - name: Download test runtime
+        uses: actions/download-artifact@v4
+        with:
+          name: test-runtime
+          path: ${{ runner.temp }}
+
+      - name: Extract test runtime
+        run: tar --zstd -xf "${RUNNER_TEMP}/test-runtime.tar.zst" -C tests
 
       - name: Write shard nodeids
         run: |
@@ -103,6 +145,7 @@ jobs:
         # fixtures from rebuilding gade-testd with potentially different flags.
         run: |
           python3 run.py \
+            --plain-python \
             --no-build \
             --nodeids-file "${RUNNER_TEMP}/pytest-nodeids.txt" \
             --junitxml "${RUNNER_TEMP}/pytest-shard-${{ matrix.index }}.xml"
@@ -110,6 +153,7 @@ jobs:
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
           GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
+          PYTHONPATH: ${{ github.workspace }}/tests/.python-packages
 
       - name: Upload shard JUnit XML
         if: always()
@@ -122,12 +166,14 @@ jobs:
   tests:
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    needs: test-shards
+    needs: [build-tests, test-shards]
     name: Tests
 
     steps:
-      - name: Check shard results
-        run: test "${{ needs.test-shards.result }}" = "success"
+      - name: Check build and shard results
+        run: |
+          test "${{ needs.build-tests.result }}" = "success"
+          test "${{ needs.test-shards.result }}" = "success"
 
   coverage_run:
     if: ${{ github.event_name == 'push' }}
