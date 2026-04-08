@@ -139,8 +139,10 @@ jobs:
       - name: Check shard results
         run: test "${{ needs.test_shards.result }}" = "success"
 
-  coverage:
+  coverage_run:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
+    name: Coverage / Full
 
     steps:
       - name: Checkout
@@ -196,3 +198,17 @@ jobs:
           file: coverage/lcov.info
           format: lcov
           flag-name: ada-core
+
+  coverage:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: coverage_run
+
+    steps:
+      - name: Coverage disabled on pull requests
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "Coverage runs on push to main/master only."
+
+      - name: Check coverage job result
+        if: ${{ github.event_name == 'push' }}
+        run: test "${{ needs.coverage_run.result }}" = "success"
