@@ -1,8 +1,8 @@
 name: CI
 
 env:
-  GNATFORMAT_BUNDLE_TAG: gnatformat-bundle-v1
-  GNATFORMAT_BUNDLE_ASSET: gnatformat-ubuntu.tar.zst
+  CI_TOOLS_BUNDLE_TAG: ci-tools-bundle-v1
+  CI_TOOLS_BUNDLE_ASSET: ci-tools-ubuntu.tar.zst
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
         id: matrix
         run: python3 scripts/ci_shards.py matrix --github-output "${GITHUB_OUTPUT}"
 
-  check-format:
+  format:
     runs-on: ubuntu-latest
     name: Check Format
     permissions:
@@ -36,26 +36,10 @@ jobs:
 
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
+        with:
+          cache-rom-downloads: "false"
 
-      - name: Restore pinned gnatformat bundle
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: sh
-        run: |
-          set -eu
-          bundle_path="${RUNNER_TEMP}/${GNATFORMAT_BUNDLE_ASSET}"
-          if gh release download "${GNATFORMAT_BUNDLE_TAG}" \
-              --repo "${GITHUB_REPOSITORY}" \
-              --pattern "${GNATFORMAT_BUNDLE_ASSET}" \
-              --output "${bundle_path}"; then
-            rm -rf "${HOME}/.alire"
-            mkdir -p "${HOME}"
-            tar --zstd -xf "${bundle_path}" -C "${HOME}"
-          else
-            echo "Pinned gnatformat bundle ${GNATFORMAT_BUNDLE_TAG}/${GNATFORMAT_BUNDLE_ASSET} not available; falling back to local install."
-          fi
-
-      - name: Install gnatformat
+      - name: Ensure gnatformat
         shell: sh
         run: |
           if [ ! -x "${HOME}/.alire/bin/gnatformat" ]; then
@@ -75,6 +59,8 @@ jobs:
 
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
+        with:
+          cache-rom-downloads: "false"
 
       - name: Build library
         run: alr build
@@ -157,8 +143,13 @@ jobs:
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
 
-      - name: Install LCOV
-        run: sudo apt-get update && sudo apt-get install -y lcov
+      - name: Ensure LCOV
+        shell: sh
+        run: |
+          if ! command -v lcov >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y lcov
+          fi
 
       - name: Build library (coverage)
         run: alr build

@@ -1,0 +1,91 @@
+name: Publish CI tools bundle
+
+on:
+  workflow_dispatch:
+
+env:
+  CI_TOOLS_BUNDLE_TAG: ci-tools-bundle-v1
+  CI_TOOLS_BUNDLE_ASSET: ci-tools-ubuntu.tar.zst
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
+        with:
+          restore-ci-tools-bundle: "false"
+          cache-rom-downloads: "false"
+
+      - name: Ensure gnatformat
+        shell: sh
+        run: |
+          if [ ! -x "${HOME}/.alire/bin/gnatformat" ]; then
+            alr install gnatformat
+          fi
+
+      - name: Install LCOV
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
+      - name: Create bundle archive
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          bundle_root="${RUNNER_TEMP}/ci-tools-home"
+          lcov_root="${bundle_root}/.local/ci-tools"
+
+          rm -rf "${bundle_root}"
+          mkdir -p "${bundle_root}/.local/bin"
+          mkdir -p "${bundle_root}/.local/share/alire"
+          mkdir -p "${bundle_root}/.config"
+
+          cp -a "${HOME}/.local/bin/alr" "${bundle_root}/.local/bin/"
+          cp -a "${HOME}/.alire" "${bundle_root}/"
+
+          if [ -d "${HOME}/.config/alire" ]; then
+            cp -a "${HOME}/.config/alire" "${bundle_root}/.config/"
+          fi
+
+          if [ -d "${HOME}/.local/share/alire/toolchains" ]; then
+            cp -a "${HOME}/.local/share/alire/toolchains" "${bundle_root}/.local/share/alire/"
+          fi
+
+          while IFS= read -r path; do
+            [ -e "${path}" ] || continue
+            case "${path}" in
+              /usr/bin/*|/usr/share/perl5/*|/usr/share/lcov/*|/etc/lcovrc)
+                cp --parents -a "${path}" "${lcov_root}"
+                ;;
+            esac
+          done < <(dpkg-query -L lcov)
+
+          tar --zstd -cf "${RUNNER_TEMP}/${CI_TOOLS_BUNDLE_ASSET}" -C "${bundle_root}" .
+
+      - name: Publish release asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: sh
+        run: |
+          set -eu
+          if ! gh release view "${CI_TOOLS_BUNDLE_TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create "${CI_TOOLS_BUNDLE_TAG}" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --title "Pinned CI tools bundle" \
+              --notes "Reusable CI bundle for alr, gnatformat, and lcov."
+          fi
+
+          gh release delete-asset "${CI_TOOLS_BUNDLE_TAG}" "${CI_TOOLS_BUNDLE_ASSET}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --yes >/dev/null 2>&1 || true
+
+          gh release upload "${CI_TOOLS_BUNDLE_TAG}" "${RUNNER_TEMP}/${CI_TOOLS_BUNDLE_ASSET}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --clobber

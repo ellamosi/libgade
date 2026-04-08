@@ -1,28 +1,90 @@
 name: CI Setup
-description: Setup Alire and restore CI caches.
+description: Restore the pinned CI tools bundle, setup Alire fallback, and restore CI caches.
+
+inputs:
+  restore-ci-tools-bundle:
+    description: Restore the pinned CI tools bundle from the repository release.
+    required: false
+    default: "true"
+  cache-alire-dependencies:
+    description: Restore cached Alire release/build state.
+    required: false
+    default: "true"
+  cache-rom-downloads:
+    description: Restore the cached ROM download directory.
+    required: false
+    default: "true"
 
 runs:
   using: composite
   steps:
+    - name: Restore pinned CI tools bundle
+      id: restore_ci_tools_bundle
+      if: ${{ inputs.restore-ci-tools-bundle == 'true' }}
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: sh
+      run: |
+        set -eu
+        bundle_tag="${CI_TOOLS_BUNDLE_TAG:-}"
+        bundle_asset="${CI_TOOLS_BUNDLE_ASSET:-}"
+
+        if [ -z "${bundle_tag}" ] || [ -z "${bundle_asset}" ]; then
+          echo "restored=false" >> "${GITHUB_OUTPUT}"
+          exit 0
+        fi
+
+        bundle_path="${RUNNER_TEMP}/${bundle_asset}"
+        if gh release download "${bundle_tag}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "${bundle_asset}" \
+            --output "${bundle_path}"; then
+          mkdir -p "${HOME}"
+          tar --zstd -xf "${bundle_path}" -C "${HOME}"
+          if [ -x "${HOME}/.local/bin/alr" ] && [ -x "${HOME}/.alire/bin/gnatformat" ]; then
+            echo "restored=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "Pinned CI tools bundle restored but required tools are missing; falling back to setup-alire."
+            echo "restored=false" >> "${GITHUB_OUTPUT}"
+          fi
+        else
+          echo "Pinned CI tools bundle ${bundle_tag}/${bundle_asset} not available; falling back to setup-alire."
+          echo "restored=false" >> "${GITHUB_OUTPUT}"
+        fi
+
     - name: Setup Alire
+      if: ${{ steps.restore_ci_tools_bundle.outputs.restored != 'true' }}
       uses: alire-project/setup-alire@v5
 
-    - name: Add Alire install prefix to PATH
+    - name: Add bundled tool prefixes to PATH
       shell: sh
-      run: echo "${HOME}/.alire/bin" >> "${GITHUB_PATH}"
+      run: |
+        echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+        echo "${HOME}/.alire/bin" >> "${GITHUB_PATH}"
+        echo "${HOME}/.local/ci-tools/usr/bin" >> "${GITHUB_PATH}"
+
+        perl5_root="${HOME}/.local/ci-tools/usr/share/perl5"
+        if [ -d "${perl5_root}" ]; then
+          {
+            echo "PERL5LIB=${perl5_root}${PERL5LIB:+:${PERL5LIB}}"
+            echo "LCOV_CONFIG_FILE=${HOME}/.local/ci-tools/etc/lcovrc"
+          } >> "${GITHUB_ENV}"
+        fi
 
     - name: Cache Alire dependencies
+      if: ${{ inputs.cache-alire-dependencies == 'true' }}
       uses: actions/cache@v4
       with:
         path: |
           ~/.cache/alire
-          ~/.config/alire
-          ~/.local/share/alire
+          ~/.local/share/alire/releases
+          ~/.local/share/alire/builds
         key: ${{ runner.os }}-alire-${{ hashFiles('alire.toml', 'alire/alire.lock', 'tests/alire.toml', 'tests/alire/alire.lock') }}
         restore-keys: |
           ${{ runner.os }}-alire-
 
     - name: Cache ROM downloads
+      if: ${{ inputs.cache-rom-downloads == 'true' }}
       uses: actions/cache@v4
       with:
         path: tests/.rom-cache/downloads
