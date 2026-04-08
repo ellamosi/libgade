@@ -41,13 +41,19 @@ jobs:
 
           bundle_root="${RUNNER_TEMP}/ci-tools-home"
           lcov_root="${bundle_root}/.local/ci-tools"
+          alr_path="$(command -v alr)"
+
+          if [ -z "${alr_path}" ]; then
+            echo "alr is not on PATH"
+            exit 1
+          fi
 
           rm -rf "${bundle_root}"
           mkdir -p "${bundle_root}/.local/bin"
           mkdir -p "${bundle_root}/.local/share/alire"
           mkdir -p "${bundle_root}/.config"
 
-          cp -a "${HOME}/.local/bin/alr" "${bundle_root}/.local/bin/"
+          cp -L "${alr_path}" "${bundle_root}/.local/bin/alr"
           cp -a "${HOME}/.alire" "${bundle_root}/"
 
           if [ -d "${HOME}/.config/alire" ]; then
