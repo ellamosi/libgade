@@ -56,11 +56,48 @@ Run a subset by substring filter:
 alr run --args="mbc1 cpu_instrs"
 ```
 
+Run an exact list of collected nodeids:
+
+```sh
+python3 run.py --no-build --nodeids-file /tmp/pytest-nodeids.txt
+```
+
 Run pytest directly (same tests):
 
 ```sh
 python3 -m pytest -q integration
 ```
+
+## CI sharding
+CI reads shard assignments from `tests/ci-shards.json`. The manifest contains:
+- the current shard count and nodeid assignments
+- the last timing map used to balance them
+
+Rebalance the manifest on demand with one or more JUnit XML reports:
+
+```sh
+python3 scripts/ci_shards.py rebalance --shards 4 --junitxml /tmp/pytest-shard-1.xml --junitxml /tmp/pytest-shard-2.xml
+```
+
+The rebalancer:
+- collects the current pytest nodeids from `integration/`
+- merges any supplied JUnit XML timings into the stored timing map
+- redistributes tests with a greedy load balancer so the expected shard times stay close
+
+Print the current GitHub Actions matrix payload:
+
+```sh
+python3 scripts/ci_shards.py matrix
+```
+
+Write one shard's exact nodeids to a file:
+
+```sh
+python3 scripts/ci_shards.py nodeids --shard 1 --output /tmp/pytest-nodeids.txt
+```
+
+Each CI shard uploads its own JUnit XML artifact as `pytest-shard-<n>`, which can
+be reused as input for a later rebalance.
 
 ## ROM asset resolver
 Integration startup resolves ROM assets from `assets/roms_manifest.toml`:

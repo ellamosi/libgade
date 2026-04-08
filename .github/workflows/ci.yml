@@ -10,6 +10,19 @@ on:
   pull_request:
 
 jobs:
+  define-test-shards:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Load test shard matrix
+        id: matrix
+        run: python3 scripts/ci_shards.py matrix --github-output "${GITHUB_OUTPUT}"
+
   format:
     runs-on: ubuntu-latest
     permissions:
@@ -50,7 +63,7 @@ jobs:
       - name: Check Ada formatting
         run: ./scripts/check-ada-format.sh
 
-  tests:
+  cpp-interface:
     runs-on: ubuntu-latest
 
     steps:
@@ -69,19 +82,53 @@ jobs:
       - name: Build C++ interface check
         run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
 
+  tests:
+    runs-on: ubuntu-latest
+    needs: define-test-shards
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.define-test-shards.outputs.matrix) }}
+
+    name: Tests / Shard ${{ matrix.index }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
+
       - name: Build tests
         working-directory: tests
         run: alr build
 
-      - name: Run tests
+      - name: Write shard nodeids
+        run: |
+          python3 scripts/ci_shards.py nodeids \
+            --shard "${{ matrix.index }}" \
+            --output "${RUNNER_TEMP}/pytest-nodeids.txt"
+
+      - name: Run shard tests
         working-directory: tests
         # --skip-build avoids rebuilding run-tests; --no-build prevents pytest
         # fixtures from rebuilding gade-testd with potentially different flags.
-        run: alr run --skip-build --args="--no-build"
+        run: |
+          python3 run.py \
+            --no-build \
+            --nodeids-file "${RUNNER_TEMP}/pytest-nodeids.txt" \
+            --junitxml "${RUNNER_TEMP}/pytest-shard-${{ matrix.index }}.xml"
         env:
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
           GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
+
+      - name: Upload shard JUnit XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-shard-${{ matrix.index }}
+          path: ${{ runner.temp }}/pytest-shard-${{ matrix.index }}.xml
+          if-no-files-found: ignore
 
   coverage:
     runs-on: ubuntu-latest
