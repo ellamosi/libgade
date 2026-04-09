@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
@@ -30,7 +30,7 @@ jobs:
           tar --zstd -cf "${RUNNER_TEMP}/${GNATFORMAT_BUNDLE_ARCHIVE}" -C "${HOME}" .alire
 
       - name: Upload gnatformat bundle artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.GNATFORMAT_BUNDLE_ARTIFACT }}
           path: ${{ runner.temp }}/${{ env.GNATFORMAT_BUNDLE_ARCHIVE }}

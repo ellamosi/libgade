@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Load test shard matrix
         id: matrix
@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
@@ -112,7 +112,7 @@ jobs:
 
       - name: Upload gnatformat bundle
         if: ${{ steps.restore_gnatformat_bundle.outputs.restored != 'true' && github.event_name == 'push' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.GNATFORMAT_BUNDLE_ARTIFACT }}
           path: ${{ runner.temp }}/${{ env.GNATFORMAT_BUNDLE_ARCHIVE }}
@@ -128,7 +128,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
@@ -153,7 +153,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
@@ -184,7 +184,7 @@ jobs:
 
       - name: Upload shard JUnit XML
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pytest-shard-${{ matrix.index }}
           path: ${{ runner.temp }}/pytest-shard-${{ matrix.index }}.xml
@@ -207,7 +207,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
