@@ -1,17 +1,17 @@
-name: Publish gnatformat bundle
+name: Generate gnatformat bundle
 
 on:
   workflow_dispatch:
 
 env:
-  GNATFORMAT_BUNDLE_TAG: gnatformat-bundle-v1
-  GNATFORMAT_BUNDLE_ASSET: gnatformat-ubuntu.tar.zst
+  GNATFORMAT_BUNDLE_ARTIFACT: gnatformat-bundle-ubuntu
+  GNATFORMAT_BUNDLE_ARCHIVE: gnatformat-ubuntu.tar.zst
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout
@@ -27,25 +27,12 @@ jobs:
         shell: sh
         run: |
           set -eu
-          tar --zstd -cf "${RUNNER_TEMP}/${GNATFORMAT_BUNDLE_ASSET}" -C "${HOME}" .alire
+          tar --zstd -cf "${RUNNER_TEMP}/${GNATFORMAT_BUNDLE_ARCHIVE}" -C "${HOME}" .alire
 
-      - name: Publish release asset
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: sh
-        run: |
-          set -eu
-          if ! gh release view "${GNATFORMAT_BUNDLE_TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create "${GNATFORMAT_BUNDLE_TAG}" \
-              --repo "${GITHUB_REPOSITORY}" \
-              --title "Pinned gnatformat bundle" \
-              --notes "Reusable CI bundle for gnatformat."
-          fi
-
-          gh release delete-asset "${GNATFORMAT_BUNDLE_TAG}" "${GNATFORMAT_BUNDLE_ASSET}" \
-            --repo "${GITHUB_REPOSITORY}" \
-            --yes >/dev/null 2>&1 || true
-
-          gh release upload "${GNATFORMAT_BUNDLE_TAG}" "${RUNNER_TEMP}/${GNATFORMAT_BUNDLE_ASSET}" \
-            --repo "${GITHUB_REPOSITORY}" \
-            --clobber
+      - name: Upload gnatformat bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.GNATFORMAT_BUNDLE_ARTIFACT }}
+          path: ${{ runner.temp }}/${{ env.GNATFORMAT_BUNDLE_ARCHIVE }}
+          compression-level: 0
+          retention-days: 90

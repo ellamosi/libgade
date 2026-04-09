@@ -1,8 +1,8 @@
 name: CI
 
 env:
-  GNATFORMAT_BUNDLE_TAG: gnatformat-bundle-v1
-  GNATFORMAT_BUNDLE_ASSET: gnatformat-ubuntu.tar.zst
+  GNATFORMAT_BUNDLE_ARTIFACT: gnatformat-bundle-ubuntu
+  GNATFORMAT_BUNDLE_ARCHIVE: gnatformat-ubuntu.tar.zst
 
 on:
   push:
@@ -10,9 +10,25 @@ on:
   pull_request:
 
 jobs:
-  format:
+  define-test-shards:
     runs-on: ubuntu-latest
+    name: Define Test Shards
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Load test shard matrix
+        id: matrix
+        run: python3 scripts/ci_shards.py matrix --github-output "${GITHUB_OUTPUT}"
+
+  check-format:
+    runs-on: ubuntu-latest
+    name: Check Format
     permissions:
+      actions: read
       contents: read
 
     steps:
@@ -22,23 +38,63 @@ jobs:
       - name: Shared CI setup
         uses: ./.github/actions/ci-setup
 
-      - name: Restore pinned gnatformat bundle
+      - name: Restore gnatformat bundle
+        id: restore_gnatformat_bundle
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         shell: sh
         run: |
           set -eu
-          bundle_path="${RUNNER_TEMP}/${GNATFORMAT_BUNDLE_ASSET}"
-          if gh release download "${GNATFORMAT_BUNDLE_TAG}" \
-              --repo "${GITHUB_REPOSITORY}" \
-              --pattern "${GNATFORMAT_BUNDLE_ASSET}" \
-              --output "${bundle_path}"; then
+          restore_dir="${RUNNER_TEMP}/gnatformat-bundle"
+          bundle_path="${restore_dir}/${GNATFORMAT_BUNDLE_ARCHIVE}"
+
+          restore_from_workflow() {
+            workflow="$1"
+            event="$2"
+            run_ids="$(
+              gh run list \
+                --repo "${GITHUB_REPOSITORY}" \
+                --workflow "${workflow}" \
+                --branch "${DEFAULT_BRANCH}" \
+                --event "${event}" \
+                --json databaseId,conclusion \
+                --limit 20 \
+                --jq '.[] | select(.conclusion == "success") | .databaseId'
+            )"
+
+            for run_id in ${run_ids}; do
+              rm -rf "${restore_dir}"
+              mkdir -p "${restore_dir}"
+
+              if gh run download "${run_id}" \
+                  --repo "${GITHUB_REPOSITORY}" \
+                  --name "${GNATFORMAT_BUNDLE_ARTIFACT}" \
+                  --dir "${restore_dir}" >/dev/null 2>&1; then
+                return 0
+              fi
+            done
+
+            return 1
+          }
+
+          restored=false
+          if restore_from_workflow publish-gnatformat-bundle.yml workflow_dispatch \
+            || restore_from_workflow ci.yml push; then
             rm -rf "${HOME}/.alire"
             mkdir -p "${HOME}"
             tar --zstd -xf "${bundle_path}" -C "${HOME}"
+
+            if [ -x "${HOME}/.alire/bin/gnatformat" ]; then
+              restored=true
+            else
+              echo "Downloaded gnatformat bundle is missing the gnatformat binary; falling back to local install."
+            fi
           else
-            echo "Pinned gnatformat bundle ${GNATFORMAT_BUNDLE_TAG}/${GNATFORMAT_BUNDLE_ASSET} not available; falling back to local install."
+            echo "No reusable gnatformat bundle artifact found; falling back to local install."
           fi
+
+          echo "restored=${restored}" >> "${GITHUB_OUTPUT}"
 
       - name: Install gnatformat
         shell: sh
@@ -47,11 +103,28 @@ jobs:
             alr install gnatformat
           fi
 
+      - name: Create gnatformat bundle
+        if: ${{ steps.restore_gnatformat_bundle.outputs.restored != 'true' && github.event_name == 'push' }}
+        shell: sh
+        run: |
+          set -eu
+          tar --zstd -cf "${RUNNER_TEMP}/${GNATFORMAT_BUNDLE_ARCHIVE}" -C "${HOME}" .alire
+
+      - name: Upload gnatformat bundle
+        if: ${{ steps.restore_gnatformat_bundle.outputs.restored != 'true' && github.event_name == 'push' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.GNATFORMAT_BUNDLE_ARTIFACT }}
+          path: ${{ runner.temp }}/${{ env.GNATFORMAT_BUNDLE_ARCHIVE }}
+          compression-level: 0
+          retention-days: 90
+
       - name: Check Ada formatting
         run: ./scripts/check-ada-format.sh
 
-  tests:
+  cpp-interface:
     runs-on: ubuntu-latest
+    name: C++ Interface
 
     steps:
       - name: Checkout
@@ -69,22 +142,68 @@ jobs:
       - name: Build C++ interface check
         run: alr exec -- gprbuild -j0 -p -q -P tests/interfaces/cpp/gade_cpp_interface_check.gpr
 
+  test-shards:
+    runs-on: ubuntu-latest
+    needs: define-test-shards
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.define-test-shards.outputs.matrix) }}
+
+    name: Tests / Shard ${{ matrix.index }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Shared CI setup
+        uses: ./.github/actions/ci-setup
+
       - name: Build tests
         working-directory: tests
         run: alr build
 
-      - name: Run tests
+      - name: Write shard nodeids
+        run: |
+          python3 scripts/ci_shards.py nodeids \
+            --shard "${{ matrix.index }}" \
+            --output "${RUNNER_TEMP}/pytest-nodeids.txt"
+
+      - name: Run shard tests
         working-directory: tests
         # --skip-build avoids rebuilding run-tests; --no-build prevents pytest
         # fixtures from rebuilding gade-testd with potentially different flags.
-        run: alr run --skip-build --args="--no-build"
+        run: |
+          python3 run.py \
+            --no-build \
+            --nodeids-file "${RUNNER_TEMP}/pytest-nodeids.txt" \
+            --junitxml "${RUNNER_TEMP}/pytest-shard-${{ matrix.index }}.xml"
         env:
           GADE_ROM_STRICT: "1"
           GADE_COMMERCIAL_ROMS_URL: ${{ secrets.GADE_COMMERCIAL_ROMS_URL }}
           GADE_COMMERCIAL_ROMS_PASSWORD: ${{ secrets.GADE_COMMERCIAL_ROMS_PASSWORD }}
 
-  coverage:
+      - name: Upload shard JUnit XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-shard-${{ matrix.index }}
+          path: ${{ runner.temp }}/pytest-shard-${{ matrix.index }}.xml
+          if-no-files-found: ignore
+
+  tests:
+    if: ${{ always() }}
     runs-on: ubuntu-latest
+    needs: test-shards
+    name: Tests
+
+    steps:
+      - name: Check shard results
+        run: test "${{ needs.test-shards.result }}" = "success"
+
+  coverage_run:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    name: Coverage / Full
 
     steps:
       - name: Checkout
@@ -140,3 +259,18 @@ jobs:
           file: coverage/lcov.info
           format: lcov
           flag-name: ada-core
+
+  coverage:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: coverage_run
+    name: Coverage
+
+    steps:
+      - name: Coverage disabled on pull requests
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "Coverage runs on push to main/master only."
+
+      - name: Check coverage job result
+        if: ${{ github.event_name == 'push' }}
+        run: test "${{ needs.coverage_run.result }}" = "success"
