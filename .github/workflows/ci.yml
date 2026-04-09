@@ -1,6 +1,7 @@
 name: CI
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   GNATFORMAT_BUNDLE_ARTIFACT: gnatformat-bundle-ubuntu
   GNATFORMAT_BUNDLE_ARCHIVE: gnatformat-ubuntu.tar.zst
 
