@@ -7,6 +7,10 @@ class CameraProvider {
 public:
     virtual ~CameraProvider() {}
 
+    virtual void setCaptureActive(bool active) {
+        (void)active;
+    }
+
     virtual void captureFrame(uint8_t *bitmap) = 0;
 };
 

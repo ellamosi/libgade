@@ -41,7 +41,14 @@ package body Gade.Carts.Camera is
    begin
       C.Capture_Active := False;
       C.Capture_Cycles_Left := 0;
-      Write_Captured_Frame (C);
+      begin
+         Write_Captured_Frame (C);
+      exception
+         when others =>
+            Gade.Camera.Set_Capture_Active (C.Provider, False);
+            raise;
+      end;
+      Gade.Camera.Set_Capture_Active (C.Provider, False);
    end Complete_Capture;
 
    function Register_Index (Address : External_RAM_IO_Address) return Natural is
@@ -93,6 +100,10 @@ package body Gade.Carts.Camera is
    overriding
    procedure Reset (C : in out Camera_Cart) is
    begin
+      if C.Capture_Active then
+         Gade.Camera.Set_Capture_Active (C.Provider, False);
+      end if;
+
       MBC_Cart (C).Reset;
       Banked_RAM_Mixin.Enable_RAM (Banked_RAM_Mixin.Banked_RAM_Cart (C), True);
       Banked_RAM_Mixin.Select_RAM_Bank (Banked_RAM_Mixin.Banked_RAM_Cart (C), 0);
@@ -114,14 +125,26 @@ package body Gade.Carts.Camera is
          C.Capture_Cycles_Left := Capture_Cycles (C);
       end if;
 
+      Gade.Camera.Set_Capture_Active (C.Provider, True);
       C.Capture_Active := True;
    end Resume_Capture;
 
    overriding
    procedure Set_Camera_Provider
-     (C : in out Camera_Cart; Provider : Gade.Camera.Provider_Access) is
+     (C : in out Camera_Cart; Provider : Gade.Camera.Provider_Access)
+   is
+      New_Provider : constant Gade.Camera.Provider_Access :=
+        (if Provider = null then Gade.Camera.Default_Provider else Provider);
    begin
-      C.Provider := (if Provider = null then Gade.Camera.Default_Provider else Provider);
+      if C.Capture_Active then
+         Gade.Camera.Set_Capture_Active (C.Provider, False);
+      end if;
+
+      C.Provider := New_Provider;
+
+      if C.Capture_Active then
+         Gade.Camera.Set_Capture_Active (C.Provider, True);
+      end if;
    end Set_Camera_Provider;
 
    overriding
@@ -157,6 +180,9 @@ package body Gade.Carts.Camera is
 
    procedure Stop_Capture (C : in out Camera_Cart) is
    begin
+      if C.Capture_Active then
+         Gade.Camera.Set_Capture_Active (C.Provider, False);
+      end if;
       C.Capture_Active := False;
    end Stop_Capture;
 

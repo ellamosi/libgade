@@ -86,8 +86,19 @@ package body Gade.Interfaces.C is
 
    type Camera_Provider_Class is null record;
 
+   procedure Set_Capture_Active
+     (This : Camera_Provider_Class_Access; Active : unsigned_char);
+   pragma Import (C, Set_Capture_Active, "CameraProvider_setCaptureActive");
+
    procedure Capture_Frame (This : Camera_Provider_Class_Access; Bitmap : System.Address);
    pragma Import (C, Capture_Frame, "CameraProvider_captureFrame");
+
+   overriding
+   procedure Set_Capture_Active
+     (Wrapper : in out Camera_Provider_Wrapper; Active : Boolean) is
+   begin
+      Set_Capture_Active (Wrapper.C_Instance, (if Active then 1 else 0));
+   end Set_Capture_Active;
 
    overriding
    procedure Capture_Frame (Wrapper : Camera_Provider_Wrapper; Frame : out Bitmap) is

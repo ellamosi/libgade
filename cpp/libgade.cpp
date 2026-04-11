@@ -14,9 +14,16 @@ void gadeRunFor(GB *gb,
                 uint8_t *frameFinished);
 void gadeSetCameraProvider(GB *gb, CameraProvider *cameraProviderInstance);
 void gadeSetInputReader(GB *gb, InputReader *inputReaderInstance);
+void CameraProvider_setCaptureActive(CameraProvider *cameraProviderInstance,
+                                     uint8_t active);
 void CameraProvider_captureFrame(CameraProvider *cameraProviderInstance,
                                  uint8_t *bitmap);
 uint8_t InputReader_readInput(InputReader *inputReaderInstance);
+}
+
+void CameraProvider_setCaptureActive(CameraProvider *cameraProviderInstance,
+                                     uint8_t active) {
+    cameraProviderInstance->setCaptureActive(active != 0);
 }
 
 void CameraProvider_captureFrame(CameraProvider *cameraProviderInstance,

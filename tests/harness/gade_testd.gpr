@@ -12,7 +12,11 @@ project Gade_Testd is
 
    for Source_Dirs use ("src");
    for Languages use ("Ada");
-   for Main use ("run_tests.adb", "gade_testd.adb", "gade-camera_controller_check.adb");
+   for Main use
+     ("run_tests.adb",
+      "gade_testd.adb",
+      "gade-camera_controller_check.adb",
+      "gade-camera_run_for_check.adb");
    for Exec_Dir use "../bin";
    for Object_Dir use "../obj";
    for Create_Missing_Dirs use "True";
@@ -21,6 +25,7 @@ project Gade_Testd is
    package Builder is
       for Default_Switches ("Ada") use Gade.Builder'Default_Switches ("Ada");
       for Executable ("gade-camera_controller_check") use "gade-camera-controller-check";
+      for Executable ("gade-camera_run_for_check") use "gade-camera-run-for-check";
       for Executable ("run_tests") use "run-tests";
       for Executable ("gade_testd") use "gade-testd";
    end Builder;

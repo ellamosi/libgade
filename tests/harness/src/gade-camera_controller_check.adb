@@ -17,8 +17,12 @@ procedure Gade.Camera_Controller_Check is
    ROM_Path  : constant String := "/tmp/gade-camera-controller-check.gb";
    Save_Path : constant String := "/tmp/gade-camera-controller-check.sav";
 
-   type Solid_Camera_Provider is new Gade.Camera.Provider_Interface
-   with null record;
+   type Solid_Camera_Provider is limited new Gade.Camera.Provider_Interface
+   with record
+      Activation_Count   : Natural := 0;
+      Deactivation_Count : Natural := 0;
+      Active             : Boolean := False;
+   end record;
 
    function Byte_Image (Value : Byte) return String;
 
@@ -27,6 +31,10 @@ procedure Gade.Camera_Controller_Check is
    overriding
    procedure Capture_Frame
      (Provider : Solid_Camera_Provider; Frame : out Gade.Camera.Bitmap);
+
+   overriding
+   procedure Set_Capture_Active
+     (Provider : in out Solid_Camera_Provider; Active : Boolean);
 
    procedure Cleanup;
 
@@ -68,6 +76,19 @@ procedure Gade.Camera_Controller_Check is
          end loop;
       end loop;
    end Capture_Frame;
+
+   overriding
+   procedure Set_Capture_Active
+     (Provider : in out Solid_Camera_Provider; Active : Boolean) is
+   begin
+      Provider.Active := Active;
+
+      if Active then
+         Provider.Activation_Count := Provider.Activation_Count + 1;
+      else
+         Provider.Deactivation_Count := Provider.Deactivation_Count + 1;
+      end if;
+   end Set_Capture_Active;
 
    procedure Cleanup is
    begin
@@ -190,6 +211,11 @@ begin
       Expect_RAM (Cart.all, 16#A000#, 16#07#, "capture status reads active");
       Expect_RAM
         (Cart.all, 16#A080#, 16#07#, "register mirrors expose capture status");
+      Assert (Provider.Active, "provider is activated when capture starts");
+      Assert
+        (Provider.Activation_Count = 1
+         and then Provider.Deactivation_Count = 0,
+         "provider activation count after first start");
 
       Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#02#);
       Expect_RAM
@@ -201,6 +227,11 @@ begin
       Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#10#);
       Gade.Carts.Write_RAM (Cart.all, 16#A000#, 16#06#);
       Expect_RAM (Cart.all, 16#A000#, 16#06#, "capture can be paused");
+      Assert (not Provider.Active, "provider deactivates when capture pauses");
+      Assert
+        (Provider.Activation_Count = 1
+         and then Provider.Deactivation_Count = 1,
+         "provider activation counts after pause");
 
       Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#02#);
       Expect_RAM
@@ -209,12 +240,23 @@ begin
       Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#10#);
       Gade.Carts.Write_RAM (Cart.all, 16#A000#, 16#07#);
       Expect_RAM (Cart.all, 16#A000#, 16#07#, "capture resumes");
+      Assert (Provider.Active, "provider reactivates when capture resumes");
+      Assert
+        (Provider.Activation_Count = 2
+         and then Provider.Deactivation_Count = 1,
+         "provider activation counts after resume");
 
       Gade.Carts.Report_Cycles (Cart.all, 40_000);
 
       Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#10#);
       Expect_RAM
         (Cart.all, 16#A000#, 16#06#, "capture completes and clears busy bit");
+      Assert
+        (not Provider.Active, "provider deactivates when capture completes");
+      Assert
+        (Provider.Activation_Count = 2
+         and then Provider.Deactivation_Count = 2,
+         "provider activation counts after completion");
 
       Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#00#);
       Expect_RAM (Cart.all, 16#A100#, 16#FF#, "pattern row 0 low plane");
@@ -259,6 +301,18 @@ begin
          16#A101#,
          16#FF#,
          "null provider restores default high plane");
+
+      Gade.Carts.Set_Camera_Provider (Cart.all, Provider'Unchecked_Access);
+      Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#10#);
+      Gade.Carts.Write_RAM (Cart.all, 16#A000#, 16#07#);
+      Assert (Provider.Active, "provider activates again before reset");
+
+      Gade.Carts.Reset (Cart.all);
+      Assert (not Provider.Active, "reset deactivates provider");
+      Assert
+        (Provider.Activation_Count = 3
+         and then Provider.Deactivation_Count = 3,
+         "provider activation counts after reset");
    end;
 
    Cleanup;

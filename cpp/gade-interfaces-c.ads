@@ -69,9 +69,13 @@ private
    type Camera_Provider_Class_Access is access all Camera_Provider_Class;
    pragma Convention (C, Camera_Provider_Class_Access);
 
-   type Camera_Provider_Wrapper is new Provider_Interface with record
+   type Camera_Provider_Wrapper is limited new Provider_Interface with record
       C_Instance : Camera_Provider_Class_Access;
    end record;
+
+   overriding
+   procedure Set_Capture_Active
+     (Wrapper : in out Camera_Provider_Wrapper; Active : Boolean);
 
    overriding
    procedure Capture_Frame (Wrapper : Camera_Provider_Wrapper; Frame : out Bitmap);

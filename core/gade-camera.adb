@@ -1,6 +1,6 @@
 package body Gade.Camera is
 
-   type Pattern_Provider is new Provider_Interface with null record;
+   type Pattern_Provider is limited new Provider_Interface with null record;
 
    overriding
    procedure Capture_Frame (Provider : Pattern_Provider; Frame : out Bitmap);
@@ -10,6 +10,13 @@ package body Gade.Camera is
    Pattern_Provider_Instance : aliased Pattern_Provider;
    Default                   : constant Provider_Access :=
      Pattern_Provider_Instance'Access;
+
+   procedure Set_Capture_Active (Provider : Provider_Access; Active : Boolean) is
+      Effective_Provider : constant Provider_Access :=
+        (if Provider = null then Default_Provider else Provider);
+   begin
+      Effective_Provider.Set_Capture_Active (Active);
+   end Set_Capture_Active;
 
    procedure Capture_Frame (Provider : Provider_Access; Frame : out Bitmap) is
       Effective_Provider : constant Provider_Access :=
