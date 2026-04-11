@@ -1,3 +1,4 @@
+limited with Gade.Camera;
 limited with Gade.Input;
 limited with Gade.Logging;
 limited with Gade.Video_Buffer;
@@ -20,7 +21,8 @@ package Gade.Interfaces is
 
    type Gade_Type is private;
 
-   --  Create a new emulator instance with default input reader and logger.
+   --  Create a new emulator instance with neutral input, the default camera
+   --  provider and the default logger.
    --
    --  Ownership:
    --  - The returned handle is owned by the caller and must be released with
@@ -34,11 +36,13 @@ package Gade.Interfaces is
    --
    --  Nullability:
    --  - Reader may be null (treated as "no input pressed").
+   --  - Camera may be null (Default_Provider is used).
    --  - Logger may be null (Default_Logger is used).
    --
    --  Ownership:
-   --  - The caller retains ownership of Reader and Logger.
-   --  - Reader and Logger must remain valid while attached to this instance.
+   --  - The caller retains ownership of Reader, Camera and Logger.
+   --  - Reader, Camera and Logger must remain valid while attached to this
+   --    instance.
    --  - The returned handle is owned by the caller and must be released with
    --    Finalize exactly once.
    --
@@ -48,6 +52,12 @@ package Gade.Interfaces is
      (G      : out Gade_Type;
       Reader : Gade.Input.Reader_Access;
       Logger : Gade.Logging.Logger_Access);
+
+   procedure Create
+     (G      : out Gade_Type;
+      Reader : Gade.Input.Reader_Access;
+      Logger : Gade.Logging.Logger_Access;
+      Camera : Gade.Camera.Provider_Access);
 
    --  Reset emulator state (CPU, memory-mapped devices, and loaded cartridge
    --  runtime state) to power-on defaults.
@@ -94,6 +104,25 @@ package Gade.Interfaces is
    --    exceptions.
    procedure Set_Input_Reader (G : Gade_Type; Reader : Gade.Input.Reader_Access);
 
+   --  Set or replace the camera provider used by camera cartridges.
+   --
+   --  Nullability:
+   --  - Provider may be null to detach custom capture and restore the default
+   --    static-pattern provider.
+   --
+   --  Preconditions:
+   --  - G must be a non-null handle previously returned by Create and not
+   --    finalized yet.
+   --
+   --  Ownership:
+   --  - The caller retains ownership of Provider and must keep it valid while
+   --    attached.
+   --
+   --  Error behavior:
+   --  - Invalid handles (for example null/dangling) raise runtime access-check
+   --    exceptions.
+   procedure Set_Camera_Provider (G : Gade_Type; Provider : Gade.Camera.Provider_Access);
+
    --  Execute emulation until a frame is completed or Requested_Samples are
    --  generated, whichever happens first.
    --
@@ -133,7 +162,7 @@ package Gade.Interfaces is
    --
    --  Ownership:
    --  - Releases resources owned by G and sets G to null.
-   --  - Does not free caller-owned Reader/Logger implementations.
+   --  - Does not free caller-owned Reader/Camera/Logger implementations.
    --
    --  Error behavior:
    --  - Save I/O exceptions propagate to caller.

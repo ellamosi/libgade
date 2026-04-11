@@ -5,7 +5,11 @@ library project Gade_CPP extends "gade.gpr" is
    for Languages use ("Ada", "C++");
    for Interfaces use
      Gade'Interfaces &
-       ("inputreader.hpp", "libgade.hpp", "logger.hpp", "gade-interfaces-c.ads");
+       ("cameraprovider.hpp",
+        "inputreader.hpp",
+        "libgade.hpp",
+        "logger.hpp",
+        "gade-interfaces-c.ads");
    for Library_Name use "gade_cpp";
    for Library_Dir use "lib";
    for Library_Src_Dir use "lib/src/cpp/" & Gade.Gade_Library;

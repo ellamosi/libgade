@@ -14,6 +14,9 @@ library project Gade is
 
    Base_Interfaces :=
      ("gade.ads",
+      "gade-camera.ads",
+      "gade-cartridge_info.ads",
+      "gade-carts.ads",
       "gade-logging.ads",
       "gade-interfaces.ads",
       "gade-input.ads",
