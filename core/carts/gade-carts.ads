@@ -1,5 +1,6 @@
 private with Gade.Cartridge_Info;
 private with Ada.Streams.Stream_IO;
+limited with Gade.Camera;
 with Gade.Logging;
 with Gade.Timing; use Gade.Timing;
 
@@ -155,6 +156,9 @@ private package Gade.Carts is
    function Logger_Of (C : Cart) return Gade.Logging.Logger_Access;
 
    procedure Report_Cycles (C : in out Cart; Cycles : M_Cycle_Count) is null;
+
+   procedure Set_Camera_Provider (C : in out Cart; Provider : Gade.Camera.Provider_Access)
+   is null;
 
 private
 

@@ -4,6 +4,7 @@ with Ada.Exceptions;   use Ada.Exceptions;
 with Ada.Streams.Stream_IO;
 with Ada.Text_IO;
 
+with Gade.Camera;
 with Gade.Carts;
 
 procedure Gade.Camera_Controller_Check is
@@ -16,9 +17,16 @@ procedure Gade.Camera_Controller_Check is
    ROM_Path  : constant String := "/tmp/gade-camera-controller-check.gb";
    Save_Path : constant String := "/tmp/gade-camera-controller-check.sav";
 
+   type Solid_Camera_Provider is new Gade.Camera.Provider_Interface
+   with null record;
+
    function Byte_Image (Value : Byte) return String;
 
    procedure Assert (Condition : Boolean; Message : String);
+
+   overriding
+   procedure Capture_Frame
+     (Provider : Solid_Camera_Provider; Frame : out Gade.Camera.Bitmap);
 
    procedure Cleanup;
 
@@ -47,6 +55,19 @@ procedure Gade.Camera_Controller_Check is
          raise Program_Error with Message;
       end if;
    end Assert;
+
+   overriding
+   procedure Capture_Frame
+     (Provider : Solid_Camera_Provider; Frame : out Gade.Camera.Bitmap)
+   is
+      pragma Unreferenced (Provider);
+   begin
+      for Y in Frame'Range (1) loop
+         for X in Frame'Range (2) loop
+            Frame (Y, X) := 2;
+         end loop;
+      end loop;
+   end Capture_Frame;
 
    procedure Cleanup is
    begin
@@ -132,8 +153,9 @@ begin
    Create_Test_ROM;
 
    declare
-      Cart : constant Gade.Carts.Cart_NN_Access :=
+      Cart     : constant Gade.Carts.Cart_NN_Access :=
         Gade.Carts.Load_ROM (ROM_Path, null);
+      Provider : aliased Solid_Camera_Provider;
    begin
       Expect_ROM (Cart.all, 16#4000#, 16#01#, "initial switchable ROM bank");
 
@@ -205,6 +227,38 @@ begin
       Expect_RAM (Cart.all, 16#A291#, 16#FF#, "pattern shade 2 high plane");
       Expect_RAM (Cart.all, 16#A2D0#, 16#FF#, "pattern shade 3 low plane");
       Expect_RAM (Cart.all, 16#A2D1#, 16#FF#, "pattern shade 3 high plane");
+
+      Gade.Carts.Set_Camera_Provider (Cart.all, Provider'Unchecked_Access);
+
+      Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#10#);
+      Gade.Carts.Write_RAM (Cart.all, 16#A000#, 16#07#);
+      Gade.Carts.Report_Cycles (Cart.all, 40_000);
+
+      Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#00#);
+      Expect_RAM (Cart.all, 16#A100#, 16#00#, "custom frame row 0 low plane");
+      Expect_RAM (Cart.all, 16#A101#, 16#FF#, "custom frame row 0 high plane");
+      Expect_RAM
+        (Cart.all, 16#A2D0#, 16#00#, "custom frame keeps low plane cleared");
+      Expect_RAM
+        (Cart.all, 16#A2D1#, 16#FF#, "custom frame keeps high plane set");
+
+      Gade.Carts.Set_Camera_Provider (Cart.all, null);
+
+      Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#10#);
+      Gade.Carts.Write_RAM (Cart.all, 16#A000#, 16#07#);
+      Gade.Carts.Report_Cycles (Cart.all, 40_000);
+
+      Gade.Carts.Write_ROM (Cart.all, 16#4000#, 16#00#);
+      Expect_RAM
+        (Cart.all,
+         16#A100#,
+         16#FF#,
+         "null provider restores default low plane");
+      Expect_RAM
+        (Cart.all,
+         16#A101#,
+         16#FF#,
+         "null provider restores default high plane");
    end;
 
    Cleanup;

@@ -1,4 +1,5 @@
 private with Gade.Carts.Mixins.MBC;
+with Gade.Camera;
 
 package Gade.Carts.Camera is
 
@@ -17,6 +18,10 @@ package Gade.Carts.Camera is
 
    overriding
    procedure Reset (C : in out Camera_Cart);
+
+   overriding
+   procedure Set_Camera_Provider
+     (C : in out Camera_Cart; Provider : Gade.Camera.Provider_Access);
 
    overriding
    procedure Write_RAM
@@ -50,6 +55,7 @@ private
    type Camera_Cart is new MBC_Cart with record
       Capture_Active      : Boolean;
       Capture_Cycles_Left : M_Cycle_Count;
+      Provider            : Gade.Camera.Provider_Access := Gade.Camera.Default_Provider;
       RAM_Write_Enabled   : Boolean;
       Registers           : Camera_Registers;
       Registers_Selected  : Boolean;

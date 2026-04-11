@@ -1,4 +1,5 @@
 with Gade.Carts.Constructors;
+with Gade.Camera;
 with Gade.Carts.Mem.RAM; use Gade.Carts.Mem.RAM;
 with Gade.Carts.Mixins.MBC.Constructors;
 
@@ -41,6 +42,7 @@ package body Gade.Carts.Camera.Constructors is
    begin
       Gade.Carts.Constructors.Initialize (Cart (C), RAM_Path, Savable, Logger);
       MBC_Constructors.Initialize (C, ROM_Content, RAM_Content);
+      C.Provider := Gade.Camera.Default_Provider;
       Reset (C);
    end Initialize;
 

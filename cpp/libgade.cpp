@@ -12,8 +12,16 @@ void gadeRunFor(GB *gb,
                 RGB32Bitmap *videoBuf,
                 StereoSample *audioBuf,
                 uint8_t *frameFinished);
+void gadeSetCameraProvider(GB *gb, CameraProvider *cameraProviderInstance);
 void gadeSetInputReader(GB *gb, InputReader *inputReaderInstance);
+void CameraProvider_captureFrame(CameraProvider *cameraProviderInstance,
+                                 uint8_t *bitmap);
 uint8_t InputReader_readInput(InputReader *inputReaderInstance);
+}
+
+void CameraProvider_captureFrame(CameraProvider *cameraProviderInstance,
+                                 uint8_t *bitmap) {
+    cameraProviderInstance->captureFrame(bitmap);
 }
 
 uint8_t InputReader_readInput(InputReader *inputReaderInstance) {
@@ -75,4 +83,9 @@ void GB::runFor(uint32_t requestedSamples,
 EXPORT
 void GB::setInputReader(InputReader *inputReader) {
     gadeSetInputReader(this, inputReader);
+}
+
+EXPORT
+void GB::setCameraProvider(CameraProvider *cameraProvider) {
+    gadeSetCameraProvider(this, cameraProvider);
 }

@@ -4,6 +4,7 @@ with Gade.Video_Buffer; use Gade.Video_Buffer;
 with System;
 with Interfaces.C;         use Interfaces.C;
 with Interfaces.C.Strings; use Interfaces.C.Strings;
+with Gade.Camera;          use Gade.Camera;
 with Gade.Input;           use Gade.Input;
 
 package Gade.Interfaces.C is
@@ -40,17 +41,40 @@ package Gade.Interfaces.C is
      (This : in out Gade_Type; Input_Reader : Input_Reader_Class_Access);
    pragma Export (C, Set_Input_Reader, "gadeSetInputReader");
 
+   type Camera_Provider_Class_Access is private;
+
+   procedure Set_Camera_Provider
+     (This : in out Gade_Type; Camera_Provider : Camera_Provider_Class_Access);
+   pragma Export (C, Set_Camera_Provider, "gadeSetCameraProvider");
+
 private
+
+   type C_State;
+   type C_State_Access is access all C_State;
+
+   type Camera_Provider_Wrapper;
+   type Camera_Provider_Wrapper_Access is access all Camera_Provider_Wrapper;
 
    type Input_Reader_Wrapper;
    type Input_Reader_Wrapper_Access is access all Input_Reader_Wrapper;
 
    type Gade_Type is record
-      Vptr         : System.Address;
-      G            : Gade.Interfaces.Gade_Type;
-      Input_Reader : Input_Reader_Wrapper_Access;
+      Vptr  : System.Address;
+      State : C_State_Access;
    end record;
    pragma Convention (C, Gade_Type);
+
+   type Camera_Provider_Class;
+
+   type Camera_Provider_Class_Access is access all Camera_Provider_Class;
+   pragma Convention (C, Camera_Provider_Class_Access);
+
+   type Camera_Provider_Wrapper is new Provider_Interface with record
+      C_Instance : Camera_Provider_Class_Access;
+   end record;
+
+   overriding
+   procedure Capture_Frame (Wrapper : Camera_Provider_Wrapper; Frame : out Bitmap);
 
    type Input_Reader_Class;
 
@@ -63,5 +87,11 @@ private
 
    overriding
    function Read_Input (Wrapper : Input_Reader_Wrapper) return State;
+
+   type C_State is record
+      Camera_Provider : Camera_Provider_Wrapper_Access := null;
+      G               : Gade.Interfaces.Gade_Type;
+      Input_Reader    : Input_Reader_Wrapper_Access := null;
+   end record;
 
 end Gade.Interfaces.C;

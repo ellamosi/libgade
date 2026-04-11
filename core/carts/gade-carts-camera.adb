@@ -1,13 +1,11 @@
 package body Gade.Carts.Camera is
+   use type Gade.Camera.Provider_Access;
+
    package Banked_RAM_Mixin renames ROM_RAM_Mixin.Banked_RAM_Mixin;
 
    Pattern_Base_Offset : constant := 16#0100#;
-   Pattern_Height      : constant := 112;
-   Pattern_Width       : constant := 128;
 
    function Capture_Cycles (C : Camera_Cart) return M_Cycle_Count;
-
-   function Pattern_Color (X : Natural; Y : Natural) return Byte;
 
    function Register_Index (Address : External_RAM_IO_Address) return Natural;
 
@@ -17,7 +15,7 @@ package body Gade.Carts.Camera is
 
    procedure Stop_Capture (C : in out Camera_Cart);
 
-   procedure Write_Pattern (C : in out Camera_Cart);
+   procedure Write_Captured_Frame (C : in out Camera_Cart);
 
    function Capture_Cycles (C : Camera_Cart) return M_Cycle_Count is
       Exposure_Steps : constant Natural :=
@@ -43,22 +41,8 @@ package body Gade.Carts.Camera is
    begin
       C.Capture_Active := False;
       C.Capture_Cycles_Left := 0;
-      Write_Pattern (C);
+      Write_Captured_Frame (C);
    end Complete_Capture;
-
-   function Pattern_Color (X : Natural; Y : Natural) return Byte is
-      In_Border : constant Boolean :=
-        X < 8
-        or else X >= Pattern_Width - 8
-        or else Y < 8
-        or else Y >= Pattern_Height - 8;
-   begin
-      if In_Border then
-         return 3;
-      else
-         return Byte ((X / 32) mod 4);
-      end if;
-   end Pattern_Color;
 
    function Register_Index (Address : External_RAM_IO_Address) return Natural is
    begin
@@ -134,6 +118,13 @@ package body Gade.Carts.Camera is
    end Resume_Capture;
 
    overriding
+   procedure Set_Camera_Provider
+     (C : in out Camera_Cart; Provider : Gade.Camera.Provider_Access) is
+   begin
+      C.Provider := (if Provider = null then Gade.Camera.Default_Provider else Provider);
+   end Set_Camera_Provider;
+
+   overriding
    procedure Select_Bank
      (C : in out Camera_Cart; Address : Bank_Select_Address; Value : Byte) is
    begin
@@ -182,29 +173,31 @@ package body Gade.Carts.Camera is
       end if;
    end Write_RAM;
 
-   procedure Write_Pattern (C : in out Camera_Cart) is
+   procedure Write_Captured_Frame (C : in out Camera_Cart) is
       Address         : External_RAM_IO_Address;
+      Frame           : Gade.Camera.Bitmap;
       High            : Byte;
       Low             : Byte;
       Original_Bank   : constant Banked_RAM_Mixin.Banked_RAM_Spaces.Bank_Index :=
         C.Selected_RAM_Bank;
       Original_Select : constant Boolean := C.Registers_Selected;
       Shade           : Byte;
-      X               : Natural;
-      Y               : Natural;
    begin
+      Gade.Camera.Capture_Frame (C.Provider, Frame);
       Banked_RAM_Mixin.Select_RAM_Bank (Banked_RAM_Mixin.Banked_RAM_Cart (C), 0);
 
-      for Tile_Y in 0 .. (Pattern_Height / 8) - 1 loop
-         for Tile_X in 0 .. (Pattern_Width / 8) - 1 loop
+      for Tile_Y in 0 .. (Gade.Camera.Capture_Height / 8) - 1 loop
+         for Tile_X in 0 .. (Gade.Camera.Capture_Width / 8) - 1 loop
             for Row in 0 .. 7 loop
                High := 16#00#;
                Low := 16#00#;
 
                for Col in 0 .. 7 loop
-                  X := Tile_X * 8 + Col;
-                  Y := Tile_Y * 8 + Row;
-                  Shade := Pattern_Color (X, Y);
+                  Shade :=
+                    Byte
+                      (Frame
+                         (Gade.Camera.Row_Index (Tile_Y * 8 + Row),
+                          Gade.Camera.Column_Index (Tile_X * 8 + Col)));
                   if (Shade and 16#01#) /= 0 then
                      Low := Low or 2**(7 - Col);
                   end if;
@@ -227,7 +220,7 @@ package body Gade.Carts.Camera is
       Banked_RAM_Mixin.Select_RAM_Bank
         (Banked_RAM_Mixin.Banked_RAM_Cart (C), Original_Bank);
       C.Registers_Selected := Original_Select;
-   end Write_Pattern;
+   end Write_Captured_Frame;
 
    procedure Write_Register
      (C : in out Camera_Cart; Address : External_RAM_IO_Address; V : Byte)

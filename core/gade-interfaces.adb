@@ -1,6 +1,7 @@
 with Ada.Unchecked_Deallocation;
 
 with Gade.GB;             use Gade.GB;
+with Gade.Camera;
 with Gade.Input;          use Gade.Input;
 with Gade.Audio_Buffer;   use Gade.Audio_Buffer;
 with Gade.Video_Buffer;   use Gade.Video_Buffer;
@@ -12,17 +13,21 @@ with Gade.Carts;
 with Gade.Logging;
 
 package body Gade.Interfaces is
+   use type Gade.Camera.Provider_Access;
    use type Gade.Logging.Logger_Access;
    use type Gade.Dev.CPU.CPU_Execution_State;
 
+   procedure Apply_Camera_Provider (G : Gade_Type);
+
    type Opaque_Gade_Type is record
+      Camera : Gade.Camera.Provider_Access;
       GB     : Gade.GB.GB_Type;
       Logger : Gade.Logging.Logger_Access;
    end record;
 
    procedure Create (G : out Gade_Type) is
    begin
-      Create (G, null, null);
+      Create (G, null, null, null);
    end Create;
 
    procedure Create
@@ -30,10 +35,21 @@ package body Gade.Interfaces is
       Reader : Gade.Input.Reader_Access;
       Logger : Gade.Logging.Logger_Access) is
    begin
+      Create (G, Reader, Logger, null);
+   end Create;
+
+   procedure Create
+     (G      : out Gade_Type;
+      Reader : Gade.Input.Reader_Access;
+      Logger : Gade.Logging.Logger_Access;
+      Camera : Gade.Camera.Provider_Access) is
+   begin
       G := new Opaque_Gade_Type;
+      G.Camera := (if Camera = null then Gade.Camera.Default_Provider else Camera);
       G.Logger := (if Logger = null then Gade.Logging.Default_Logger else Logger);
       G.GB.Create (G.Logger);
       G.GB.Joypad.Set_Input_Reader (Reader);
+      Apply_Camera_Provider (G);
    end Create;
 
    procedure Reset (G : Gade_Type) is
@@ -41,15 +57,28 @@ package body Gade.Interfaces is
       G.GB.Reset;
    end Reset;
 
+   procedure Apply_Camera_Provider (G : Gade_Type) is
+   begin
+      G.GB.Cart.Set_Camera_Provider (G.Camera);
+   end Apply_Camera_Provider;
+
    procedure Load_ROM (G : Gade_Type; Path : String) is
    begin
       G.GB.Cart := Gade.Carts.Load_ROM (Path, G.Logger);
+      Apply_Camera_Provider (G);
    end Load_ROM;
 
    procedure Set_Input_Reader (G : Gade_Type; Reader : Gade.Input.Reader_Access) is
    begin
       G.GB.Joypad.Set_Input_Reader (Reader);
    end Set_Input_Reader;
+
+   procedure Set_Camera_Provider (G : Gade_Type; Provider : Gade.Camera.Provider_Access)
+   is
+   begin
+      G.Camera := (if Provider = null then Gade.Camera.Default_Provider else Provider);
+      Apply_Camera_Provider (G);
+   end Set_Camera_Provider;
 
    procedure Run_For
      (G                 : Gade_Type;
